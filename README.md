@@ -26,9 +26,10 @@
 - [Shouldly](https://docs.shouldly.org) - Helper for testing.
 - [Destructurama.Attributed](https://github.com/destructurama/attributed) - Masking for sensitive datatypes.
 
-## Software 
+## Software
+
 1. Install [Rider](https://www.jetbrains.com/rider/) or [Visual Studio](https://visualstudio.microsoft.com/)
-2. Make sure you have [ASP.NET 9](https://dotnet.microsoft.com/en-us/download) installed (comes with Rider and Visual Studio) 
+2. Make sure you have [ASP.NET 9](https://dotnet.microsoft.com/en-us/download) installed (comes with Rider and Visual Studio)
 
 ## Installation Instructions
 
@@ -40,7 +41,7 @@
 
 4. The project should open in your default browser on port 5001.
 
-5. The database (SQLite) will be created. However you will have to switch the database provider of your choosing 
+5. The database (SQLite) will be created. However you will have to switch the database provider of your choosing
 
    1. **SQL Server**
 
@@ -60,7 +61,7 @@
 
       🔗 [NuGet Link](https://www.nuget.org/packages/Npgsql.EntityFrameworkCore.PostgreSQL/)
 
-   4. Mongo etc... 
+   4. Mongo etc...
 
 ## Creation of the database
 
@@ -88,7 +89,7 @@ dotnet ef database update --startup-project Rise.Server --project Rise.Persisten
 
 In the `src/Rise.Server` folder
 
-`dotnet watch --non-interactive` 
+`dotnet watch --non-interactive`
 
 The `dotnet watch` command is a file watcher. When it detects a change, it runs the `dotnet run` command or a specified `dotnet` command. If it runs `dotnet run`, and the change is supported for [hot reload](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-watch#hot-reload), it hot reloads the specified application. If the change isn't supported, it restarts the application. This process enables fast iterative development from the command line.
 
@@ -96,7 +97,7 @@ The `dotnet watch` command is a file watcher. When it detects a change, it runs 
 
 The `dotnet run` command provides a convenient option to run your application from the source code with one command. It's useful for fast iterative development from the command line. The command depends on the [`dotnet build`](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-build) command to build the code. Any requirements for the build apply to `dotnet run` as wel
 
-`dotnet clean `- you won't need this often
+`dotnet clean`- you won't need this often
 
 The `dotnet clean` command cleans the output of the previous build. It's implemented as an [MSBuild target](https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild-targets), so the project is evaluated when the command is run. Only the outputs created during the build are cleaned. Both intermediate (*obj*) and final output (*bin*) folders are cleaned.
 
@@ -106,11 +107,11 @@ Authentication and authorization is present, you'll host and maintain the user a
 
 ### Users
 
-- user@example.com
-- technician1@example.com
-- technician2@example.com
-- secretary@example.com
-- admin@example.com
+- <user@example.com>
+- <technician1@example.com>
+- <technician2@example.com>
+- <secretary@example.com>
+- <admin@example.com>
 
 ### Roles
 
@@ -174,11 +175,11 @@ Let’s look at each of these in more detail:
 
 - **Use Cases**: These classes are responsible for specific actions in the system, like creating an order or processing a payment.
 
-**Why this separation?**: This project enforces the **Separation of Concerns (SoC)**. It also makes testing easier, as this layer can be unit tested without worrying about external dependencies. 
+**Why this separation?**: This project enforces the **Separation of Concerns (SoC)**. It also makes testing easier, as this layer can be unit tested without worrying about external dependencies.
 
 > Note that we can swap out the API for something else, for example a console application and the business rules will still apply.
 >
-> We do not recommend abstracting your database as we see it as a migration to another database provider, not an abstraction. Read more about it [Should you Abstract the Database ](https://enterprisecraftsmanship.com/posts/should-you-abstract-database/). However you will have to switch to a real database provider not SQLite.
+> We do not recommend abstracting your database as we see it as a migration to another database provider, not an abstraction. Read more about it [Should you Abstract the Database](https://enterprisecraftsmanship.com/posts/should-you-abstract-database/). However you will have to switch to a real database provider not SQLite.
 
 ------
 
@@ -218,6 +219,7 @@ You might notice something interesting about how endpoints send responses. In `P
 So how are responses sent? We use a custom **Post-Processor** called `GlobalResponseSender`. This processor runs after every endpoint and is responsible for creating the final HTTP response. It takes the object returned by your endpoint—typically an `Ardalis.Result`—and intelligently maps it to the correct HTTP status code.
 
 For example:
+
 - If your endpoint returns a successful `Result<ProductDto>`, the processor creates a `200 OK` response containing the product data.
 - If it returns `Result.Invalid(errors)`, the processor creates a `400 Bad Request` response with the validation errors.
 - If it returns `Result.NotFound()`, it becomes a `404 Not Found` response.
@@ -230,11 +232,11 @@ This pattern is powerful because it keeps your endpoint logic clean and focused 
 
 ### 5. **Client Project**
 
-**Folder**: `Client` 
+**Folder**: `Client`
 
-A Blazor Web Assembly Standalone client, just like React, Vue, Svelte, Angular,... but written in C#. 
+A Blazor Web Assembly Standalone client, just like React, Vue, Svelte, Angular,... but written in C#.
 
----
+------
 
 ### 6. **Shared Project**
 
@@ -259,7 +261,7 @@ While not always included in the base template, most well-architected solutions 
 
 By separating the tests into their own projects, you ensure that they remain maintainable, modular, and focused on the specific functionality being tested.
 
----
+------
 
 ### 8. **Cross-Cutting Concerns**
 
@@ -287,7 +289,6 @@ The `dotnet-template` solution is structured to encourage scalability, maintaina
 
 ## Course
 
-There is .NET course from 1-2 years ago which is no longer maintained but still relevant. 
+There is .NET course from 1-2 years ago which is no longer maintained but still relevant.
 
-https://hogent-web.github.io/csharp/
-
+<https://hogent-web.github.io/csharp/>
