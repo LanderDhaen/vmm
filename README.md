@@ -2,9 +2,10 @@
 
 ## Team Members
 
-- [MEMBER1_NAME] - [MEMBER1_EMAIL] - [MEMBER1_GITHUB_USERNAME]
-- Vervaet Brent - [brent.vervaet@student.hogent.be](brent.vervaet@student.hogent.be) - [brentvervaet](https://github.com/brentvervaet)
-- test
+- Lander Dhaen - [lander.dhaen@student.hogent.be](lander.dhaen@student.hogent.be) - [LanderDhaen](https://github.com/LanderDhaen)
+- Xander Lauwens - [xander.lauwens@student.hogent.be](xander.lauwens@student.hogent.be) - [xalonious](https://github.com/xalonious)
+- Kim Mercken - [kim.mercken@student.hogent.be](kim.mercken@student.hogent.be) - [KimMrcn](https://github.com/KimMrcn)
+- Brent Vervaet - [brent.vervaet@student.hogent.be](brent.vervaet@student.hogent.be) - [brentvervaet](https://github.com/brentvervaet)
 
 ## Technologies & Packages Used
 
