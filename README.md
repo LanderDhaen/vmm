@@ -4,6 +4,7 @@
 
 - [MEMBER1_NAME] - [MEMBER1_EMAIL] - [MEMBER1_GITHUB_USERNAME]
 - Vervaet Brent - [brent.vervaet@student.hogent.be](brent.vervaet@student.hogent.be) - [brentvervaet](https://github.com/brentvervaet)
+- test
 
 ## Technologies & Packages Used
 
