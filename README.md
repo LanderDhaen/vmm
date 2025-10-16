@@ -6,6 +6,7 @@
 - Xander Lauwens - [xander.lauwens@student.hogent.be](xander.lauwens@student.hogent.be) - [xalonious](https://github.com/xalonious)
 - Kim Mercken - [kim.mercken@student.hogent.be](kim.mercken@student.hogent.be) - [KimMrcn](https://github.com/KimMrcn)
 - Brent Vervaet - [brent.vervaet@student.hogent.be](brent.vervaet@student.hogent.be) - [brentvervaet](https://github.com/brentvervaet)
+- Levi Vertenten - [levi.vertenten@student.hogent.be](levi.vertenten@student.hogent.be) - [levivertenten1](https://github.com/levivertenten1)
 
 ## Technologies & Packages Used
 
