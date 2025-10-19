@@ -30,7 +30,10 @@ try
         {
             var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ??
                                    throw new InvalidOperationException("Connection string 'DatabaseConnection' not found.");
-            o.UseSqlite(connectionString); // Swap Sqlite for your database provider (e.g. Sql Server, MySQL, PostgreSQL, etc.).
+
+            var serverVersion = MariaDbServerVersion.AutoDetect(connectionString);
+            
+            o.UseMySql(connectionString, serverVersion); // Swap Sqlite for your database provider (e.g. Sql Server, MySQL, PostgreSQL, etc.).
             o.EnableDetailedErrors();
             if (builder.Environment.IsDevelopment())
             {
