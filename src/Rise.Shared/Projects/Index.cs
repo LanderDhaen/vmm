@@ -1,10 +1,13 @@
 namespace Rise.Shared.Projects;
 
-public static class ProjectResponse
+/// <summary>
+/// Represents the response structure for project-related operations.
+/// </summary>
+public static partial class ProjectResponse
 {
     public class Index
     {
-        public required IEnumerable<ProjectDto.Index> Projects { get; set; }
-        public required int TotalCount  { get; set; }
+        public IEnumerable<ProjectDto.Index> Projects { get; set; } = [];
+        public int TotalCount  { get; set; }
     }
 }
