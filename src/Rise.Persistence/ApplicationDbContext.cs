@@ -6,81 +6,35 @@ using Rise.Domain.Projects;
 
 namespace Rise.Persistence;
 
+/// <summary>
+/// Entrance to the database, inherits from IdentityDbContext and is basically a Unit Of Work and Repository pattern combined.
+/// A <see cref="DbSet"/> is a repository for a specific type of entity.
+/// The <see cref="ApplicationDbContext"/> is the Unit Of Work pattern
+/// Will look very similar when switching database providers.
+/// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1
+/// See https://enterprisecraftsmanship.com/posts/should-you-abstract-database/
+/// </summary>
+/// <param name="opts"></param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts)
 {
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Technician> Technicians => Set<Technician>();
-
+  
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        // REMOVE the global 4000-char max — it blows up MySQL row size
+        // All columns in the database have a maxlength of 4000.
+        // in NVARACHAR 4000 is the maximum length that can be indexed by a database.
+        // Some columns need more length, but these can be set on the configuration level for that Entity in particular.
         // configurationBuilder.Properties<string>().HaveMaxLength(4_000);
-
-        // Keep decimal precision
+        // All decimals columns should have 2 digits after the comma
         configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // MySQL/MariaDB charset & collation
-        modelBuilder.HasCharSet("utf8mb4");
-        modelBuilder.UseCollation("utf8mb4_general_ci"); // or utf8mb4_0900_ai_ci on MySQL 8+
-
-        // ---- Identity overrides to avoid 3072-byte key overflows under utf8mb4 ----
-        const int IdLen = 191;
-        const int NormLen = 256;
-        const int LoginLen = 128;
-
-        modelBuilder.Entity<IdentityUser>(b =>
-        {
-            b.Property(u => u.Id).HasMaxLength(IdLen);
-            b.Property(u => u.UserName).HasMaxLength(NormLen);
-            b.Property(u => u.NormalizedUserName).HasMaxLength(NormLen);
-            b.Property(u => u.Email).HasMaxLength(NormLen);
-            b.Property(u => u.NormalizedEmail).HasMaxLength(NormLen);
-        });
-
-        modelBuilder.Entity<IdentityRole>(b =>
-        {
-            b.Property(r => r.Id).HasMaxLength(IdLen);
-            b.Property(r => r.Name).HasMaxLength(NormLen);
-            b.Property(r => r.NormalizedName).HasMaxLength(NormLen);
-        });
-
-        modelBuilder.Entity<IdentityUserRole<string>>(b =>
-        {
-            b.Property(ur => ur.UserId).HasMaxLength(IdLen);
-            b.Property(ur => ur.RoleId).HasMaxLength(IdLen);
-        });
-
-        modelBuilder.Entity<IdentityUserClaim<string>>(b =>
-        {
-            b.Property(uc => uc.UserId).HasMaxLength(IdLen);
-        });
-
-        modelBuilder.Entity<IdentityRoleClaim<string>>(b =>
-        {
-            b.Property(rc => rc.RoleId).HasMaxLength(IdLen);
-        });
-
-        modelBuilder.Entity<IdentityUserLogin<string>>(b =>
-        {
-            b.Property(l => l.UserId).HasMaxLength(IdLen);
-            b.Property(l => l.LoginProvider).HasMaxLength(LoginLen);
-            b.Property(l => l.ProviderKey).HasMaxLength(LoginLen);
-        });
-
-        modelBuilder.Entity<IdentityUserToken<string>>(b =>
-        {
-            b.Property(t => t.UserId).HasMaxLength(IdLen);
-            b.Property(t => t.LoginProvider).HasMaxLength(LoginLen);
-            b.Property(t => t.Name).HasMaxLength(LoginLen);
-        });
-
-        // Apply the rest of your entity configurations
+        // Applying all types of IEntityTypeConfiguration in the Persistence project.
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }
