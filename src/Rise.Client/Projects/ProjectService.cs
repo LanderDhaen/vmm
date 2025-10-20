@@ -4,13 +4,13 @@ using Rise.Shared.Common;
 
 namespace Rise.Client.Projects;
 
-public class ProjectService(HttpClient httpClient) : IProjectServiceService
+public class ProjectService(HttpClient httpClient) : IProjectService
 {
 
-    public async Task<Result<ProjectResponse.Create>> EditAsync(ProjectRequest.Create request, CancellationToken ctx = default)
+    public async Task<Result> EditAsync(ProjectRequest.Edit request, CancellationToken ctx = default)
     {
         var response = await httpClient.PostAsJsonAsync("/api/projects", request, ctx);
-        var result = await response.Content.ReadFromJsonAsync<Result<ProjectResponse.Create>>(cancellationToken: ctx);
+        var result = await response.Content.ReadFromJsonAsync<Result>(cancellationToken: ctx);
         return result!;
     }
 

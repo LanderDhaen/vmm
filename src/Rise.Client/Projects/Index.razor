@@ -2,8 +2,31 @@
 @using Rise.Shared.Identity
 
 
-    <PageTitle>Products</PageTitle>
+    <PageTitle>Projects</PageTitle>
 
 <h1>Products</h1>
 
-
+@if (projects == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table is-fullwidth">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var project in projects)
+        {
+            <tr @key="project.Id">
+                <td>@project.Id</td>
+                <td>@project.Name</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
