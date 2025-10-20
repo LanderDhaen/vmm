@@ -18,10 +18,11 @@ internal class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
         builder.Property(e => e.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
-        // UpdatedAt: no DB default—handled by trigger before update
-        // builder.Property(e => e.UpdatedAt)  <-- REMOVE default here
-
-        // Soft delete default
+        // CreatedAt: let MySQL/MariaDB fill default timestamp
+       builder.Property(e => e.UpdatedAt) 
+            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+       
+        // IsDeleted should be false by default, used for softdelete.
         builder.Property(e => e.IsDeleted)
             .HasDefaultValue(false);
     }
