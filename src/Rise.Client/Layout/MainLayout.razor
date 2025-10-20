@@ -1,13 +1,11 @@
 ﻿@inherits LayoutComponentBase
-<div>
+<MudLayout>
     <header>
         <NavBar/>
     </header>
-    <main>
-        <section class="section">
-            @Body
-        </section>
-    </main>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
     @* Required *@
     <MudThemeProvider />
     <MudPopoverProvider />
@@ -15,5 +13,5 @@
     <MudDialogProvider />
     @* Needed for snackbars *@
     <MudSnackbarProvider />
-</div>
+</MudLayout>
 

@@ -3,6 +3,7 @@ using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Identity;
 using Rise.Shared.Projects;
+using Rise.Shared.Common;
 
 namespace Rise.Services.Projects;
 
@@ -34,5 +35,16 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
         await dbContext.SaveChangesAsync(ctx);
 
         return Result.Success();
+    }
+
+    public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake,
+        CancellationToken ctx = default)
+    {
+        var query = dbContext.Projects.AsQueryable();
+        var totalCount = await query.CountAsync(ctx);
+        var projects = await query.AsNoTracking().Select(p => new ProjectDto.Index(Id = p.Id, Name = p.Name)).ToListAsync(ctx);
+
+        return Result.Success(new ProjectResponse.Index((Projects = projects), totalCount));
+
     }
 }
