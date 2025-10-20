@@ -7,22 +7,21 @@ namespace Rise.Persistence.Configurations;
 /// <summary>
 /// Base configuration for an <see cref="Entity"/>
 /// </summary>
-/// <typeparam name="TEntity"></typeparam>
 internal class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : Entity
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        // All tables are singlular named and have the name of the class e.g. Product instead of Products.
+        // Table name = class name (singular)
         builder.ToTable(typeof(TEntity).Name);
 
-        // CreatedAt should be filled in by the database when using raw SQL.
+        // CreatedAt: let MySQL/MariaDB fill default timestamp
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP"); // SQLite specific, so change this when moving to another database provider.
+            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
-        // UpdatedAt should be filled in by the database when using raw SQL.
-        builder.Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP"); // SQLite specific, so change this when moving to another database provider.
-        
+        // CreatedAt: let MySQL/MariaDB fill default timestamp
+       builder.Property(e => e.UpdatedAt) 
+            .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+       
         // IsDeleted should be false by default, used for softdelete.
         builder.Property(e => e.IsDeleted)
             .HasDefaultValue(false);

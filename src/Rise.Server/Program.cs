@@ -2,6 +2,7 @@ using Destructurama;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Rise.Persistence;
 using Rise.Persistence.Triggers;
 using Rise.Server.Identity;
@@ -30,7 +31,10 @@ try
         {
             var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ??
                                    throw new InvalidOperationException("Connection string 'DatabaseConnection' not found.");
-            o.UseSqlite(connectionString); // Swap Sqlite for your database provider (e.g. Sql Server, MySQL, PostgreSQL, etc.).
+
+            var serverVersion = MariaDbServerVersion.AutoDetect(connectionString);
+            
+            o.UseMySql(connectionString, serverVersion);
             o.EnableDetailedErrors();
             if (builder.Environment.IsDevelopment())
             {
@@ -56,7 +60,7 @@ try
         });
 
     var app = builder.Build();
-    // apply Database migraticons on startup, not so wise in production (Use Generated SQL Scripts) 
+    // apply Database migrations on startup, not so wise in production (Use Generated SQL Scripts) 
     // See: https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli
     if (app.Environment.IsDevelopment())
     {
@@ -99,5 +103,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-
