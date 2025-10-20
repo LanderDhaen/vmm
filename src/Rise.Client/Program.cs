@@ -6,6 +6,8 @@ using Rise.Client.Identity;
 using Rise.Client.Products;
 using Rise.Shared.Products;
 using MudBlazor.Services;
+using Rise.Shared.Projects;
+using Rise.Client.Projects;
 
 
 try
@@ -46,6 +48,11 @@ try
         client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
     });
 
+    builder.Services.AddHttpClient<IProjectService, ProjectService>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+    });
+    
     await builder.Build().RunAsync();
 }           
 catch (Exception ex)
