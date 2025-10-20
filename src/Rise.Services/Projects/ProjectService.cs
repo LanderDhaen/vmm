@@ -37,14 +37,27 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
         return Result.Success();
     }
 
-    public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake,
+    public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
         CancellationToken ctx = default)
     {
         var query = dbContext.Projects.AsQueryable();
-        var totalCount = await query.CountAsync(ctx);
-        var projects = await query.AsNoTracking().Select(p => new ProjectDto.Index(Id = p.Id, Name = p.Name)).ToListAsync(ctx);
 
-        return Result.Success(new ProjectResponse.Index((Projects = projects), totalCount));
+        var totalCount = await query.CountAsync();
 
+        var projects = await query.AsNoTracking()
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .Select(p => new ProjectDto.Index
+            {
+                Id = p.Id,
+                Name = p.Name,
+            })
+            .ToListAsync(ctx);
+
+        return Result.Success(new ProjectResponse.Index
+        {
+            Projects = projects,
+            TotalCount = totalCount
+        });
     }
 }
