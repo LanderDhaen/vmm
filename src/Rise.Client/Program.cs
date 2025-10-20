@@ -5,6 +5,8 @@ using Rise.Client;
 using Rise.Client.Identity;
 using Rise.Client.Products;
 using Rise.Shared.Products;
+using MudBlazor.Services;
+
 
 try
 {
@@ -26,6 +28,9 @@ try
 
 // set up authorization
     builder.Services.AddAuthorizationCore();
+    
+    // setup mud blazor
+    builder.Services.AddMudServices();
 
 // register the custom state provider
     builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
