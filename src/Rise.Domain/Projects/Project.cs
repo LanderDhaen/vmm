@@ -11,7 +11,7 @@ public class Project : Entity
     public string Name
     {
         get => _name;
-        set => _name = Guard.Against.NullOrEmpty(value);
+        set => _name = Guard.Against.NullOrWhiteSpace(value);
     }
     
     private string _code = string.Empty;
@@ -19,7 +19,7 @@ public class Project : Entity
     public string Code
     {
         get => _code;
-        set => _code = Guard.Against.NullOrEmpty(value);
+        set => _code = Guard.Against.NullOrWhiteSpace(value);
     }
     
     private DateTime _startDate;
@@ -27,7 +27,7 @@ public class Project : Entity
     public DateTime StartDate
     {
         get => _startDate;
-        set => _startDate = Guard.Against.Null(value);
+        set => _startDate = Guard.Against.NullOrOutOfSQLDateRange(value);
     }
     
     private  DateTime _endDate;
@@ -35,7 +35,7 @@ public class Project : Entity
     public DateTime EndDate
     {
         get => _endDate;
-        set => _endDate = Guard.Against.Null(value);    
+        set => _endDate = Guard.Against.NullOrOutOfSQLDateRange(value);    
     }
     
     /// <summary>
