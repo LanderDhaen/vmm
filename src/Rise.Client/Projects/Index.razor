@@ -11,8 +11,10 @@ else
 {
     <MudDataGrid Items=projects>
         <Columns>
-            <PropertyColumn Property="x => x.Id" Title="Id" />
-            <PropertyColumn Property="x => x.Name" />
+            <PropertyColumn Property="x => x.Name" Title="Naam"/>
+            <PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
+            <PropertyColumn Property="x => x.StartDate" Title="Begindatum"/>
+            <PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
         </Columns>
     </MudDataGrid>
 }
