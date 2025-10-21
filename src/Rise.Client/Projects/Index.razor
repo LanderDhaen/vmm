@@ -9,7 +9,13 @@
 }
 else
 {
-    <MudDataGrid Items=projects>
+    int itemsPerPage = 4; // Aantal items per pagina
+    IEnumerable<Shared.Projects.ProjectDto.Index>? paginatedProjects = projects.Skip((_selected - 1) * itemsPerPage).Take(itemsPerPage);
+
+    
+    <MudText Align="Align.Center">Geselecteerde pagina: @_selected</MudText>
+
+    <MudDataGrid Items=paginatedProjects>
         <Columns>
             <PropertyColumn Property="x => x.Name" Title="Naam"/>
             <PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
@@ -17,4 +23,12 @@ else
             <PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
         </Columns>
     </MudDataGrid>
+  
+
+<MudText Align="Align.Center"> 
+<MudPagination Color="Color.Primary" Count="4" @bind-Selected="@_selected"/>
+</MudText>
+}
+@code {
+    private int _selected = 1;
 }
