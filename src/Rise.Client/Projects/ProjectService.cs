@@ -14,8 +14,12 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
+		
+		// Oké op deze manier?
+		var url = $"/api/projects?skip={request.Skip}&take={request.Take}&orderBy={request.OrderBy}";
+		
 		Result<ProjectResponse.Index>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>("/api/projects", ctx);
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>(url, ctx);
 		return result!;
 	}
 }
