@@ -1,37 +1,37 @@
 @page "/projects"
-@using Rise.Shared.Identity
 
 <PageTitle>Projects</PageTitle>
 
 @if (projects == null)
 {
-    <p><em>Loading...</em></p>
+	<p><em>Loading...</em></p>
 }
 else
 {
-    int itemsPerPage = 4; // Aantal items per pagina
-    IEnumerable<Shared.Projects.ProjectDto.Index>? paginatedProjects = projects.Skip((_selected - 1) * itemsPerPage).Take(itemsPerPage);
+	var itemsPerPage = 4; // Aantal items per pagina
+	var paginatedProjects = projects.Skip((_selected - 1) * itemsPerPage).Take(itemsPerPage);
 
-    
-    <MudText Align="Align.Center">Geselecteerde pagina: @_selected</MudText>
 
-    <MudDataGrid Items=paginatedProjects>
-        <Columns>
-            <PropertyColumn Property="x => x.Name" Title="Naam"/>
-            <PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
-            <PropertyColumn Property="x => x.StartDate" Title="Begindatum"/>
-            <PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
-        </Columns>
-    </MudDataGrid>
-  
-    @* Dynamisch aantal pagina's berekenen *@
-    int totalProjects = projects.Count();
-    int totalPages = (int)Math.Ceiling((double)totalProjects / itemsPerPage);
+	<MudText Align="Align.Center">Geselecteerde pagina: @_selected</MudText>
 
-    <MudText Align="Align.Center"> 
-        <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@_selected"/>
-    </MudText>
+	<MudDataGrid Items=paginatedProjects>
+		<Columns>
+			<PropertyColumn Property="x => x.Name" Title="Naam"/>
+			<PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
+			<PropertyColumn Property="x => x.StartDate" Title="Begindatum"/>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
+		</Columns>
+	</MudDataGrid>
+
+	@* Dynamisch aantal pagina's berekenen *@
+	var totalProjects = projects.Count();
+	var totalPages = (int)Math.Ceiling((double)totalProjects / itemsPerPage);
+
+	<MudText Align="Align.Center">
+		<MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@_selected"/>
+	</MudText>
 }
+
 @code {
-    private int _selected = 1;
+	private int _selected = 1;
 }

@@ -1,69 +1,72 @@
 namespace Rise.Domain.Common;
 
 /// <summary>
-/// Entity Base Class, all entities should inherit from this. (read: Entity = Row in SQL terms)
+///     Entity Base Class, all entities should inherit from this. (read: Entity = Row in SQL terms)
 /// </summary>
-public abstract class Entity
-{
-    /// <summary>
-    /// Primary Key of the <see cref="Entity"/>
-    /// </summary>
-    public int Id { get; protected set; }
-    /// <summary>
-    /// Date of the initial creation.
-    /// </summary>
-    public DateTime CreatedAt { get; set; }
-    /// <summary>
-    /// Date of the last update.
-    /// </summary>
-    public DateTime UpdatedAt { get; set; }
-    /// <summary>
-    /// Soft Delete indicator, instead of deleting rows, we flag them as deleted.
-    /// </summary>
-    public bool IsDeleted { get; set; }
+public abstract class Entity {
+	protected Entity() { }
 
-    protected Entity() {}
+	protected Entity(int id) {
+		Id = id;
+	}
 
-    protected Entity(int id)
-    {
-        Id = id;
-    }
+	/// <summary>
+	///     Primary Key of the <see cref="Entity" />
+	/// </summary>
+	public int Id { get; protected set; }
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Entity other)
-            return false;
+	/// <summary>
+	///     Date of the initial creation.
+	/// </summary>
+	public DateTime CreatedAt { get; set; }
 
-        if (ReferenceEquals(this, other))
-            return true;
+	/// <summary>
+	///     Date of the last update.
+	/// </summary>
+	public DateTime UpdatedAt { get; set; }
 
-        if (GetType() != other.GetType())
-            return false;
+	/// <summary>
+	///     Soft Delete indicator, instead of deleting rows, we flag them as deleted.
+	/// </summary>
+	public bool IsDeleted { get; set; }
 
-        if (Id.Equals(default) || other.Id.Equals(default))
-            return false;
+	public override bool Equals(object? obj) {
+		if (obj is not Entity other) {
+			return false;
+		}
 
-        return Id.Equals(other.Id);
-    }
+		if (ReferenceEquals(this, other)) {
+			return true;
+		}
 
-    public static bool operator ==(Entity a, Entity b)
-    {
-        if (a is null && b is null)
-            return true;
+		if (GetType() != other.GetType()) {
+			return false;
+		}
 
-        if (a is null || b is null)
-            return false;
+		if (Id.Equals(default) || other.Id.Equals(default)) {
+			return false;
+		}
 
-        return a.Equals(b);
-    }
+		return Id.Equals(other.Id);
+	}
 
-    public static bool operator !=(Entity a, Entity b)
-    {
-        return !(a == b);
-    }
+	public static bool operator ==(Entity a, Entity b) {
+		if (a is null && b is null) {
+			return true;
+		}
 
-    public override int GetHashCode()
-    {
-        return (GetType().ToString() + Id).GetHashCode();
-    }
+		if (a is null || b is null) {
+			return false;
+		}
+
+		return a.Equals(b);
+	}
+
+	public static bool operator !=(Entity a, Entity b) {
+		return !(a == b);
+	}
+
+	public override int GetHashCode() {
+		return (GetType().ToString() + Id).GetHashCode();
+	}
 }
