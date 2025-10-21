@@ -17,17 +17,16 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
     public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default)
     {
         var project = await dbContext.Projects
-            .Include(x => x.Technician)
             .SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
         if (project is null)
             return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 
-        // Currently logged-in user must be the same as the project's technician.
+        // User must be logged in to perform an edit.
         var loggedInTechnician = await dbContext.Technicians
             .SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
         
-        if(loggedInTechnician is null || !project.CanBeEditedBy(loggedInTechnician))
+        if(loggedInTechnician is null)
             return Result.Unauthorized("You are not authorized to edit this project.");
 
         project.Edit(req.Name);

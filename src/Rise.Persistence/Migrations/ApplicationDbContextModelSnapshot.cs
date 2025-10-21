@@ -278,17 +278,12 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("varchar(250)");
 
-                    b.Property<int>("TechnicianId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TechnicianId");
 
                     b.ToTable("Project", (string)null);
                 });
@@ -392,12 +387,6 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
-                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
-                        .WithMany("Projects")
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.OwnsOne("Rise.Domain.Projects.Address", "Location", b1 =>
                         {
                             b1.Property<int>("ProjectId")
@@ -437,13 +426,6 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Location")
                         .IsRequired();
-
-                    b.Navigation("Technician");
-                });
-
-            modelBuilder.Entity("Rise.Domain.Projects.Technician", b =>
-                {
-                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }

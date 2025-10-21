@@ -15,11 +15,6 @@ internal class ProjectConfiguration : EntityConfiguration<Project>
         base.Configure(builder);
         builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
         
-        // 1 to Many relationship with a cascade restrict behavio
-        builder.HasOne(x => x.Technician)
-            .WithMany(x => x.Projects)
-            .OnDelete(DeleteBehavior.Restrict);
-        
         // Value Object Mapping and rename of columns
         builder.OwnsOne(x => x.Location, loc =>
         {

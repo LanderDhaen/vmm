@@ -24,7 +24,7 @@ public class ProjectServiceShould
 
         var technicianAccountId = Guid.NewGuid().ToString();
         var technician = new Technician("FName", "LName", technicianAccountId);
-        var project = new Project("Old Project", technician, new Address("Street", "Bus", "City", "Zip"));
+        var project = new Project("Old Project", new Address("Street", "Bus", "City", "Zip"));
 
         dbContext.Technicians.Add(technician);
         dbContext.Projects.Add(project);
@@ -69,7 +69,7 @@ public class ProjectServiceShould
         var projectTechnician = new Technician("FName", "LName", correctTechAccountId);
         var loggedInTechnician = new Technician("Other", "Tech", otherTechAccountId);
 
-        var project = new Project("Old Project", projectTechnician, new Address("Street", "Bus", "City", "Zip"));
+        var project = new Project("Old Project", new Address("Street", "Bus", "City", "Zip"));
 
         dbContext.Technicians.AddRange(projectTechnician, loggedInTechnician);
         dbContext.Projects.Add(project);
