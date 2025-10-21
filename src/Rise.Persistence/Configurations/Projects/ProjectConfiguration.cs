@@ -14,6 +14,9 @@ internal class ProjectConfiguration : EntityConfiguration<Project>
     {
         base.Configure(builder);
         builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
+        builder.Property(x => x.Code).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.StartDate).IsRequired();
+        builder.Property(x => x.EndDate).IsRequired();
         
         // Value Object Mapping and rename of columns
         builder.OwnsOne(x => x.Location, loc =>

@@ -136,11 +136,11 @@ public class DbSeeder(ApplicationDbContext dbContext, RoleManager<IdentityRole> 
         
         var projects = new List<Project>
         {
-            new("Website Redesign", addresses[0]),
-            new("Mobile App Development", addresses[1]),
-            new("Database Migration", addresses[2]),
-            new("E-commerce Platform", addresses[3]),
-            new("CRM Integration", addresses[4])
+            new("Website Redesign", "WR2025", new DateTime(2025, 1, 15), new DateTime(2025, 6, 30), addresses[0]),
+            new("Mobile App Development", "MAD2025", new DateTime(2025, 2, 1), new DateTime(2025, 8, 15), addresses[1]),
+            new("Database Migration", "DBM2025", new DateTime(2025, 3, 10), new DateTime(2025, 9, 25), addresses[2]),
+            new("E-commerce Platform", "ECP2025", new DateTime(2025, 4, 5), new DateTime(2025, 11, 20), addresses[3]),
+            new("CRM Integration", "CRMI2025", new DateTime(2025, 5, 12), new DateTime(2025, 12, 31), addresses[4])
         };
 
         dbContext.Projects.AddRange(projects);
