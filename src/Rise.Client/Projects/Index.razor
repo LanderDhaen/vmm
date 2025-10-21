@@ -24,10 +24,13 @@ else
         </Columns>
     </MudDataGrid>
   
+    @* Dynamisch aantal pagina's berekenen *@
+    int totalProjects = projects.Count();
+    int totalPages = (int)Math.Ceiling((double)totalProjects / itemsPerPage);
 
-<MudText Align="Align.Center"> 
-<MudPagination Color="Color.Primary" Count="4" @bind-Selected="@_selected"/>
-</MudText>
+    <MudText Align="Align.Center"> 
+        <MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@_selected"/>
+    </MudText>
 }
 @code {
     private int _selected = 1;
