@@ -3,21 +3,29 @@ using Microsoft.AspNetCore.Components;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
+// Deze lijkt nodig desondanks aanwezig te zijn in _imports
+using MudBlazor;
+
 namespace Rise.Client.Projects;
 
 public partial class Index {
-	private IEnumerable<ProjectDto.Index>? projects;
-
+	
 	[Inject] public required IProjectService ProjectService { get; set; }
 
-	protected override async Task OnInitializedAsync() {
+	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
+		
 		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 50,
+			Skip = state.Page * state.PageSize,
+			Take = state.PageSize,
 			OrderBy = "Id"
 		};
-
+		
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
-		projects = result.Value.Projects;
+
+		return new GridData<ProjectDto.Index>() {
+			TotalItems = result.Value.TotalCount,
+			Items = result.Value.Projects,
+		};
+
 	}
 }

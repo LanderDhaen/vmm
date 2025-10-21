@@ -1,37 +1,18 @@
 @page "/projects"
+@using Rise.Shared.Projects
 
 <PageTitle>Projects</PageTitle>
 
-@if (projects == null)
-{
-	<p><em>Loading...</em></p>
-}
-else
-{
-	var itemsPerPage = 4; // Aantal items per pagina
-	var paginatedProjects = projects.Skip((_selected - 1) * itemsPerPage).Take(itemsPerPage);
-
-
-	<MudText Align="Align.Center">Geselecteerde pagina: @_selected</MudText>
-
-	<MudDataGrid Items=paginatedProjects>
+	<MudDataGrid T="ProjectDto.Index" ServerData="GetProjectsAsync">
 		<Columns>
 			<PropertyColumn Property="x => x.Name" Title="Naam"/>
 			<PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Begindatum"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
 		</Columns>
+		<PagerContent>
+			<MudDataGridPager PageSizeOptions="new int[]{1, 2, 5, 10, 25, 50}"
+			                  RowsPerPageString="Rijen per pagina"
+			                  InfoFormat="{first_item}-{last_item} van de {all_items}"/>
+		</PagerContent>
 	</MudDataGrid>
-
-	@* Dynamisch aantal pagina's berekenen *@
-	var totalProjects = projects.Count();
-	var totalPages = (int)Math.Ceiling((double)totalProjects / itemsPerPage);
-
-	<MudText Align="Align.Center">
-		<MudPagination Color="Color.Primary" Count="@totalPages" @bind-Selected="@_selected"/>
-	</MudText>
-}
-
-@code {
-	private int _selected = 1;
-}
