@@ -42,10 +42,17 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
+		
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
 		int totalCount = await query.CountAsync();
 
+		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
+			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
+		} else {
+			query = query.OrderBy(p => p.Name);
+		}
+			
 		List<ProjectDto.Index> projects = await query.AsNoTracking()
 			.Skip(request.Skip)
 			.Take(request.Take)
