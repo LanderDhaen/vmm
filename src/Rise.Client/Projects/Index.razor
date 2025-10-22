@@ -1,18 +1,72 @@
-@page "/projects"
 @using Rise.Shared.Projects
+@page "/projects"
 
 <PageTitle>Projects</PageTitle>
 
-	<MudDataGrid T="ProjectDto.Index" ServerData="GetProjectsAsync">
-		<Columns>
-			<PropertyColumn Property="x => x.Name" Title="Naam"/>
-			<PropertyColumn Property="x => x.Code" Title="Referentienummer"/>
-			<PropertyColumn Property="x => x.StartDate" Title="Begindatum"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
-		</Columns>
-		<PagerContent>
-			<MudDataGridPager PageSizeOptions="new int[]{5, 10, 25, 50}"
-			                  RowsPerPageString="Rijen per pagina"
-			                  InfoFormat="{first_item}-{last_item} van de {all_items}"/>
-		</PagerContent>
-	</MudDataGrid>
+<MudContainer MaxWidth="MaxWidth.Large" Class="projects-container">
+
+    <!-- Header -->
+    <MudPaper Elevation="1" Class="projects-header pa-4 mb-4">
+        <MudText Typo="Typo.h4" Class="fw-600">Projects</MudText>
+        <MudText Typo="Typo.subtitle2" Class="text-muted">
+            Overview of all projects in the system.
+        </MudText>
+    </MudPaper>
+
+    <!-- Projects Grid -->
+    <MudPaper Elevation="2" Class="pa-4">
+        <MudDataGrid T="ProjectDto.Index"
+                     ServerData="GetProjectsAsync"
+                     RowsPerPage="5"
+                     Bordered="false"
+                     Hover="true"
+                     Dense="true"
+                     Elevation="0">
+
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Projects List</MudText>
+            </ToolBarContent>
+
+            <Columns>
+                <PropertyColumn Property="x => x.Id" Title="#" />
+                <PropertyColumn Property="x => x.Name" Title="Name" />
+                <PropertyColumn Property="x => x.StartDate" Title="Start Date" Format="g" />
+                <PropertyColumn Property="x => x.EndDate" Title="End Date" Format="g" />
+            </Columns>
+
+            <!-- Pager -->
+            <PagerContent>
+                <MudDataGridPager PageSizeOptions="new int[] { 5, 10, 20, 50 }" />
+            </PagerContent>
+
+        </MudDataGrid>
+    </MudPaper>
+</MudContainer>
+
+<style>
+.projects-container {
+    background-color: var(--mud-palette-background, #f5f5f5);
+    min-height: 100vh;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.projects-header {
+    border-radius: 12px;
+    background-color: var(--mud-palette-surface, #ffffff);
+    box-shadow: var(--mud-elevation-2, 0 2px 6px rgba(0,0,0,0.1));
+}
+
+
+.mud-datagrid thead {
+    background-color: color-mix(in srgb, var(--mud-palette-primary, #3f51b5) 8%, var(--mud-palette-surface, #fff) 92%);
+}
+
+.text-muted {
+    color: var(--mud-palette-text-secondary, #777);
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+</style>

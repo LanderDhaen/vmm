@@ -1,17 +1,27 @@
 ﻿@inherits LayoutComponentBase
-<MudLayout>
+
+<MudLayout Class="layout-root">
+
 	<header>
-		<NavBar/>
+		<NavBar />
 	</header>
-	<MudMainContent>
-		@Body
+
+	<MudMainContent Class="main-content">
+		<MudContainer MaxWidth="MaxWidth.Medium" Class="py-8 px-4">
+			@Body
+		</MudContainer>
 	</MudMainContent>
-	@* Required *@
-	<MudThemeProvider/>
-	<MudPopoverProvider/>
-	@* Needed for dialogs *@
-	<MudDialogProvider/>
-	@* Needed for snackbars *@
-	<MudSnackbarProvider/>
+
+	<MudThemeProvider />
+	<MudPopoverProvider />
+	<MudDialogProvider />
+	<MudSnackbarProvider />
+
 </MudLayout>
 
+<style>
+	.layout-root, .main-content {
+		min-height: 100vh;
+		background-color: var(--mud-palette-background);
+	}
+</style>
