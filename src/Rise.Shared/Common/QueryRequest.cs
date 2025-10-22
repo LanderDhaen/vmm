@@ -48,6 +48,12 @@ public static class QueryRequest {
 		///     to further refine query results based on specified conditions.
 		/// </summary>
 		public Dictionary<string, object?> Filters { get; set; } = new();
+		
+		/// <summary>
+		///		Sets
+		///
+		
+		public string AsQuery() => $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
 	}
 
 	/// <summary>

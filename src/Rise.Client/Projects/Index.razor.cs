@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
-// Deze lijkt nodig desondanks aanwezig te zijn in _imports
 using MudBlazor;
 
 namespace Rise.Client.Projects;
