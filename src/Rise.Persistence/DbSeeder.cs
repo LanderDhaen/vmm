@@ -152,6 +152,8 @@ public class DbSeeder(
 				locations[0]),
 			new Project("CRM Integration", "CRMI2025", new DateTime(2025, 5, 12), new DateTime(2025, 12, 31),
 				locations[0]),
+			new Project("Dashboard", "DASH2025", new DateTime(2025, 5, 12), new DateTime(2025, 11, 18),
+				locations[0]),
 		};
 
 		dbContext.Projects.AddRange(projects);
