@@ -10,13 +10,13 @@ public class Coordinate : ValueObject {
 	}
 
 	public Coordinate(double x, double y) {
-		x = x;
-		y = y;
+		X = x;
+		Y = y;
 	}
 
-	public double X { get; } = default!;
+	public double X { get; }
 
-	public double Y { get; } = default!;
+	public double Y { get; }
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return X;
