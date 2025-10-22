@@ -1,3 +1,4 @@
+@using Rise.Client.Components
 @using Rise.Shared.Projects
 @page "/projects"
 
@@ -24,9 +25,14 @@
 	                 Elevation="0">
 		    
 		    <!-- Implement searching, filtering, sorting & actions in ToolBarContent (all with sidebar from the right & drawer from the bottom on mobile -->
-
+			<!-- Sorting can also be implemented on columnheader when on desktop -->
+		    
 		    <ToolBarContent>
-			    <MudText Typo="Typo.h6">Projects List</MudText>
+			    <MudText Typo="Typo.h6">Zoekbalk</MudText>
+			    <MudSpacer />
+			    <MudText Class="pr-2">Filters</MudText>
+			    <MudText Class="pr-2">Sorteren</MudText>
+			    <MudText>Acties</MudText>
 		    </ToolBarContent>
 
 		    <Columns>
@@ -39,9 +45,7 @@
 		    <!-- Pager -->
 		    
 		    <PagerContent>
-			    <MudDataGridPager PageSizeOptions="new int[] { 5, 10, 20, 50 }"
-			                      RowsPerPageString="Rijen per pagina"
-			                      InfoFormat="{first_item}-{last_item} van de {all_items}"/>
+			   <Pagination T="ProjectDto.Index" />
 		    </PagerContent>
 
 	    </MudDataGrid>
