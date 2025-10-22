@@ -20,11 +20,10 @@ public class Project : Entity {
 	private Project() {
 	}
 
-	public Project(string name, string code, DateTime startDate, DateTime endDate, Location location) {
+	public Project(string name, string code, DateRange dateRange, Location location) {
 		Name = name;
 		Code = code;
-		StartDate = startDate;
-		EndDate = endDate;
+		DateRange = Guard.Against.Null(dateRange);
 		Location = Guard.Against.Null(location);
 	}
 
@@ -38,15 +37,7 @@ public class Project : Entity {
 		set => _code = Guard.Against.NullOrWhiteSpace(value);
 	}
 
-	public DateTime StartDate {
-		get => _startDate;
-		set => _startDate = Guard.Against.NullOrOutOfSQLDateRange(value);
-	}
-
-	public DateTime EndDate {
-		get => _endDate;
-		set => _endDate = Guard.Against.NullOrOutOfSQLDateRange(value);
-	}
+	public DateRange DateRange { get; init; } = default!;
 	
 	public Location Location { get; init; } = default!;
 

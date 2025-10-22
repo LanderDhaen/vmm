@@ -1,7 +1,7 @@
 namespace Rise.Domain.Locations;
 
 /// <summary>
-///     A physical Coördinate using the <see cref="ValueObject" /> design pattern.
+///     A geographical Coordinate using the <see cref="ValueObject" /> design pattern.
 ///     <see cref="https://enterprisecraftsmanship.com/posts/value-objects-explained/" />
 /// </summary>
 public class Coordinate : ValueObject {

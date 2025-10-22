@@ -60,8 +60,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				Id = p.Id,
 				Name = p.Name,
 				Code = p.Code,
-				StartDate = p.StartDate,
-				EndDate = p.EndDate
+				DateRange = new DateRangeDto.Index {
+					StartDate = p.DateRange.StartDate,
+					EndDate = p.DateRange.EndDate,
+				},
 			})
 			.ToListAsync(ctx);
 

@@ -1,3 +1,5 @@
+
+
 namespace Rise.Shared.Projects;
 
 /// <summary>
@@ -11,10 +13,8 @@ public static class ProjectDto {
 		public required int Id { get; set; }
 		public required string Name { get; set; }
 
-		public required string Code { get; set; }
-
-		public required DateTime StartDate { get; set; }
-
-		public required DateTime EndDate { get; set; }
+		public required string Code { get; set; }	
+		
+		public required DateRangeDto.Index DateRange { get; init; }
 	}
 }

@@ -139,22 +139,28 @@ public class DbSeeder(
 
 		List<Location> locations = await dbContext.Locations.ToListAsync();
 		
-		Random rnd = new(123); // Using a seed so the random is always the same.
-
-		List<Project> projects = new() {
-			new Project("Website Redesign", "WR2025", new DateTime(2025, 1, 15), new DateTime(2025, 6, 30),
-				locations[0]),
-			new Project("Mobile App Development", "MAD2025", new DateTime(2025, 2, 1), new DateTime(2025, 8, 15),
-				locations[0]),
-			new Project("Database Migration", "DBM2025", new DateTime(2025, 3, 10), new DateTime(2025, 9, 25),
-				locations[0]),
-			new Project("E-commerce Platform", "ECP2025", new DateTime(2025, 4, 5), new DateTime(2025, 11, 20),
-				locations[0]),
-			new Project("CRM Integration", "CRMI2025", new DateTime(2025, 5, 12), new DateTime(2025, 12, 31),
-				locations[0]),
-			new Project("Dashboard", "DASH2025", new DateTime(2025, 5, 12), new DateTime(2025, 11, 18),
-				locations[0]),
+		List<DateRange> dateRanges = new()
+		{
+			new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
+			new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
+			new DateRange(new DateOnly(2025, 3, 10), new DateOnly(2025, 9, 25)),
+			new DateRange(new DateOnly(2025, 4, 5), null),
+			new DateRange(new DateOnly(2025, 5, 12), new DateOnly(2025, 12, 31)),
+			new DateRange(new DateOnly(2025, 5, 12), null)
 		};
+
+		Random rnd = new(123); // deterministic seed
+
+		List<Project> projects = new()
+		{
+			new Project("Website Redesign", "WR2025", dateRanges[0], locations[0]),
+			new Project("Mobile App Development", "MAD2025", dateRanges[1], locations[0]),
+			new Project("Database Migration", "DBM2025", dateRanges[2], locations[0]),
+			new Project("E-commerce Platform", "ECP2025", dateRanges[3], locations[0]),
+			new Project("CRM Integration", "CRMI2025", dateRanges[4], locations[0]),
+			new Project("Dashboard", "DASH2025", dateRanges[5], locations[0])
+		};
+
 
 		dbContext.Projects.AddRange(projects);
 		await dbContext.SaveChangesAsync();
