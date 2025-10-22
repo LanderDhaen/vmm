@@ -10,7 +10,8 @@ public static class LocationDto {
 	///     Represents a location index containing minimalistic location details.
 	/// </summary>
 	public class Index {
-		public required string Name { get; init; }
+		public required int Id { get; set; }
+		public required string Name { get; set; }
 		public required AddressDto.Index Address { get; init; }
 		public required CoordinateDto.Index Coordinate { get; init; }
 	}

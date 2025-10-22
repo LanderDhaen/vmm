@@ -67,6 +67,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 					EndDate = p.DateRange.EndDate
 				},
 				Location = new LocationDto.Index {
+					Id = p.Location.Id,
 					Name = p.Location.Name,
 					Address = new AddressDto.Index {
 						AddressLine1 = p.Location.Address.Addressline1,
