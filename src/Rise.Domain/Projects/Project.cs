@@ -1,3 +1,5 @@
+using Rise.Domain.Locations;
+
 namespace Rise.Domain.Projects;
 
 /// <summary>
@@ -18,7 +20,7 @@ public class Project : Entity {
 	private Project() {
 	}
 
-	public Project(string name, string code, DateTime startDate, DateTime endDate, Address location) {
+	public Project(string name, string code, DateTime startDate, DateTime endDate, Location location) {
 		Name = name;
 		Code = code;
 		StartDate = startDate;
@@ -45,13 +47,8 @@ public class Project : Entity {
 		get => _endDate;
 		set => _endDate = Guard.Against.NullOrOutOfSQLDateRange(value);
 	}
-
-	/// <summary>
-	///     The address is immutable and owned by the <see cref="Project" />. If you want to change the address, create a new
-	///     Address and link it to the project.
-	///     <see cref="ProjectConfiguration" />
-	/// </summary>
-	public Address Location { get; init; } = default!;
+	
+	public Location Location { get; init; } = default!;
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

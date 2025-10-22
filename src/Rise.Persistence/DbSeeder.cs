@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
 
@@ -22,6 +23,7 @@ public class DbSeeder(
 		await RolesAsync();
 		await UsersAsync();
 		await ProductsAsync();
+		await LocationAsync();
 		await ProjectsAsync();
 	}
 
@@ -111,6 +113,19 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
+	private async Task LocationAsync() {
+		if (dbContext.Locations.Any()) {
+			return;
+		}
+
+		dbContext.Locations.AddRange(
+			new Location("Aalst", new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+				new Coordinate(6.0, 7.0))
+		);
+
+		await dbContext.SaveChangesAsync();
+	}
+
 	private async Task ProjectsAsync() {
 		if (dbContext.Projects.Any()) {
 			return;
@@ -122,27 +137,21 @@ public class DbSeeder(
 			return;
 		}
 
-		List<Address> addresses = new() {
-			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
-			new Address("Meir 45", "", "Antwerpen", "2000"),
-			new Address("Veldstraat 78", "2e verdieping", "Gent", "9000"),
-			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-			new Address("Place Saint-Lambert 8", "Bureau 12", "Liège", "4000")
-		};
-
+		List<Location> locations = await dbContext.Locations.ToListAsync();
+		
 		Random rnd = new(123); // Using a seed so the random is always the same.
 
 		List<Project> projects = new() {
 			new Project("Website Redesign", "WR2025", new DateTime(2025, 1, 15), new DateTime(2025, 6, 30),
-				addresses[0]),
+				locations[0]),
 			new Project("Mobile App Development", "MAD2025", new DateTime(2025, 2, 1), new DateTime(2025, 8, 15),
-				addresses[1]),
+				locations[0]),
 			new Project("Database Migration", "DBM2025", new DateTime(2025, 3, 10), new DateTime(2025, 9, 25),
-				addresses[2]),
+				locations[0]),
 			new Project("E-commerce Platform", "ECP2025", new DateTime(2025, 4, 5), new DateTime(2025, 11, 20),
-				addresses[3]),
+				locations[0]),
 			new Project("CRM Integration", "CRMI2025", new DateTime(2025, 5, 12), new DateTime(2025, 12, 31),
-				addresses[4])
+				locations[0]),
 		};
 
 		dbContext.Projects.AddRange(projects);

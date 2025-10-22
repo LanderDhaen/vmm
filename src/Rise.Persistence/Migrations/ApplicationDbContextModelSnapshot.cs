@@ -218,6 +218,39 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Location", (string)null);
+                });
+
             modelBuilder.Entity("Rise.Domain.Products.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -281,6 +314,9 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -295,6 +331,8 @@ namespace Rise.Persistence.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Project", (string)null);
                 });
@@ -396,11 +434,11 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
+            modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
                 {
-                    b.OwnsOne("Rise.Domain.Projects.Address", "Location", b1 =>
+                    b.OwnsOne("Rise.Domain.Locations.Address", "Address", b1 =>
                         {
-                            b1.Property<int>("ProjectId")
+                            b1.Property<int>("LocationId")
                                 .HasColumnType("int");
 
                             b1.Property<string>("Addressline1")
@@ -421,22 +459,62 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("varchar(50)")
                                 .HasColumnName("City");
 
+                            b1.Property<string>("CountryIso")
+                                .IsRequired()
+                                .HasMaxLength(2)
+                                .HasColumnType("varchar(2)")
+                                .HasColumnName("CountryIso");
+
                             b1.Property<string>("PostalCode")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("varchar(20)")
                                 .HasColumnName("PostalCode");
 
-                            b1.HasKey("ProjectId");
+                            b1.HasKey("LocationId");
 
-                            b1.ToTable("Project");
+                            b1.ToTable("Location");
 
                             b1.WithOwner()
-                                .HasForeignKey("ProjectId");
+                                .HasForeignKey("LocationId");
                         });
 
-                    b.Navigation("Location")
+                    b.OwnsOne("Rise.Domain.Locations.Coordinate", "Coordinate", b1 =>
+                        {
+                            b1.Property<int>("LocationId")
+                                .HasColumnType("int");
+
+                            b1.Property<double>("X")
+                                .HasColumnType("double")
+                                .HasColumnName("X");
+
+                            b1.Property<double>("Y")
+                                .HasColumnType("double")
+                                .HasColumnName("Y");
+
+                            b1.HasKey("LocationId");
+
+                            b1.ToTable("Location");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Coordinate")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
+                {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
                 });
 #pragma warning restore 612, 618
         }
