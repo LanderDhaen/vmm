@@ -11,7 +11,7 @@ public class Address : ValueObject {
 	private Address() {
 	}
 
-	public Address(string? addressline1, string? addressline2, string? city, string? zipCode, string? countryIso = "BE") {
+	public Address(string? addressline1, string? addressline2, string city, string zipCode, string countryIso = "BE") {
 		Addressline1 = addressline1;
 		Addressline2 = addressline2;
 		City = city;
@@ -21,9 +21,9 @@ public class Address : ValueObject {
 
 	public string? Addressline1 { get; }
 	public string? Addressline2 { get; }
-	public string? City { get; }
-	public string? PostalCode { get; }
-	public string? CountryIso { get; }
+	public string City { get; }
+	public string PostalCode { get; }
+	public string CountryIso { get; }
 	
 
 	protected override IEnumerable<object> GetEqualityComponents() {

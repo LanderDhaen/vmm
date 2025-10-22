@@ -436,13 +436,11 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Addressline1")
-                                .IsRequired()
                                 .HasMaxLength(250)
                                 .HasColumnType("varchar(250)")
                                 .HasColumnName("Addressline1");
 
                             b1.Property<string>("Addressline2")
-                                .IsRequired()
                                 .HasMaxLength(250)
                                 .HasColumnType("varchar(250)")
                                 .HasColumnName("Addressline2");

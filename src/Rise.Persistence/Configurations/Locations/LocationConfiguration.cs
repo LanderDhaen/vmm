@@ -19,9 +19,9 @@ internal class LocationConfiguration : EntityConfiguration<Location> {
 				.HasColumnName(nameof(Address.Addressline1));
 			a.Property(x => x.Addressline2).HasMaxLength(250)
 				.HasColumnName(nameof(Address.Addressline2));
-			a.Property(x => x.City).HasMaxLength(50).HasColumnName(nameof(Address.City));
-			a.Property(x => x.PostalCode).HasMaxLength(20).HasColumnName(nameof(Address.PostalCode));
-			a.Property(x => x.CountryIso).HasMaxLength(2).HasColumnName(nameof(Address.CountryIso));
+			a.Property(x => x.City).IsRequired().HasMaxLength(50).HasColumnName(nameof(Address.City));
+			a.Property(x => x.PostalCode).IsRequired().HasMaxLength(20).HasColumnName(nameof(Address.PostalCode));
+			a.Property(x => x.CountryIso).IsRequired().HasMaxLength(2).HasColumnName(nameof(Address.CountryIso));
 		}).Navigation(x => x.Address);
 		
 		builder.OwnsOne(x => x.Coordinate, c => {
