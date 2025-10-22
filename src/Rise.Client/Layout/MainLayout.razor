@@ -1,12 +1,29 @@
-﻿@inherits LayoutComponentBase
-<div>
-    <header>
-        <NavBar/>
-    </header>
-    <main>
-        <section class="section">
-            @Body
-        </section>
-    </main>
-</div>
+﻿feature/#RI2526VC2-108Site:Add-Filte- function-for-Sites
 
+@inherits LayoutComponentBase
+
+<MudLayout Class="layout-root">
+
+    <header>
+        <NavBar />
+    </header>
+
+    <MudMainContent Class="main-content">
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8 px-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+
+    <MudThemeProvider />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+
+</MudLayout>
+
+<style>
+    .layout-root, .main-content {
+        min-height: 100vh;
+        background-color: var(--mud-palette-background);
+    }
+</style>
