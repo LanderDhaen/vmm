@@ -8,11 +8,7 @@ namespace Rise.Domain.Projects;
 public class Project : Entity {
 	private string _code = string.Empty;
 
-	private DateTime _endDate;
-
 	private string _name = string.Empty;
-
-	private DateTime _startDate;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
