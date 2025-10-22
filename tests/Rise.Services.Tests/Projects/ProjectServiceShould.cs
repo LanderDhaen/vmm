@@ -5,6 +5,7 @@ using Ardalis.Result;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Projects;
+using Rise.Domain.Locations;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Fakers;
@@ -27,7 +28,8 @@ public class ProjectServiceShould {
 		string technicianAccountId = Guid.NewGuid().ToString();
 		Technician technician = new("FName", "LName", technicianAccountId);
 		Project project = new("Old Project", "OLD123", new DateTime(2025, 2, 20), new DateTime(2025, 9, 10),
-			new Address("Street", "Bus", "City", "Zip"));
+			new Location("Aalst", new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+				new Coordinate(6.0, 7.0)));
 
 		dbContext.Technicians.Add(technician);
 		dbContext.Projects.Add(project);
@@ -73,7 +75,8 @@ public class ProjectServiceShould {
 		Technician loggedInTechnician = new("Other", "Tech", otherTechAccountId);
 
 		Project project = new("Old Project", "OLD123", new DateTime(2025, 2, 20), new DateTime(2025, 9, 10),
-			new Address("Street", "Bus", "City", "Zip"));
+			new Location("Aalst", new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+				new Coordinate(6.0, 7.0)));
 
 		dbContext.Technicians.AddRange(projectTechnician, loggedInTechnician);
 		dbContext.Projects.Add(project);
