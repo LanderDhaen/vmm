@@ -1,44 +1,34 @@
+@page "/projects"
 @using Rise.Client.Components
 @using Rise.Shared.Projects
-@page "/projects"
 
-<PageTitle>Projects</PageTitle>
-	
-	<!-- Projects Grid -->
-	
-		<MudDataGrid T="ProjectDto.Index"
-		             ServerData="GetProjectsAsync"
-		             RowsPerPage="5"
-		             Bordered="false"
-		             Hover="true"
-		             Dense="true"
-		             Elevation="0">
+<PageTitle>Projecten</PageTitle>
 
-			<!-- ToolBar -->
+<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+	<MudDataGrid T="ProjectDto.Index"
+	             ServerData="GetProjectsAsync"
+	             RowsPerPage="10"
+	             Bordered="true"
+	             Striped="true"
+	             Hover="true"
+	             Dense="false"
+	             Elevation="0">
+		<ToolBarContent><ToolBar /></ToolBarContent>
 
-			<ToolBarContent>
-				<ToolBar/>
-			</ToolBarContent>
+		<Columns>
+			<PropertyColumn Property="x => x.Code" Title="#"/>
+			<PropertyColumn Property="x => x.Name" Title="Naam"/>
+			<PropertyColumn Property="x => x.DateRange.StartDate" Title="Startdatum"/>
+			<PropertyColumn Property="x => x.DateRange.EndDate" Title="Einddatum"/>
+			<PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
+			<PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")" Title="Coördinaten"/>
+			<PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres"/>
+			<PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente"/>
+			<PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
+		</Columns>
 
-			<!-- Table -->
-
-			<Columns>
-				<PropertyColumn Property="x => x.Code" Title="#"/>
-				<PropertyColumn Property="x => x.Name" Title="Naam"/>
-				<PropertyColumn Property="x => x.DateRange.StartDate" Title="Startdatum"/>
-				<PropertyColumn Property="x => x.DateRange.EndDate" Title="Einddatum"/>
-				<PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
-				<PropertyColumn Property="@(x => x.Location.Coordinate.X + " - " + x.Location.Coordinate.Y)" Title="Coördinaten"/>
-				<PropertyColumn Property="@(x => x.Location.Address.AddressLine1 + ", " + x.Location.Address.AddressLine2)" Title="Adres"/>
-				<PropertyColumn Property="@(x => x.Location.Address.City + ", " + x.Location.Address.PostalCode)" Title="Gemeente"/>
-				<PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
-			</Columns>
-
-			<!-- Pagination -->
-
-			<PagerContent>
-				<Pagination T="ProjectDto.Index"/>
-			</PagerContent>
-		</MudDataGrid>
-
-
+		<PagerContent>
+			<Pagination T="ProjectDto.Index"/>
+		</PagerContent>
+	</MudDataGrid>
+</MudPaper>
