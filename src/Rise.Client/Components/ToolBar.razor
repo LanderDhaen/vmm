@@ -1,8 +1,23 @@
-<!-- Implement searching, filtering, sorting & actions in ToolBarContent (all with sidebar from the right & drawer from the bottom on mobile -->
-<!-- Sorting can also be implemented on columnheader when on desktop -->
+<MudAppBar Style="background: linear-gradient(to top, #BAE6FD, #7DD3FC);"  Fixed="false">
+    <MudTextField @bind-Value="Search" Label="Zoek" 
+    Variant="Variant.Filled" Adornment="Adornment.End" 
+    AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Inherit" 
+    Style="width: auto; background-color: white; color: gray;border-radius: 20px;" />
+    <MudSpacer/>
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt" Style="color: gray;border-radius: 5px;"/>
+        <MudIconButton 
+        Icon="@Icons.Material.Filled.Sort"
+        Style="color: gray;border-radius: 5px;"/>
+        <MudIconButton 
+        Icon="@Icons.Material.Filled.MoreHoriz"
+        Style="color: gray;border-radius: 5px;"/>
+</MudAppBar>
 
-<MudText Typo="Typo.h6">Zoekbalk</MudText>
-<MudSpacer />
-<MudText Class="pr-2">Filters</MudText>
-<MudText Class="pr-2">Sorteren</MudText>
-<MudText>Acties</MudText>
+@code {
+    public string Search { get; set; }
+    
+    public ToolBar() // Zorg ervoor dat de naam van de klasse correct is
+    {
+        Search = string.Empty; // Initialiseer met een lege string
+    }
+}

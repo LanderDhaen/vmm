@@ -1,34 +1,22 @@
-<MudAppBar Elevation="1" Color="Color.Primary" Dense="true" Class="navbar">
-	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-		<MudButton Href="/" Color="Color.Inherit" Variant="Variant.Text" Class="fw-600">
-			Home
-		</MudButton>
+@inject NavigationManager NavigationManager
+<MudAppBar Style=" background-color: white;" Fixed="false">        
+@if (NavigationManager.Uri.EndsWith("/")) // Controleer of we op de homepage zijn
+        {    
+            <MudButton
+            Href="/projects"
+            Color="Color.Default"
+            Variant="Variant.Text"
+            Style="border-radius: 5px; color: gray; background: linear-gradient(to top, #BAE6FD, #7DD3FC);"
+            >Sites</MudButton>
+           // Toon de tekst "Sites" op de homepage
+        }
 
-		<MudButton Href="/projects" Color="Color.Inherit" Variant="Variant.Text">
-			Projects
-		</MudButton>
-	</MudStack>
 
-	<MudSpacer />
-	
-	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-		<MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Inherit">
-			Login
-		</MudButton>
-
-		<MudButton Href="/register" Variant="Variant.Filled" Color="Color.Secondary">
-			Register
-		</MudButton>
-	</MudStack>
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="border-radius: 5px; color: gray; background: linear-gradient(to top, #BAE6FD, #7DD3FC);"/>
+        }
+    
+    <MudSpacer/>
+    <MudIconButton Icon="@Icons.Material.Filled.HowToReg"  Style="border-radius: 5px; color: gray; background: linear-gradient(to top, #BAE6FD, #7DD3FC);"/>
 </MudAppBar>
-
-<style>
-	.navbar {
-		padding: 0 1rem;
-	}
-
-	.fw-600 {
-		font-weight: 600;
-	}
-
-</style>
