@@ -39,31 +39,21 @@
 
 2. Open the `Rise.sln` file in [Rider](https://www.jetbrains.com/rider/), [Visual Studio](https://visualstudio.microsoft.com/) or  [Visual Studio Code](https://code.visualstudio.com/). (we prefer Rider, but you're free to choose.)
 
-3. Run the project using the `Rise.Server` project as the startup project
+3. Set the [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) in `secrets.json` file
 
-4. The project should open in your default browser on port 5001.
+```json
+{
+  "ConnectionStrings": {
+    "DatabaseConnection": "Server=localhost;Port=3306;Database=RiseDB;User=<YOUR_USERNAME>;Password=<YOUR_PASSWORD>;"
+  }
+}
+```
 
-5. The database (SQLite) will be created. However you will have to switch the database provider of your choosing
+4. Run the project using the `Rise.Server` project as the startup project
 
-   1. **SQL Server**
+5. The project should open in your default browser on port 5001.
 
-      Package: Microsoft.EntityFrameworkCore.SqlServer
-
-      🔗 [NuGet Link](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/)
-
-   2. **MariaDB**
-
-      Package: Pomelo.EntityFrameworkCore.MySql
-
-      🔗 [NuGet Link](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql/)
-
-   3. **PostgreSQL**
-
-      Package: Npgsql.EntityFrameworkCore.PostgreSQL
-
-      🔗 [NuGet Link](https://www.nuget.org/packages/Npgsql.EntityFrameworkCore.PostgreSQL/)
-
-   4. Mongo etc...
+5. The database (MariaDB) will be created. 
 
 ## Creation of the database
 
@@ -78,13 +68,19 @@ dotnet tool install --global dotnet-ef
 Adapting the database schema can be done using migrations. To create a new migration, run the following command in the `src` folder
 
 ```
-dotnet ef migrations add YourMigrationName --startup-project Rise.Server --project Rise.Persistence
+dotnet ef migrations add <MIGRATION_NAME> --startup-project Rise.Server --project Rise.Persistence
 ```
 
 And then update the database using the following command, or run the `Rise.Server`
 
 ```
 dotnet ef database update --startup-project Rise.Server --project Rise.Persistence
+```
+
+If you want the .sql file, run the following command in the `src` folder
+
+```
+dotnet ef migrations script -o <FILE_NAME>.sql -s .\Rise.Server\ -p .\Rise.Persistence\
 ```
 
 ## Usefull Commands
