@@ -1,27 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
-<MudLayout Class="layout-root">
-
+<MudLayout>
 	<header>
 		<NavBar />
 	</header>
-
-	<MudMainContent Class="main-content">
-		<MudContainer MaxWidth="MaxWidth.Medium" Class="py-8 px-4">
+	<MudMainContent>
 			@Body
-		</MudContainer>
 	</MudMainContent>
-
 	<MudThemeProvider />
 	<MudPopoverProvider />
 	<MudDialogProvider />
 	<MudSnackbarProvider />
-
 </MudLayout>
 
-<style>
-	.layout-root, .main-content {
-		min-height: 100vh;
-		background-color: var(--mud-palette-background);
-	}
-</style>
