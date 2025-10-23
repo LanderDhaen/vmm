@@ -1,0 +1,28 @@
+@typeparam T
+@* 
+    <summary>
+        A reusable pagination component for MudBlazor DataGrids.
+    </summary>
+
+    <typeparam name="T">
+        The data type used by the parent <MudDataGrid>.
+        Must match the type parameter of the grid this pagination component belongs to.
+    </typeparam>
+
+    <example>
+        Example usage:
+        <code>
+            <MudDataGrid T="ProjectDto.Index" ...>
+                ...
+                <PagerContent>
+                    <Pager T="ProjectDto.Index" />
+                </PagerContent>
+            </MudDataGrid>
+        </code>
+    </example>
+*@
+
+<MudDataGridPager T="T"
+                  PageSizeOptions="new int[] { 5, 10, 20, 50 }"
+                  RowsPerPageString="Rijen per pagina"
+                  InfoFormat="{first_item}-{last_item} van de {all_items}" />

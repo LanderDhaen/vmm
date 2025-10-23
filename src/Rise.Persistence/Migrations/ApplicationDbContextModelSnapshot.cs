@@ -218,13 +218,42 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Location", (string)null);
+                });
+
             modelBuilder.Entity("Rise.Domain.Products.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -257,11 +286,14 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -273,13 +305,13 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("varchar(250)");
-
-                    b.Property<int>("TechnicianId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -288,18 +320,16 @@ namespace Rise.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TechnicianId");
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Project", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.Projects.Technician", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("AccountId")
                         .IsRequired()
@@ -390,27 +420,19 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
+            modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
                 {
-                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
-                        .WithMany("Projects")
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsOne("Rise.Domain.Projects.Address", "Location", b1 =>
+                    b.OwnsOne("Rise.Domain.Locations.Address", "Address", b1 =>
                         {
-                            b1.Property<int>("ProjectId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("char(36)");
 
                             b1.Property<string>("Addressline1")
-                                .IsRequired()
                                 .HasMaxLength(250)
                                 .HasColumnType("varchar(250)")
                                 .HasColumnName("Addressline1");
 
                             b1.Property<string>("Addressline2")
-                                .IsRequired()
                                 .HasMaxLength(250)
                                 .HasColumnType("varchar(250)")
                                 .HasColumnName("Addressline2");
@@ -421,11 +443,73 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("varchar(50)")
                                 .HasColumnName("City");
 
+                            b1.Property<string>("CountryIso")
+                                .IsRequired()
+                                .HasMaxLength(2)
+                                .HasColumnType("varchar(2)")
+                                .HasColumnName("CountryIso");
+
                             b1.Property<string>("PostalCode")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("varchar(20)")
                                 .HasColumnName("PostalCode");
+
+                            b1.HasKey("LocationId");
+
+                            b1.ToTable("Location");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.OwnsOne("Rise.Domain.Locations.Coordinate", "Coordinate", b1 =>
+                        {
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<double>("X")
+                                .HasColumnType("double")
+                                .HasColumnName("X");
+
+                            b1.Property<double>("Y")
+                                .HasColumnType("double")
+                                .HasColumnName("Y");
+
+                            b1.HasKey("LocationId");
+
+                            b1.ToTable("Location");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LocationId");
+                        });
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Coordinate")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
+                {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
+                        {
+                            b1.Property<Guid>("ProjectId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<DateOnly?>("EndDate")
+                                .HasColumnType("date")
+                                .HasColumnName("EndDate");
+
+                            b1.Property<DateOnly>("StartDate")
+                                .HasColumnType("date")
+                                .HasColumnName("StartDate");
 
                             b1.HasKey("ProjectId");
 
@@ -435,15 +519,10 @@ namespace Rise.Persistence.Migrations
                                 .HasForeignKey("ProjectId");
                         });
 
-                    b.Navigation("Location")
+                    b.Navigation("DateRange")
                         .IsRequired();
 
-                    b.Navigation("Technician");
-                });
-
-            modelBuilder.Entity("Rise.Domain.Projects.Technician", b =>
-                {
-                    b.Navigation("Projects");
+                    b.Navigation("Location");
                 });
 #pragma warning restore 612, 618
         }

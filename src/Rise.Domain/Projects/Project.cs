@@ -1,47 +1,43 @@
+using Rise.Domain.Locations;
+
 namespace Rise.Domain.Projects;
 
 /// <summary>
-/// A project is something that a technician is working on.
+///     A project is something that owns multiple measuring stations.
 /// </summary>
-public class Project : Entity
-{
-    private string _name = string.Empty;
+public class Project : Entity {
+	private string _code = string.Empty;
 
-    public string Name
-    {
-        get => _name;
-        set => _name = Guard.Against.NullOrEmpty(value);
-    }
-    public Technician Technician { get; init; } = default!;
+	private string _name = string.Empty;
 
-    /// <summary>
-    /// The address is immutable and owned by the <see cref="Project"/>. If you want to change the address, create a new Address and link it to the project.
-    /// <see cref="ProjectConfiguration"/>
-    /// </summary>
-    public Address Location { get; init; } = default!;
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private Project() {
+	}
 
-    /// <summary>
-    /// Entity Framework Core Constructor
-    /// </summary>
-    private Project()
-    {
-        
-    }
+	public Project(string name, string code, DateRange dateRange, Location location) {
+		Name = name;
+		Code = code;
+		DateRange = Guard.Against.Null(dateRange);
+		Location = Guard.Against.Null(location);
+	}
 
-    public Project(string name, Technician technician, Address location)
-    {
-        Name = name;
-        Technician = Guard.Against.Null(technician);
-        Location = Guard.Against.Null(location);
-    }
+	public string Name {
+		get => _name;
+		set => _name = Guard.Against.NullOrWhiteSpace(value);
+	}
 
-    public bool CanBeEditedBy(Technician technician)
-    {
-        return Technician == technician; // due to Entity (comparision via ID)
-    }
+	public string Code {
+		get => _code;
+		set => _code = Guard.Against.NullOrWhiteSpace(value);
+	}
 
-    public void Edit(string name)
-    {
-        Name = Guard.Against.NullOrEmpty(name);       
-    }
+	public DateRange DateRange { get; init; } = default!;
+	
+	public Location Location { get; init; } = default!;
+
+	public void Edit(string name) {
+		Name = Guard.Against.NullOrEmpty(name);
+	}
 }
