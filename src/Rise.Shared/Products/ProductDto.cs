@@ -8,7 +8,7 @@ public static class ProductDto {
 	///     Represents a product index containing minimalistic product details.
 	/// </summary>
 	public class Index {
-		public required int Id { get; set; }
+		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string Description { get; set; }
 	}

@@ -6,14 +6,14 @@ namespace Rise.Domain.Common;
 public abstract class Entity {
 	protected Entity() { }
 
-	protected Entity(int id) {
+	protected Entity(Guid id) {
 		Id = id;
 	}
 
 	/// <summary>
 	///     Primary Key of the <see cref="Entity" />
 	/// </summary>
-	public int Id { get; protected set; }
+	public Guid Id { get; protected set; }
 
 	/// <summary>
 	///     Date of the initial creation.

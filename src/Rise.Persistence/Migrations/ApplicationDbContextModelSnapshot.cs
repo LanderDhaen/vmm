@@ -220,11 +220,9 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -253,11 +251,9 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Products.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -290,11 +286,9 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -311,8 +305,8 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -333,11 +327,9 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.Technician", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("AccountId")
                         .IsRequired()
@@ -432,8 +424,8 @@ namespace Rise.Persistence.Migrations
                 {
                     b.OwnsOne("Rise.Domain.Locations.Address", "Address", b1 =>
                         {
-                            b1.Property<int>("LocationId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("char(36)");
 
                             b1.Property<string>("Addressline1")
                                 .HasMaxLength(250)
@@ -473,8 +465,8 @@ namespace Rise.Persistence.Migrations
 
                     b.OwnsOne("Rise.Domain.Locations.Coordinate", "Coordinate", b1 =>
                         {
-                            b1.Property<int>("LocationId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("char(36)");
 
                             b1.Property<double>("X")
                                 .HasColumnType("double")
@@ -508,8 +500,8 @@ namespace Rise.Persistence.Migrations
 
                     b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
                         {
-                            b1.Property<int>("ProjectId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("ProjectId")
+                                .HasColumnType("char(36)");
 
                             b1.Property<DateOnly?>("EndDate")
                                 .HasColumnType("date")

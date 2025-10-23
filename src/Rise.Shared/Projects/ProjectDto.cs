@@ -10,7 +10,7 @@ public static class ProjectDto {
 	///     Represents a project index containing minimalistic project details.
 	/// </summary>
 	public class Index {
-		public required int Id { get; set; }
+		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 
 		public required string Code { get; set; }	

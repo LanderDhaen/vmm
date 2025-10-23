@@ -5,7 +5,7 @@ public static class ProjectRequest {
 		/// <summary>
 		///     The unique identifier of the project.
 		/// </summary>
-		public required int ProjectId { get; set; }
+		public required Guid ProjectId { get; set; }
 
 		/// <summary>
 		///     The name of the project.
