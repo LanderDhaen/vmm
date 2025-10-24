@@ -34,7 +34,7 @@ public class Project : Entity {
 	}
 
 	public DateRange DateRange { get; init; } = default!;
-	
+
 	public Location Location { get; init; } = default!;
 
 	public void Edit(string name) {

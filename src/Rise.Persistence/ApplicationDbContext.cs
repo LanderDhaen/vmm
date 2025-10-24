@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.Products;
-using Rise.Domain.Locations; 
 using Rise.Domain.Projects;
-
 
 namespace Rise.Persistence;
 

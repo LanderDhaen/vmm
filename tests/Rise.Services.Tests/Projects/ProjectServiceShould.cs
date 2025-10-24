@@ -4,8 +4,8 @@ using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Projects;
 using Rise.Domain.Locations;
+using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Fakers;
@@ -14,10 +14,9 @@ using Rise.Shared.Projects;
 namespace Rise.Services.Tests.Projects;
 
 public class ProjectServiceShould {
-	
 	private static readonly Location DummyLocation = new(
 		"Aalst",
-		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
 		new Coordinate(6.0, 7.0)
 	);
 
@@ -25,7 +24,7 @@ public class ProjectServiceShould {
 		new DateOnly(2025, 1, 5),
 		new DateOnly(2025, 5, 10)
 	);
-	
+
 	[Fact]
 	public async Task EditProjectWhenTechnicianIsTheSame() {
 		// Arrange

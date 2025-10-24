@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
@@ -44,7 +43,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-		
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
 		int totalCount = await query.CountAsync();
@@ -54,7 +52,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		} else {
 			query = query.OrderBy(p => p.Name);
 		}
-			
+
 		List<ProjectDto.Index> projects = await query.AsNoTracking()
 			.Skip(request.Skip)
 			.Take(request.Take)
@@ -74,11 +72,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						AddressLine2 = p.Location.Address.Addressline2,
 						City = p.Location.Address.City,
 						PostalCode = p.Location.Address.PostalCode,
-						CountryIso = p.Location.Address.CountryIso,
+						CountryIso = p.Location.Address.CountryIso
 					},
 					Coordinate = new CoordinateDto.Index {
 						X = p.Location.Coordinate.X,
-						Y = p.Location.Coordinate.Y,
+						Y = p.Location.Coordinate.Y
 					}
 				}
 			})

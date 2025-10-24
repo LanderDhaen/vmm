@@ -117,22 +117,22 @@ public class DbSeeder(
 		if (dbContext.Locations.Any()) {
 			return;
 		}
-		
+
 		List<Address> addresses = new() {
 			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
 			new Address("", "", "Antwerpen", "2000"),
 			new Address("Veldstraat 78", null, "Gent", "9000"),
 			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-			new Address(null,null, "Breda", "4811", "NL"),
-			};
-		
+			new Address(null, null, "Breda", "4811", "NL")
+		};
+
 		List<Coordinate> coordinates = new() {
-			new Coordinate(4.35, 50.85),   // Brussel (Koningstraat 12)
-			new Coordinate(4.40, 51.22),   // Antwerpen
-			new Coordinate(3.73, 51.05),   // Gent
-			new Coordinate(4.37, 50.84),   // Bruxelles (Rue de la Loi)
-			new Coordinate(4.78, 51.59),   // Breda
-			new Coordinate(2.92, 51.22)    // Oostende
+			new Coordinate(4.35, 50.85), // Brussel (Koningstraat 12)
+			new Coordinate(4.40, 51.22), // Antwerpen
+			new Coordinate(3.73, 51.05), // Gent
+			new Coordinate(4.37, 50.84), // Bruxelles (Rue de la Loi)
+			new Coordinate(4.78, 51.59), // Breda
+			new Coordinate(2.92, 51.22) // Oostende
 		};
 
 		List<Location> locations = new() {
@@ -162,7 +162,7 @@ public class DbSeeder(
 		}
 
 		List<Location> locations = await dbContext.Locations.ToListAsync();
-		
+
 		List<DateRange> dateRanges = new() {
 			new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
 			new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
@@ -175,14 +175,13 @@ public class DbSeeder(
 		Random rnd = new(123); // deterministic seed
 
 		List<Project> projects = new() {
-			new Project("Canal Cleanup", "CC2025", dateRanges[0], locations[0]),         
-			new Project("River Monitoring", "RM2025", dateRanges[1], locations[1]),      
-			new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], locations[2]), 
-			new Project("Pond Restoration", "PR2025", dateRanges[3], locations[3]),      
-			new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], locations[4]), 
-			new Project("Coastal Dashboard", "CD2025", dateRanges[5], locations[5]) 
+			new Project("Canal Cleanup", "CC2025", dateRanges[0], locations[0]),
+			new Project("River Monitoring", "RM2025", dateRanges[1], locations[1]),
+			new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], locations[2]),
+			new Project("Pond Restoration", "PR2025", dateRanges[3], locations[3]),
+			new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], locations[4]),
+			new Project("Coastal Dashboard", "CD2025", dateRanges[5], locations[5])
 		};
-
 
 
 		dbContext.Projects.AddRange(projects);

@@ -8,11 +8,10 @@ public static class AddressDto {
 	///     Represents an address index containing minimalistic daterange details.
 	/// </summary>
 	public class Index {
-		public required string AddressLine1 {get; init; }
-		public required string AddressLine2 {get; init; }
-		public required string City {get; init; }
-		public required string PostalCode {get; init; }
-		public required string CountryIso {get; init; }
+		public required string AddressLine1 { get; init; }
+		public required string AddressLine2 { get; init; }
+		public required string City { get; init; }
+		public required string PostalCode { get; init; }
+		public required string CountryIso { get; init; }
 	}
-	
 }
