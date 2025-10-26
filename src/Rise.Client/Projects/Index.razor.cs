@@ -10,7 +10,7 @@ namespace Rise.Client.Projects;
 public partial class Index {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
-	
+
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
@@ -25,7 +25,7 @@ public partial class Index {
 			Items = result.Value.Projects
 		};
 	}
-	
+
 	private void OnRowClick(DataGridRowClickEventArgs<ProjectDto.Index> args) {
 		NavigationManager.NavigateTo($"/projects/{args.Item.Id}");
 	}
