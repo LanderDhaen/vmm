@@ -87,4 +87,40 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			TotalCount = totalCount
 		});
 	}
+	
+	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
+	    ProjectDto.Detail? project = await dbContext.Projects.AsNoTracking()
+	        .Where(p => p.Id == projectId)
+	        .Select(p => new ProjectDto.Detail {
+	            Id = p.Id,
+	            Name = p.Name,
+	            Code = p.Code,
+	            DateRange = new DateRangeDto.Index {
+	                StartDate = p.DateRange.StartDate,
+	                EndDate = p.DateRange.EndDate
+	            },
+	            Location = new LocationDto.Index {
+	                Id = p.Location.Id,
+	                Name = p.Location.Name,
+	                Address = new AddressDto.Index {
+	                    AddressLine1 = p.Location.Address.Addressline1,
+	                    AddressLine2 = p.Location.Address.Addressline2,
+	                    City = p.Location.Address.City,
+	                    PostalCode = p.Location.Address.PostalCode,
+	                    CountryIso = p.Location.Address.CountryIso
+	                },
+	                Coordinate = new CoordinateDto.Index {
+	                    X = p.Location.Coordinate.X,
+	                    Y = p.Location.Coordinate.Y
+	                }
+	            }
+	        })
+	        .SingleOrDefaultAsync(ctx);
+	
+	    if (project is null) {
+	        return Result<ProjectResponse.Detail>.NotFound($"Project with Id '{projectId}' was not found.");
+	    }
+	
+	    return Result.Success(new ProjectResponse.Detail { Project = project });
+	}
 }

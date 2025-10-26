@@ -8,4 +8,5 @@ namespace Rise.Shared.Projects;
 public interface IProjectService {
 	Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx);
 	Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request, CancellationToken ctx = default);
+	Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default);
 }

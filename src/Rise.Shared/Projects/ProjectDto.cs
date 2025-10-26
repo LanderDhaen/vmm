@@ -17,4 +17,12 @@ public static class ProjectDto {
 
 		public required LocationDto.Index Location { get; init; }
 	}
+	
+	public class Detail {
+	    public required Guid Id { get; set; }
+	    public required string Name { get; set; }
+	    public required string Code { get; set; }
+	    public required DateRangeDto.Index DateRange { get; init; }
+	    public required LocationDto.Index Location { get; init; }
+	}
 }
