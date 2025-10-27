@@ -1,0 +1,28 @@
+    <MudDrawer @bind-Open="@_open" Elevation="1" Anchor="Anchor.End" Style="height: auto; background-color: white;">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Filters</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => FilterList("Canal Cleanup"))">Canal Cleanup</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => FilterList("River Monitoring"))">River Monitoring</MudNavLink>
+            <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => FilterList("Waterway CRM Analytics"))">Waterway CRM Analytics</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
+    @code {
+
+        private bool _open = false;
+          private string SelectedFilter { get; set; }
+
+
+    public FilterDrawer() // Zorg ervoor dat de naam van de klasse correct is
+    {
+  
+         SelectedFilter = string.Empty;
+    }
+        private void FilterList(string filter)
+    {
+        SelectedFilter = filter;
+        // Logica om de lijst te filteren op basis van SelectedFilter
+    }
+}
