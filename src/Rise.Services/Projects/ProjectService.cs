@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
@@ -30,8 +29,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		{
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
-
-		// User must be logged in to perform an edit.
+		
 		Technician? loggedInTechnician = await dbContext.Technicians
 			.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
 
@@ -67,8 +65,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.AsNoTracking()
 			.Skip(request.Skip)
 			.Take(request.Take);
-
-		// Force LINQ-to-Entities (Queryable) Select to avoid ambiguity
+		
 		List<ProjectDto.Index> projects = await Queryable
 			.Select(page, p => new ProjectDto.Index
 			{

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Stations;
 using Rise.Persistence;
-using Rise.Shared.Common;       // Result, QueryRequest
-using Rise.Shared.Locations;    // LocationDto
-using Rise.Shared.Stations;     // MeasurementStationDto, MeasurementStationResponse
+using Rise.Shared.Common;       
+using Rise.Shared.Locations;    
+using Rise.Shared.Stations;    
 
 namespace Rise.Services.Stations;
 
@@ -31,8 +31,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             .AsNoTracking()
             .Skip(request.Skip)
             .Take(request.Take);
-
-        // Force Queryable.Select to avoid the Enumerable/Queryable ambiguity
+        
         List<MeasurementStationDto.Index> stations = await Queryable
             .Select(page, s => new MeasurementStationDto.Index
             {
