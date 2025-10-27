@@ -18,4 +18,11 @@ public partial class Detail {
 			_project = result.Value.Project;
 		}
 	}
+	
+	private string? _remarks;
+
+	private void NavigateToHistory()
+	{
+		Navigation.NavigateTo("/projects/history");
+	}
 }
