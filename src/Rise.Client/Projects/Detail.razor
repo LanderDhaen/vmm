@@ -1,56 +1,48 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Shared.Projects
-
+@inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
-
 
 @if (_project is null)
 {
-	<MudProgressCircular Indeterminate="true"/>
+	<MudContainer Class="d-flex justify-center align-center" Style="height:70vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Small" Color="Color.Primary"/>
+	</MudContainer>
 }
 else
 {
-	<MudContainer Class="mt-2 px-2">
-		<MudPaper>
-			<MudTabs Rounded="true" Centered="true" Border="true">
+	<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4" >
+			<MudTabs Rounded="true" Border="true" Centered="true" Elevation="0" Class="mb-4">
 				<MudTabPanel Text="Informatie">
-					<MudGrid>
-						<MudItem xs="12" sm="6">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Referentienummer</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">@_project.Code</MudText>
 
-						</MudItem>
+					<MudStack Spacing="3">
 
-						<MudItem xs="12" sm="6">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Site</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">@_project.Location.Name</MudText>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
+						<MudPaper Class="p-2 bg-white rounded">@_project.Code</MudPaper>
 
-						</MudItem>
-						
-						<MudItem xs="12" sm="6">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Stad</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">@_project.Location.Address.City</MudText>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
+						<MudPaper Class="p-2 bg-white rounded">@_project.Location.Name</MudPaper>
 
-						</MudItem>
-						
-						<MudItem xs="12" sm="6">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Provincie</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">TODO</MudText>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
+						<MudPaper Class="p-2 bg-white rounded">@_project.Location.Address.City</MudPaper>
 
-						</MudItem>
-						
-						<MudItem xs="12" sm="6">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Regio</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">TODO</MudText>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
+						<MudPaper Class="p-2 bg-white rounded">West-Vlaanderen</MudPaper>
 
-						</MudItem>
-						
-						<MudItem xs="12">
-							<MudText Typo="Typo.subtitle2" Class="mb-1">Opmerkingen</MudText>
-							<MudText Typo="Typo.body2" Class="mb-1">...</MudText>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
+						<MudPaper Class="p-2 bg-white rounded">Conductiviteitsmeetnet West</MudPaper>
 
-						</MudItem>
-					</MudGrid>
+						<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
+						<MudTextField
+							@bind-Value="_remarks"
+							FullWidth="true"
+							Lines="4"
+							Variant="Variant.Filled"
+							Style="background-color:white;"
+							Class="rounded"
+						/>
+					</MudStack>
+
 				</MudTabPanel>
 
 				<MudTabPanel Text="Kaart">
@@ -60,11 +52,19 @@ else
 				<MudTabPanel Text="Meetstations">
 					<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
 				</MudTabPanel>
-				<MudTabPanel Text="...">
-					<MudText Typo="Typo.body1">[DROP DOWN]</MudText>
-				</MudTabPanel>
-			</MudTabs>
-		</MudPaper>
 
+				<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
+			</MudTabs>
+		@* </MudPaper> *@
 	</MudContainer>
+}
+
+@code {
+	private string? _remarks;
+
+	private void NavigateToHistory()
+	{
+		Navigation.NavigateTo("/projects/history");
+	}
+
 }
