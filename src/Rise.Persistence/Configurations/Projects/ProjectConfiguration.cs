@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Rise.Domain.Products;
 using Rise.Domain.Projects;
 
 namespace Rise.Persistence.Configurations.Projects;

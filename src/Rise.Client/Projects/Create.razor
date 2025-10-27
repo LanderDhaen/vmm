@@ -1,0 +1,29 @@
+@page "/projects/create"
+@using FluentValidation
+
+<MudCard>
+	<MudForm Model="@Model" ValidationDelay="0">
+		<MudCardContent>
+			<MudTextField @bind-Value="Model.Name"
+			              For="@(() => Model.Name)"
+			              Immediate="true"
+			              Label="Naam"/>
+
+			<MudTextField @bind-Value="Model.Code"
+			              For="@(() => Model.Code)"
+			              Immediate="true"
+			              Label="Code"/>
+
+			<MudTextField @bind-Value="Model.StartDate"
+			              For="@(() => Model.StartDate)"
+			              Immediate="true"
+			              Label="Startdatum"/>
+
+		</MudCardContent>
+	</MudForm>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CreateProjectAsync">Project toevoegen</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {}

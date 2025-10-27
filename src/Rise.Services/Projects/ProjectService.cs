@@ -17,8 +17,27 @@ namespace Rise.Services.Projects;
 /// </summary>
 /// <param name="dbContext"></param>
 /// <param name="sessionContextProvider"></param>
-public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
-	: IProjectService {
+public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider) : IProjectService {
+	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request, CancellationToken ctx = default) {
+		//Moet mss nog aangepast worden naar code
+		if (await dbContext.Projects.AnyAsync(x => x.Name == request.Name)) {
+			Log.Warning("Product with name '{Name}' already exists.", request.Name);
+			return Result.Conflict($"Product with name '{request.Name}'  already exists.");
+		}
+
+		var location = await dbContext.Locations.FirstAsync(ctx);
+
+		Project p = new(request.Name!, request.Code!, new DateRange(request.StartDate), location); { };
+
+		dbContext.Projects.Add(p);
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Created(new ProjectResponse.Create {
+			ProjectId = p.Id
+		});
+	}
+	
 	public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);

@@ -11,6 +11,12 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
+	
+	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request, CancellationToken ctx = default) {
+		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/projects", request, ctx);
+		Result<ProjectResponse.Create>? result = await response.Content.ReadFromJsonAsync<Result<ProjectResponse.Create>>(ctx);
+		return result!;
+	}
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
