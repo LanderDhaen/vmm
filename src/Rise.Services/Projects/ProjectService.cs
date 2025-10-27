@@ -44,8 +44,25 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-		
+
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
+
+    // Splits de filterparameter in naam en code
+    var filters = request.Filter?.Split(',');
+    if (filters != null && filters.Length == 2)
+    {
+        var nameFilter = filters[0];
+        var codeFilter = filters[1];
+
+        if (!string.IsNullOrWhiteSpace(nameFilter))
+        {
+            query = query.Where(p => p.Name.Contains(nameFilter));
+        }
+        if (!string.IsNullOrWhiteSpace(codeFilter))
+        {
+            query = query.Where(p => p.Code.Contains(codeFilter));
+        }
+    }
 
 		int totalCount = await query.CountAsync();
 
@@ -54,6 +71,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		} else {
 			query = query.OrderBy(p => p.Name);
 		}
+		
 			
 		List<ProjectDto.Index> projects = await query.AsNoTracking()
 			.Skip(request.Skip)

@@ -47,6 +47,9 @@ public static class QueryRequest {
 		///     Gets or sets a collection of key-value pairs representing additional filtering criteria
 		///     to further refine query results based on specified conditions.
 		/// </summary>
+		/// 
+		public string? Filter { get; set; } 
+		
 		public Dictionary<string, object?> Filters { get; set; } = new();
 		
 		/// <summary>
