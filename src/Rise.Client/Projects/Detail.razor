@@ -10,45 +10,61 @@
 }
 else
 {
-	<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-2 px-2">
-		<MudPaper Class="pa-4" Elevation="1">
-			@* TODO: buttongroup? *@
-			<MudButtonGroup Exclusive="true" Color="Color.Primary" Class="mb-3">
-				<MudButton>Informatie</MudButton>
-				<MudButton>Kaart</MudButton>
-				<MudButton>Meetstations</MudButton>
-				<MudButton>...</MudButton>
-			</MudButtonGroup>
-			<MudStack Spacing="2">
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Referentienummer</MudText>
-				<MudText Typo="Typo.body1" Class="font-weight-medium">@_project.Code</MudText>
+	<MudContainer Class="mt-2 px-2">
+		<MudPaper>
+			<MudTabs Rounded="true" Centered="true" Border="true">
+				<MudTabPanel Text="Informatie">
+					<MudGrid>
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Referentienummer</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">@_project.Code</MudText>
 
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Site</MudText>
-				<MudText Typo="Typo.body1" Class="font-weight-medium">@_project.Location.Name</MudText>
+						</MudItem>
 
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Stad</MudText>
-				<MudText Typo="Typo.body1" Class="font-weight-medium">
-					@_project.Location.Address.PostalCode, @_project.Location.Address.City
-				</MudText>
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Site</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">@_project.Location.Name</MudText>
 
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Provincie</MudText>
-				<MudText Typo="Typo.body1" Class="font-weight-medium">
-					@_project.Location.Address.AddressLine2
-				</MudText>
+						</MudItem>
+						
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Stad</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">@_project.Location.Address.City</MudText>
 
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Regio</MudText>
-				<MudText Typo="Typo.body1" Class="font-weight-medium">
-					Conductiviteitmeetnet West
-				</MudText>
+						</MudItem>
+						
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Provincie</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">TODO</MudText>
 
-				<MudText Typo="Typo.subtitle2" Color="Color.Secondary">Opmerkingen</MudText>
-				<MudTextField T="string"
-				              Lines="4"
-				              Variant="Variant.Outlined"
-				              Placeholder="Voeg opmerkingen toe..."
-				              ReadOnly="true"/>
-			</MudStack>
+						</MudItem>
+						
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Regio</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">TODO</MudText>
 
+						</MudItem>
+						
+						<MudItem xs="12">
+							<MudText Typo="Typo.subtitle2" Class="mb-1">Opmerkingen</MudText>
+							<MudText Typo="Typo.body2" Class="mb-1">...</MudText>
+
+						</MudItem>
+					</MudGrid>
+				</MudTabPanel>
+
+				<MudTabPanel Text="Kaart">
+					<MudText Typo="Typo.body1">[Kaartcomponent komt hier]</MudText>
+				</MudTabPanel>
+
+				<MudTabPanel Text="Meetstations">
+					<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
+				</MudTabPanel>
+				<MudTabPanel Text="...">
+					<MudText Typo="Typo.body1">[DROP DOWN]</MudText>
+				</MudTabPanel>
+			</MudTabs>
 		</MudPaper>
+
 	</MudContainer>
 }
