@@ -1,0 +1,61 @@
+@page "/stations"
+
+@using Rise.Client.Components
+@using Rise.Client.Stations
+@using Rise.Shared.Common
+@using Rise.Shared.Stations
+
+@inject StationService StationService
+
+<PageTitle>Stations</PageTitle>
+
+<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+    <MudDataGrid T="MeasurementStationDto.Index"
+                 ServerData="GetStationsAsync"
+                 RowsPerPage="10"
+                 Bordered="true"
+                 Striped="true"
+                 Hover="true"
+                 Dense="false"
+                 Elevation="0">
+        <ToolBarContent><ToolBar /></ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Code" Title="#"/>
+            <PropertyColumn Property="x => x.Status" Title="Status"/>
+            <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd"/>
+            <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd"/>
+            <PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
+            <PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")" Title="Coördinaten"/>
+            <PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres"/>
+            <PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente"/>
+            <PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
+        </Columns>
+
+        <PagerContent>
+            <Pagination T="MeasurementStationDto.Index"/>
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
+
+@code {
+    private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state)
+    {
+        var orderBy = state.SortDefinitions?.FirstOrDefault()?.SortBy ?? "Code";
+        var req = new QueryRequest.SkipTake
+        {
+            Skip = state.Page * state.PageSize,
+            Take = state.PageSize,
+            OrderBy = orderBy
+        };
+
+        var result = await StationService.GetIndexAsync(req);
+        var value = result.Value ?? new MeasurementStationResponse.Index();
+
+        return new GridData<MeasurementStationDto.Index>
+        {
+            Items = value.Stations,
+            TotalItems = value.TotalCount
+        };
+    }
+}

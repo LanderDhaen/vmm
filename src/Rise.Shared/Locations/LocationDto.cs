@@ -1,6 +1,6 @@
 using Rise.Shared.Locations;
 
-namespace Rise.Shared.Projects;
+namespace Rise.Shared.Locations;
 
 /// <summary>
 ///     Contains data transfer objects (DTOs) used for location-related operations.

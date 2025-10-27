@@ -9,6 +9,7 @@ using Rise.Persistence;
 using Rise.Persistence.Triggers;
 using Rise.Server.Identity;
 using Rise.Server.Processors;
+using Rise.Services.Stations;
 using Rise.Services;
 using Rise.Services.Identity;
 using Rise.Shared.Products;
@@ -50,6 +51,7 @@ try {
 		.AddScoped<ISessionContextProvider,
 			HttpContextSessionProvider>() // Provides the current user from the HttpContext to the session provider.
 		.AddApplicationServices() // You'll need to add your own services in this function call.
+		.AddScoped<IMeasurementStationService, MeasurementStationService>() // Registers Stations service for DI.
 		.AddAuthorization()
 		.AddFastEndpoints(o => {
 			o.IncludeAbstractValidators =

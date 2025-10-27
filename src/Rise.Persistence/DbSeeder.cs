@@ -1,9 +1,12 @@
+using System;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 
 namespace Rise.Persistence;
 
@@ -25,6 +28,7 @@ public class DbSeeder(
 		await ProductsAsync();
 		await LocationAsync();
 		await ProjectsAsync();
+		await StationsAsync(); 
 	}
 
 	private async Task RolesAsync() {
@@ -186,6 +190,35 @@ public class DbSeeder(
 
 
 		dbContext.Projects.AddRange(projects);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private async Task StationsAsync() {
+		if (dbContext.MeasurementStations.Any()) {
+			return;
+		}
+		
+		List<Location> locations = await dbContext.Locations.ToListAsync();
+		if (!locations.Any()) {
+			return;
+		}
+		
+		var station1 = new MeasurementStation {
+			Code = "STN-001",
+			Status = "Active",
+			InstalledAt = DateTime.UtcNow.AddMonths(-6),
+			LocationId = locations[0].Id
+		};
+
+		var station2 = new MeasurementStation {
+			Code = "STN-002",
+			Status = "Inactive",
+			InstalledAt = DateTime.UtcNow.AddYears(-1),
+			RemovedAt = DateTime.UtcNow.AddDays(-30),
+			LocationId = locations[Math.Min(1, locations.Count - 1)].Id
+		};
+
+		dbContext.MeasurementStations.AddRange(station1, station2);
 		await dbContext.SaveChangesAsync();
 	}
 }
