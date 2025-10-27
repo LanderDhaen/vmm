@@ -27,7 +27,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		var location = await dbContext.Locations.FirstAsync(ctx);
 
-		Project p = new(request.Name!, request.Code!, new DateRange(request.StartDate), location); { };
+		Project p = new(request.Name!, request.Code!, new DateRange(DateOnly.FromDateTime(request.StartDate)), location); { };
 
 		dbContext.Projects.Add(p);
 

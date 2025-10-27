@@ -7,7 +7,7 @@ public static partial class ProjectRequest {
 	public class Create {
 		public string Name { get; set; }
 		public string Code { get; set; }
-		public DateOnly StartDate { get; set; }
+		public DateTime StartDate { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
