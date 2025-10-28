@@ -5,58 +5,78 @@
 @if (_project is null)
 {
 	<MudContainer Class="d-flex justify-center align-center" Style="height:70vh;">
-		<MudProgressCircular Indeterminate="true" Size="Size.Small" Color="Color.Primary"/>
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
 	</MudContainer>
 }
 else
 {
-	<MudContainer>
-		<MudTabs Rounded="true" Border="true" Centered="true" Elevation="0" Class="mb-4">
-			<MudTabPanel Text="Informatie">
+	<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-2 pa-sm-4">
+		<MudPaper Elevation="1" Class="p-3 p-sm-5 bg-grey-lighten-5">
+			<MudTabs Border="false" Centered="true" Elevation="0" Class="mb-4">
+				<!-- INFO TAB -->
+				<MudTabPanel Text="Informatie">
+					<MudGrid Class="gap-3">
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
+							<MudPaper Class="p-2 bg-white shadow-xs">@_project.Code</MudPaper>
+						</MudItem>
 
-				<MudStack Spacing="3">
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
+							<MudPaper Class="p-2 bg-white shadow-xs">@_project.Location.Name</MudPaper>
+						</MudItem>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
-					<MudPaper Class="p-2 bg-white rounded">@_project.Code</MudPaper>
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
+							<MudPaper
+								Class="p-2 bg-white shadow-xs">@_project.Location.Address.City</MudPaper>
+						</MudItem>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
-					<MudPaper Class="p-2 bg-white rounded">@_project.Location.Name</MudPaper>
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
+							<MudPaper Class="p-2 bg-white shadow-xs">TODO</MudPaper>
+						</MudItem>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
-					<MudPaper Class="p-2 bg-white rounded">@_project.Location.Address.City</MudPaper>
+						<MudItem xs="12" sm="6">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
+							<MudPaper Class="p-2 bg-white shadow-xs">TODO</MudPaper>
+						</MudItem>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
-					<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
+						<MudItem xs="12">
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
+							<MudTextField
+								@bind-Value="_remarks"
+								FullWidth="true"
+								Lines="4"
+								Variant="Variant.Filled"
+								Class="bg-white "
+								Margin="Margin.Dense"
+							/>
+						</MudItem>
+					</MudGrid>
+				</MudTabPanel>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
-					<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
+				<!-- MAP TAB -->
+				<MudTabPanel Text="Kaart">
+					<MudPaper Class="p-2 p-sm-3 rounded-sm bg-white" Elevation="0">
+						<div style="width: 100%; height: 500px; border-radius: 4px; overflow: hidden;">
+							<RealTimeMap Parameters="_parameters" height="500px" width="100%"></RealTimeMap>
+						</div>
+						<MudText Typo="Typo.caption" Class="text-center mt-2 text-secondary">
+							@_project.Location.Coordinate.Y.ToString("F5") - @_project.Location.Coordinate.X.ToString("F5")
+						</MudText>
+					</MudPaper>
+				</MudTabPanel>
 
-					<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
-					<MudTextField
-						@bind-Value="_remarks"
-						FullWidth="true"
-						Lines="4"
-						Variant="Variant.Filled"
-						Style="background-color:white;"
-						Class="rounded"
-					/>
-				</MudStack>
+				<!-- 📊 MEETSTATIONS -->
+				<MudTabPanel Text="Meetstations">
+					<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
+				</MudTabPanel>
 
-			</MudTabPanel>
+				<!-- 🔙 HISTORY -->
+				<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
+			</MudTabs>
 
-			<MudTabPanel Text="Kaart">
-				<MudContainer>
-					<RealTimeMap Parameters="parameters" height="400px" width="100%"></RealTimeMap>
-					<MudText Typo="Typo.body1">@_project.Location.Coordinate.Y.ToString("F5") - @_project.Location.Coordinate.X.ToString("F5")</MudText>
-				</MudContainer>
-			</MudTabPanel>
-
-			<MudTabPanel Text="Meetstations">
-				<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
-			</MudTabPanel>
-
-			<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
-		</MudTabs>
-		
+		</MudPaper>
 	</MudContainer>
 }
