@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 
+using MudBlazor;
+
 using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects;
@@ -9,11 +11,17 @@ public partial class Create {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Create Model { get; } = new();
+	private ProjectRequest.Create.Validator validator = new ProjectRequest.Create.Validator();
+	MudForm form;
 
 	private async Task CreateProjectAsync() {
-		_result = await ProjectService.CreateAsync(Model);
-		if (_result.IsSuccess) {
-			NavigationManager.NavigateTo("/projects");
+		await form.Validate();
+
+		if (form.IsValid) {
+			_result = await ProjectService.CreateAsync(Model);
+			if (_result.IsSuccess) {
+				NavigationManager.NavigateTo("/projects");
+			}
 		}
 	}
 }

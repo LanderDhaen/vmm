@@ -7,7 +7,8 @@ public static partial class ProjectRequest {
 	public class Create {
 		public string Name { get; set; }
 		public string Code { get; set; }
-		public DateTime StartDate { get; set; }
+
+		public DateTime? StartDate { get; set; } = DateTime.Now;
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
@@ -15,6 +16,13 @@ public static partial class ProjectRequest {
 				RuleFor(x => x.Code).NotEmpty().MaximumLength(50);
 				RuleFor(x => x.StartDate).NotNull();
 			}
+			
+			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
+				var result = await ValidateAsync(ValidationContext<Create>.CreateWithOptions((Create)model, x => x.IncludeProperties(propertyName)));
+				if (result.IsValid)
+					return Array.Empty<string>();
+				return result.Errors.Select(e => e.ErrorMessage);
+			};
 		}
 	}
 }
