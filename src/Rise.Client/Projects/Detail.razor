@@ -12,7 +12,9 @@ else
 {
 	<MudContainer MaxWidth="MaxWidth.Medium">
 		<div>
-			<MudTabs Border="false" Centered="true">
+			@* TODO: achtergrond tab doorzichtig maken *@
+			@* TODO: iets anders dan tabs gebruiken? *@
+			<MudTabs Border="false" Centered="true" MinimumTabWidth="10px">
 				<!-- INFO TAB -->
 				<MudTabPanel Text="Info">
 					<MudStack>
@@ -45,7 +47,7 @@ else
 						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Adres 1</MudText>
 							<MudPaper
-								Class="p-2">@_project.Location.Address.AddressLine1  </MudPaper>
+								Class="p-2">@_project.Location.Address.AddressLine1 </MudPaper>
 						</MudItem>
 
 						<MudItem Class="m-2">
