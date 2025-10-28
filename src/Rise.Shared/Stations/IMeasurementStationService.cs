@@ -1,7 +1,6 @@
 using Rise.Shared.Common;   
-using Rise.Shared.Stations;
 
-namespace Rise.Services.Stations;
+namespace Rise.Shared.Stations;
 
 public interface IMeasurementStationService
 {
