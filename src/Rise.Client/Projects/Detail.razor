@@ -58,22 +58,37 @@ else
 
 				<!-- MAP TAB -->
 				<MudTabPanel Text="Kaart">
+					<MudContainer>
+						<MudStack Justify="Justify.Center">
+							<MudItem xs="12" sm="6">
+								<MudText Typo="Typo.subtitle2" Class="text-secondary">Breedtegraad</MudText>
+								<MudPaper
+									Class="p-2 bg-white shadow-xs"> @_project.Location.Coordinate.Y.ToString("F5")
+								</MudPaper>
+							</MudItem>
+
+							<MudItem xs="12" sm="6">
+								<MudText Typo="Typo.subtitle2" Class="text-secondary">Lengtegraad</MudText>
+								<MudPaper
+									Class="p-2 bg-white shadow-xs"> @_project.Location.Coordinate.X.ToString("F5")
+								</MudPaper>
+							</MudItem>
+						</MudStack>
+					</MudContainer>
+					
 					<MudPaper Class="p-2 p-sm-3 rounded-sm bg-white" Elevation="0">
 						<div style="width: 100%; height: 500px; border-radius: 4px; overflow: hidden;">
 							<RealTimeMap Parameters="_parameters" height="500px" width="100%"></RealTimeMap>
 						</div>
-						<MudText Typo="Typo.caption" Class="text-center mt-2 text-secondary">
-							@_project.Location.Coordinate.Y.ToString("F5") - @_project.Location.Coordinate.X.ToString("F5")
-						</MudText>
 					</MudPaper>
 				</MudTabPanel>
 
-				<!-- 📊 MEETSTATIONS -->
+				<!-- MEETSTATIONS -->
 				<MudTabPanel Text="Meetstations">
 					<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
 				</MudTabPanel>
 
-				<!-- 🔙 HISTORY -->
+				<!-- HISTORY -->
 				<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
 			</MudTabs>
 
