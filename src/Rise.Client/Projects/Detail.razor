@@ -36,28 +36,34 @@ else
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Start datum</MudText>
 							<MudPaper Class="p-2">@_project.DateRange.StartDate</MudPaper>
 						</MudItem>
-						
+
 						<MudItem>
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Eind datum</MudText>
 							<MudPaper Class="p-2">@_project.DateRange.EndDate</MudPaper>
 						</MudItem>
 
-						@* <MudItem> *@
-						@* 	<MudText Typo="Typo.subtitle2" Class="text-secondary">Adress</MudText> *@
-						@* 	<MudPaper *@
-						@* 		Class="p-2">@_project.Location.Address.AddressLine1 @_project.Location.Address.AddressLine2, @_project.Location.Address.PostalCode @_project.Location.Address.City @_project.Location.Address.CountryIso </MudPaper> *@
-						@* </MudItem> *@
-
 						<MudItem>
-							<MudText Typo="Typo.subtitle2" Class="text-secondary">Straat</MudText>
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Adres 1</MudText>
 							<MudPaper
-								Class="p-2">@_project.Location.Address.AddressLine1 @_project.Location.Address.AddressLine2 </MudPaper>
+								Class="p-2">@_project.Location.Address.AddressLine1  </MudPaper>
 						</MudItem>
 
 						<MudItem>
-							<MudText Typo="Typo.subtitle2" Class="text-secondary">Gemeente</MudText>
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Adres 2</MudText>
 							<MudPaper
-								Class="p-2">@_project.Location.Address.PostalCode @_project.Location.Address.City </MudPaper>
+								Class="p-2"> @_project.Location.Address.AddressLine2 </MudPaper>
+						</MudItem>
+
+						<MudItem>
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
+							<MudPaper
+								Class="p-2">@_project.Location.Address.City </MudPaper>
+						</MudItem>
+						
+						<MudItem>
+							<MudText Typo="Typo.subtitle2" Class="text-secondary">Postcode</MudText>
+							<MudPaper
+								Class="p-2">@_project.Location.Address.PostalCode</MudPaper>
 						</MudItem>
 
 						<MudItem>
