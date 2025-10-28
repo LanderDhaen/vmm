@@ -1,5 +1,6 @@
 using Rise.Shared.Common;
-using Rise.Shared.Locations; 
+using Rise.Shared.Locations;
+using Rise.Shared.Projects;
 
 namespace Rise.Shared.Stations;
 
@@ -16,8 +17,8 @@ public static class MeasurementStationDto
 		public DateTime? RemovedAt { get; set; }
 
 		public LocationDto.Index Location { get; set; } = default!;
-
-		public string? ProjectName { get; set; }
-		public string? ProjectCode { get; set; }
+		
+		public string ProjectName { get; set; }
+		public string ProjectCode { get; set; }
 	}
 }

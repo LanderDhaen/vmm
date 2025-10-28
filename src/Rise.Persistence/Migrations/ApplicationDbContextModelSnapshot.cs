@@ -383,16 +383,8 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("ProjectCode")
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<Guid?>("ProjectId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("char(36)");
-
-                    b.Property<string>("ProjectName")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -402,6 +394,8 @@ namespace Rise.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("MeasurementStations", (string)null);
                 });
@@ -570,6 +564,12 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Rise.Domain.Projects.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("Rise.Domain.Stations.ValueObjects.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationId")
@@ -595,6 +595,8 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
+
+                    b.Navigation("Project");
                 });
 #pragma warning restore 612, 618
         }

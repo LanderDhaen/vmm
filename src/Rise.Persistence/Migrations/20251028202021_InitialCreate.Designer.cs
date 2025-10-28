@@ -12,8 +12,8 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251027201313_AddMeasurementStation")]
-    partial class AddMeasurementStation
+    [Migration("20251028202021_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -380,46 +380,27 @@ namespace Rise.Persistence.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
-
-                    b.Property<DateTime?>("InstalledAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
 
                     b.Property<Guid>("LocationId")
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime?>("RemovedAt")
-                        .HasColumnType("datetime(6)");
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
-                        .IsUnique();
-
                     b.HasIndex("LocationId");
 
-                    b.ToTable("MeasurementStation", (string)null);
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("MeasurementStations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -583,10 +564,42 @@ namespace Rise.Persistence.Migrations
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Projects.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Rise.Domain.Stations.ValueObjects.Installation", "Installation", b1 =>
+                        {
+                            b1.Property<Guid>("MeasurementStationId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<DateTime>("InstalledAt")
+                                .HasColumnType("datetime(6)")
+                                .HasColumnName("InstalledAt");
+
+                            b1.Property<DateTime?>("RemovedAt")
+                                .HasColumnType("datetime(6)")
+                                .HasColumnName("RemovedAt");
+
+                            b1.HasKey("MeasurementStationId");
+
+                            b1.ToTable("MeasurementStations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeasurementStationId");
+                        });
+
+                    b.Navigation("Installation")
+                        .IsRequired();
+
                     b.Navigation("Location");
+
+                    b.Navigation("Project");
                 });
 #pragma warning restore 612, 618
         }

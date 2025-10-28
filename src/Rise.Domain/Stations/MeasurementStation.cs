@@ -1,5 +1,6 @@
 using Rise.Domain.Locations;                    
 using Rise.Domain.Stations.ValueObjects;
+using Rise.Domain.Projects;	
 
 namespace Rise.Domain.Stations;
 
@@ -10,11 +11,9 @@ public class MeasurementStation
 	public string Code { get; private set; } = default!;
 	public string Status { get; private set; } = default!;
 	
-	public Guid? ProjectId { get; private set; }
-	public string? ProjectName { get; private set; }
-	public string? ProjectCode { get; private set; }
 	
 	public Location Location { get; private set; } = default!;
+	public Project Project { get; private set; } = default!;
 	
 	public Installation Installation { get; private set; } = default!;
 
@@ -25,19 +24,15 @@ public class MeasurementStation
 		string status,
 		Location location,
 		Installation installation,
-		Guid? projectId = null,
-		string? projectName = null,
-		string? projectCode = null)
+		Project project
+		)
 	{
 		Code = code;
 		Status = status;
 
 		Location = location ?? throw new ArgumentNullException(nameof(location));
 		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
-
-		ProjectId = projectId;
-		ProjectName = projectName;
-		ProjectCode = projectCode;
+		Project = project ?? throw new ArgumentNullException(nameof(project));
 	}
 
 	public void UpdateStatus(string status) => Status = status;

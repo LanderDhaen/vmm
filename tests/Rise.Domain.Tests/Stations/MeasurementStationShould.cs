@@ -1,5 +1,6 @@
 using System;
 using Rise.Domain.Locations;
+using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
 using Shouldly;
@@ -9,6 +10,19 @@ namespace Rise.Domain.Tests.Stations;
 
 public class MeasurementStationShould
 {
+	
+	private static readonly Location DummyLocation = new(
+		"Aalst",
+		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+		new Coordinate(6.0, 7.0)
+	);
+
+	private static readonly DateRange DummyDateRange = new(
+		new DateOnly(2025, 1, 5),
+		new DateOnly(2025, 5, 10)
+	);
+
+	private static readonly Project dummyproject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
     private static Location MakeLocation(string name = "Test Water")
         => new Location(
             name,
@@ -27,14 +41,14 @@ public class MeasurementStationShould
             status: "Active",
             location: location,
             installation: new Installation(installed),
-            projectId: projectId);
+            project: dummyproject);
         
         station.Code.ShouldBe("STN-001");
         station.Status.ShouldBe("Active");
         station.Location.ShouldNotBeNull();
         station.Installation.InstalledAt.ShouldBe(installed);
         station.Installation.RemovedAt.ShouldBeNull();
-        station.ProjectId.ShouldBe(projectId);
+        station.Project.ShouldBe(dummyproject);
     }
 
     [Fact]
@@ -44,7 +58,10 @@ public class MeasurementStationShould
             code: "STN-001",
             status: "Active",
             location: MakeLocation(),
-            installation: new Installation(DateTime.UtcNow.AddDays(-30)));
+            installation: new Installation(DateTime.UtcNow.AddDays(-30)),
+            project: dummyproject
+            );	
+			
         
         station.UpdateStatus("Inactive");
         var removedAt = DateTime.UtcNow;
@@ -63,7 +80,9 @@ public class MeasurementStationShould
             code: "STN-100",
             status: "Active",
             location: originalLocation,
-            installation: new Installation(DateTime.UtcNow.AddDays(-5)));
+            installation: new Installation(DateTime.UtcNow.AddDays(-5)),
+            project: dummyproject
+            );
         
         station.Installation.RemovedAt.ShouldBeNull();
 

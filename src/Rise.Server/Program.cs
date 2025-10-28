@@ -71,7 +71,7 @@ try {
 		using (IServiceScope scope = app.Services.CreateScope()) {
 			ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			DbSeeder dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
-			// dbContext.Database.EnsureDeleted(); // Delete the database if it exists to clean it up if needed.
+			dbContext.Database.EnsureDeleted(); // Delete the database if it exists to clean it up if needed.
 
 			dbContext.Database
 				.Migrate(); // Creates the database if it doesn't exist and applies all migrations. See Readme.md for more info.

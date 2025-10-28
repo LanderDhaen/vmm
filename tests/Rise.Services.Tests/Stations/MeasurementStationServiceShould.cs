@@ -17,6 +17,19 @@ namespace Rise.Services.Tests.Stations
 {
     public class MeasurementStationServiceShould
     {
+	    
+	    private static readonly Location DummyLocation = new(
+		    "Aalst",
+		    new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+		    new Coordinate(6.0, 7.0)
+	    );
+
+	    private static readonly DateRange DummyDateRange = new(
+		    new DateOnly(2025, 1, 5),
+		    new DateOnly(2025, 5, 10)
+	    );
+
+	    private static readonly Project dummyproject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
         private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -56,9 +69,7 @@ namespace Rise.Services.Tests.Stations
                     status: i % 2 == 0 ? "Active" : "Inactive",
                     location: loc,
                     installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-                    projectId: projectId,
-                    projectName: project.Name,   
-                    projectCode: project.Code
+					project: dummyproject
                 );
 
                 db.MeasurementStations.Add(station);

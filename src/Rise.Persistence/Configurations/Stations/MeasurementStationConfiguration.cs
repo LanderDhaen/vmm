@@ -37,8 +37,8 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 
 			b.WithOwner();
 		});
-		
-		builder.Property(x => x.ProjectName).HasMaxLength(256);
-		builder.Property(x => x.ProjectCode).HasMaxLength(64);
+
+		builder.HasOne(x => x.Project);
+
 	}
 }
