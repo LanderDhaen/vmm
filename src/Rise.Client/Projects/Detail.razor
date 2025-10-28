@@ -47,7 +47,7 @@ else
 			<MudTabPanel Text="Kaart">
 				<MudContainer>
 					<RealTimeMap Parameters="parameters" height="400px" width="100%"></RealTimeMap>
-					<MudText Typo="Typo.body1">[Kaartcomponent komt hier]</MudText>
+					<MudText Typo="Typo.body1">@_project.Location.Coordinate.Y.ToString("F5") - @_project.Location.Coordinate.X.ToString("F5")</MudText>
 				</MudContainer>
 			</MudTabPanel>
 

@@ -13,22 +13,26 @@ public partial class Detail {
 	private ProjectDto.Detail? _project;
 	private string? _remarks;
 
+	private RealTimeMap.LoadParameters? parameters;
 
 	protected override async Task OnInitializedAsync() {
 		var result = await ProjectService.GetDetailAsync(ProjectId);
+
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
+
+			// Pas hier stel je de parameters in op basis van je projectlocatie
+			if (_project?.Location?.Coordinate is not null) {
+				parameters = new RealTimeMap.LoadParameters {
+					location = new RealTimeMap.Location {
+						latitude = _project.Location.Coordinate.Y, // meestal Y = lat
+						longitude = _project.Location.Coordinate.X // meestal X = lon
+					},
+					zoomLevel = 15
+				};
+			}
 		}
 	}
-
-	RealTimeMap.LoadParameters parameters = new RealTimeMap.LoadParameters() {
-		location = new RealTimeMap.Location() {
-			latitude = 50.94419365167052,
-			longitude = 4.044876626010708,
-		},
-		zoomLevel = 20
-	};
-
 
 	private void NavigateToHistory() {
 		Navigation.NavigateTo("/projects/history");
