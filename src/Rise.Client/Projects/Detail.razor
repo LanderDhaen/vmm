@@ -10,12 +10,12 @@
 }
 else
 {
-	<MudContainer MaxWidth="MaxWidth.Medium" Class="pa-2 pa-sm-4">
-		<MudPaper Elevation="1" Class="p-3 p-sm-5 bg-grey-lighten-5">
-			<MudTabs Border="false" Centered="true" Elevation="0" Class="mb-4">
+	<MudContainer MaxWidth="MaxWidth.Medium">
+		<MudPaper Elevation="1">
+			<MudTabs Border="false" Centered="true">
 				<!-- INFO TAB -->
 				<MudTabPanel Text="Informatie">
-					<MudGrid Class="gap-3">
+					<MudGrid Class="gap-3" Justify="Justify.Center">
 						<MudItem xs="12" sm="6">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
 							<MudPaper Class="p-2 bg-white shadow-xs">@_project.Code</MudPaper>
