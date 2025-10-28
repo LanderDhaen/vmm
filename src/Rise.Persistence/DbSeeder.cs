@@ -1,5 +1,4 @@
 using System;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,15 +6,16 @@ using Rise.Domain.Locations;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
+using Rise.Domain.Stations.ValueObjects; 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Rise.Persistence;
 
 /// <summary>
 ///     Seeds the database
 /// </summary>
-/// <param name="dbContext"></param>
-/// <param name="roleManager"></param>
-/// <param name="userManager"></param>
 public class DbSeeder(
     ApplicationDbContext dbContext,
     RoleManager<IdentityRole> roleManager,
@@ -36,9 +36,7 @@ public class DbSeeder(
     private async Task RolesAsync()
     {
         if (dbContext.Roles.Any())
-        {
             return;
-        }
 
         await roleManager.CreateAsync(new IdentityRole("Administrator"));
         await roleManager.CreateAsync(new IdentityRole("Secretary"));
@@ -48,9 +46,7 @@ public class DbSeeder(
     private async Task UsersAsync()
     {
         if (dbContext.Users.Any())
-        {
             return;
-        }
 
         await dbContext.Roles.ToListAsync();
 
@@ -106,13 +102,10 @@ public class DbSeeder(
         await dbContext.SaveChangesAsync();
     }
 
-
     private async Task ProductsAsync()
     {
         if (dbContext.Products.Any())
-        {
             return;
-        }
 
         dbContext.Products.AddRange(
             new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
@@ -133,19 +126,19 @@ public class DbSeeder(
     private async Task LocationAsync()
     {
         if (dbContext.Locations.Any())
-        {
             return;
-        }
 
-        List<Address> addresses = new() {
+        List<Address> addresses = new()
+        {
             new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
             new Address("", "", "Antwerpen", "2000"),
             new Address("Veldstraat 78", null, "Gent", "9000"),
             new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-            new Address(null,null, "Breda", "4811", "NL"),
-            };
+            new Address(null, null, "Breda", "4811", "NL"),
+        };
 
-        List<Coordinate> coordinates = new() {
+        List<Coordinate> coordinates = new()
+        {
             new Coordinate(4.35, 50.85),   // Brussel (Koningstraat 12)
             new Coordinate(4.40, 51.22),   // Antwerpen
             new Coordinate(3.73, 51.05),   // Gent
@@ -154,7 +147,8 @@ public class DbSeeder(
             new Coordinate(2.92, 51.22)    // Oostende
         };
 
-        List<Location> locations = new() {
+        List<Location> locations = new()
+        {
             new Location("Paleisgracht", addresses[0], coordinates[0]),
             new Location("Schelde", addresses[1], coordinates[1]),
             new Location("Watersportbaan", addresses[2], coordinates[2]),
@@ -163,29 +157,23 @@ public class DbSeeder(
             new Location("Zee", null, coordinates[5])
         };
 
-
         dbContext.Locations.AddRange(locations);
-
         await dbContext.SaveChangesAsync();
     }
 
     private async Task ProjectsAsync()
     {
         if (dbContext.Projects.Any())
-        {
             return;
-        }
 
         List<Technician> technicians = await dbContext.Technicians.ToListAsync();
-
         if (!technicians.Any())
-        {
             return;
-        }
 
         List<Location> locations = await dbContext.Locations.ToListAsync();
 
-        List<DateRange> dateRanges = new() {
+        List<DateRange> dateRanges = new()
+        {
             new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
             new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
             new DateRange(new DateOnly(2025, 3, 10), new DateOnly(2025, 9, 25)),
@@ -194,9 +182,8 @@ public class DbSeeder(
             new DateRange(new DateOnly(2025, 5, 12), null)
         };
 
-        Random rnd = new(123); // deterministic seed
-
-        List<Project> projects = new() {
+        List<Project> projects = new()
+        {
             new Project("Canal Cleanup", "CC2025", dateRanges[0], locations[0]),
             new Project("River Monitoring", "RM2025", dateRanges[1], locations[1]),
             new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], locations[2]),
@@ -211,44 +198,50 @@ public class DbSeeder(
 
     private async Task StationsAsync()
     {
-        if (dbContext.MeasurementStations.Any())
-        {
-            return;
-        }
-        
-        List<Location> locations = await dbContext.Locations.AsNoTracking().ToListAsync();
-        List<Project> projects  = await dbContext.Projects.AsNoTracking().ToListAsync();
+	    if (dbContext.MeasurementStations.Any())
+		    return;
+	    
+	    var locations = dbContext.Locations.Local.Any()
+		    ? dbContext.Locations.Local.ToList()
+		    : await dbContext.Locations.ToListAsync();
 
-        if (!locations.Any() || !projects.Any())
-        {
-            return;
-        }
-        
-        int l0 = 0;
-        int l1 = Math.Min(1, locations.Count - 1);
-        int p0 = 0;
-        int p1 = Math.Min(1, projects.Count - 1);
+	    var projects = dbContext.Projects.Local.Any()
+		    ? dbContext.Projects.Local.ToList()
+		    : await dbContext.Projects.ToListAsync();
 
-        var station1 = new MeasurementStation
-        {
-            Code        = "STN-001",
-            Status      = "Active",
-            InstalledAt = DateTime.UtcNow.AddMonths(-6),
-            LocationId  = locations[l0].Id,
-            ProjectId   = projects[p0].Id   
-        };
+	    if (!locations.Any() || !projects.Any())
+		    return;
 
-        var station2 = new MeasurementStation
-        {
-            Code        = "STN-002",
-            Status      = "Inactive",
-            InstalledAt = DateTime.UtcNow.AddYears(-1),
-            RemovedAt   = DateTime.UtcNow.AddDays(-30),
-            LocationId  = locations[l1].Id,
-            ProjectId   = projects[p1].Id   
-        };
+	    int l0 = 0;
+	    int l1 = Math.Min(1, locations.Count - 1);
+	    int p0 = 0;
+	    int p1 = Math.Min(1, projects.Count - 1);
 
-        dbContext.MeasurementStations.AddRange(station1, station2);
-        await dbContext.SaveChangesAsync();
+	    var station1 = new MeasurementStation(
+		    code: "STN-001",
+		    status: "Active",
+		    location: locations[l0],                         
+		    installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
+		    projectId: projects[p0].Id,
+		    projectName: projects[p0].Name,
+		    projectCode: projects[p0].Code
+	    );
+
+	    var station2 = new MeasurementStation(
+		    code: "STN-002",
+		    status: "Inactive",
+		    location: locations[l1],                         
+		    installation: new Installation(
+			    installedAt: DateTime.UtcNow.AddYears(-1),
+			    removedAt:   DateTime.UtcNow.AddDays(-30)
+		    ),
+		    projectId: projects[p1].Id,
+		    projectName: projects[p1].Name,
+		    projectCode: projects[p1].Code
+	    );
+
+	    dbContext.MeasurementStations.AddRange(station1, station2);
+	    await dbContext.SaveChangesAsync();
     }
+
 }

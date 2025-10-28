@@ -1,32 +1,44 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Rise.Domain.Stations;
+using Rise.Domain.Stations.ValueObjects;
 
-namespace Rise.Persistence.Configurations.Stations
+namespace Rise.Persistence.Configurations.Stations;
+
+public class MeasurementStationConfiguration : IEntityTypeConfiguration<MeasurementStation>
 {
-	internal class MeasurementStationConfiguration : EntityConfiguration<MeasurementStation>
+	public void Configure(EntityTypeBuilder<MeasurementStation> builder)
 	{
-		public override void Configure(EntityTypeBuilder<MeasurementStation> builder)
+		builder.ToTable("MeasurementStations");
+
+		builder.HasKey(x => x.Id);
+
+		builder.Property(x => x.Code)
+			.IsRequired()
+			.HasMaxLength(64);
+
+		builder.Property(x => x.Status)
+			.IsRequired()
+			.HasMaxLength(32);
+		
+		builder.HasOne(x => x.Location)
+			.WithMany()
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Restrict);
+		
+		builder.OwnsOne(x => x.Installation, b =>
 		{
-			base.Configure(builder);
+			b.Property(p => p.InstalledAt)
+				.HasColumnName("InstalledAt")
+				.IsRequired();
 
-			builder.ToTable("MeasurementStations");
+			b.Property(p => p.RemovedAt)
+				.HasColumnName("RemovedAt");
 
-			builder.Property(x => x.Code).IsRequired().HasMaxLength(100);
-			builder.Property(x => x.Status).IsRequired().HasMaxLength(100);
-
-			builder.HasOne(s => s.Location)
-				.WithMany()
-				.HasForeignKey(s => s.LocationId)
-				.OnDelete(DeleteBehavior.Restrict);
-			
-			builder.HasOne(s => s.Project)
-				.WithMany()                 
-				.HasForeignKey(s => s.ProjectId)
-				.IsRequired()
-				.OnDelete(DeleteBehavior.Restrict);
-
-			builder.HasIndex(x => x.Code).IsUnique();
-		}
+			b.WithOwner();
+		});
+		
+		builder.Property(x => x.ProjectName).HasMaxLength(256);
+		builder.Property(x => x.ProjectCode).HasMaxLength(64);
 	}
 }

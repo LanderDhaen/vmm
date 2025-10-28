@@ -5,35 +5,37 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 using Rise.Domain.Locations;
-using Rise.Domain.Projects;     
+using Rise.Domain.Projects;
 using Rise.Domain.Stations;
+using Rise.Domain.Stations.ValueObjects; 
 using Rise.Persistence;
 using Rise.Services.Stations;
-using Rise.Shared.Common;       
-using Rise.Shared.Stations;     
+using Rise.Shared.Common;
+using Rise.Shared.Stations;
 
 namespace Rise.Services.Tests.Stations
 {
     public class MeasurementStationServiceShould
     {
-        private static ApplicationDbContext CreateDbContext(out Guid projectId)
+        private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             var context = new ApplicationDbContext(options);
-            
-            var loc = new Location(
+
+            location = new Location(
                 "TestLoc",
                 new Address("Line1", "Line2", "City", "1234"),
                 new Coordinate(4.35, 50.85));
 
-            context.Locations.Add(loc);
+            context.Locations.Add(location);
             context.SaveChanges();
-            
+
             var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-            var project   = new Project("Test Project", "TP2025", dateRange, loc);
+            project = new Project("Test Project", "TP2025", dateRange, location);
+
             context.Projects.Add(project);
             context.SaveChanges();
 
@@ -44,34 +46,35 @@ namespace Rise.Services.Tests.Stations
         [Fact]
         public async Task GetIndexAsync_ShouldReturnPagedResults()
         {
-            var db = CreateDbContext(out var projectId);
+            var db = CreateDbContext(out var projectId, out var project, out var loc);
             var service = new MeasurementStationService(db);
-
-            var locId = db.Locations.First().Id;
             
             for (int i = 0; i < 5; i++)
             {
-                db.MeasurementStations.Add(new MeasurementStation
-                {
-                    Code        = $"STN-{i}",
-                    Status      = i % 2 == 0 ? "Active" : "Inactive",
-                    LocationId  = locId,
-                    ProjectId   = projectId,                       
-                    InstalledAt = DateTime.UtcNow.AddDays(-i)
-                });
+                var station = new MeasurementStation(
+                    code: $"STN-{i}",
+                    status: i % 2 == 0 ? "Active" : "Inactive",
+                    location: loc,
+                    installation: new Installation(DateTime.UtcNow.AddDays(-i)),
+                    projectId: projectId,
+                    projectName: project.Name,   
+                    projectCode: project.Code
+                );
+
+                db.MeasurementStations.Add(station);
             }
 
             await db.SaveChangesAsync();
 
             var request = new QueryRequest.SkipTake
             {
-                Skip    = 0,
-                Take    = 3,
+                Skip = 0,
+                Take = 3,
                 OrderBy = "Code"
             };
-
+            
             var result = await service.GetIndexAsync(request);
-
+            
             Assert.True(result.IsSuccess);
             Assert.NotNull(result.Value);
 
@@ -83,6 +86,7 @@ namespace Rise.Services.Tests.Stations
             Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
             
             Assert.All(payload.Stations, s => Assert.Equal("Test Project", s.ProjectName));
+            Assert.All(payload.Stations, s => Assert.Equal("TP2025", s.ProjectCode));
         }
     }
 }

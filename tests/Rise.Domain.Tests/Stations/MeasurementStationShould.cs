@@ -1,71 +1,76 @@
 using System;
+using Rise.Domain.Locations;
 using Rise.Domain.Stations;
+using Rise.Domain.Stations.ValueObjects;
 using Shouldly;
 using Xunit;
 
-namespace Rise.Domain.Tests.Stations
+namespace Rise.Domain.Tests.Stations;
+
+public class MeasurementStationShould
 {
-    public class MeasurementStationShould
+    private static Location MakeLocation(string name = "Test Water")
+        => new Location(
+            name,
+            new Address("Main St 1", "Bus 1", "Brussels", "1000"),
+            new Coordinate(4.35, 50.85));
+
+    [Fact]
+    public void BeCreated()
     {
-        [Fact]
-        public void BeCreated()
-        {
-            var locationId = Guid.NewGuid();
-            var projectId  = Guid.NewGuid();
+        var location  = MakeLocation();
+        var projectId = Guid.NewGuid();
+        var installed = DateTime.UtcNow.AddDays(-10);
+        
+        var station = new MeasurementStation(
+            code: "STN-001",
+            status: "Active",
+            location: location,
+            installation: new Installation(installed),
+            projectId: projectId);
+        
+        station.Code.ShouldBe("STN-001");
+        station.Status.ShouldBe("Active");
+        station.Location.ShouldNotBeNull();
+        station.Installation.InstalledAt.ShouldBe(installed);
+        station.Installation.RemovedAt.ShouldBeNull();
+        station.ProjectId.ShouldBe(projectId);
+    }
 
-            var station = new MeasurementStation
-            {
-                Code        = "STN-001",
-                Status      = "Active",
-                InstalledAt = DateTime.UtcNow.AddDays(-10),
-                RemovedAt   = null,
-                LocationId  = locationId,
-                ProjectId   = projectId   
-            };
+    [Fact]
+    public void AllowUpdatingStatusAndRemovalDate()
+    {
+        var station = new MeasurementStation(
+            code: "STN-001",
+            status: "Active",
+            location: MakeLocation(),
+            installation: new Installation(DateTime.UtcNow.AddDays(-30)));
+        
+        station.UpdateStatus("Inactive");
+        var removedAt = DateTime.UtcNow;
+        station.UpdateInstallation(new Installation(station.Installation.InstalledAt, removedAt));
+        
+        station.Status.ShouldBe("Inactive");
+        station.Installation.RemovedAt.ShouldNotBeNull();
+        station.Installation.RemovedAt!.Value.ShouldBe(removedAt, TimeSpan.FromSeconds(1));
+    }
 
-            station.Code.ShouldBe("STN-001");
-            station.Status.ShouldBe("Active");
-            station.InstalledAt.ShouldNotBeNull();
-            station.RemovedAt.ShouldBeNull();
-            station.LocationId.ShouldBe(locationId);
-            station.ProjectId.ShouldBe(projectId);
-        }
+    [Fact]
+    public void AllowNullRemovedAt_AndMoveLocation()
+    {
+        var originalLocation = MakeLocation("Old Place");
+        var station = new MeasurementStation(
+            code: "STN-100",
+            status: "Active",
+            location: originalLocation,
+            installation: new Installation(DateTime.UtcNow.AddDays(-5)));
+        
+        station.Installation.RemovedAt.ShouldBeNull();
 
-        [Fact]
-        public void AllowUpdatingBasicFields()
-        {
-            var station = new MeasurementStation
-            {
-                Code       = "STN-001",
-                Status     = "Active",
-                LocationId = Guid.NewGuid(),
-                ProjectId  = Guid.NewGuid() 
-            };
-
-            station.Code      = "STN-002";
-            station.Status    = "Inactive";
-            station.RemovedAt = DateTime.UtcNow;
-
-            station.Code.ShouldBe("STN-002");
-            station.Status.ShouldBe("Inactive");
-            station.RemovedAt.ShouldNotBeNull();
-        }
-
-        [Fact]
-        public void AllowOptionalDates()
-        {
-            var station = new MeasurementStation
-            {
-                Code        = "STN-100",
-                Status      = "Active",
-                InstalledAt = null,
-                RemovedAt   = null,
-                LocationId  = Guid.NewGuid(),
-                ProjectId   = Guid.NewGuid() 
-            };
-
-            station.InstalledAt.ShouldBeNull();
-            station.RemovedAt.ShouldBeNull();
-        }
+        var newLocation = MakeLocation("New Place");
+        station.MoveTo(newLocation);
+        
+        station.Location.ShouldBe(newLocation);
+        station.Installation.RemovedAt.ShouldBeNull();
     }
 }

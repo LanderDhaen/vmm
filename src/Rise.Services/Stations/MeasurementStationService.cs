@@ -1,7 +1,9 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.Stations;
+using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
@@ -18,10 +20,21 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
         IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable();
 
         int totalCount = await query.CountAsync(ctx);
-
+        
         if (!string.IsNullOrWhiteSpace(request.OrderBy))
         {
-            query = query.OrderBy(s => EF.Property<object>(s, request.OrderBy));
+            if (request.OrderBy == nameof(MeasurementStationDto.Index.InstalledAt))
+            {
+                query = query.OrderBy(s => s.Installation.InstalledAt);
+            }
+            else if (request.OrderBy == nameof(MeasurementStationDto.Index.RemovedAt))
+            {
+                query = query.OrderBy(s => s.Installation.RemovedAt);
+            }
+            else
+            {
+                query = query.OrderBy(s => EF.Property<object>(s, request.OrderBy));
+            }
         }
         else
         {
@@ -32,26 +45,27 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             .AsNoTracking()
             .Skip(request.Skip)
             .Take(request.Take);
-
-        List<MeasurementStationDto.Index> stations = await page
-            .Select(s => new MeasurementStationDto.Index
+        
+        List<MeasurementStationDto.Index> stations = await Queryable
+            .Select(page, s => new MeasurementStationDto.Index
             {
-                Id = s.Id,
-                Code = s.Code,
-                Status = s.Status,
-                InstalledAt = s.InstalledAt,
-                RemovedAt = s.RemovedAt,
+                Id         = s.Id,
+                Code       = s.Code,
+                Status     = s.Status,
+                InstalledAt= s.Installation.InstalledAt,
+                RemovedAt  = s.Installation.RemovedAt,
+
                 Location = new LocationDto.Index
                 {
-                    Id = s.Location.Id,
+                    Id   = s.Location.Id,
                     Name = s.Location.Name,
                     Address = new AddressDto.Index
                     {
                         AddressLine1 = s.Location.Address.Addressline1,
                         AddressLine2 = s.Location.Address.Addressline2,
-                        City        = s.Location.Address.City,
-                        PostalCode  = s.Location.Address.PostalCode,
-                        CountryIso  = s.Location.Address.CountryIso,
+                        City         = s.Location.Address.City,
+                        PostalCode   = s.Location.Address.PostalCode,
+                        CountryIso   = s.Location.Address.CountryIso,
                     },
                     Coordinate = new CoordinateDto.Index
                     {
@@ -60,50 +74,69 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
                     }
                 },
                 
-                ProjectId   = s.ProjectId,
-                ProjectName = s.Project.Name,
-                ProjectCode = s.Project.Code,
+                ProjectName = s.ProjectName,
+                ProjectCode = s.ProjectCode,
             })
             .ToListAsync(ctx);
 
         return Result.Success(new MeasurementStationResponse.Index
         {
-            Stations = stations,
+            Stations   = stations,
             TotalCount = totalCount
         });
     }
-	
+
     public async Task<Result<Guid>> CreateAsync(CreateMeasurementStationRequest request, CancellationToken ct = default)
     {
-        var entity = new MeasurementStation
-        {
-            Code = request.Code,
-            Status = request.Status,
-            InstalledAt = request.InstalledAt,
-            LocationId = request.LocationId,
-            ProjectId = request.ProjectId, // NEW
-        };
+        var location = await dbContext.Set<Location>()
+            .SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
 
-        dbContext.MeasurementStations.Add(entity);
+        if (location is null)
+            return Result.NotFound();
+        
+        var installedAt = request.InstalledAt ?? DateTime.UtcNow;
+
+        var station = new MeasurementStation(
+            code: request.Code,
+            status: request.Status,
+            location: location,
+            installation: new Installation(installedAt),
+            projectId: request.ProjectId,
+            projectName: null,
+            projectCode: null
+        );
+
+        dbContext.MeasurementStations.Add(station);
         await dbContext.SaveChangesAsync(ct);
 
-        return Result.Success(entity.Id);
+        return Result.Success(station.Id);
     }
-	
+
     public async Task<Result> UpdateAsync(Guid id, UpdateMeasurementStationRequest request, CancellationToken ct = default)
     {
-        var entity = await dbContext.MeasurementStations
-            .FirstOrDefaultAsync(s => s.Id == id, ct);
+        var station = await dbContext.MeasurementStations
+            .Include(s => s.Location)
+            .SingleOrDefaultAsync(s => s.Id == id, ct);
 
-        if (entity == null)
+        if (station is null)
             return Result.NotFound();
+        
+        station.UpdateStatus(request.Status);
+        
+        var installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
+        station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));
+        
+        if (station.Location.Id != request.LocationId)
+        {
+            var newLocation = await dbContext.Set<Location>()
+                .SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
 
-        entity.Code = request.Code;
-        entity.Status = request.Status;
-        entity.InstalledAt = request.InstalledAt;
-        entity.RemovedAt = request.RemovedAt;
-        entity.LocationId = request.LocationId;
-        entity.ProjectId = request.ProjectId; 
+            if (newLocation is null)
+                return Result.NotFound();
+
+            station.MoveTo(newLocation);
+        }
+        
 
         await dbContext.SaveChangesAsync(ct);
         return Result.Success();
