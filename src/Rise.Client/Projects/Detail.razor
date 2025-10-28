@@ -11,84 +11,83 @@
 else
 {
 	<MudContainer MaxWidth="MaxWidth.Medium">
-		<MudPaper Elevation="1" Class="p-4">
+		<div>
 			<MudTabs Border="false" Centered="true">
 				<!-- INFO TAB -->
 				<MudTabPanel Text="Info">
 					<MudStack>
 						@* TODO: mudtextfield ipv mudpaper *@
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
 							<MudPaper Class="p-2">@_project.Code</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Name</MudText>
 							<MudPaper Class="p-2">@_project.Name</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
 							<MudPaper Class="p-2">@_project.Location.Name</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Start datum</MudText>
 							<MudPaper Class="p-2">@_project.DateRange.StartDate</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Eind datum</MudText>
 							<MudPaper Class="p-2">@_project.DateRange.EndDate</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Adres 1</MudText>
 							<MudPaper
 								Class="p-2">@_project.Location.Address.AddressLine1  </MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Adres 2</MudText>
 							<MudPaper
 								Class="p-2"> @_project.Location.Address.AddressLine2 </MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
 							<MudPaper
 								Class="p-2">@_project.Location.Address.City </MudPaper>
 						</MudItem>
-						
-						<MudItem>
+
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Postcode</MudText>
 							<MudPaper
 								Class="p-2">@_project.Location.Address.PostalCode</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Land</MudText>
 							<MudPaper
 								Class="p-2">@_project.Location.Address.CountryIso </MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
 							<MudPaper Class="p-2">TODO</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
-							<MudPaper Class="p-2 bg-white shadow-xs">TODO</MudPaper>
+							<MudPaper Class="p-2">TODO</MudPaper>
 						</MudItem>
 
-						<MudItem>
+						<MudItem Class="m-2">
 							<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
 							<MudTextField
 								@bind-Value="_remarks"
 								FullWidth="true"
-								Lines="4"
-								Variant="Variant.Filled"/>
+								Lines="4"/>
 						</MudItem>
 					</MudStack>
 				</MudTabPanel>
@@ -131,6 +130,6 @@ else
 				<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
 			</MudTabs>
 
-		</MudPaper>
+		</div>
 	</MudContainer>
 }
