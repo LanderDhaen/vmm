@@ -14,7 +14,7 @@ public static partial class ProjectRequest {
 			public Validator() {
 				RuleFor(x => x.Name).NotEmpty().MaximumLength(250);
 				RuleFor(x => x.Code).NotEmpty().MaximumLength(50);
-				RuleFor(x => x.StartDate).NotNull();
+				RuleFor(x => x.StartDate).NotNull().WithMessage("Startdatum mag niet leeg zijn!");
 			}
 			
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {

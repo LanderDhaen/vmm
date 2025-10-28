@@ -5,7 +5,7 @@
 		<MudCardContent>
 			<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Immediate="true" Label="Naam"/>
 			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Immediate="true" Label="Code"/>
-			<MudDatePicker @bind-Value="Model.StartDate" For="@(() => Model.StartDate)" Immediate="true" Label="Startdatum"/>
+			<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy" Label="Startdatum"/>
 
 		</MudCardContent>
 	</MudForm>
