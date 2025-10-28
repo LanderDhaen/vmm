@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Components;
+using LeafletForBlazor;
 
-using MudBlazor;
+using Microsoft.AspNetCore.Components;
 
 using Rise.Shared.Projects;
 
@@ -11,6 +11,8 @@ public partial class Detail {
 	[Inject] public required IProjectService ProjectService { get; set; }
 
 	private ProjectDto.Detail? _project;
+	private string? _remarks;
+
 
 	protected override async Task OnInitializedAsync() {
 		var result = await ProjectService.GetDetailAsync(ProjectId);
@@ -18,11 +20,17 @@ public partial class Detail {
 			_project = result.Value.Project;
 		}
 	}
-	
-	private string? _remarks;
 
-	private void NavigateToHistory()
-	{
+	RealTimeMap.LoadParameters parameters = new RealTimeMap.LoadParameters() {
+		location = new RealTimeMap.Location() {
+			latitude = 50,
+			longitude = 4,
+		},
+		zoomLevel = 10
+	};
+
+
+	private void NavigateToHistory() {
 		Navigation.NavigateTo("/projects/history");
 	}
 }

@@ -1,5 +1,4 @@
 @page "/projects/{ProjectId:guid}"
-@using Rise.Shared.Projects
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -11,50 +10,53 @@
 }
 else
 {
-	<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4" >
-			<MudTabs Rounded="true" Border="true" Centered="true" Elevation="0" Class="mb-4">
-				<MudTabPanel Text="Informatie">
+	<MudContainer>
+		<MudTabs Rounded="true" Border="true" Centered="true" Elevation="0" Class="mb-4">
+			<MudTabPanel Text="Informatie">
 
-					<MudStack Spacing="3">
+				<MudStack Spacing="3">
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
-						<MudPaper Class="p-2 bg-white rounded">@_project.Code</MudPaper>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Referentienummer</MudText>
+					<MudPaper Class="p-2 bg-white rounded">@_project.Code</MudPaper>
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
-						<MudPaper Class="p-2 bg-white rounded">@_project.Location.Name</MudPaper>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Site</MudText>
+					<MudPaper Class="p-2 bg-white rounded">@_project.Location.Name</MudPaper>
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
-						<MudPaper Class="p-2 bg-white rounded">@_project.Location.Address.City</MudPaper>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Stad</MudText>
+					<MudPaper Class="p-2 bg-white rounded">@_project.Location.Address.City</MudPaper>
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
-						<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Provincie</MudText>
+					<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
-						<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Regio</MudText>
+					<MudPaper Class="p-2 bg-white rounded">TODO</MudPaper>
 
-						<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
-						<MudTextField
-							@bind-Value="_remarks"
-							FullWidth="true"
-							Lines="4"
-							Variant="Variant.Filled"
-							Style="background-color:white;"
-							Class="rounded"
-						/>
-					</MudStack>
+					<MudText Typo="Typo.subtitle2" Class="text-secondary">Opmerkingen</MudText>
+					<MudTextField
+						@bind-Value="_remarks"
+						FullWidth="true"
+						Lines="4"
+						Variant="Variant.Filled"
+						Style="background-color:white;"
+						Class="rounded"
+					/>
+				</MudStack>
 
-				</MudTabPanel>
+			</MudTabPanel>
 
-				<MudTabPanel Text="Kaart">
+			<MudTabPanel Text="Kaart">
+				<MudContainer>
+					<RealTimeMap Parameters="parameters" height="400px" width="100%"></RealTimeMap>
 					<MudText Typo="Typo.body1">[Kaartcomponent komt hier]</MudText>
-				</MudTabPanel>
+				</MudContainer>
+			</MudTabPanel>
 
-				<MudTabPanel Text="Meetstations">
-					<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
-				</MudTabPanel>
+			<MudTabPanel Text="Meetstations">
+				<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
+			</MudTabPanel>
 
-				<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
-			</MudTabs>
-		@* </MudPaper> *@
+			<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
+		</MudTabs>
+		
 	</MudContainer>
 }
