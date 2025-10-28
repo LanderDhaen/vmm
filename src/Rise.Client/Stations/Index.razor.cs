@@ -12,24 +12,21 @@ public partial class Index
 	[Inject] public required StationService StationService { get; set; }
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
-		GridState<MeasurementStationDto.Index> state)
-	{
-		var orderBy = state.SortDefinitions?.FirstOrDefault()?.SortBy ?? "Code";
+		GridState<MeasurementStationDto.Index> state) {
 
-		var req = new QueryRequest.SkipTake
-		{
+		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = orderBy
+			OrderBy = "Id"
 		};
 
-		var result = await StationService.GetIndexAsync(req);
-		var value = result.Value ?? new MeasurementStationResponse.Index();
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+		
 
 		return new GridData<MeasurementStationDto.Index>
 		{
-			Items = value.Stations,
-			TotalItems = value.TotalCount
+			TotalItems = result.Value.TotalCount,
+			Items = result.Value.Stations,
 		};
 	}
 }

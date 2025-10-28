@@ -82,7 +82,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
         });
     }
 
-    public async Task<Result<Guid>> CreateAsync(CreateMeasurementStationRequest request, CancellationToken ct = default)
+    public async Task<Result<Guid>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ct = default)
     {
         var location = await dbContext.Set<Location>()
             .SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
@@ -110,7 +110,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
         return Result.Success(station.Id);
     }
 
-    public async Task<Result> UpdateAsync(Guid id, UpdateMeasurementStationRequest request, CancellationToken ct = default)
+    public async Task<Result> UpdateAsync(Guid id, MeasurementStationRequest.Edit request, CancellationToken ct = default)
     {
         var station = await dbContext.MeasurementStations
             .Include(s => s.Location)

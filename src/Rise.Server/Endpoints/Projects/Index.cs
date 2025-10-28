@@ -17,7 +17,6 @@ public class Index(IProjectService projectService) : Endpoint<QueryRequest.SkipT
 		AllowAnonymous();
 	}
 
-	public override Task<Result<ProjectResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct) {
-		return projectService.GetIndexAsync(req, ct);
-	}
+	public override Task<Result<ProjectResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct)
+		=> projectService.GetIndexAsync(req, ct);
 }
