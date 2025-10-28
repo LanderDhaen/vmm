@@ -43,13 +43,13 @@
 	</MudDataGrid>
 </MudPaper>
 @code{
-	private List<ProjectDto.Index>projects;
+	private List<ProjectDto.Index>projects= new List<ProjectDto.Index>();
 	    private readonly HttpClient httpClient = new HttpClient();
     private string searchTerm = "";
-    public MudDataGrid<ProjectDto.Index> _projectsDataGrid = null;
+    public MudDataGrid<ProjectDto.Index> _projectsDataGrid = new();
     protected override async Task OnInitializedAsync()
     {
-        projects = await httpClient.GetFromJsonAsync<List<ProjectDto.Index>>("http://localhost:5001/projectData.json") ?? new List<ProjectDto.Index>();
+        projects = await httpClient.GetFromJsonAsync<List<ProjectDto.Index>>("http://localhost:5001/projects") ?? new List<ProjectDto.Index>();
     }
 
     private string? _searchString
@@ -62,29 +62,39 @@
         }
     }
 
-    private async Task<GridData<ProjectDto.Index>> _loadProjectsData(GridState<ProjectDto.Index> gridState)
+private async Task<GridData<ProjectDto.Index>> _loadProjectsData(GridState<ProjectDto.Index> gridState)
+{
+    // Genereer filterfuncties op basis van de filterdefinities in gridState
+    var filterFunctions = gridState.FilterDefinitions.Select(x => x.GenerateFilterFunction());
+    
+    // Filter de projecten op basis van de filterfuncties en een optionele zoekstring
+    var filteredData = projects.Where(x =>  filterFunctions.All(f => f(x))
+         && (string.IsNullOrWhiteSpace(_searchString) || System.Text.Json.JsonSerializer.Serialize(x).Contains(_searchString.Trim(), StringComparison.OrdinalIgnoreCase)));
+
+    // Bepaal de kolom en richting voor sorteren
+    var sortColumn = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().SortBy : null;
+    bool? sortDirectionDescending = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().Descending : null;
+
+    // Pas de sortering toe op de gefilterde gegevens
+    if (sortColumn != null)
     {
-        var filterFunctions = gridState.FilterDefinitions.Select(x => x.GenerateFilterFunction());
-        var filteredData = projects.Where(x =>  filterFunctions.All(f => f(x))
-             && (string.IsNullOrWhiteSpace(_searchString) || System.Text.Json.JsonSerializer.Serialize(x).Contains(_searchString.Trim(), StringComparison.OrdinalIgnoreCase)));
+        filteredData = sortDirectionDescending.HasValue && sortDirectionDescending.Value
+            ? filteredData.OrderByDescending(x => x.GetType().GetProperty(sortColumn)?.GetValue(x, null))
+            : filteredData.OrderBy(x => x.GetType().GetProperty(sortColumn)?.GetValue(x, null));
+    }
 
-        var sortColumn = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().SortBy : null;
-        bool? sortDirectionDescending = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().Descending : null;
-        Console.WriteLine($"Sorting by {sortColumn} {(sortDirectionDescending.HasValue ? (sortDirectionDescending.Value ? "descending" : "ascending") : "not sorted")}");
+    // Maak een GridData object aan met de gefilterde en gesorteerde resultaten
+    GridData<ProjectDto.Index> data = new()
+    {
+        Items = filteredData.Skip(gridState.Page * gridState.PageSize).Take(gridState.PageSize).ToList(),
+        TotalItems = filteredData.Count()
+    };
 
-        var filterColumn = gridState.FilterDefinitions.Count > 0 ? gridState.FilterDefinitions.First().Column.PropertyName : null;
-        var Operator = gridState.FilterDefinitions.Count > 0 ? gridState.FilterDefinitions.First().Operator.ToString() : null;
-        var filterValue = gridState.FilterDefinitions.Count > 0 ? gridState.FilterDefinitions.First().Value : null;
-        Console.WriteLine($"Filtering by {filterColumn} {Operator} {filterValue}");
+    // Simuleer een asynchrone vertraging
+    await Task.Delay(500);
 
-        GridData<ProjectDto.Index> data = new()
-        {
-            Items = filteredData.OrderBySortDefinitions(gridState.SortDefinitions).Skip(gridState.Page * gridState.PageSize).Take(gridState.PageSize).ToList(),
-            TotalItems = filteredData.Count()
-        };
+    return data;
+}
 
-        await Task.Delay(500);
-
-        return data;
-    }    
+  
 }
