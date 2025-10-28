@@ -65,6 +65,6 @@ public partial class Detail {
 	}
 
 	private void NavigateToHistory() {
-		Navigation.NavigateTo("/projects/history");
+		Navigation.NavigateTo($"/projects/{ProjectId}/history");
 	}
 }
