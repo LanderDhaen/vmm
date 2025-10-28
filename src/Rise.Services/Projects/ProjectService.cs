@@ -90,7 +90,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		ProjectDto.Detail? project = await dbContext.Projects.AsNoTracking()
-			.Where(p => p.Id == projectId)
+			.Where(p => p.Id.Equals(projectId))
 			.Select(p => new ProjectDto.Detail {
 				Id = p.Id,
 				Name = p.Name,
