@@ -30,19 +30,20 @@ public partial class Detail {
 				basemap = new RealTimeMap.Basemap {
 					basemapLayers = new List<RealTimeMap.BasemapLayer> {
 						new RealTimeMap.BasemapLayer {
-							url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-							attribution = "©OpenStreetMap",
-							title = "OpenStreetMap",
-							detectRetina = true
-						},
-
-						new RealTimeMap.BasemapLayer {
 							url =
 								"http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
 							attribution = "©World Topo Map",
 							title = "World Topo Map",
 							detectRetina = true
 						},
+
+						new RealTimeMap.BasemapLayer {
+							url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+							attribution = "©OpenStreetMap",
+							title = "OpenStreetMap",
+							detectRetina = true
+						},
+
 						new RealTimeMap.BasemapLayer {
 							url =
 								"http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
