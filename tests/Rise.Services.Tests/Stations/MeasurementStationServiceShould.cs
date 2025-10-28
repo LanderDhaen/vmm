@@ -29,7 +29,7 @@ namespace Rise.Services.Tests.Stations
 		    new DateOnly(2025, 5, 10)
 	    );
 
-	    private static readonly Project dummyproject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
         private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -69,7 +69,7 @@ namespace Rise.Services.Tests.Stations
                     status: i % 2 == 0 ? "Active" : "Inactive",
                     location: loc,
                     installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-					project: dummyproject
+					project: DummyProject
                 );
 
                 db.MeasurementStations.Add(station);

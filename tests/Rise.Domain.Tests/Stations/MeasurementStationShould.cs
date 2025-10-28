@@ -22,7 +22,7 @@ public class MeasurementStationShould
 		new DateOnly(2025, 5, 10)
 	);
 
-	private static readonly Project dummyproject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+	private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
     private static Location MakeLocation(string name = "Test Water")
         => new Location(
             name,
@@ -41,14 +41,14 @@ public class MeasurementStationShould
             status: "Active",
             location: location,
             installation: new Installation(installed),
-            project: dummyproject);
+            project: DummyProject);
         
         station.Code.ShouldBe("STN-001");
         station.Status.ShouldBe("Active");
         station.Location.ShouldNotBeNull();
         station.Installation.InstalledAt.ShouldBe(installed);
         station.Installation.RemovedAt.ShouldBeNull();
-        station.Project.ShouldBe(dummyproject);
+        station.Project.ShouldBe(DummyProject);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MeasurementStationShould
             status: "Active",
             location: MakeLocation(),
             installation: new Installation(DateTime.UtcNow.AddDays(-30)),
-            project: dummyproject
+            project: DummyProject
             );	
 			
         
@@ -81,7 +81,7 @@ public class MeasurementStationShould
             status: "Active",
             location: originalLocation,
             installation: new Installation(DateTime.UtcNow.AddDays(-5)),
-            project: dummyproject
+            project: DummyProject
             );
         
         station.Installation.RemovedAt.ShouldBeNull();
