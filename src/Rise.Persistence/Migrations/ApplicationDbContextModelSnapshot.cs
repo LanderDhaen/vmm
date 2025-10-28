@@ -396,13 +396,16 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime?>("RemovedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -416,7 +419,9 @@ namespace Rise.Persistence.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("MeasurementStation", (string)null);
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("MeasurementStations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -580,10 +585,18 @@ namespace Rise.Persistence.Migrations
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Projects.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Location");
+
+                    b.Navigation("Project");
                 });
 #pragma warning restore 612, 618
         }

@@ -18,22 +18,27 @@
                  Hover="true"
                  Dense="false"
                  Elevation="0">
-        <ToolBarContent><ToolBar /></ToolBarContent>
+
+        <ToolBarContent>
+            <ToolBar />
+        </ToolBarContent>
 
         <Columns>
-            <PropertyColumn Property="x => x.Code" Title="#"/>
-            <PropertyColumn Property="x => x.Status" Title="Status"/>
-            <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd"/>
-            <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd"/>
-            <PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
-            <PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")" Title="Coördinaten"/>
-            <PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres"/>
-            <PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente"/>
-            <PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
+            <PropertyColumn Property="x => x.Code" Title="#" />
+            <PropertyColumn Property="x => x.Status" Title="Status" />
+            <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
+            <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
+            <PropertyColumn Property="x => x.Location.Name" Title="Locatie" />
+            <PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")" Title="Coördinaten" />
+            <PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres" />
+            <PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente" />
+            <PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land" />
+            <PropertyColumn Property="x => x.ProjectName" Title="Project" />
+            <PropertyColumn Property="x => x.ProjectCode" Title="Projectcode" />
         </Columns>
 
         <PagerContent>
-            <Pagination T="MeasurementStationDto.Index"/>
+            <Pagination T="MeasurementStationDto.Index" />
         </PagerContent>
     </MudDataGrid>
 </MudPaper>
@@ -42,6 +47,7 @@
     private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state)
     {
         var orderBy = state.SortDefinitions?.FirstOrDefault()?.SortBy ?? "Code";
+
         var req = new QueryRequest.SkipTake
         {
             Skip = state.Page * state.PageSize,

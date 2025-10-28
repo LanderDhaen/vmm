@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Stations;
 using Rise.Persistence;
-using Rise.Shared.Common;       
-using Rise.Shared.Locations;    
-using Rise.Shared.Stations;    
+using Rise.Shared.Common;
+using Rise.Shared.Locations;
+using Rise.Shared.Stations;
 
 namespace Rise.Services.Stations;
 
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService
 {
-    public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+    public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
+        QueryRequest.SkipTake request,
         CancellationToken ctx = default)
     {
         IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable();
@@ -31,9 +32,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             .AsNoTracking()
             .Skip(request.Skip)
             .Take(request.Take);
-        
-        List<MeasurementStationDto.Index> stations = await Queryable
-            .Select(page, s => new MeasurementStationDto.Index
+
+        List<MeasurementStationDto.Index> stations = await page
+            .Select(s => new MeasurementStationDto.Index
             {
                 Id = s.Id,
                 Code = s.Code,
@@ -48,16 +49,20 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
                     {
                         AddressLine1 = s.Location.Address.Addressline1,
                         AddressLine2 = s.Location.Address.Addressline2,
-                        City = s.Location.Address.City,
-                        PostalCode = s.Location.Address.PostalCode,
-                        CountryIso = s.Location.Address.CountryIso,
+                        City        = s.Location.Address.City,
+                        PostalCode  = s.Location.Address.PostalCode,
+                        CountryIso  = s.Location.Address.CountryIso,
                     },
                     Coordinate = new CoordinateDto.Index
                     {
                         X = s.Location.Coordinate.X,
                         Y = s.Location.Coordinate.Y,
                     }
-                }
+                },
+                
+                ProjectId   = s.ProjectId,
+                ProjectName = s.Project.Name,
+                ProjectCode = s.Project.Code,
             })
             .ToListAsync(ctx);
 
@@ -66,5 +71,41 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             Stations = stations,
             TotalCount = totalCount
         });
+    }
+	
+    public async Task<Result<Guid>> CreateAsync(CreateMeasurementStationRequest request, CancellationToken ct = default)
+    {
+        var entity = new MeasurementStation
+        {
+            Code = request.Code,
+            Status = request.Status,
+            InstalledAt = request.InstalledAt,
+            LocationId = request.LocationId,
+            ProjectId = request.ProjectId, // NEW
+        };
+
+        dbContext.MeasurementStations.Add(entity);
+        await dbContext.SaveChangesAsync(ct);
+
+        return Result.Success(entity.Id);
+    }
+	
+    public async Task<Result> UpdateAsync(Guid id, UpdateMeasurementStationRequest request, CancellationToken ct = default)
+    {
+        var entity = await dbContext.MeasurementStations
+            .FirstOrDefaultAsync(s => s.Id == id, ct);
+
+        if (entity == null)
+            return Result.NotFound();
+
+        entity.Code = request.Code;
+        entity.Status = request.Status;
+        entity.InstalledAt = request.InstalledAt;
+        entity.RemovedAt = request.RemovedAt;
+        entity.LocationId = request.LocationId;
+        entity.ProjectId = request.ProjectId; 
+
+        await dbContext.SaveChangesAsync(ct);
+        return Result.Success();
     }
 }
