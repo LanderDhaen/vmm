@@ -6,6 +6,7 @@
 
 <MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 	<MudDataGrid T="ProjectDto.Index"
+	             Class="cursor-pointer"
 	             ServerData="GetProjectsAsync"
 	             RowsPerPage="10"
 	             Bordered="true"
@@ -14,10 +15,11 @@
 	             Dense="false"
 	             Elevation="0"
 	             RowClick="OnRowClick">
+		
 		<ToolBarContent>
 			<ToolBar/>
 		</ToolBarContent>
-
+		
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam"/>
