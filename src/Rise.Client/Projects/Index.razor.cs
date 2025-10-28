@@ -13,10 +13,13 @@ public partial class Index {
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		
+		var sortDefinition = state.SortDefinitions.FirstOrDefault();
+		
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = "Id"
+			OrderBy = sortDefinition.SortBy,
+			OrderDescending = sortDefinition.Descending
 		};
 		
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);

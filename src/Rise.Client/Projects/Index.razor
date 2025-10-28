@@ -12,22 +12,12 @@
 	             Striped="true"
 	             Hover="true"
 	             Dense="false"
-							 Filterable="true"
-							 DragDropColumnReordering="true" 
-							 ColumnsPanelReordering="true"
-							 
-							 
-							 FilterMode="DataGridFilterMode.Simple"
-							 ShowMenuIcon="false"
-							 Items="projects"
-							 
 	             Elevation="0">
-		<ToolBarContent><ToolBar/></ToolBarContent>
+		<ToolBarContent><ToolBar /></ToolBarContent>
 
 		<Columns>
-		
-			<PropertyColumn Property="x => x.Code" Title="#" Filterable="true"/>
-			<PropertyColumn Property="x => x.Name" Title="Naam" Filterable="true"/>
+			<PropertyColumn Property="x => x.Code" Title="#"/>
+			<PropertyColumn Property="x => x.Name" Title="Naam"/>
 			<PropertyColumn Property="x => x.DateRange.StartDate" Title="Startdatum"/>
 			<PropertyColumn Property="x => x.DateRange.EndDate" Title="Einddatum"/>
 			<PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
@@ -42,59 +32,3 @@
 		</PagerContent>
 	</MudDataGrid>
 </MudPaper>
-@code{
-	private List<ProjectDto.Index>projects= new List<ProjectDto.Index>();
-	    private readonly HttpClient httpClient = new HttpClient();
-    private string searchTerm = "";
-    public MudDataGrid<ProjectDto.Index> _projectsDataGrid = new();
-    protected override async Task OnInitializedAsync()
-    {
-        projects = await httpClient.GetFromJsonAsync<List<ProjectDto.Index>>("http://localhost:5001/projects") ?? new List<ProjectDto.Index>();
-    }
-
-    private string? _searchString
-    {
-        get => searchTerm;
-        set
-        {
-            searchTerm = value;
-            _projectsDataGrid.ReloadServerData();
-        }
-    }
-
-private async Task<GridData<ProjectDto.Index>> _loadProjectsData(GridState<ProjectDto.Index> gridState)
-{
-    // Genereer filterfuncties op basis van de filterdefinities in gridState
-    var filterFunctions = gridState.FilterDefinitions.Select(x => x.GenerateFilterFunction());
-    
-    // Filter de projecten op basis van de filterfuncties en een optionele zoekstring
-    var filteredData = projects.Where(x =>  filterFunctions.All(f => f(x))
-         && (string.IsNullOrWhiteSpace(_searchString) || System.Text.Json.JsonSerializer.Serialize(x).Contains(_searchString.Trim(), StringComparison.OrdinalIgnoreCase)));
-
-    // Bepaal de kolom en richting voor sorteren
-    var sortColumn = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().SortBy : null;
-    bool? sortDirectionDescending = gridState.SortDefinitions.Count > 0 ? gridState.SortDefinitions.First().Descending : null;
-
-    // Pas de sortering toe op de gefilterde gegevens
-    if (sortColumn != null)
-    {
-        filteredData = sortDirectionDescending.HasValue && sortDirectionDescending.Value
-            ? filteredData.OrderByDescending(x => x.GetType().GetProperty(sortColumn)?.GetValue(x, null))
-            : filteredData.OrderBy(x => x.GetType().GetProperty(sortColumn)?.GetValue(x, null));
-    }
-
-    // Maak een GridData object aan met de gefilterde en gesorteerde resultaten
-    GridData<ProjectDto.Index> data = new()
-    {
-        Items = filteredData.Skip(gridState.Page * gridState.PageSize).Take(gridState.PageSize).ToList(),
-        TotalItems = filteredData.Count()
-    };
-
-    // Simuleer een asynchrone vertraging
-    await Task.Delay(500);
-
-    return data;
-}
-
-  
-}
