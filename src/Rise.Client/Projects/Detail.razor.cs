@@ -23,10 +23,10 @@ public partial class Detail {
 
 	RealTimeMap.LoadParameters parameters = new RealTimeMap.LoadParameters() {
 		location = new RealTimeMap.Location() {
-			latitude = 50,
-			longitude = 4,
+			latitude = 50.94419365167052,
+			longitude = 4.044876626010708,
 		},
-		zoomLevel = 10
+		zoomLevel = 20
 	};
 
 
