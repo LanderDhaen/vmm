@@ -9,6 +9,7 @@ using Rise.Persistence;
 using Rise.Persistence.Triggers;
 using Rise.Server.Identity;
 using Rise.Server.Processors;
+using Rise.Services.Stations;
 using Rise.Services;
 using Rise.Services.Identity;
 using Rise.Shared.Products;
@@ -50,6 +51,7 @@ try {
 		.AddScoped<ISessionContextProvider,
 			HttpContextSessionProvider>() // Provides the current user from the HttpContext to the session provider.
 		.AddApplicationServices() // You'll need to add your own services in this function call.
+		.AddScoped<IMeasurementStationService, MeasurementStationService>() // Registers Stations service for DI.
 		.AddAuthorization()
 		.AddFastEndpoints(o => {
 			o.IncludeAbstractValidators =
@@ -69,7 +71,7 @@ try {
 		using (IServiceScope scope = app.Services.CreateScope()) {
 			ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			DbSeeder dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
-			// dbContext.Database.EnsureDeleted(); // Delete the database if it exists to clean it up if needed.
+			dbContext.Database.EnsureDeleted(); // Delete the database if it exists to clean it up if needed.
 
 			dbContext.Database
 				.Migrate(); // Creates the database if it doesn't exist and applies all migrations. See Readme.md for more info.

@@ -1,4 +1,4 @@
-namespace Rise.Shared.Projects;
+namespace Rise.Shared.Locations;
 
 /// <summary>
 ///     Contains data transfer objects (DTOs) used for address-related operations.

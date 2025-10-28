@@ -293,6 +293,48 @@ namespace Rise.Persistence.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "MeasurementStations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Code = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<string>(type: "varchar(32)", maxLength: 32, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LocationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ProjectId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    InstalledAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    RemovedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeasurementStations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasurementStations_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MeasurementStations_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStations_LocationId",
+                table: "MeasurementStations",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStations_ProjectId",
+                table: "MeasurementStations",
+                column: "ProjectId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Project_LocationId",
                 table: "Project",
@@ -346,10 +388,10 @@ namespace Rise.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Product");
+                name: "MeasurementStations");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
@@ -370,13 +412,16 @@ namespace Rise.Persistence.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Project");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Location");
         }
     }
 }
