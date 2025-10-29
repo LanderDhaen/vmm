@@ -11,7 +11,7 @@ public partial class Create {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Create Model { get; } = new();
-	private ProjectRequest.Create.Validator validator;
+	private ProjectRequest.Create.Validator validator = new ProjectRequest.Create.Validator();
 	MudForm form;
 
 	private async Task CreateProjectAsync() {
