@@ -45,15 +45,32 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 
-		IQueryable<Project> query = dbContext.Projects.AsQueryable();
+		IQueryable<Project> query = dbContext.Projects.Include(x => x.Location).AsQueryable();
 
 		int totalCount = await query.CountAsync();
 
-		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
-			query = request.OrderDescending
-				? query.OrderByDescending(e => EF.Property<object>(e, request.OrderBy))
-				: query.OrderBy(e => EF.Property<object>(e, request.OrderBy));
-		} else {
+		if (!string.IsNullOrWhiteSpace(request.OrderBy))
+		{
+			if (request.OrderBy.Contains("."))
+			{
+				// Handles navigation, e.g., "Location.Name"
+				var parts = request.OrderBy.Split('.');
+				if (parts.Length == 2)
+				{
+					query = request.OrderDescending
+						? query.OrderByDescending(e => EF.Property<object>(EF.Property<object>(e, parts[0]), parts[1]))
+						: query.OrderBy(e => EF.Property<object>(EF.Property<object>(e, parts[0]), parts[1]));
+				}
+			}
+			else
+			{
+				query = request.OrderDescending
+					? query.OrderByDescending(e => EF.Property<object>(e, request.OrderBy))
+					: query.OrderBy(e => EF.Property<object>(e, request.OrderBy));
+			}
+		}
+		else
+		{
 			query = query.OrderBy(p => p.Id);
 		}
 		
