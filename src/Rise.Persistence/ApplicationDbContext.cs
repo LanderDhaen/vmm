@@ -31,7 +31,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 		// All columns in the database have a maxlength of 4000.
 		// in NVARACHAR 4000 is the maximum length that can be indexed by a database.
 		// Some columns need more length, but these can be set on the configuration level for that Entity in particular.
-		// configurationBuilder.Properties<string>().HaveMaxLength(4_000);
+		configurationBuilder.Properties<string>().HaveMaxLength(4_000);
 		// All decimals columns should have 2 digits after the comma
 		configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
 	}

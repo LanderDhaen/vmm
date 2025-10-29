@@ -13,15 +13,15 @@ internal class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
 		// Table name = class name (singular)
 		builder.ToTable(typeof(TEntity).Name);
 
-		// CreatedAt: let MySQL/MariaDB fill default timestamp
+		// CreatedAt: let SQL Server fill the default timestamp.
 		builder.Property(e => e.CreatedAt)
-			.HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+			.HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-		// CreatedAt: let MySQL/MariaDB fill default timestamp
+		// UpdatedAt: let SQL Server fill the default timestamp.
 		builder.Property(e => e.UpdatedAt)
-			.HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+			.HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-		// IsDeleted should be false by default, used for softdelete.
+		// IsDeleted should be false by default, used for soft delete.
 		builder.Property(e => e.IsDeleted)
 			.HasDefaultValue(false);
 	}
