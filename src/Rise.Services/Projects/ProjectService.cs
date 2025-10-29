@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
@@ -19,10 +18,9 @@ namespace Rise.Services.Projects;
 /// <param name="sessionContextProvider"></param>
 public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider) : IProjectService {
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request, CancellationToken ctx = default) {
-		//Moet mss nog aangepast worden naar code
-		if (await dbContext.Projects.AnyAsync(x => x.Name == request.Name)) {
-			Log.Warning("Product with name '{Name}' already exists.", request.Name);
-			return Result.Conflict($"Product with name '{request.Name}'  already exists.");
+		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code)) {
+			Log.Warning("Project met code '{Code}' bestaat al.", request.Code);
+			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
 		var location = await dbContext.Locations.FirstAsync(ctx);

@@ -1,5 +1,7 @@
 
 
+using Rise.Shared.Locations;
+
 namespace Rise.Shared.Projects;
 
 /// <summary>
