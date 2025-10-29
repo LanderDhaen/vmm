@@ -39,12 +39,12 @@
 
 2. Open the `Rise.sln` file in [Rider](https://www.jetbrains.com/rider/), [Visual Studio](https://visualstudio.microsoft.com/) or  [Visual Studio Code](https://code.visualstudio.com/). (we prefer Rider, but you're free to choose.)
 
-3. Set the [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) in `secrets.json` file
+3. Update the [User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) in `secrets.json` file with your SQL Server connection
 
 ```json
 {
   "ConnectionStrings": {
-    "DatabaseConnection": "Server=localhost;Port=3306;Database=RiseDB;User=<YOUR_USERNAME>;Password=<YOUR_PASSWORD>;"
+    "DatabaseConnection": "Server=localhost;Database=<YOUR_DATABASE_NAME>;Trusted_Connection=True;TrustServerCertificate=True;"
   }
 }
 ```
@@ -53,7 +53,7 @@
 
 5. The project should open in your default browser on port 5001.
 
-5. The database (MariaDB) will be created. 
+5. The database will be created. 
 
 ## Creation of the database
 
