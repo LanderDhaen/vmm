@@ -36,9 +36,7 @@ try {
 			                          throw new InvalidOperationException(
 				                          "Connection string 'DatabaseConnection' not found.");
 
-			ServerVersion? serverVersion = MariaDbServerVersion.AutoDetect(connectionString);
-
-			o.UseMySql(connectionString, serverVersion);
+			o.UseSqlServer(connectionString);
 			o.EnableDetailedErrors();
 			if (builder.Environment.IsDevelopment()) {
 				o.EnableSensitiveDataLogging(); // only enabled in development.
