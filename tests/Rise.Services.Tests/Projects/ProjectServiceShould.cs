@@ -20,6 +20,9 @@ public class ProjectServiceShould {
 		new DateOnly(2025, 5, 10)
 	);
 	
+	private static readonly Zone DummyZone = new("DummyZone");
+	private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
+	
 	[Fact]
 	public async Task EditProjectWhenTechnicianIsTheSame() {
 		// Arrange
@@ -33,7 +36,7 @@ public class ProjectServiceShould {
 
 		string technicianAccountId = Guid.NewGuid().ToString();
 		Technician technician = new("FName", "LName", technicianAccountId);
-		Project project = new("Old Project", "OLD123", DummyDateRange);
+		Project project = new("Old Project", "OLD123", DummyDateRange, DummyMeasurementNetwork);
 
 		dbContext.Technicians.Add(technician);
 		dbContext.Projects.Add(project);
@@ -78,7 +81,7 @@ public class ProjectServiceShould {
 		Technician projectTechnician = new("FName", "LName", correctTechAccountId);
 		Technician loggedInTechnician = new("Other", "Tech", otherTechAccountId);
 
-		Project project = new("Old Project", "OLD123", DummyDateRange);
+		Project project = new("Old Project", "OLD123", DummyDateRange, DummyMeasurementNetwork);
 
 		dbContext.Technicians.AddRange(projectTechnician, loggedInTechnician);
 		dbContext.Projects.Add(project);

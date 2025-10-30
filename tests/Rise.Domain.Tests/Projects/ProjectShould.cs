@@ -12,14 +12,18 @@ public class ProjectShould {
         new DateOnly(2025, 5, 10)
     );
 
+    private static readonly Zone DummyZone = new("DummyZone");
+    private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
+
     [Fact]
     public void BeCreated()
     {
-        var project = new Project("Testing Project", "CODE123", DummyDateRange);
+        var project = new Project("Testing Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
 
         project.Name.ShouldBe("Testing Project");
         project.Code.ShouldBe("CODE123");
         project.DateRange.ShouldBe(DummyDateRange);
+        project.MeasurementNetwork.ShouldBe(DummyMeasurementNetwork);
     }
 
     [Theory]
@@ -29,7 +33,7 @@ public class ProjectShould {
     public void NotBeCreatedWithAnInvalidName(string? name)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project(name!, "CODE123", DummyDateRange)
+            new Project(name!, "CODE123", DummyDateRange, DummyMeasurementNetwork)
         );
     }
 
@@ -40,16 +44,23 @@ public class ProjectShould {
     public void NotBeCreatedWithAnInvalidCode(string? code)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project("TestProject", code!, DummyDateRange)
+            new Project("TestProject", code!, DummyDateRange, DummyMeasurementNetwork)
         );
     }
 
     [Theory]
     [InlineData(null)]
-    public void NotBeCreatedWithAnInvalidDateRange(DateRange? dateRange)
+    public void NotBeCreatedWithAnInvalidDateRange(DateRange dateRange)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project("TestProject", "CODE123", dateRange!)
+            new Project("TestProject", "CODE123", dateRange, DummyMeasurementNetwork)
         );
+    }
+
+    [Theory]
+    [InlineData(null)]
+    public void NotBeCreatedWithAnInvalidMeasurementNetwork(MeasurementNetwork measurementNetwork) {
+	    Should.Throw<ArgumentException>(() =>
+		    new Project("TestProject", "CODE123", DummyDateRange, measurementNetwork));
     }
 }

@@ -21,8 +21,11 @@ public class MeasurementStationShould
 		new DateOnly(2025, 1, 5),
 		new DateOnly(2025, 5, 10)
 	);
+	
+	private static readonly Zone DummyZone = new("DummyZone");
+	private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
-	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange);
+	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange, DummyMeasurementNetwork);
     private static Location MakeLocation(string name = "Test Water")
         => new(
             name,
