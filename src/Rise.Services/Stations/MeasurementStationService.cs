@@ -70,8 +70,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
                     }
                 },
                 
-                ProjectCode = s.Project.Code,
-                ProjectName = s.Project.Name,
+                ProjectCode   = s.Project.Code,
+                ProjectName   = s.Project.Name,
+
+                // New: while the domain still has a single Project, we report 1.
+                // When you switch to many-to-many, replace with:
+                // ProjectsCount = s.Projects.Count() OR s.ProjectStations.Count()
+                ProjectsCount = 1
             })
             .ToListAsync(ctx);
 
@@ -134,16 +139,14 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
             station.MoveTo(newLocation);
         }
-
-        // Change Project without needing a public setter or helper method:
+        
         if (station.Project.Id != request.ProjectId)
         {
             var newProject = await dbContext.Set<Project>()
                 .SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
             if (newProject is null)
                 return Result.NotFound();
-
-            // Use EF reference API to set the navigation (works even with private setter)
+            
             dbContext.Entry(station).Reference(s => s.Project).CurrentValue = newProject;
         }
 

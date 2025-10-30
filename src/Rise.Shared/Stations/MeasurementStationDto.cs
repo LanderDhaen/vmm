@@ -20,5 +20,7 @@ public static class MeasurementStationDto
 		
 		public string ProjectName { get; set; }
 		public string ProjectCode { get; set; }
+		
+		public int ProjectsCount { get; set; }
 	}
 }
