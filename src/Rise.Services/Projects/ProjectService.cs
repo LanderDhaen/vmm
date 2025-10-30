@@ -73,7 +73,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				Name = p.Name,
 				Code = p.Code,
 				StartDate = p.DateRange.StartDate,
-				EndDate = p.DateRange.EndDate	
+				EndDate = p.DateRange.EndDate,	
+				MeasurementNetwork = p.MeasurementNetwork.Name,
+				Zone = p.MeasurementNetwork.Zone.Name,	
 			})
 			.ToListAsync(ctx);
 
