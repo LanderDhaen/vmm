@@ -17,19 +17,19 @@ namespace Rise.Services.Tests.Stations
 {
     public class MeasurementStationServiceShould
     {
-	    
-	    private static readonly Location DummyLocation = new(
-		    "Aalst",
-		    new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
-		    new Coordinate(6.0, 7.0)
-	    );
+        private static readonly Location DummyLocation = new(
+            "Aalst",
+            new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+            new Coordinate(6.0, 7.0)
+        );
 
-	    private static readonly DateRange DummyDateRange = new(
-		    new DateOnly(2025, 1, 5),
-		    new DateOnly(2025, 5, 10)
-	    );
+        private static readonly DateRange DummyDateRange = new(
+            new DateOnly(2025, 1, 5),
+            new DateOnly(2025, 5, 10)
+        );
 
-	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+        private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+
         private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -61,7 +61,7 @@ namespace Rise.Services.Tests.Stations
         {
             var db = CreateDbContext(out var projectId, out var project, out var loc);
             var service = new MeasurementStationService(db);
-            
+
             for (int i = 0; i < 5; i++)
             {
                 var station = new MeasurementStation(
@@ -69,7 +69,7 @@ namespace Rise.Services.Tests.Stations
                     status: i % 2 == 0 ? "Active" : "Inactive",
                     location: loc,
                     installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-					project: DummyProject
+                    project: project
                 );
 
                 db.MeasurementStations.Add(station);
@@ -83,9 +83,9 @@ namespace Rise.Services.Tests.Stations
                 Take = 3,
                 OrderBy = "Code"
             };
-            
+
             var result = await service.GetIndexAsync(request);
-            
+
             Assert.True(result.IsSuccess);
             Assert.NotNull(result.Value);
 
@@ -95,7 +95,7 @@ namespace Rise.Services.Tests.Stations
 
             var codes = payload.Stations.Select(s => s.Code).ToArray();
             Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
-            
+
             Assert.All(payload.Stations, s => Assert.Equal("Test Project", s.ProjectName));
             Assert.All(payload.Stations, s => Assert.Equal("TP2025", s.ProjectCode));
         }
