@@ -23,6 +23,8 @@ namespace Rise.Persistence;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) {
 	public DbSet<Product> Products => Set<Product>();
 	public DbSet<Location> Locations => Set<Location>();
+	public DbSet<Zone> Zones => Set<Zone>();
+	public DbSet<MeasurementNetwork> MeasurementNetworks => Set<MeasurementNetwork>();
 	public DbSet<Project> Projects => Set<Project>();
 	public DbSet<Technician> Technicians => Set<Technician>();
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();

@@ -123,6 +123,38 @@ public class DbSeeder(
         await dbContext.SaveChangesAsync();
     }
 
+    private async Task ZonesAsync() {
+	    if (dbContext.Zones.Any())
+		    return;
+
+	    List<Zone> zones = new() {
+			new Zone("West"),
+			new Zone("Oost")
+	    };
+	    
+	    dbContext.Zones.AddRange(zones);
+	    await dbContext.SaveChangesAsync();
+    }
+    
+    private async Task MeasurementNetworksAsync() {
+	    if (dbContext.MeasurementNetworks.Any())
+		    return;
+
+	    List<Zone> zones = await dbContext.Zones.ToListAsync();
+	    if (!zones.Any())
+		    return;
+	    
+	    List<MeasurementNetwork> measurementnetworks = new() {
+		    new MeasurementNetwork("West", zones[0]),
+		    new MeasurementNetwork("Oost", zones[1])
+	    };
+	    
+	    dbContext.MeasurementNetworks.AddRange(measurementnetworks);
+	    await dbContext.SaveChangesAsync();
+    }
+    
+    
+
     private async Task LocationAsync()
     {
         if (dbContext.Locations.Any())
@@ -166,8 +198,8 @@ public class DbSeeder(
         if (dbContext.Projects.Any())
             return;
 
-        List<Technician> technicians = await dbContext.Technicians.ToListAsync();
-        if (!technicians.Any())
+        List<MeasurementNetwork> networks = await dbContext.MeasurementNetworks.ToListAsync();
+        if (!networks.Any())
 	        return;
 
         List<DateRange> dateRanges = new()
@@ -182,12 +214,12 @@ public class DbSeeder(
 
         List<Project> projects = new()
         {
-            new Project("Canal Cleanup", "CC2025", dateRanges[0]),
-            new Project("River Monitoring", "RM2025", dateRanges[1]),
-            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2]),
-            new Project("Pond Restoration", "PR2025", dateRanges[3]),
-            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4]),
-            new Project("Coastal Dashboard", "CD2025", dateRanges[5])
+            new Project("Canal Cleanup", "CC2025", dateRanges[0], networks[0]),
+            new Project("River Monitoring", "RM2025", dateRanges[1], networks[1]),
+            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[0]),
+            new Project("Pond Restoration", "PR2025", dateRanges[3], networks[1]),
+            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[0]),
+            new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[1])
         };
 
         dbContext.Projects.AddRange(projects);
