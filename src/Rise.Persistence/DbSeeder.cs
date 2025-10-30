@@ -28,6 +28,8 @@ public class DbSeeder(
         await RolesAsync();
         await UsersAsync();
         await ProductsAsync();
+        await ZonesAsync();
+    //  await MeasurementNetworksAsync();
         await LocationAsync();
         await ProjectsAsync();
         await StationsAsync();
@@ -140,16 +142,16 @@ public class DbSeeder(
 	    if (dbContext.MeasurementNetworks.Any())
 		    return;
 
-	    List<Zone> zones = await dbContext.Zones.ToListAsync();
+	    var zones = await dbContext.Zones.ToListAsync();
 	    if (!zones.Any())
 		    return;
 	    
-	    List<MeasurementNetwork> measurementnetworks = new() {
+	    List<MeasurementNetwork> measurementNetworks = new() {
 		    new MeasurementNetwork("West", zones[0]),
 		    new MeasurementNetwork("Oost", zones[1])
 	    };
 	    
-	    dbContext.MeasurementNetworks.AddRange(measurementnetworks);
+	    dbContext.MeasurementNetworks.AddRange(measurementNetworks);
 	    await dbContext.SaveChangesAsync();
     }
     

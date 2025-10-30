@@ -6,14 +6,11 @@ using Rise.Domain.Projects;
 namespace Rise.Persistence.Configurations.Projects;
 
 /// <summary>
-///     Specific configuration for <see cref="MeasurementNetwork" />.
+///     Specific configuration for <see cref="Zone" />.
 /// </summary>
-internal class ZoneConfiguration : EntityConfiguration<MeasurementNetwork> {
-	public override void Configure(EntityTypeBuilder<MeasurementNetwork> builder) {
+internal class ZoneConfiguration : EntityConfiguration<Zone> {
+	public override void Configure(EntityTypeBuilder<Zone> builder) {
 		base.Configure(builder);
 		builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
-
-		// See /// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.
-		// Other MeasurementNetwork configuration here.
 	}
 }

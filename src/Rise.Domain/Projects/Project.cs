@@ -18,7 +18,7 @@ public class Project : Entity {
 		Name = name;
 		Code = code;
 		DateRange = Guard.Against.Null(dateRange);
-		MeasurementNetwork = measurementNetwork;
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 	}
 
 	public string Name {
