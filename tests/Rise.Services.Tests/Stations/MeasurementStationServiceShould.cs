@@ -29,7 +29,7 @@ namespace Rise.Services.Tests.Stations
 		    new DateOnly(2025, 5, 10)
 	    );
 
-	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange);
         private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -47,7 +47,7 @@ namespace Rise.Services.Tests.Stations
             context.SaveChanges();
 
             var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-            project = new Project("Test Project", "TP2025", dateRange, location);
+            project = new Project("Test Project", "TP2025", dateRange);
 
             context.Projects.Add(project);
             context.SaveChanges();

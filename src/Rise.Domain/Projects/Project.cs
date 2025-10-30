@@ -16,11 +16,10 @@ public class Project : Entity {
 	private Project() {
 	}
 
-	public Project(string name, string code, DateRange dateRange, Location location) {
+	public Project(string name, string code, DateRange dateRange) {
 		Name = name;
 		Code = code;
 		DateRange = Guard.Against.Null(dateRange);
-		Location = Guard.Against.Null(location);
 	}
 
 	public string Name {
@@ -34,8 +33,6 @@ public class Project : Entity {
 	}
 
 	public DateRange DateRange { get; init; } = default!;
-	
-	public Location Location { get; init; } = default!;
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

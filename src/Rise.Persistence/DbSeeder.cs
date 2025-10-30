@@ -168,9 +168,7 @@ public class DbSeeder(
 
         List<Technician> technicians = await dbContext.Technicians.ToListAsync();
         if (!technicians.Any())
-            return;
-
-        List<Location> locations = await dbContext.Locations.ToListAsync();
+	        return;
 
         List<DateRange> dateRanges = new()
         {
@@ -184,12 +182,12 @@ public class DbSeeder(
 
         List<Project> projects = new()
         {
-            new Project("Canal Cleanup", "CC2025", dateRanges[0], locations[0]),
-            new Project("River Monitoring", "RM2025", dateRanges[1], locations[1]),
-            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], locations[2]),
-            new Project("Pond Restoration", "PR2025", dateRanges[3], locations[3]),
-            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], locations[4]),
-            new Project("Coastal Dashboard", "CD2025", dateRanges[5], locations[5])
+            new Project("Canal Cleanup", "CC2025", dateRanges[0]),
+            new Project("River Monitoring", "RM2025", dateRanges[1]),
+            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2]),
+            new Project("Pond Restoration", "PR2025", dateRanges[3]),
+            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4]),
+            new Project("Coastal Dashboard", "CD2025", dateRanges[5])
         };
 
         dbContext.Projects.AddRange(projects);

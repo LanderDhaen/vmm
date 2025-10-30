@@ -14,12 +14,6 @@ using Rise.Shared.Projects;
 namespace Rise.Services.Tests.Projects;
 
 public class ProjectServiceShould {
-	
-	private static readonly Location DummyLocation = new(
-		"Aalst",
-		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
-		new Coordinate(6.0, 7.0)
-	);
 
 	private static readonly DateRange DummyDateRange = new(
 		new DateOnly(2025, 1, 5),
@@ -39,7 +33,7 @@ public class ProjectServiceShould {
 
 		string technicianAccountId = Guid.NewGuid().ToString();
 		Technician technician = new("FName", "LName", technicianAccountId);
-		Project project = new("Old Project", "OLD123", DummyDateRange, DummyLocation);
+		Project project = new("Old Project", "OLD123", DummyDateRange);
 
 		dbContext.Technicians.Add(technician);
 		dbContext.Projects.Add(project);
@@ -84,7 +78,7 @@ public class ProjectServiceShould {
 		Technician projectTechnician = new("FName", "LName", correctTechAccountId);
 		Technician loggedInTechnician = new("Other", "Tech", otherTechAccountId);
 
-		Project project = new("Old Project", "OLD123", DummyDateRange, DummyLocation);
+		Project project = new("Old Project", "OLD123", DummyDateRange);
 
 		dbContext.Technicians.AddRange(projectTechnician, loggedInTechnician);
 		dbContext.Projects.Add(project);

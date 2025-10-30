@@ -6,12 +6,6 @@ using Xunit;
 namespace Rise.Domain.Tests.Projects;
 
 public class ProjectShould {
-	
-    private static readonly Location DummyLocation = new(
-        "Aalst",
-        new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
-        new Coordinate(6.0, 7.0)
-    );
 
     private static readonly DateRange DummyDateRange = new(
         new DateOnly(2025, 1, 5),
@@ -21,12 +15,11 @@ public class ProjectShould {
     [Fact]
     public void BeCreated()
     {
-        var project = new Project("Testing Project", "CODE123", DummyDateRange, DummyLocation);
+        var project = new Project("Testing Project", "CODE123", DummyDateRange);
 
         project.Name.ShouldBe("Testing Project");
         project.Code.ShouldBe("CODE123");
         project.DateRange.ShouldBe(DummyDateRange);
-        project.Location.ShouldBe(DummyLocation);
     }
 
     [Theory]
@@ -36,7 +29,7 @@ public class ProjectShould {
     public void NotBeCreatedWithAnInvalidName(string? name)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project(name!, "CODE123", DummyDateRange, DummyLocation)
+            new Project(name!, "CODE123", DummyDateRange)
         );
     }
 
@@ -47,7 +40,7 @@ public class ProjectShould {
     public void NotBeCreatedWithAnInvalidCode(string? code)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project("TestProject", code!, DummyDateRange, DummyLocation)
+            new Project("TestProject", code!, DummyDateRange)
         );
     }
 
@@ -56,16 +49,7 @@ public class ProjectShould {
     public void NotBeCreatedWithAnInvalidDateRange(DateRange? dateRange)
     {
         Should.Throw<ArgumentException>(() =>
-            new Project("TestProject", "CODE123", dateRange!, DummyLocation)
-        );
-    }
-
-    [Theory]
-    [InlineData(null)]
-    public void NotBeCreatedWithAnInvalidLocation(Location? location)
-    {
-        Should.Throw<ArgumentException>(() =>
-            new Project("TestProject", "CODE123", DummyDateRange, location!)
+            new Project("TestProject", "CODE123", dateRange!)
         );
     }
 }

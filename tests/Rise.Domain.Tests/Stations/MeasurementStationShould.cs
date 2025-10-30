@@ -22,9 +22,9 @@ public class MeasurementStationShould
 		new DateOnly(2025, 5, 10)
 	);
 
-	private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange);
     private static Location MakeLocation(string name = "Test Water")
-        => new Location(
+        => new(
             name,
             new Address("Main St 1", "Bus 1", "Brussels", "1000"),
             new Coordinate(4.35, 50.85));

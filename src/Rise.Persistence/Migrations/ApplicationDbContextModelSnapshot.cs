@@ -331,9 +331,6 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<Guid>("LocationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -345,8 +342,6 @@ namespace Rise.Persistence.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("Project", (string)null);
                 });
@@ -549,12 +544,6 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
-                    b.HasOne("Rise.Domain.Locations.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
                         {
                             b1.Property<Guid>("ProjectId")
@@ -578,8 +567,6 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("DateRange")
                         .IsRequired();
-
-                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
