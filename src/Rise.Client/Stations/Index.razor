@@ -31,8 +31,7 @@
 			<PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres" />
 			<PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente" />
 			<PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land" />
-
-			<!-- Replaced Project + Projectcode with a single "Projecten" column -->
+			
 			<TemplateColumn Title="Projecten">
 				<CellTemplate Context="ctx">
 					@{

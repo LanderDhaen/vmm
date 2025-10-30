@@ -36,6 +36,8 @@ public class Project : Entity {
 	public DateRange DateRange { get; init; } = default!;
 	
 	public Location Location { get; init; } = default!;
+	
+	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

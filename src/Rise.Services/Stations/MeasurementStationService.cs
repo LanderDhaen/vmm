@@ -22,7 +22,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
         IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable();
 
         int totalCount = await query.CountAsync(ctx);
-        
+
         if (!string.IsNullOrWhiteSpace(request.OrderBy))
         {
             if (request.OrderBy == nameof(MeasurementStationDto.Index.InstalledAt))
@@ -41,9 +41,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             .AsNoTracking()
             .Skip(request.Skip)
             .Take(request.Take);
-        
-        List<MeasurementStationDto.Index> stations = await Queryable
-            .Select(page, s => new MeasurementStationDto.Index
+
+        List<MeasurementStationDto.Index> stations = await page
+            .Select(s => new MeasurementStationDto.Index
             {
                 Id          = s.Id,
                 Code        = s.Code,
@@ -70,13 +70,16 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
                     }
                 },
                 
-                ProjectCode   = s.Project.Code,
-                ProjectName   = s.Project.Name,
-
-                // New: while the domain still has a single Project, we report 1.
-                // When you switch to many-to-many, replace with:
-                // ProjectsCount = s.Projects.Count() OR s.ProjectStations.Count()
-                ProjectsCount = 1
+                ProjectCode = s.Projects
+                    .OrderBy(p => p.Name)
+                    .Select(p => p.Code)
+                    .FirstOrDefault(), 
+                ProjectName = s.Projects
+                    .OrderBy(p => p.Name)
+                    .Select(p => p.Name)
+                    .FirstOrDefault(), 
+                
+                ProjectsCount = s.Projects.Count()
             })
             .ToListAsync(ctx);
 
@@ -93,7 +96,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             .SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
         if (location is null)
             return Result.NotFound();
-
+        
         var project = await dbContext.Set<Project>()
             .SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
         if (project is null)
@@ -106,7 +109,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             status: request.Status,
             location: location,
             installation: new Installation(installedAt),
-            project: project
+            projects: new[] { project }     
         );
 
         dbContext.MeasurementStations.Add(station);
@@ -119,7 +122,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
     {
         var station = await dbContext.MeasurementStations
             .Include(s => s.Location)
-            .Include(s => s.Project)
+            .Include(s => s.Projects)  
             .SingleOrDefaultAsync(s => s.Id == id, ct);
 
         if (station is null)
@@ -140,15 +143,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
             station.MoveTo(newLocation);
         }
         
-        if (station.Project.Id != request.ProjectId)
-        {
-            var newProject = await dbContext.Set<Project>()
-                .SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
-            if (newProject is null)
-                return Result.NotFound();
-            
-            dbContext.Entry(station).Reference(s => s.Project).CurrentValue = newProject;
-        }
+        var newProject = await dbContext.Set<Project>()
+            .SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
+        if (newProject is null)
+            return Result.NotFound();
+
+        station.Projects.Clear();
+        station.Projects.Add(newProject);
 
         await dbContext.SaveChangesAsync(ct);
         return Result.Success();

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
+using Rise.Domain.Projects;
 
 namespace Rise.Persistence.Configurations.Stations;
 
@@ -38,7 +38,24 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 			b.WithOwner();
 		});
 
-		builder.HasOne(x => x.Project);
+		builder.HasMany(s => s.Projects)
+			.WithMany(p => p.Stations)
+			.UsingEntity<Dictionary<string, object>>(
+				"ProjectStations",
+				right => right.HasOne<Project>()
+					.WithMany()
+					.HasForeignKey("ProjectId")
+					.OnDelete(DeleteBehavior.Cascade),
+				left  => left.HasOne<MeasurementStation>()
+					.WithMany()
+					.HasForeignKey("StationId")
+					.OnDelete(DeleteBehavior.Cascade),
+				join =>
+				{
+					join.ToTable("ProjectStations");
+					join.HasKey("ProjectId", "StationId");
+					join.HasIndex("StationId");
+				});
 
 	}
 }

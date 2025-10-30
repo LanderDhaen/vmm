@@ -11,7 +11,8 @@ public class MeasurementStation : Entity
 	public string Status { get; private set; } = default!;
 
 	public Location Location { get; private set; } = default!;
-	public Project Project { get; private set; } = default!;
+	
+	public ICollection<Project> Projects { get; private set; } = new List<Project>();
 	public Installation Installation { get; private set; } = default!;
 
 	private MeasurementStation() { }
@@ -21,7 +22,7 @@ public class MeasurementStation : Entity
 		string status,
 		Location location,
 		Installation installation,
-		Project project
+		IEnumerable<Project> projects
 	)
 	{
 		Code = code;
@@ -29,7 +30,8 @@ public class MeasurementStation : Entity
 
 		Location = location ?? throw new ArgumentNullException(nameof(location));
 		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
-		Project = project ?? throw new ArgumentNullException(nameof(project));
+		if (projects is null) throw new ArgumentNullException(nameof(projects));
+		foreach (var p in projects) Projects.Add(p);
 	}
 
 	public void UpdateStatus(string status) => Status = status;

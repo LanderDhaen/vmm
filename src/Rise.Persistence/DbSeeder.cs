@@ -198,45 +198,45 @@ public class DbSeeder(
 
     private async Task StationsAsync()
     {
-        if (dbContext.MeasurementStations.Any())
-            return;
-        
-        var locations = dbContext.Locations.Local.Any()
-            ? dbContext.Locations.Local.ToList()
-            : await dbContext.Locations.ToListAsync();
+	    if (dbContext.MeasurementStations.Any())
+		    return;
 
-        var projects = dbContext.Projects.Local.Any()
-            ? dbContext.Projects.Local.ToList()
-            : await dbContext.Projects.ToListAsync();
+	    var locations = dbContext.Locations.Local.Any()
+		    ? dbContext.Locations.Local.ToList()
+		    : await dbContext.Locations.ToListAsync();
 
-        if (!locations.Any() || !projects.Any())
-            return;
+	    var projects = dbContext.Projects.Local.Any()
+		    ? dbContext.Projects.Local.ToList()
+		    : await dbContext.Projects.ToListAsync();
 
-        int l0 = 0;
-        int l1 = Math.Min(1, locations.Count - 1);
-        int p0 = 0;
-        int p1 = Math.Min(1, projects.Count - 1);
+	    if (!locations.Any() || !projects.Any())
+		    return;
 
-        var station1 = new MeasurementStation(
-            code: "STN-001",
-            status: "Active",
-            location: locations[l0],
-            installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
-            project: projects[p0] 
-        );
+	    int l0 = 0;
+	    int l1 = Math.Min(1, locations.Count - 1);
+	    int p0 = 0;
+	    int p1 = Math.Min(1, projects.Count - 1);
+	    
+	    var station1 = new MeasurementStation(
+		    code: "STN-001",
+		    status: "Active",
+		    location: locations[l0],
+		    installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
+		    projects: new[] { projects[p0] }                  
+	    );
 
-        var station2 = new MeasurementStation(
-            code: "STN-002",
-            status: "Inactive",
-            location: locations[l1],
-            installation: new Installation(
-                installedAt: DateTime.UtcNow.AddYears(-1),
-                removedAt: DateTime.UtcNow.AddDays(-30)
-            ),
-            project: projects[p1] 
-        );
+	    var station2 = new MeasurementStation(
+		    code: "STN-002",
+		    status: "Inactive",
+		    location: locations[l1],
+		    installation: new Installation(
+			    installedAt: DateTime.UtcNow.AddYears(-1),
+			    removedAt: DateTime.UtcNow.AddDays(-30)
+		    ),
+		    projects: new[] { projects[p1], projects[p0] }    
+	    );
 
-        dbContext.MeasurementStations.AddRange(station1, station2);
-        await dbContext.SaveChangesAsync();
+	    dbContext.MeasurementStations.AddRange(station1, station2);
+	    await dbContext.SaveChangesAsync();
     }
 }

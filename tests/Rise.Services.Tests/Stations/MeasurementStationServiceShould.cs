@@ -69,7 +69,7 @@ namespace Rise.Services.Tests.Stations
                     status: i % 2 == 0 ? "Active" : "Inactive",
                     location: loc,
                     installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-                    project: project
+                    projects: new[] { project } // <-- many-to-many: assign as collection
                 );
 
                 db.MeasurementStations.Add(station);
@@ -95,9 +95,11 @@ namespace Rise.Services.Tests.Stations
 
             var codes = payload.Stations.Select(s => s.Code).ToArray();
             Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
-
+            
             Assert.All(payload.Stations, s => Assert.Equal("Test Project", s.ProjectName));
             Assert.All(payload.Stations, s => Assert.Equal("TP2025", s.ProjectCode));
+            
+            Assert.All(payload.Stations, s => Assert.Equal(1, s.ProjectsCount));
         }
     }
 }
