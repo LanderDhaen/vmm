@@ -12,8 +12,8 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251030100830_AddMeasurementNetworkAndZoneTable")]
-    partial class AddMeasurementNetworkAndZoneTable
+    [Migration("20251030103216_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -320,18 +320,24 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<Guid>("ZoneId")
                         .HasColumnType("uniqueidentifier");
@@ -340,7 +346,7 @@ namespace Rise.Persistence.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("MeasurementNetworks");
+                    b.ToTable("MeasurementNetwork", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
@@ -608,9 +614,9 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
                 {
                     b.HasOne("Rise.Domain.Projects.Zone", "Zone")
-                        .WithMany()
+                        .WithMany("MeasurementNetworks")
                         .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Zone");
@@ -619,9 +625,9 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.HasOne("Rise.Domain.Projects.MeasurementNetwork", "MeasurementNetwork")
-                        .WithMany()
+                        .WithMany("Projects")
                         .HasForeignKey("MeasurementNetworkId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
@@ -692,6 +698,16 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
+                {
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.Zone", b =>
+                {
+                    b.Navigation("MeasurementNetworks");
                 });
 #pragma warning restore 612, 618
         }

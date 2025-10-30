@@ -18,6 +18,9 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange).IsRequired();
+		builder.HasOne(x => x.MeasurementNetwork)
+			.WithMany(x => x.Projects)
+			.OnDelete(DeleteBehavior.Restrict);
 
 
 		// See /// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.

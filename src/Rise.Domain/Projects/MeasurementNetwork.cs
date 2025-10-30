@@ -5,6 +5,7 @@ namespace Rise.Domain.Projects;
 /// </summary>
 public class MeasurementNetwork : Entity {
 	private string _name = String.Empty;
+	private readonly List<Project> _projects = [];
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -23,4 +24,6 @@ public class MeasurementNetwork : Entity {
 	}
 
 	public Zone Zone { get; init; } = default!;
+	
+	public IReadOnlyList<Project> Projects => _projects.AsReadOnly();
 }

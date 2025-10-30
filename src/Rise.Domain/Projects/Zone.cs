@@ -5,6 +5,7 @@ namespace Rise.Domain.Projects;
 /// </summary>
 public class Zone : Entity {
 	private string _name = String.Empty;
+	private readonly List<MeasurementNetwork> _measurementnetworks = [];
 
 	private Zone() {
 	}
@@ -17,4 +18,6 @@ public class Zone : Entity {
 		get => _name;
 		set => _name = Guard.Against.NullOrWhiteSpace(value);
 	}
+	
+	public IReadOnlyList<MeasurementNetwork> MeasurementNetworks => _measurementnetworks.AsReadOnly();
 }
