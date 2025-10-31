@@ -130,8 +130,8 @@ public class DbSeeder(
 		    return;
 
 	    List<Zone> zones = new() {
-			new Zone("Zone West"),
-			new Zone("Zone Oost")
+			new Zone("Zone West", "ASTA"),
+			new Zone("Zone Oost", "HSTA")
 	    };
 	    
 	    dbContext.Zones.AddRange(zones);

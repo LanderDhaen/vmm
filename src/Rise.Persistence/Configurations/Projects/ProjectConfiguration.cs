@@ -21,6 +21,10 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		builder.HasOne(x => x.MeasurementNetwork)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
+		
+		// Constraints
+		
+		builder.HasIndex(x => x.Code).IsUnique();
 
 
 		// See /// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.

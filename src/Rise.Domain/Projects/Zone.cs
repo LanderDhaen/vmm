@@ -5,6 +5,7 @@ namespace Rise.Domain.Projects;
 /// </summary>
 public class Zone : Entity {
 	private string _name = String.Empty;
+	private string _code = String.Empty;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -12,12 +13,18 @@ public class Zone : Entity {
 	private Zone() {
 	}
 
-	public Zone(string name) {
+	public Zone(string name, string code) {
 		Name = name;
+		Code = code;
 	}
 	
 	public string Name {
 		get => _name;
 		set => _name = Guard.Against.NullOrWhiteSpace(value);
+	}
+
+	public string Code {
+		get => _code; 
+		set =>  _code = Guard.Against.NullOrWhiteSpace(value);
 	}
 }
