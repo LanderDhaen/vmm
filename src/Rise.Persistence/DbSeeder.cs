@@ -29,7 +29,7 @@ public class DbSeeder(
         await UsersAsync();
         await ProductsAsync();
         await ZonesAsync();
-    //  await MeasurementNetworksAsync();
+	    await MeasurementNetworksAsync();
         await LocationAsync();
         await ProjectsAsync();
         await StationsAsync();

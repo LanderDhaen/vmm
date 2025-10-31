@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251030110511_InitialCreate")]
+    [Migration("20251031081831_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -620,7 +620,7 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
                 {
                     b.HasOne("Rise.Domain.Projects.Zone", "Zone")
-                        .WithMany("MeasurementNetworks")
+                        .WithMany()
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -631,7 +631,7 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.HasOne("Rise.Domain.Projects.MeasurementNetwork", "MeasurementNetwork")
-                        .WithMany("Projects")
+                        .WithMany()
                         .HasForeignKey("MeasurementNetworkId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -704,16 +704,6 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
-                {
-                    b.Navigation("Projects");
-                });
-
-            modelBuilder.Entity("Rise.Domain.Projects.Zone", b =>
-                {
-                    b.Navigation("MeasurementNetworks");
                 });
 #pragma warning restore 612, 618
         }

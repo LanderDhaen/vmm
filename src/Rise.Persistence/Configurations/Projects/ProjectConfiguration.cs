@@ -19,7 +19,7 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange).IsRequired();
 		builder.HasOne(x => x.MeasurementNetwork)
-			.WithMany(x => x.Projects)
+			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
 
 

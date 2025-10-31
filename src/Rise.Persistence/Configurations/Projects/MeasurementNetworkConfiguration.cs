@@ -13,7 +13,7 @@ internal class MeasurementNetworkConfiguration : EntityConfiguration<Measurement
 		base.Configure(builder);
 		builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
 		builder.HasOne(x => x.Zone)
-			.WithMany(x => x.MeasurementNetworks)
+			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
 
 
