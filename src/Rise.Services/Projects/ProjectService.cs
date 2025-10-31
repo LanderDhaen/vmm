@@ -72,29 +72,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				Id = p.Id,
 				Name = p.Name,
 				Code = p.Code,
-				DateRange = new DateRangeDto.Index
-				{
-					StartDate = p.DateRange.StartDate,
-					EndDate = p.DateRange.EndDate
-				},
-				Location = new LocationDto.Index
-				{
-					Id = p.Location.Id,
-					Name = p.Location.Name,
-					Address = new AddressDto.Index
-					{
-						AddressLine1 = p.Location.Address.Addressline1,
-						AddressLine2 = p.Location.Address.Addressline2,
-						City = p.Location.Address.City,
-						PostalCode = p.Location.Address.PostalCode,
-						CountryIso = p.Location.Address.CountryIso,
-					},
-					Coordinate = new CoordinateDto.Index
-					{
-						X = p.Location.Coordinate.X,
-						Y = p.Location.Coordinate.Y,
-					}
-				}
+				StartDate = p.DateRange.StartDate,
+				EndDate = p.DateRange.EndDate,	
+				MeasurementNetwork = p.MeasurementNetwork.Name,
+				Zone = p.MeasurementNetwork.Zone.Name,	
 			})
 			.ToListAsync(ctx);
 

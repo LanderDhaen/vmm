@@ -17,9 +17,10 @@ public static class ProjectDto
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string Code { get; set; }
+		public required DateOnly StartDate {get; set; }
+		public required DateOnly? EndDate {get; set; }
+		public required string MeasurementNetwork { get; set; }
+		public required string Zone { get; set; }
 
-		public required DateRangeDto.Index DateRange { get; init; }
-
-		public required LocationDto.Index Location { get; init; }
 	}
 }

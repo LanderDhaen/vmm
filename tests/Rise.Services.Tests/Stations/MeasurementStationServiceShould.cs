@@ -28,12 +28,15 @@ namespace Rise.Services.Tests.Stations
 		    new DateOnly(2025, 1, 5),
 		    new DateOnly(2025, 5, 10)
 	    );
+	    
+	    private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
+	    private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
-	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+	    private static readonly Project DummyProject = new Project("DummyProject", "DP-1", DummyDateRange, DummyMeasurementNetwork);
         private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()) // Do NOT use InMemoryDatabase... it's not reliable. Use a real database and come up with a strategy to clean up the database between tests.
                 .Options;
 
             var context = new ApplicationDbContext(options);
@@ -47,7 +50,9 @@ namespace Rise.Services.Tests.Stations
             context.SaveChanges();
 
             var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-            project = new Project("Test Project", "TP2025", dateRange, location);
+            var measurementNetwork = new MeasurementNetwork("TestNetwork", new Zone("TestZone", "TestCode"));
+            
+            project = new Project("Test Project", "TP2025", dateRange, measurementNetwork);
 
             context.Projects.Add(project);
             context.SaveChanges();
@@ -96,8 +101,8 @@ namespace Rise.Services.Tests.Stations
             var codes = payload.Stations.Select(s => s.Code).ToArray();
             Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
             
-            Assert.All(payload.Stations, s => Assert.Equal("Test Project", s.ProjectName));
-            Assert.All(payload.Stations, s => Assert.Equal("TP2025", s.ProjectCode));
+            Assert.All(payload.Stations, s => Assert.Equal("DummyProject", s.ProjectName));
+            Assert.All(payload.Stations, s => Assert.Equal("DP-1", s.ProjectCode));
         }
     }
 }

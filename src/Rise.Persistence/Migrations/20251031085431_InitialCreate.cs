@@ -106,28 +106,19 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
+                name: "Zone",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Project", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Project_Location_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Zone", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -237,6 +228,53 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MeasurementNetwork",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    ZoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeasurementNetwork", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasurementNetwork_Zone_ZoneId",
+                        column: x => x.ZoneId,
+                        principalTable: "Zone",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Project",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    MeasurementNetworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Project_MeasurementNetwork_MeasurementNetworkId",
+                        column: x => x.MeasurementNetworkId,
+                        principalTable: "MeasurementNetwork",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MeasurementStations",
                 columns: table => new
                 {
@@ -266,6 +304,11 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_MeasurementNetwork_ZoneId",
+                table: "MeasurementNetwork",
+                column: "ZoneId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MeasurementStations_LocationId",
                 table: "MeasurementStations",
                 column: "LocationId");
@@ -276,9 +319,15 @@ namespace Rise.Persistence.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_LocationId",
+                name: "IX_Project_Code",
                 table: "Project",
-                column: "LocationId");
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Project_MeasurementNetworkId",
+                table: "Project",
+                column: "MeasurementNetworkId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
@@ -324,6 +373,12 @@ namespace Rise.Persistence.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Zone_Code",
+                table: "Zone",
+                column: "Code",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -354,6 +409,9 @@ namespace Rise.Persistence.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
+                name: "Location");
+
+            migrationBuilder.DropTable(
                 name: "Project");
 
             migrationBuilder.DropTable(
@@ -363,7 +421,10 @@ namespace Rise.Persistence.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "MeasurementNetwork");
+
+            migrationBuilder.DropTable(
+                name: "Zone");
         }
     }
 }

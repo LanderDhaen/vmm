@@ -310,6 +310,42 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("Product", (string)null);
                 });
 
+            modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid>("ZoneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ZoneId");
+
+                    b.ToTable("MeasurementNetwork", (string)null);
+                });
+
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -331,7 +367,7 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<Guid>("LocationId")
+                    b.Property<Guid>("MeasurementNetworkId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -346,7 +382,10 @@ namespace Rise.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("MeasurementNetworkId");
 
                     b.ToTable("Project", (string)null);
                 });
@@ -393,6 +432,45 @@ namespace Rise.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Technician", (string)null);
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.Zone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Zone", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
@@ -547,12 +625,23 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Rise.Domain.Projects.MeasurementNetwork", b =>
+                {
+                    b.HasOne("Rise.Domain.Projects.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Zone");
+                });
+
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
-                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                    b.HasOne("Rise.Domain.Projects.MeasurementNetwork", "MeasurementNetwork")
                         .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("MeasurementNetworkId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
@@ -579,7 +668,7 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("DateRange")
                         .IsRequired();
 
-                    b.Navigation("Location");
+                    b.Navigation("MeasurementNetwork");
                 });
 
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
