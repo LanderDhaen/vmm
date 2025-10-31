@@ -224,10 +224,10 @@ public class DbSeeder(
         {
             new Project("Canal Cleanup", "CC2025", dateRanges[0], networks[0]),
             new Project("River Monitoring", "RM2025", dateRanges[1], networks[1]),
-            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[0]),
-            new Project("Pond Restoration", "PR2025", dateRanges[3], networks[1]),
-            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[0]),
-            new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[1])
+            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[2]),
+            new Project("Pond Restoration", "PR2025", dateRanges[3], networks[3]),
+            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[4]),
+            new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[5])
         };
 
         dbContext.Projects.AddRange(projects);
