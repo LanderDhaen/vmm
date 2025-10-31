@@ -130,8 +130,8 @@ public class DbSeeder(
 		    return;
 
 	    List<Zone> zones = new() {
-			new Zone("West"),
-			new Zone("Oost")
+			new Zone("Zone West"),
+			new Zone("Zone Oost")
 	    };
 	    
 	    dbContext.Zones.AddRange(zones);
@@ -147,8 +147,14 @@ public class DbSeeder(
 		    return;
 	    
 	    List<MeasurementNetwork> measurementNetworks = new() {
-		    new MeasurementNetwork("West", zones[0]),
-		    new MeasurementNetwork("Oost", zones[1])
+		    new MeasurementNetwork("Conductiviteitmeetnet West", zones[0]),
+		    new MeasurementNetwork("Multiparameter West", zones[0]),
+		    new MeasurementNetwork("Nitraatmeetnet West", zones[0]),
+		    new MeasurementNetwork("Overstortmeetnet West", zones[0]),
+		    new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
+		    new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
+		    new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
+		    new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
 	    };
 	    
 	    dbContext.MeasurementNetworks.AddRange(measurementNetworks);
