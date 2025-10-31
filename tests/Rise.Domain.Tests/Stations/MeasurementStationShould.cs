@@ -22,7 +22,7 @@ public class MeasurementStationShould
 		new DateOnly(2025, 5, 10)
 	);
 	
-	private static readonly Zone DummyZone = new("DummyZone");
+	private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
 	private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
 	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange, DummyMeasurementNetwork);

@@ -12,7 +12,7 @@ public class ProjectShould {
         new DateOnly(2025, 5, 10)
     );
 
-    private static readonly Zone DummyZone = new("DummyZone");
+    private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
     private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
     [Fact]

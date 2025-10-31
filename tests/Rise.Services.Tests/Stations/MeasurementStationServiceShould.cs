@@ -29,7 +29,7 @@ namespace Rise.Services.Tests.Stations
 		    new DateOnly(2025, 5, 10)
 	    );
 	    
-	    private static readonly Zone DummyZone = new("DummyZone");
+	    private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
 	    private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
 	    private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyMeasurementNetwork);
@@ -50,7 +50,7 @@ namespace Rise.Services.Tests.Stations
             context.SaveChanges();
 
             var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-            var measurementNetwork = new MeasurementNetwork("TestNetwork", new Zone("TestZone"));
+            var measurementNetwork = new MeasurementNetwork("TestNetwork", new Zone("TestZone", "TestCode"));
             
             project = new Project("Test Project", "TP2025", dateRange, measurementNetwork);
 
