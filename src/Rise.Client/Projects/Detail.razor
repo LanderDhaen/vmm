@@ -16,7 +16,10 @@ else
 		<MudTabs Border="false">
 			<!-- INFO TAB -->
 			<MudTabPanel Text="Info">
-				<MudText Class="m-2" Typo="Typo.h5">Naam</MudText>
+				<div class="d-flex align-center mt-2 mb-2">
+					<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
+					<MudIcon  Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+				</div>
 				<MudStack>
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
