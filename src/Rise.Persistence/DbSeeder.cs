@@ -1,4 +1,5 @@
 using System;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,264 +19,245 @@ namespace Rise.Persistence;
 ///     Seeds the database
 /// </summary>
 public class DbSeeder(
-    ApplicationDbContext dbContext,
-    RoleManager<IdentityRole> roleManager,
-    UserManager<IdentityUser> userManager)
-{
-    private const string PasswordDefault = "A1b2C3!";
+	ApplicationDbContext dbContext,
+	RoleManager<IdentityRole> roleManager,
+	UserManager<IdentityUser> userManager) {
+	private const string PasswordDefault = "A1b2C3!";
 
-    public async Task SeedAsync()
-    {
-        await RolesAsync();
-        await UsersAsync();
-        await ProductsAsync();
-        await ZonesAsync();
-	    await MeasurementNetworksAsync();
-        await LocationAsync();
-        await ProjectsAsync();
-        await StationsAsync();
-    }
+	public async Task SeedAsync() {
+		await RolesAsync();
+		await UsersAsync();
+		await ProductsAsync();
+		await ZonesAsync();
+		await MeasurementNetworksAsync();
+		await LocationAsync();
+		await ProjectsAsync();
+		await StationsAsync();
+	}
 
-    private async Task RolesAsync()
-    {
-        if (dbContext.Roles.Any())
-            return;
+	private async Task RolesAsync() {
+		if (dbContext.Roles.Any())
+			return;
 
-        await roleManager.CreateAsync(new IdentityRole("Administrator"));
-        await roleManager.CreateAsync(new IdentityRole("Secretary"));
-        await roleManager.CreateAsync(new IdentityRole("Technician"));
-    }
+		await roleManager.CreateAsync(new IdentityRole("Administrator"));
+		await roleManager.CreateAsync(new IdentityRole("Secretary"));
+		await roleManager.CreateAsync(new IdentityRole("Technician"));
+	}
 
-    private async Task UsersAsync()
-    {
-        if (dbContext.Users.Any())
-            return;
+	private async Task UsersAsync() {
+		if (dbContext.Users.Any())
+			return;
 
-        await dbContext.Roles.ToListAsync();
+		await dbContext.Roles.ToListAsync();
 
-        IdentityUser admin = new()
-        {
-            UserName = "admin@example.com",
-            Email = "admin@example.com",
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(admin, PasswordDefault);
+		IdentityUser admin = new() {
+			UserName = "admin@example.com",
+			Email = "admin@example.com",
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(admin, PasswordDefault);
 
-        IdentityUser secretary = new()
-        {
-            UserName = "secretary@example.com",
-            Email = "secretary@example.com",
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(secretary, PasswordDefault);
+		IdentityUser secretary = new() {
+			UserName = "secretary@example.com",
+			Email = "secretary@example.com",
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(secretary, PasswordDefault);
 
-        IdentityUser technicianAccount1 = new()
-        {
-            UserName = "technician1@example.com",
-            Email = "technician1@example.com",
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(technicianAccount1, PasswordDefault);
+		IdentityUser technicianAccount1 = new() {
+			UserName = "technician1@example.com",
+			Email = "technician1@example.com",
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(technicianAccount1, PasswordDefault);
 
-        IdentityUser technicianAccount2 = new()
-        {
-            UserName = "technician2@example.com",
-            Email = "technician2@example.com",
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(technicianAccount2, PasswordDefault);
+		IdentityUser technicianAccount2 = new() {
+			UserName = "technician2@example.com",
+			Email = "technician2@example.com",
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(technicianAccount2, PasswordDefault);
 
-        IdentityUser user = new()
-        {
-            UserName = "user@example.com",
-            Email = "user@example.com",
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(user, PasswordDefault);
+		IdentityUser user = new() {
+			UserName = "user@example.com",
+			Email = "user@example.com",
+			EmailConfirmed = true
+		};
+		await userManager.CreateAsync(user, PasswordDefault);
 
-        await userManager.AddToRoleAsync(admin, "Administrator");
-        await userManager.AddToRoleAsync(secretary, "Secretary");
-        await userManager.AddToRoleAsync(technicianAccount1, "Technician");
-        await userManager.AddToRoleAsync(technicianAccount2, "Technician");
+		await userManager.AddToRoleAsync(admin, "Administrator");
+		await userManager.AddToRoleAsync(secretary, "Secretary");
+		await userManager.AddToRoleAsync(technicianAccount1, "Technician");
+		await userManager.AddToRoleAsync(technicianAccount2, "Technician");
 
-        dbContext.Technicians.AddRange(
-            new Technician("Tech 1", "Awesome", technicianAccount1.Id),
-            new Technician("Tech 2", "Less Awesome", technicianAccount2.Id));
+		dbContext.Technicians.AddRange(
+			new Technician("Tech 1", "Awesome", technicianAccount1.Id),
+			new Technician("Tech 2", "Less Awesome", technicianAccount2.Id));
 
-        await dbContext.SaveChangesAsync();
-    }
+		await dbContext.SaveChangesAsync();
+	}
 
-    private async Task ProductsAsync()
-    {
-        if (dbContext.Products.Any())
-            return;
+	private async Task ProductsAsync() {
+		if (dbContext.Products.Any())
+			return;
 
-        dbContext.Products.AddRange(
-            new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
-            new Product { Name = "Smartphone", Description = "6.5-inch screen, 128GB storage" },
-            new Product { Name = "Headphones", Description = "Wireless noise-cancelling" },
-            new Product { Name = "Keyboard", Description = "Mechanical RGB backlit" },
-            new Product { Name = "Mouse", Description = "Ergonomic wireless mouse" },
-            new Product { Name = "Monitor", Description = "27-inch 4K UHD display" },
-            new Product { Name = "Printer", Description = "All-in-one inkjet printer" },
-            new Product { Name = "Camera", Description = "Mirrorless 24MP with 4K video" },
-            new Product { Name = "Smartwatch", Description = "Heart rate monitor, GPS" },
-            new Product { Name = "Speaker", Description = "Bluetooth portable speaker" }
-        );
+		dbContext.Products.AddRange(
+			new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
+			new Product { Name = "Smartphone", Description = "6.5-inch screen, 128GB storage" },
+			new Product { Name = "Headphones", Description = "Wireless noise-cancelling" },
+			new Product { Name = "Keyboard", Description = "Mechanical RGB backlit" },
+			new Product { Name = "Mouse", Description = "Ergonomic wireless mouse" },
+			new Product { Name = "Monitor", Description = "27-inch 4K UHD display" },
+			new Product { Name = "Printer", Description = "All-in-one inkjet printer" },
+			new Product { Name = "Camera", Description = "Mirrorless 24MP with 4K video" },
+			new Product { Name = "Smartwatch", Description = "Heart rate monitor, GPS" },
+			new Product { Name = "Speaker", Description = "Bluetooth portable speaker" }
+		);
 
-        await dbContext.SaveChangesAsync();
-    }
+		await dbContext.SaveChangesAsync();
+	}
 
-    private async Task ZonesAsync() {
-	    if (dbContext.Zones.Any())
-		    return;
+	private async Task ZonesAsync() {
+		if (dbContext.Zones.Any())
+			return;
 
-	    List<Zone> zones = new() {
+		List<Zone> zones = new() {
 			new Zone("Zone West", "ASTA"),
 			new Zone("Zone Oost", "HSTA")
-	    };
-	    
-	    dbContext.Zones.AddRange(zones);
-	    await dbContext.SaveChangesAsync();
-    }
-    
-    private async Task MeasurementNetworksAsync() {
-	    if (dbContext.MeasurementNetworks.Any())
-		    return;
+		};
 
-	    var zones = await dbContext.Zones.ToListAsync();
-	    if (!zones.Any())
-		    return;
-	    
-	    List<MeasurementNetwork> measurementNetworks = new() {
-		    new MeasurementNetwork("Conductiviteitmeetnet West", zones[0]),
-		    new MeasurementNetwork("Multiparameter West", zones[0]),
-		    new MeasurementNetwork("Nitraatmeetnet West", zones[0]),
-		    new MeasurementNetwork("Overstortmeetnet West", zones[0]),
-		    new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
-		    new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
-		    new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
-		    new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
-	    };
-	    
-	    dbContext.MeasurementNetworks.AddRange(measurementNetworks);
-	    await dbContext.SaveChangesAsync();
-    }
-    
-    
+		dbContext.Zones.AddRange(zones);
+		await dbContext.SaveChangesAsync();
+	}
 
-    private async Task LocationAsync()
-    {
-        if (dbContext.Locations.Any())
-            return;
+	private async Task MeasurementNetworksAsync() {
+		if (dbContext.MeasurementNetworks.Any())
+			return;
 
-        List<Address> addresses = new()
-        {
-            new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
-            new Address("", "", "Antwerpen", "2000"),
-            new Address("Veldstraat 78", null, "Gent", "9000"),
-            new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-            new Address(null, null, "Breda", "4811", "NL"),
-        };
+		var zones = await dbContext.Zones.ToListAsync();
+		if (!zones.Any())
+			return;
 
-        List<Coordinate> coordinates = new()
-        {
-            new Coordinate(4.35, 50.85),   // Brussel (Koningstraat 12)
-            new Coordinate(4.40, 51.22),   // Antwerpen
-            new Coordinate(3.73, 51.05),   // Gent
-            new Coordinate(4.37, 50.84),   // Bruxelles (Rue de la Loi)
-            new Coordinate(4.78, 51.59),   // Breda
-            new Coordinate(2.92, 51.22)    // Oostende
-        };
+		List<MeasurementNetwork> measurementNetworks = new() {
+			new MeasurementNetwork("Conductiviteitmeetnet West", zones[0]),
+			new MeasurementNetwork("Multiparameter West", zones[0]),
+			new MeasurementNetwork("Nitraatmeetnet West", zones[0]),
+			new MeasurementNetwork("Overstortmeetnet West", zones[0]),
+			new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
+			new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
+			new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
+			new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
+		};
 
-        List<Location> locations = new()
-        {
-            new Location("Paleisgracht", addresses[0], coordinates[0]),
-            new Location("Schelde", addresses[1], coordinates[1]),
-            new Location("Watersportbaan", addresses[2], coordinates[2]),
-            new Location("Paleisvijver", addresses[3], coordinates[3]),
-            new Location("Stadsgracht", addresses[4], coordinates[4]),
-            new Location("Zee", null, coordinates[5])
-        };
+		dbContext.MeasurementNetworks.AddRange(measurementNetworks);
+		await dbContext.SaveChangesAsync();
+	}
 
-        dbContext.Locations.AddRange(locations);
-        await dbContext.SaveChangesAsync();
-    }
 
-    private async Task ProjectsAsync()
-    {
-        if (dbContext.Projects.Any())
-            return;
+	private async Task LocationAsync() {
+		if (dbContext.Locations.Any())
+			return;
 
-        List<MeasurementNetwork> networks = await dbContext.MeasurementNetworks.ToListAsync();
-        if (!networks.Any())
-	        return;
+		List<Address> addresses = new() {
+			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
+			new Address("", "", "Antwerpen", "2000"),
+			new Address("Veldstraat 78", null, "Gent", "9000"),
+			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
+			new Address(null, null, "Breda", "4811", "NL"),
+		};
 
-        List<DateRange> dateRanges = new()
-        {
-            new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
-            new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
-            new DateRange(new DateOnly(2025, 3, 10), new DateOnly(2025, 9, 25)),
-            new DateRange(new DateOnly(2025, 4, 5), null),
-            new DateRange(new DateOnly(2025, 5, 12), new DateOnly(2025, 12, 31)),
-            new DateRange(new DateOnly(2025, 5, 12), null)
-        };
+		List<Coordinate> coordinates = new() {
+			new Coordinate(4.35, 50.85), // Brussel (Koningstraat 12)
+			new Coordinate(4.40, 51.22), // Antwerpen
+			new Coordinate(3.73, 51.05), // Gent
+			new Coordinate(4.37, 50.84), // Bruxelles (Rue de la Loi)
+			new Coordinate(4.78, 51.59), // Breda
+			new Coordinate(2.92, 51.22) // Oostende
+		};
 
-        List<Project> projects = new()
-        {
-            new Project("Canal Cleanup", "CC2025", dateRanges[0], networks[0]),
-            new Project("River Monitoring", "RM2025", dateRanges[1], networks[1]),
-            new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[2]),
-            new Project("Pond Restoration", "PR2025", dateRanges[3], networks[3]),
-            new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[4]),
-            new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[5])
-        };
+		List<Location> locations = new() {
+			new Location("Paleisgracht", addresses[0], coordinates[0]),
+			new Location("Schelde", addresses[1], coordinates[1]),
+			new Location("Watersportbaan", addresses[2], coordinates[2]),
+			new Location("Paleisvijver", addresses[3], coordinates[3]),
+			new Location("Stadsgracht", addresses[4], coordinates[4]),
+			new Location("Zee", null, coordinates[5])
+		};
 
-        dbContext.Projects.AddRange(projects);
-        await dbContext.SaveChangesAsync();
-    }
+		dbContext.Locations.AddRange(locations);
+		await dbContext.SaveChangesAsync();
+	}
 
-    private async Task StationsAsync()
-    {
-        if (dbContext.MeasurementStations.Any())
-            return;
-        
-        var locations = dbContext.Locations.Local.Any()
-            ? dbContext.Locations.Local.ToList()
-            : await dbContext.Locations.ToListAsync();
+	private async Task ProjectsAsync() {
+		if (dbContext.Projects.Any())
+			return;
 
-        var projects = dbContext.Projects.Local.Any()
-            ? dbContext.Projects.Local.ToList()
-            : await dbContext.Projects.ToListAsync();
+		List<MeasurementNetwork> networks = await dbContext.MeasurementNetworks.ToListAsync();
+		if (!networks.Any())
+			return;
 
-        if (!locations.Any() || !projects.Any())
-            return;
+		List<DateRange> dateRanges = new() {
+			new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
+			new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
+			new DateRange(new DateOnly(2025, 3, 10), new DateOnly(2025, 9, 25)),
+			new DateRange(new DateOnly(2025, 4, 5), null),
+			new DateRange(new DateOnly(2025, 5, 12), new DateOnly(2025, 12, 31)),
+			new DateRange(new DateOnly(2025, 5, 12), null)
+		};
 
-        int l0 = 0;
-        int l1 = Math.Min(1, locations.Count - 1);
-        int p0 = 0;
-        int p1 = Math.Min(1, projects.Count - 1);
+		List<Project> projects = new() {
+			new Project("Canal Cleanup", "CC2025", dateRanges[0], networks[0]),
+			new Project("River Monitoring", "RM2025", dateRanges[1], networks[1]),
+			new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[2]),
+			new Project("Pond Restoration", "PR2025", dateRanges[3], networks[3]),
+			new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[4]),
+			new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[5])
+		};
 
-        var station1 = new MeasurementStation(
-            code: "STN-001",
-            status: "Active",
-            location: locations[l0],
-            installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
-            project: projects[p0] 
-        );
+		dbContext.Projects.AddRange(projects);
+		await dbContext.SaveChangesAsync();
+	}
 
-        var station2 = new MeasurementStation(
-            code: "STN-002",
-            status: "Inactive",
-            location: locations[l1],
-            installation: new Installation(
-                installedAt: DateTime.UtcNow.AddYears(-1),
-                removedAt: DateTime.UtcNow.AddDays(-30)
-            ),
-            project: projects[p1] 
-        );
+	private async Task StationsAsync() {
+		if (dbContext.MeasurementStations.Any())
+			return;
 
-        dbContext.MeasurementStations.AddRange(station1, station2);
-        await dbContext.SaveChangesAsync();
-    }
+		var locations = dbContext.Locations.Local.Any()
+			? dbContext.Locations.Local.ToList()
+			: await dbContext.Locations.ToListAsync();
+
+		var projects = dbContext.Projects.Local.Any()
+			? dbContext.Projects.Local.ToList()
+			: await dbContext.Projects.ToListAsync();
+
+		if (!locations.Any() || !projects.Any())
+			return;
+
+		int l0 = 0;
+		int l1 = Math.Min(1, locations.Count - 1);
+		int p0 = 0;
+		int p1 = Math.Min(1, projects.Count - 1);
+
+		var station1 = new MeasurementStation(
+			code: "STN-001",
+			status: "Active",
+			location: locations[l0],
+			installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
+			project: projects[p0]
+		);
+
+		var station2 = new MeasurementStation(
+			code: "STN-002",
+			status: "Inactive",
+			location: locations[l1],
+			installation: new Installation(
+				installedAt: DateTime.UtcNow.AddYears(-1),
+				removedAt: DateTime.UtcNow.AddDays(-30)
+			),
+			project: projects[p1]
+		);
+
+		dbContext.MeasurementStations.AddRange(station1, station2);
+		await dbContext.SaveChangesAsync();
+	}
 }

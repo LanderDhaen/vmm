@@ -17,14 +17,14 @@ public class Zone : Entity {
 		Name = name;
 		Code = code;
 	}
-	
+
 	public string Name {
 		get => _name;
 		set => _name = Guard.Against.NullOrWhiteSpace(value);
 	}
 
 	public string Code {
-		get => _code; 
-		set =>  _code = Guard.Against.NullOrWhiteSpace(value);
+		get => _code;
+		set => _code = Guard.Against.NullOrWhiteSpace(value);
 	}
 }

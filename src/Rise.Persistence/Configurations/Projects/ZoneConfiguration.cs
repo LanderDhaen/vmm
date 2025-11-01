@@ -13,9 +13,9 @@ internal class ZoneConfiguration : EntityConfiguration<Zone> {
 		base.Configure(builder);
 		builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
 		builder.Property(x => x.Code).IsRequired().HasMaxLength(50);
-		
+
 		// Constraints
-		
+
 		builder.HasIndex(x => x.Code).IsUnique();
 	}
 }
