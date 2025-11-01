@@ -43,12 +43,12 @@ else
 
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-						<MudPaper Class="p-2">@_project.Code</MudPaper>
+						<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
 					</MudItem>
 
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Zone</MudText>
-						<MudPaper Class="p-2">@_project.Code</MudPaper>
+						<MudPaper Class="p-2">@_project.Zone</MudPaper>
 					</MudItem>
 
 					<MudItem Class="m-2">
@@ -97,7 +97,7 @@ else
 			</MudTabPanel>
 
 			<!-- HISTORY -->
-			<MudTabPanel Text="..." OnClick="NavigateToHistory"></MudTabPanel>
+			<MudTabPanel Text="Historiek" OnClick="NavigateToHistory"></MudTabPanel>
 		</MudTabs>
 
 		<MudButton Icon="@Icons.Material.Filled.MoreHoriz" OnClick="NavigateToHistory"/>
