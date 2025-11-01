@@ -1,27 +1,84 @@
-<MudAppBar Elevation="1" Color="Color.Primary" Dense="true">
-	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-		<MudButton Href="/" Color="Color.Inherit" Variant="Variant.Text">
-			Thuis
-		</MudButton>
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 
-		<MudButton Href="/projects" Color="Color.Inherit" Variant="Variant.Text">
-			Projecten
-		</MudButton>
-		
-		<MudButton Href="/stations" Color="Color.Inherit" Variant="Variant.Text">
-			Stations
-		</MudButton>
+<MudAppBar Elevation="1" Style="color: gray; background: #126B8D;" Dense="true" Fixed="false">
+	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Style="margin: 0.5rem;">
+		@if (IsHome)
+		{
+			<MudButton
+				Href="/projects"
+				Color="Color.Default"
+				Variant="Variant.Text"
+				Style="border-radius: 5px; color: gray; background: white;"
+			>Projecten
+			</MudButton>
+		}
+		else
+		{
+			<MudFab OnClick="@GoBack" Style="color: gray;border-radius: 5px;background: white;"
+			        StartIcon="@Icons.Material.Filled.ArrowBackIos" Size="Size.Small" AriaLabel="Terug"/>
+		}
+
+		<MudSpacer/>
 	</MudStack>
 
 	<MudSpacer/>
 
 	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-		<MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Inherit">
-			Log in
-		</MudButton>
-
-		<MudButton Href="/register" Variant="Variant.Filled" Color="Color.Secondary">
-			Registreer
-		</MudButton>
+		@if (IsHome)
+		{
+			<MudFab OnClick="@GoToLogin" Style="color: gray;border-radius: 5px;background: white;"
+			        StartIcon="@Icons.Material.Filled.Person" Size="Size.Small" AriaLabel="Login"/>
+		}
+		else
+		{
+			<!-- Klik op dit icoon navigeert nu naar /logout -->
+			<MudFab OnClick="@GoToLogout" Style="color: gray;border-radius: 5px;background: white;"
+			        StartIcon="@Icons.Material.Filled.HowToReg" Size="Size.Small" AriaLabel="Logout"/>
+		}
 	</MudStack>
 </MudAppBar>
+
+@code {
+
+	// Computed property that checks whether we're on the root (home) route.
+	private bool IsHome => string.IsNullOrEmpty(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+
+	protected override void OnInitialized()
+	{
+		// Subscribe to navigation events so the component re-renders when the URL changes.
+		NavigationManager.LocationChanged += OnLocationChanged;
+	}
+
+	private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+	{
+		// Ensure re-render on the UI thread
+		InvokeAsync(StateHasChanged);
+	}
+
+	// Called when the back button is clicked — instructs the browser to go back in history.
+	private async Task GoBack()
+	{
+		await JSRuntime.InvokeVoidAsync("history.back");
+	}
+
+	// Navigeer naar de login pagina
+	private void GoToLogin()
+	{
+		NavigationManager.NavigateTo("/login");
+	}
+
+	// Navigeer naar de logout pagina
+	private void GoToLogout()
+	{
+		NavigationManager.NavigateTo("/logout");
+	}
+
+	public void Dispose()
+	{
+		// Unsubscribe to avoid memory leaks
+		NavigationManager.LocationChanged -= OnLocationChanged;
+	}
+
+}
