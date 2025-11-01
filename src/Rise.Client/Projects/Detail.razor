@@ -15,33 +15,28 @@ else
 		<div class="d-flex">
 			<MudIconButton
 				Class="p-0"
-				Icon="@Icons.Material.Outlined.ArrowBackIos"
+				Icon="@Icons.Material.Outlined.ArrowBack"
 				OnClick="NavigateToProjects"
 				Style="background: transparent">
 			</MudIconButton>
-			<MudText Class="m-4" Typo="Typo.h3">Site</MudText>
+			<MudText Class="m-4" Typo="Typo.h3" Style="font-weight: 800">Site</MudText>
 		</div>
 		@* TODO: achtergrond tab doorzichtig maken *@
 		@* TODO: iets anders dan tabs gebruiken? *@
 		<MudTabs Border="false">
 			<!-- INFO TAB -->
 			<MudTabPanel Text="Info">
+				<MudText Class="m-2" Typo="Typo.h5">Naam</MudText>
 				<MudStack>
-					@* TODO: mudtextfield ipv mudpaper *@
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
 						<MudPaper Class="p-2">@_project.Code</MudPaper>
 					</MudItem>
 
 					<MudItem Class="m-2">
-						<MudText Typo="Typo.subtitle2">Name</MudText>
+						<MudText Typo="Typo.subtitle2">Naam</MudText>
 						<MudPaper Class="p-2">@_project.Name</MudPaper>
 					</MudItem>
-
-					@* <MudItem Class="m-2"> *@
-					@* 	<MudText Typo="Typo.subtitle2">Site</MudText> *@
-					@* 	<MudPaper Class="p-2">@_project.Location.Name</MudPaper> *@
-					@* </MudItem> *@
 
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Start datum</MudText>
@@ -54,13 +49,13 @@ else
 					</MudItem>
 
 					<MudItem Class="m-2">
-						<MudText Typo="Typo.subtitle2">Provincie</MudText>
-						<MudPaper Class="p-2">TODO</MudPaper>
+						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+						<MudPaper Class="p-2">@_project.Code</MudPaper>
 					</MudItem>
-
+					
 					<MudItem Class="m-2">
-						<MudText Typo="Typo.subtitle2">Regio</MudText>
-						<MudPaper Class="p-2">TODO</MudPaper>
+						<MudText Typo="Typo.subtitle2">Zone</MudText>
+						<MudPaper Class="p-2">@_project.Code</MudPaper>
 					</MudItem>
 
 					<MudItem Class="m-2">
