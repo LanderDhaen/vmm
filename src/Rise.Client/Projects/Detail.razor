@@ -1,4 +1,5 @@
 @page "/projects/{ProjectId:guid}"
+@using Rise.Client.Components
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -11,16 +12,7 @@
 else
 {
 	<MudContainer>
-
-		<div class="d-flex">
-			<MudIconButton
-				Class="p-0"
-				Icon="@Icons.Material.Outlined.ArrowBack"
-				OnClick="NavigateToProjects"
-				Style="background: transparent">
-			</MudIconButton>
-			<MudText Class="m-4" Typo="Typo.h3" Style="font-weight: 800">Site</MudText>
-		</div>
+		<ArrowHeader Title="Site" OnBack="NavigateToProjects" Class="m-4"/>
 		@* TODO: achtergrond tab doorzichtig maken *@
 		@* TODO: iets anders dan tabs gebruiken? *@
 		<MudTabs Border="false">
@@ -52,7 +44,7 @@ else
 						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
 						<MudPaper Class="p-2">@_project.Code</MudPaper>
 					</MudItem>
-					
+
 					<MudItem Class="m-2">
 						<MudText Typo="Typo.subtitle2">Zone</MudText>
 						<MudPaper Class="p-2">@_project.Code</MudPaper>
