@@ -19,48 +19,48 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
-			_parameters = new RealTimeMap.LoadParameters {
-				location = new RealTimeMap.Location {
-					latitude = _project.Location.Coordinate.Y,
-					longitude = _project.Location.Coordinate.X
-				},
-				zoomLevel = 18,
-
-				// 👇 meerdere basemap-types instellen
-				basemap = new RealTimeMap.Basemap {
-					basemapLayers = new List<RealTimeMap.BasemapLayer> {
-						new RealTimeMap.BasemapLayer {
-							url =
-								"http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
-							attribution = "©World Topo Map",
-							title = "World Topo Map",
-							detectRetina = true
-						},
-
-						new RealTimeMap.BasemapLayer {
-							url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-							attribution = "©OpenStreetMap",
-							title = "OpenStreetMap",
-							detectRetina = true
-						},
-
-						new RealTimeMap.BasemapLayer {
-							url =
-								"http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-							attribution = "©World Street Map",
-							title = "World Street Map",
-							detectRetina = true
-						},
-						new RealTimeMap.BasemapLayer {
-							url =
-								"http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-							attribution = "©World Imagery",
-							title = "World Imagery",
-							detectRetina = true
-						},
-					}
-				}
-			};
+			// _parameters = new RealTimeMap.LoadParameters {
+			// 	location = new RealTimeMap.Location {
+			// 		latitude = _project.Location.Coordinate.Y,
+			// 		longitude = _project.Location.Coordinate.X
+			// 	},
+			// 	zoomLevel = 18,
+			//
+			// 	// 👇 meerdere basemap-types instellen
+			// 	basemap = new RealTimeMap.Basemap {
+			// 		basemapLayers = new List<RealTimeMap.BasemapLayer> {
+			// 			new RealTimeMap.BasemapLayer {
+			// 				url =
+			// 					"http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+			// 				attribution = "©World Topo Map",
+			// 				title = "World Topo Map",
+			// 				detectRetina = true
+			// 			},
+			//
+			// 			new RealTimeMap.BasemapLayer {
+			// 				url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+			// 				attribution = "©OpenStreetMap",
+			// 				title = "OpenStreetMap",
+			// 				detectRetina = true
+			// 			},
+			//
+			// 			new RealTimeMap.BasemapLayer {
+			// 				url =
+			// 					"http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+			// 				attribution = "©World Street Map",
+			// 				title = "World Street Map",
+			// 				detectRetina = true
+			// 			},
+			// 			new RealTimeMap.BasemapLayer {
+			// 				url =
+			// 					"http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+			// 				attribution = "©World Imagery",
+			// 				title = "World Imagery",
+			// 				detectRetina = true
+			// 			},
+			// 		}
+			// 	}
+			// };
 		}
 	}
 

@@ -4,6 +4,13 @@
 
 <PageTitle>Projecten</PageTitle>
 
+<style>
+.clickable-rows .mud-table-row:hover,
+.clickable-rows .mud-data-grid-row:hover {
+  cursor: pointer;
+}
+</style>
+
 <MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 	<MudDataGrid T="ProjectDto.Index"
 	             ServerData="GetProjectsAsync"
@@ -12,15 +19,17 @@
 	             Striped="true"
 	             Hover="true"
 	             Dense="false"
-	             Elevation="0">
-		<ToolBarContent><ToolBar /></ToolBarContent>
+	             Elevation="0"
+	             RowClick="OnRowClick">
+		
+		<ToolBarContent><ToolBar/></ToolBarContent>
 
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
-			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" />
+			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet"/>
 			<PropertyColumn Property="x => x.Zone" Title="Zone"/>
 		</Columns>
 
