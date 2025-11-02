@@ -23,16 +23,12 @@ public partial class Detail {
 			_project = result.Value.Project;
 
 			_items.Clear();
-			_items.Add(new BreadcrumbItem("Projecten", href: "#"));
+			_items.Add(new BreadcrumbItem("Projecten", href: "/projects"));
 			_items.Add(new BreadcrumbItem(_project?.Code ?? "Detail", href: null, disabled: true));
 		}
 	}
 
 	//NAV
-	private void NavigateToHistory() {
-		Navigation.NavigateTo($"/projects/{ProjectId}/history");
-	}
-
 	private void NavigateToProjects() {
 		Navigation.NavigateTo($"/projects/");
 	}

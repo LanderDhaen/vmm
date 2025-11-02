@@ -20,11 +20,11 @@ else
 		<MudContainer>
 			<MudBreadcrumbs Items="_items">
 				<SeparatorTemplate>
-					<MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+					<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
 				</SeparatorTemplate>
 			</MudBreadcrumbs>
 
-		
+
 			@* Mobile *@
 			<ArrowHeader Title="Site" OnBack="NavigateToProjects" Class="m-4"/>
 			<MudTabs Border="false">
@@ -111,10 +111,11 @@ else
 				</MudTabPanel>
 
 				<!-- HISTORY -->
-				<MudTabPanel Text="Historiek" OnClick="NavigateToHistory"></MudTabPanel>
+				<MudTabPanel Text="Historiek">
+					<MudText Typo="Typo.body1">[Lijst van historiek]</MudText>
+				</MudTabPanel>
 			</MudTabs>
 
-			<MudButton Icon="@Icons.Material.Filled.MoreHoriz" OnClick="NavigateToHistory"/>
 		</MudContainer>
 	}
 }
