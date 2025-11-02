@@ -25,101 +25,102 @@ else
 		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
 
 	</MudHidden>
-	
-	<div class="d-flex justify-space-between p-4 align-center">
-		<MudText>Info</MudText>
-		<MudText>Meetstations</MudText>
-		<MudText>Historiek</MudText>
+
+	@* <div class="d-flex justify-space-between p-4 align-center"> *@
+	@* 	<MudText>Info</MudText> *@
+	@* 	<MudText>Meetstations</MudText> *@
+	@* 	<MudText>Historiek</MudText> *@
+	@* 	<MudDivider Vertical="true" FlexItem="true"/> *@
+	@* 	<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon> *@
+	@* </div> *@
+
+	<div class="d-flex justify-space-between p-4 align-center" role="tablist" aria-label="Project tabs">
+		<MudText
+			Style="cursor: pointer; @(_selectedTab == 0 ? "border-bottom: 2px solid; border-color:gray;" : "")"
+			@onclick="() => SetTab(0)"
+			role="tab"
+			aria-selected="@(_selectedTab == 0)">
+			Info
+		</MudText>
+
+		<MudText
+			Style="cursor: pointer; @(_selectedTab == 1 ? "border-bottom: 2px solid; border-color:gray;" : "")"
+			@onclick="() => SetTab(1)"
+			role="tab"
+			aria-selected="@(_selectedTab == 1)">
+			Meetstations
+		</MudText>
+
+		<MudText
+			Style="cursor: pointer; @(_selectedTab == 2 ? "border-bottom: 2px solid; border-color:gray;" : "")"
+			@onclick="() => SetTab(2)"
+			role="tab"
+			aria-selected="@(_selectedTab == 2)">
+			Historiek
+		</MudText>
+
 		<MudDivider Vertical="true" FlexItem="true"/>
 		<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon>
 	</div>
 
-	<MudTabs Border="false">
-		<!-- INFO TAB -->
-		<MudTabPanel Text="Info">
-			<div class="d-flex align-center mt-2 mb-2">
-				<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
-				<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #7DD3FC"></MudIcon>
-			</div>
-			<MudStack>
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-					<MudPaper Class="p-2">@_project.Code</MudPaper>
-				</MudItem>
+	@* Conditionally render the panels based on the selected index *@
+	@if (_selectedTab == 0)
+	{
+		<div class="d-flex align-center mt-2 mb-2">
+			<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #7DD3FC"></MudIcon>
+		</div>
+		<MudStack>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
+				<MudPaper Class="p-2">@_project.Code</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Naam</MudText>
-					<MudPaper Class="p-2">@_project.Name</MudPaper>
-				</MudItem>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Naam</MudText>
+				<MudPaper Class="p-2">@_project.Name</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Start datum</MudText>
-					<MudPaper Class="p-2">@_project.StartDate</MudPaper>
-				</MudItem>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Start datum</MudText>
+				<MudPaper Class="p-2">@_project.StartDate</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-					<MudPaper Class="p-2">@_project.EndDate</MudPaper>
-				</MudItem>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Eind datum</MudText>
+				<MudPaper Class="p-2">@_project.EndDate</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-					<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
-				</MudItem>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+				<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Zone</MudText>
-					<MudPaper Class="p-2">@_project.Zone</MudPaper>
-				</MudItem>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Zone</MudText>
+				<MudPaper Class="p-2">@_project.Zone</MudPaper>
+			</MudItem>
 
-				<MudItem Class="m-2">
-					<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
-					<MudTextField
-						@bind-Value="_remarks"
-						FullWidth="true"
-						Lines="4"
-						Class="white"/>
-				</MudItem>
-			</MudStack>
-		</MudTabPanel>
+			<MudItem Class="m-2">
+				<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
+				<MudTextField
+					@bind-Value="_remarks"
+					FullWidth="true"
+					Lines="4"
+					Class="white"/>
+			</MudItem>
+		</MudStack>
+	}
+	else if (_selectedTab == 1)
+	{
+		<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
+	}
+	else if (_selectedTab == 2)
+	{
+		<MudText Typo="Typo.body1">[Lijst van historiek]</MudText>
+	}
 
-		@* <!-- MAP TAB --> *@
-		@* <MudTabPanel Text="Kaart"> *@
-		@* 	<MudContainer Class="pa-4"> *@
-		@* 		<MudStack Justify="Justify.Center"> *@
-		@* 			<MudItem> *@
-		@* 				<MudText Typo="Typo.subtitle2" Class="text-secondary">Breedtegraad</MudText> *@
-		@* 				<MudPaper *@
-		@* 					Class="p-2 "> @_project.Location.Coordinate.Y.ToString("F5") *@
-		@* 				</MudPaper> *@
-		@* 			</MudItem> *@
-		@* *@
-		@* 			<MudItem> *@
-		@* 				<MudText Typo="Typo.subtitle2" Class="text-secondary">Lengtegraad</MudText> *@
-		@* 				<MudPaper *@
-		@* 					Class="p-2"> @_project.Location.Coordinate.X.ToString("F5") *@
-		@* 				</MudPaper> *@
-		@* 			</MudItem> *@
-		@* 		</MudStack> *@
-		@* 	</MudContainer> *@
-		@* 	<MudContainer Class="p-4"> *@
-		@* 		<MudPaper> *@
-		@* 			<div style="width: 100%; height: 400px; border-radius: 4px; overflow: hidden;"> *@
-		@* 				<RealTimeMap Parameters="_parameters" height="400px" width="100%"></RealTimeMap> *@
-		@* 			</div> *@
-		@* 		</MudPaper> *@
-		@* 	</MudContainer> *@
-		@* *@
-		@* </MudTabPanel> *@
+	@code {
 
-		<!-- MEETSTATIONS -->
-		<MudTabPanel Text="Meetstations">
-			<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
-		</MudTabPanel>
-
-		<!-- HISTORY -->
-		<MudTabPanel Text="Historiek">
-			<MudText Typo="Typo.body1">[Lijst van historiek]</MudText>
-		</MudTabPanel>
-	</MudTabs>
+	}
 }

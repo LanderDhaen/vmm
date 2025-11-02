@@ -12,9 +12,22 @@ public partial class Detail {
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 
+	// ====== Main ======
 	private ProjectDto.Detail? _project;
 	private string? _remarks;
 	// private RealTimeMap.LoadParameters? _parameters;
+
+	// ====== Tabs ======
+	private int _selectedTab = 0;
+
+	private readonly List<string> _tabs = new() {
+		"Info",
+		"Meetstations",
+		"Historiek"
+	};
+
+	private void SetTab(int index) => _selectedTab = index;
+
 
 	protected override async Task OnInitializedAsync() {
 		var result = await ProjectService.GetDetailAsync(ProjectId);
