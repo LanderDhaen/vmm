@@ -18,6 +18,14 @@ else
 	else
 	{
 		<MudContainer>
+			<MudBreadcrumbs Items="_items">
+				<SeparatorTemplate>
+					<MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+				</SeparatorTemplate>
+			</MudBreadcrumbs>
+
+		
+			@* Mobile *@
 			<ArrowHeader Title="Site" OnBack="NavigateToProjects" Class="m-4"/>
 			<MudTabs Border="false">
 				<!-- INFO TAB -->
