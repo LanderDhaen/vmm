@@ -7,10 +7,12 @@ using MudBlazor.Services;
 using Rise.Client;
 using Rise.Client.Identity;
 using Rise.Client.Locations;
+using Rise.Client.Networks;
 using Rise.Client.Products;
 using Rise.Client.Projects;
 using Rise.Shared.Locations;
 using Rise.Client.Stations;
+using Rise.Shared.Networks;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
 
@@ -56,6 +58,10 @@ try {
 	});
 	
 	builder.Services.AddHttpClient<ILocationService, LocationService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	});
+	
+	builder.Services.AddHttpClient<INetworkService, NetworkService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
 

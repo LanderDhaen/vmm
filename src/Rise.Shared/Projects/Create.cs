@@ -8,12 +8,14 @@ public static partial class ProjectRequest {
 		public string Name { get; set; }
 		public string Code { get; set; }
 		public DateTime? StartDate { get; set; } = DateTime.Now;
+		public Guid MeasurementNetworkId { get; set; } = Guid.Empty;
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
 				RuleFor(x => x.Name).NotEmpty().MaximumLength(250);
 				RuleFor(x => x.Code).NotEmpty().MaximumLength(50);
 				RuleFor(x => x.StartDate).NotNull().WithMessage("Startdatum mag niet leeg zijn!");
+				RuleFor(x => x.MeasurementNetworkId).NotEqual(Guid.Empty).WithMessage("Je moet een meetnet selecteren!");
 			}
 			
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {

@@ -24,10 +24,13 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 
 		var startdate = DateOnly.FromDateTime(request.StartDate!.Value);
-		var measurementNetwork = await dbContext.MeasurementNetworks.FirstAsync(ctx);
+		var measurementNetwork = await dbContext.MeasurementNetworks
+			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
 
-
-		//Gekozen meetnet nog meegeven
+		if (measurementNetwork == null) {
+			return Result.Conflict("Meetnet niet gevonden.");
+		}
+		
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
 		dbContext.Projects.Add(p);

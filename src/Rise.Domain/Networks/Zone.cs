@@ -1,4 +1,4 @@
-namespace Rise.Domain.Projects;
+namespace Rise.Domain.Networks;
 
 /// <summary>
 ///     A zone is something that owns multiple measurement networks.

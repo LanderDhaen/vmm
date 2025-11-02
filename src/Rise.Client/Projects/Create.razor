@@ -6,6 +6,14 @@
 			<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Immediate="true" Label="Naam"/>
 			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Immediate="true" Label="Code"/>
 			<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy" Label="Startdatum"/>
+			@if (networks != null) {
+				<MudSelect T="Guid" @bind-Value="Model.MeasurementNetworkId" Label="Meetnet" Clearable="true">
+					<MudSelectItem Value="@Guid.Empty"><em>Kies een meetnet...</em></MudSelectItem>
+					@foreach (var network in networks) {
+						<MudSelectItem Value="network.Id">@network.Name</MudSelectItem>
+					}
+				</MudSelect>
+			}
 		</MudCardContent>
 	</MudForm>
 	<MudCardActions>
