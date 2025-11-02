@@ -23,10 +23,12 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
-		var location = await dbContext.Locations.FirstAsync(ctx);
 		var startdate = DateOnly.FromDateTime(request.StartDate!.Value);
+		var measurementNetwork = await dbContext.MeasurementNetworks.FirstAsync(ctx);
 
-		Project p = new(request.Name!, request.Code!, new DateRange(startdate), location);
+
+		//Gekozen meetnet nog meegeven
+		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
 		dbContext.Projects.Add(p);
 
