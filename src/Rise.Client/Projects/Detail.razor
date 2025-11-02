@@ -5,13 +5,18 @@
 
 @if (_project is null)
 {
-	<MudContainer Class="d-flex justify-center align-center" Style="height:70vh;">
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
 	</MudContainer>
 }
 else
 {
-	<MudContainer>
+	<MudContainer MaxWidth="MaxWidth.Medium">
+		@* Mobile *@
+		<MudHidden Breakpoint="Breakpoint.SmAndUp">
+			<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
+		</MudHidden>
+		
 		@* Desktop *@
 		<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
 			<MudBreadcrumbs Items="_items">
@@ -21,10 +26,6 @@ else
 			</MudBreadcrumbs>
 		</MudHidden>
 		
-		@* Mobile *@
-		<MudHidden Breakpoint="Breakpoint.SmAndUp">
-			<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
-		</MudHidden>
 		<MudTabs Border="false">
 			<!-- INFO TAB -->
 			<MudTabPanel Text="Info">
