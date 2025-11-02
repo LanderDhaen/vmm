@@ -11,19 +11,28 @@
 }
 else
 {
-	@* Mobile *@
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
-	</MudHidden>
-
 	@* Desktop *@
-	<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+	<MudHidden Breakpoint="Breakpoint.SmAndDown">
 		<MudBreadcrumbs Items="_items">
 			<SeparatorTemplate>
 				<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
 			</SeparatorTemplate>
 		</MudBreadcrumbs>
 	</MudHidden>
+
+	@* Mobile *@
+	<MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
+
+	</MudHidden>
+	
+	<div class="d-flex justify-space-between p-4 align-center">
+		<MudText>Info</MudText>
+		<MudText>Meetstations</MudText>
+		<MudText>Historiek</MudText>
+		<MudDivider Vertical="true" FlexItem="true"/>
+		<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon>
+	</div>
 
 	<MudTabs Border="false">
 		<!-- INFO TAB -->
