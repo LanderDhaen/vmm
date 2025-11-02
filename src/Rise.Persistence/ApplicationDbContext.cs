@@ -35,7 +35,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 		// Some columns need more length, but these can be set on the configuration level for that Entity in particular.
 		configurationBuilder.Properties<string>().HaveMaxLength(4_000);
 		// All decimals columns should have 2 digits after the comma
-		configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
+		configurationBuilder.Properties<decimal>().HavePrecision(18, 6);
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder) {
