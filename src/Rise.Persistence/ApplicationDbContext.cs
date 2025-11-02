@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Rise.Domain.Products;
 using Rise.Domain.Locations; 
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 
 
 namespace Rise.Persistence;
@@ -22,14 +23,17 @@ namespace Rise.Persistence;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) {
 	public DbSet<Product> Products => Set<Product>();
 	public DbSet<Location> Locations => Set<Location>();
+	public DbSet<Zone> Zones => Set<Zone>();
+	public DbSet<MeasurementNetwork> MeasurementNetworks => Set<MeasurementNetwork>();
 	public DbSet<Project> Projects => Set<Project>();
 	public DbSet<Technician> Technicians => Set<Technician>();
+	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		// All columns in the database have a maxlength of 4000.
 		// in NVARACHAR 4000 is the maximum length that can be indexed by a database.
 		// Some columns need more length, but these can be set on the configuration level for that Entity in particular.
-		// configurationBuilder.Properties<string>().HaveMaxLength(4_000);
+		configurationBuilder.Properties<string>().HaveMaxLength(4_000);
 		// All decimals columns should have 2 digits after the comma
 		configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
 	}

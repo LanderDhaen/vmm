@@ -18,13 +18,10 @@
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam"/>
-			<PropertyColumn Property="x => x.DateRange.StartDate" Title="Startdatum"/>
-			<PropertyColumn Property="x => x.DateRange.EndDate" Title="Einddatum"/>
-			<PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")" Title="Coördinaten"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")" Title="Adres"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")" Title="Gemeente"/>
-			<PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum"/>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
+			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" />
+			<PropertyColumn Property="x => x.Zone" Title="Zone"/>
 		</Columns>
 
 		<PagerContent>
