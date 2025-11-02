@@ -1,15 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
 <MudLayout>
-	<NavBar />
+	<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+		<NavBar/>
+	</MudHidden>
 	<MudMainContent>
 		<MudContainer>
 			@Body
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-<MudThemeProvider />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 

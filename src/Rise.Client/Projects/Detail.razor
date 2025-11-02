@@ -18,15 +18,20 @@ else
 	else
 	{
 		<MudContainer>
-			<MudBreadcrumbs Items="_items">
-				<SeparatorTemplate>
-					<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
-				</SeparatorTemplate>
-			</MudBreadcrumbs>
+			@* Desktop *@
+			<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+				<MudBreadcrumbs Items="_items">
+					<SeparatorTemplate>
+						<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
+					</SeparatorTemplate>
+				</MudBreadcrumbs>
+			</MudHidden>
 
 
 			@* Mobile *@
-			<ArrowHeader Title="Site" OnBack="NavigateToProjects" Class="m-4"/>
+			<MudHidden Breakpoint="Breakpoint.SmAndUp">
+				<ArrowHeader Title="Site" OnBack="NavigateToProjects" Class="m-4"/>
+			</MudHidden>
 			<MudTabs Border="false">
 				<!-- INFO TAB -->
 				<MudTabPanel Text="Info">
