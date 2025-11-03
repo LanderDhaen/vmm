@@ -1,7 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor.Utilities
+@inherits LayoutComponentBase
 
 <MudLayout>
-	<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+	<MudHidden Breakpoint="Breakpoint.Xs">
 		<NavBar/>
 	</MudHidden>
 	<MudMainContent>
@@ -10,8 +11,32 @@
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-<MudThemeProvider/>
+<MudThemeProvider Theme="@VMM"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
+@code{
+
+	MudTheme VMM = new MudTheme()
+	{
+		PaletteLight = new PaletteLight()
+		{
+			Primary = new MudColor("#126B8D"),
+			// Secondary = Colors.Green.Accent4,
+			// AppbarBackground = Colors.Red.Default,
+		},
+
+		PaletteDark = new PaletteDark()
+		{
+			Primary = Colors.Blue.Lighten1
+		},
+
+		// LayoutProperties = new LayoutProperties()
+		// {
+		// 	DrawerWidthLeft = "260px",
+		// 	DrawerWidthRight = "300px"
+		// }
+	};
+
+}
