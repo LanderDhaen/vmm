@@ -12,7 +12,7 @@
 else
 {
 	// Desktop
-	<MudHidden Breakpoint="Breakpoint.SmAndDown">
+	<MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
 		<MudBreadcrumbs Items="_items">
 			<SeparatorTemplate>
 				<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
@@ -21,7 +21,7 @@ else
 	</MudHidden>
 
 	// Mobile
-	<MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
 		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
 	</MudHidden>
 
@@ -59,42 +59,48 @@ else
 	@* Conditionally render the panels based on the selected index *@
 	@if (_selectedTab == 0)
 	{
+		<MudContainer>
+			
+		</MudContainer>
+		//name and edit icon
 		<div class="d-flex align-center mt-2 mb-2">
 			<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
 			<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #126B8D"></MudIcon>
 		</div>
-		<MudGrid>
-			<MudItem Class="m-2">
+
+		//details grid
+		<MudGrid Class="p-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
 				<MudPaper Class="p-2">@_project.Code</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Naam</MudText>
 				<MudPaper Class="p-2">@_project.Name</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Start datum</MudText>
 				<MudPaper Class="p-2">@_project.StartDate</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Eind datum</MudText>
 				<MudPaper Class="p-2">@_project.EndDate</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
 				<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12" sm="6">
 				<MudText Typo="Typo.subtitle2">Zone</MudText>
 				<MudPaper Class="p-2">@_project.Zone</MudPaper>
 			</MudItem>
 
-			<MudItem Class="m-2">
+			<MudItem xs="12">
 				<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
 				<MudTextField
 					@bind-Value="_remarks"
