@@ -15,7 +15,7 @@ public partial class Create {
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Create Model { get; } = new();
-	private ProjectRequest.Create.Validator validator = new();
+	private readonly ProjectRequest.Create.Validator validator = new();
 	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
