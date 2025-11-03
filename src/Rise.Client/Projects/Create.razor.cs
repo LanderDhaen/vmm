@@ -28,7 +28,7 @@ public partial class Create {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		networks = result.Value.measurementsNetworks;
 	}
-	
+
 	private async Task CreateProjectAsync() {
 		await form.Validate();
 

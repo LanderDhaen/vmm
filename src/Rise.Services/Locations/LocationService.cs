@@ -15,15 +15,16 @@ namespace Rise.Services.Locations;
 /// <param name="dbContext"></param>
 /// <param name="sessionContextProvider"></param>
 public class LocationService(ApplicationDbContext dbContext) : ILocationService {
-	public async Task<Result<LocationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request, CancellationToken ctx = default) {
+	public async Task<Result<LocationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+		CancellationToken ctx = default) {
 		IQueryable<Location> query = dbContext.Locations.AsQueryable();
-		
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(l => EF.Property<object>(l, request.OrderBy));
 		} else {
 			query = query.OrderBy(l => l.Name);
 		}
-			
+
 		List<LocationDto.Index> locations = await query.AsNoTracking()
 			.Skip(request.Skip)
 			.Take(request.Take)

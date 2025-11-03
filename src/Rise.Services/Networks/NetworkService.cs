@@ -14,12 +14,12 @@ namespace Rise.Services.Networks;
 /// </summary>
 /// <param name="dbContext"></param>
 /// <param name="sessionContextProvider"></param>
-public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider) : INetworkService {
+public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+	: INetworkService {
 	public async Task<Result<NetworkResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-		
 		IQueryable<MeasurementNetwork> query = dbContext.MeasurementNetworks.AsQueryable();
-		
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
 		} else {
@@ -30,13 +30,12 @@ public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvi
 			.AsNoTracking()
 			.Skip(request.Skip)
 			.Take(request.Take);
-		
+
 		List<MeasurementNetworkDto.Index> networks = await Queryable
-			.Select(page, p => new MeasurementNetworkDto.Index
-			{
+			.Select(page, p => new MeasurementNetworkDto.Index {
 				Id = p.Id,
 				Name = p.Name,
-				Zone = p.Zone.Name,	
+				Zone = p.Zone.Name,
 			})
 			.ToListAsync(ctx);
 
