@@ -1,7 +1,6 @@
-using System;
+// DateRangeDto
 
-using Rise.Shared.Common; // DateRangeDto
-using Rise.Shared.Locations; // LocationDto
+// LocationDto
 
 namespace Rise.Shared.Projects;
 

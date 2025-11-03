@@ -5,10 +5,10 @@
 <PageTitle>Projecten</PageTitle>
 
 <style>
-.clickable-rows .mud-table-row:hover,
-.clickable-rows .mud-data-grid-row:hover {
-  cursor: pointer;
-}
+	.clickable-rows .mud-table-row:hover,
+	.clickable-rows .mud-data-grid-row:hover {
+		cursor: pointer;
+	}
 </style>
 
 <MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
@@ -21,8 +21,10 @@
 	             Dense="false"
 	             Elevation="0"
 	             RowClick="OnRowClick">
-		
-		<ToolBarContent><ToolBar/></ToolBarContent>
+
+		<ToolBarContent>
+			<ToolBar/>
+		</ToolBarContent>
 
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#"/>

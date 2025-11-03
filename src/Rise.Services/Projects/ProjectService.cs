@@ -1,12 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Identity;
-using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 
 namespace Rise.Services.Projects;
@@ -58,15 +56,15 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.Skip(request.Skip)
 			.Take(request.Take);
 
-		List<ProjectDto.Index> projects = await Queryable
-			.Select(page, p => new ProjectDto.Index {
+		List<ProjectDto.Index> projects = await page
+			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
 				Name = p.Name,
 				Code = p.Code,
 				StartDate = p.DateRange.StartDate,
 				EndDate = p.DateRange.EndDate,
 				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name,
+				Zone = p.MeasurementNetwork.Zone.Name
 			})
 			.ToListAsync(ctx);
 
@@ -87,14 +85,14 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project with Id '{projectId}' was not found.");
 		}
 
-		ProjectDto.Detail projectDto = new ProjectDto.Detail {
+		ProjectDto.Detail projectDto = new() {
 			Id = project.Id,
 			Name = project.Name,
 			Code = project.Code,
 			StartDate = project.DateRange.StartDate,
 			EndDate = project.DateRange.EndDate,
 			MeasurementNetwork = project.MeasurementNetwork.Name,
-			Zone = project.MeasurementNetwork.Zone.Name,
+			Zone = project.MeasurementNetwork.Zone.Name
 		};
 
 		return Result.Success(new ProjectResponse.Detail {

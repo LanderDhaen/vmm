@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
@@ -9,7 +7,6 @@ using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
-using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Services.Stations;
@@ -23,12 +20,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		int totalCount = await query.CountAsync(ctx);
 
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
-			if (request.OrderBy == nameof(MeasurementStationDto.Index.InstalledAt))
+			if (request.OrderBy == nameof(MeasurementStationDto.Index.InstalledAt)) {
 				query = query.OrderBy(s => s.Installation.InstalledAt);
-			else if (request.OrderBy == nameof(MeasurementStationDto.Index.RemovedAt))
+			} else if (request.OrderBy == nameof(MeasurementStationDto.Index.RemovedAt)) {
 				query = query.OrderBy(s => s.Installation.RemovedAt);
-			else
+			} else {
 				query = query.OrderBy(s => EF.Property<object>(s, request.OrderBy));
+			}
 		} else {
 			query = query.OrderBy(s => s.Code);
 		}
@@ -38,8 +36,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			.Skip(request.Skip)
 			.Take(request.Take);
 
-		List<MeasurementStationDto.Index> stations = await Queryable
-			.Select(page, s => new MeasurementStationDto.Index {
+		List<MeasurementStationDto.Index> stations = await page
+			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
 				Code = s.Code,
 				Status = s.Status,
@@ -54,16 +52,16 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 						AddressLine2 = s.Location.Address.Addressline2,
 						City = s.Location.Address.City,
 						PostalCode = s.Location.Address.PostalCode,
-						CountryIso = s.Location.Address.CountryIso,
+						CountryIso = s.Location.Address.CountryIso
 					},
 					Coordinate = new CoordinateDto.Index {
 						X = s.Location.Coordinate.X,
-						Y = s.Location.Coordinate.Y,
+						Y = s.Location.Coordinate.Y
 					}
 				},
 
 				ProjectCode = s.Project.Code,
-				ProjectName = s.Project.Name,
+				ProjectName = s.Project.Name
 			})
 			.ToListAsync(ctx);
 
@@ -75,24 +73,26 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<Guid>> CreateAsync(MeasurementStationRequest.Create request,
 		CancellationToken ct = default) {
-		var location = await dbContext.Set<Location>()
+		Location? location = await dbContext.Set<Location>()
 			.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
-		if (location is null)
+		if (location is null) {
 			return Result.NotFound();
+		}
 
-		var project = await dbContext.Set<Project>()
+		Project? project = await dbContext.Set<Project>()
 			.SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
-		if (project is null)
+		if (project is null) {
 			return Result.NotFound();
+		}
 
-		var installedAt = request.InstalledAt ?? DateTime.UtcNow;
+		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
 
-		var station = new MeasurementStation(
-			code: request.Code,
-			status: request.Status,
-			location: location,
-			installation: new Installation(installedAt),
-			project: project
+		MeasurementStation station = new(
+			request.Code,
+			request.Status,
+			location,
+			new Installation(installedAt),
+			project
 		);
 
 		dbContext.MeasurementStations.Add(station);
@@ -103,34 +103,37 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result> UpdateAsync(Guid id, MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-		var station = await dbContext.MeasurementStations
+		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Location)
 			.Include(s => s.Project)
 			.SingleOrDefaultAsync(s => s.Id == id, ct);
 
-		if (station is null)
+		if (station is null) {
 			return Result.NotFound();
+		}
 
 		station.UpdateStatus(request.Status);
 
-		var installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
+		DateTime installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
 		station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));
 
 		if (station.Location.Id != request.LocationId) {
-			var newLocation = await dbContext.Set<Location>()
+			Location? newLocation = await dbContext.Set<Location>()
 				.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
-			if (newLocation is null)
+			if (newLocation is null) {
 				return Result.NotFound();
+			}
 
 			station.MoveTo(newLocation);
 		}
 
 		// Change Project without needing a public setter or helper method:
 		if (station.Project.Id != request.ProjectId) {
-			var newProject = await dbContext.Set<Project>()
+			Project? newProject = await dbContext.Set<Project>()
 				.SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
-			if (newProject is null)
+			if (newProject is null) {
 				return Result.NotFound();
+			}
 
 			// Use EF reference API to set the navigation (works even with private setter)
 			dbContext.Entry(station).Reference(s => s.Project).CurrentValue = newProject;

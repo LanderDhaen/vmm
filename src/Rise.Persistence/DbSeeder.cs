@@ -1,5 +1,3 @@
-using System;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +6,6 @@ using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Rise.Persistence;
 
@@ -36,8 +30,9 @@ public class DbSeeder(
 	}
 
 	private async Task RolesAsync() {
-		if (dbContext.Roles.Any())
+		if (dbContext.Roles.Any()) {
 			return;
+		}
 
 		await roleManager.CreateAsync(new IdentityRole("Administrator"));
 		await roleManager.CreateAsync(new IdentityRole("Secretary"));
@@ -45,8 +40,9 @@ public class DbSeeder(
 	}
 
 	private async Task UsersAsync() {
-		if (dbContext.Users.Any())
+		if (dbContext.Users.Any()) {
 			return;
+		}
 
 		await dbContext.Roles.ToListAsync();
 
@@ -98,8 +94,9 @@ public class DbSeeder(
 	}
 
 	private async Task ProductsAsync() {
-		if (dbContext.Products.Any())
+		if (dbContext.Products.Any()) {
 			return;
+		}
 
 		dbContext.Products.AddRange(
 			new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
@@ -118,8 +115,9 @@ public class DbSeeder(
 	}
 
 	private async Task ZonesAsync() {
-		if (dbContext.Zones.Any())
+		if (dbContext.Zones.Any()) {
 			return;
+		}
 
 		List<Zone> zones = new() {
 			new Zone("Zone West", "ASTA"),
@@ -131,12 +129,14 @@ public class DbSeeder(
 	}
 
 	private async Task MeasurementNetworksAsync() {
-		if (dbContext.MeasurementNetworks.Any())
+		if (dbContext.MeasurementNetworks.Any()) {
 			return;
+		}
 
-		var zones = await dbContext.Zones.ToListAsync();
-		if (!zones.Any())
+		List<Zone> zones = await dbContext.Zones.ToListAsync();
+		if (!zones.Any()) {
 			return;
+		}
 
 		List<MeasurementNetwork> measurementNetworks = new() {
 			new MeasurementNetwork("Conductiviteitmeetnet West", zones[0]),
@@ -146,7 +146,7 @@ public class DbSeeder(
 			new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
 			new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
 			new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
-			new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
+			new MeasurementNetwork("Overstortmeetnet Oost", zones[1])
 		};
 
 		dbContext.MeasurementNetworks.AddRange(measurementNetworks);
@@ -155,15 +155,16 @@ public class DbSeeder(
 
 
 	private async Task LocationAsync() {
-		if (dbContext.Locations.Any())
+		if (dbContext.Locations.Any()) {
 			return;
+		}
 
 		List<Address> addresses = new() {
 			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
 			new Address("", "", "Antwerpen", "2000"),
 			new Address("Veldstraat 78", null, "Gent", "9000"),
 			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-			new Address(null, null, "Breda", "4811", "NL"),
+			new Address(null, null, "Breda", "4811", "NL")
 		};
 
 		List<Coordinate> coordinates = new() {
@@ -189,12 +190,14 @@ public class DbSeeder(
 	}
 
 	private async Task ProjectsAsync() {
-		if (dbContext.Projects.Any())
+		if (dbContext.Projects.Any()) {
 			return;
+		}
 
 		List<MeasurementNetwork> networks = await dbContext.MeasurementNetworks.ToListAsync();
-		if (!networks.Any())
+		if (!networks.Any()) {
 			return;
+		}
 
 		List<DateRange> dateRanges = new() {
 			new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
@@ -219,42 +222,44 @@ public class DbSeeder(
 	}
 
 	private async Task StationsAsync() {
-		if (dbContext.MeasurementStations.Any())
+		if (dbContext.MeasurementStations.Any()) {
 			return;
+		}
 
-		var locations = dbContext.Locations.Local.Any()
+		List<Location> locations = dbContext.Locations.Local.Any()
 			? dbContext.Locations.Local.ToList()
 			: await dbContext.Locations.ToListAsync();
 
-		var projects = dbContext.Projects.Local.Any()
+		List<Project> projects = dbContext.Projects.Local.Any()
 			? dbContext.Projects.Local.ToList()
 			: await dbContext.Projects.ToListAsync();
 
-		if (!locations.Any() || !projects.Any())
+		if (!locations.Any() || !projects.Any()) {
 			return;
+		}
 
 		int l0 = 0;
 		int l1 = Math.Min(1, locations.Count - 1);
 		int p0 = 0;
 		int p1 = Math.Min(1, projects.Count - 1);
 
-		var station1 = new MeasurementStation(
-			code: "STN-001",
-			status: "Active",
-			location: locations[l0],
-			installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
-			project: projects[p0]
+		MeasurementStation station1 = new(
+			"STN-001",
+			"Active",
+			locations[l0],
+			new Installation(DateTime.UtcNow.AddMonths(-6)),
+			projects[p0]
 		);
 
-		var station2 = new MeasurementStation(
-			code: "STN-002",
-			status: "Inactive",
-			location: locations[l1],
-			installation: new Installation(
-				installedAt: DateTime.UtcNow.AddYears(-1),
-				removedAt: DateTime.UtcNow.AddDays(-30)
+		MeasurementStation station2 = new(
+			"STN-002",
+			"Inactive",
+			locations[l1],
+			new Installation(
+				DateTime.UtcNow.AddYears(-1),
+				DateTime.UtcNow.AddDays(-30)
 			),
-			project: projects[p1]
+			projects[p1]
 		);
 
 		dbContext.MeasurementStations.AddRange(station1, station2);

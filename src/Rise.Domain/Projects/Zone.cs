@@ -4,8 +4,8 @@ namespace Rise.Domain.Projects;
 ///     A zone is something that owns multiple measurement networks.
 /// </summary>
 public class Zone : Entity {
-	private string _name = String.Empty;
-	private string _code = String.Empty;
+	private string _code = string.Empty;
+	private string _name = string.Empty;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
