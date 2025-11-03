@@ -1,0 +1,29 @@
+---
+name: Dependabot PR Management
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Comment on Dependabot PR
+        run: |
+          echo "Dependabot created a pull request for package updates"
+          echo "Update type: ${{ steps.metadata.outputs.update-type }}"
+          echo "This PR needs manual review before merging"
+
