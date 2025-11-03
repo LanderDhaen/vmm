@@ -50,20 +50,32 @@ jobs:
           targetdir: "**/TestResults/CoverageReport"
           reporttypes: "HtmlInline_AzurePipelines;Cobertura"
 
+      - name: Find coverage report files
+        id: find-coverage
+        if: always()
+        run: |
+          echo "coverage_dirs=$(find . -name \"CoverageReport\" -type d | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.find-coverage.outputs.coverage_dirs
         with:
           name: coverage-report
-          path: "**/TestResults/CoverageReport/"
+          path: ${{ steps.find-coverage.outputs.coverage_dirs }}
           retention-days: 30
+
+      - name: Find test result files
+        id: find-test-results
+        if: always()
+        run: |
+          echo "test_result_dirs=$(find . -name \"TestResults\" -type d | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.find-test-results.outputs.test_result_dirs
         with:
           name: test-results
-          path: "**/TestResults/"
+          path: ${{ steps.find-test-results.outputs.test_result_dirs }}
           retention-days: 30
 
       - name: Comment coverage on PR
