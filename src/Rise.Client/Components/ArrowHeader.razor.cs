@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
 
-using MudBlazor;
-
 namespace Rise.Client.Components;
 
 public partial class ArrowHeader : ComponentBase {
