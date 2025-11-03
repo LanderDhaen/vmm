@@ -1,9 +1,4 @@
 using Rise.Domain.Projects;
-using Rise.Domain.Locations;
-
-using Shouldly;
-
-using Xunit;
 
 namespace Rise.Domain.Tests.Projects;
 
@@ -18,7 +13,7 @@ public class ProjectShould {
 
 	[Fact]
 	public void BeCreated() {
-		var project = new Project("Testing Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
+		Project project = new("Testing Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
 
 		project.Name.ShouldBe("Testing Project");
 		project.Code.ShouldBe("CODE123");

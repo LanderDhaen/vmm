@@ -4,7 +4,7 @@ namespace Rise.Domain.Projects;
 ///     A measurement network is something that owns multiple projects.
 /// </summary>
 public class MeasurementNetwork : Entity {
-	private string _name = String.Empty;
+	private string _name = string.Empty;
 
 	/// <summary>
 	///     Entity Framework Core Constructor

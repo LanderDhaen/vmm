@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 
 namespace Rise.Persistence.Configurations.Stations;
 
