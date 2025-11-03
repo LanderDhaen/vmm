@@ -8,15 +8,22 @@ public static partial class ProjectRequest {
 		public string Name { get; set; }
 		public string Code { get; set; }
 		public DateTime? StartDate { get; set; } = DateTime.Now;
-		public Guid MeasurementNetworkId { get; set; } = Guid.Empty;
+		public Guid? MeasurementNetworkId { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
-				RuleFor(x => x.Name).NotEmpty().MaximumLength(250);
-				RuleFor(x => x.Code).NotEmpty().MaximumLength(50);
-				RuleFor(x => x.StartDate).NotNull().WithMessage("Startdatum mag niet leeg zijn!");
-				RuleFor(x => x.MeasurementNetworkId).NotEqual(Guid.Empty)
-					.WithMessage("Je moet een meetnet selecteren!");
+				RuleFor(x => x.Name)
+					.NotEmpty().WithMessage("Naam mag niet leeg zijn.")
+					.MaximumLength(250).WithMessage("Naam mag maar max. 250 karakter hebben.");
+				RuleFor(x => x.Code)
+					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
+					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
+				RuleFor(x => x.StartDate)
+					.NotNull().WithMessage("Startdatum mag niet leeg zijn!")
+					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet boven 1 januari 2000 liggen.")
+					.LessThan(DateTime.MaxValue).WithMessage("Startdatum moet onder het maximum zijn.");
+				RuleFor(x => x.MeasurementNetworkId)
+					.NotNull().WithMessage("Je moet een meetnet selecteren.");
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {

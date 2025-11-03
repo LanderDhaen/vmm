@@ -3,25 +3,45 @@
 <MudCard>
 	<MudForm Model="@Model" @ref="form" Validation="validator.ValidateValue" ValidationDelay="0">
 		<MudCardContent>
-			<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Immediate="true" Label="Naam"/>
-			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Immediate="true" Label="Code"/>
-			<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy"
-			               Label="Startdatum"/>
-			@if (networks != null)
-			{
-				<MudSelect T="Guid" @bind-Value="Model.MeasurementNetworkId" Label="Meetnet" Clearable="true">
-					<MudSelectItem Value="@Guid.Empty"><em>Kies een meetnet...</em></MudSelectItem>
-					@foreach (var network in networks)
+			<MudGrid>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
+					<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Start datum</MudText>
+					<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy"
+					               Variant="Variant.Outlined"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					@if (networks != null)
 					{
-						<MudSelectItem Value="network.Id">@network.Name</MudSelectItem>
+						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId" For="@(() => Model.MeasurementNetworkId)"
+						           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
+							@foreach (var network in networks)
+							{
+								<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
+							}
+						</MudSelect>
 					}
-				</MudSelect>
-			}
+				</MudItem>
+			</MudGrid>
 		</MudCardContent>
 	</MudForm>
 	<MudCardActions>
-		<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CreateProjectAsync">Project
-			toevoegen
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CreateProjectAsync">Opslaan
+		</MudButton>
+		<MudButton Href="/projects" Variant="Variant.Filled" Color="Color.Primary" Class="mr-auto">Annuleren
 		</MudButton>
 	</MudCardActions>
 </MudCard>
