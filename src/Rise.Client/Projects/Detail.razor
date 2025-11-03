@@ -35,26 +35,20 @@ else
 
 	<div class="d-flex justify-space-between p-4 align-center" role="tablist" aria-label="Project tabs">
 		<MudText
-			Style="cursor: pointer; @(_selectedTab == 0 ? "border-bottom: 2px solid; border-color:gray;" : "")"
-			@onclick="() => SetTab(0)"
-			role="tab"
-			aria-selected="@(_selectedTab == 0)">
+			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+			@onclick="() => SetTab(0)">
 			Info
 		</MudText>
 
 		<MudText
-			Style="cursor: pointer; @(_selectedTab == 1 ? "border-bottom: 2px solid; border-color:gray;" : "")"
-			@onclick="() => SetTab(1)"
-			role="tab"
-			aria-selected="@(_selectedTab == 1)">
+			Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+			@onclick="() => SetTab(1)">
 			Meetstations
 		</MudText>
 
 		<MudText
-			Style="cursor: pointer; @(_selectedTab == 2 ? "border-bottom: 2px solid; border-color:gray;" : "")"
-			@onclick="() => SetTab(2)"
-			role="tab"
-			aria-selected="@(_selectedTab == 2)">
+			Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")"
+			@onclick="() => SetTab(2)">
 			Historiek
 		</MudText>
 
@@ -67,7 +61,7 @@ else
 	{
 		<div class="d-flex align-center mt-2 mb-2">
 			<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
-			<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #7DD3FC"></MudIcon>
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #126B8D"></MudIcon>
 		</div>
 		<MudStack>
 			<MudItem Class="m-2">
