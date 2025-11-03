@@ -9,7 +9,7 @@ public class Detail(IProjectService projectService) : Endpoint<EmptyRequest, Res
 	}
 
 	public override async Task<Result<ProjectResponse.Detail>> ExecuteAsync(EmptyRequest req, CancellationToken ct) {
-		var projectId = Route<Guid>("projectId");
+		Guid projectId = Route<Guid>("projectId");
 		return await projectService.GetDetailAsync(projectId, ct);
 	}
 }

@@ -63,7 +63,7 @@ else
 			<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
 			<MudIcon Icon="@Icons.Material.Filled.Edit" Style="color: #126B8D"></MudIcon>
 		</div>
-		<MudStack>
+		<MudGrid>
 			<MudItem Class="m-2">
 				<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
 				<MudPaper Class="p-2">@_project.Code</MudPaper>
@@ -102,7 +102,7 @@ else
 					Lines="4"
 					Class="white"/>
 			</MudItem>
-		</MudStack>
+		</MudGrid>
 	}
 	else if (_selectedTab == 1)
 	{
