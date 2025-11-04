@@ -18,19 +18,19 @@
 
 @code{
 
-	MudTheme VMM = new MudTheme()
+	readonly MudTheme VMM = new()
 	{
-		PaletteLight = new PaletteLight()
+		PaletteLight = new PaletteLight
 		{
-			Primary = new MudColor("#126B8D"),
+			Primary = new MudColor("#126B8D")
 			// Secondary = Colors.Green.Accent4,
 			// AppbarBackground = Colors.Red.Default,
 		},
 
-		PaletteDark = new PaletteDark()
+		PaletteDark = new PaletteDark
 		{
 			Primary = Colors.Blue.Lighten1
-		},
+		}
 
 		// LayoutProperties = new LayoutProperties()
 		// {
