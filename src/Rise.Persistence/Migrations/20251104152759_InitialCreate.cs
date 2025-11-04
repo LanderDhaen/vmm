@@ -108,6 +108,29 @@ namespace Rise.Persistence.Migrations {
 				});
 
 			migrationBuilder.CreateTable(
+				name: "MeasurementStations",
+				columns: table => new {
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+					Status = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+					LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+					RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+					CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+					UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+					IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+				},
+				constraints: table => {
+					table.PrimaryKey("PK_MeasurementStations", x => x.Id);
+					table.ForeignKey(
+						name: "FK_MeasurementStations_Location_LocationId",
+						column: x => x.LocationId,
+						principalTable: "Location",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+				});
+
+			migrationBuilder.CreateTable(
 				name: "RoleClaims",
 				columns: table => new {
 					Id = table.Column<int>(type: "int", nullable: false)
@@ -247,27 +270,22 @@ namespace Rise.Persistence.Migrations {
 				});
 
 			migrationBuilder.CreateTable(
-				name: "MeasurementStations",
+				name: "MeasurementStationProject",
 				columns: table => new {
-					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-					Status = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-					LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-					RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+					ProjectsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					StationsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
 				},
 				constraints: table => {
-					table.PrimaryKey("PK_MeasurementStations", x => x.Id);
+					table.PrimaryKey("PK_MeasurementStationProject", x => new { x.ProjectsId, x.StationsId });
 					table.ForeignKey(
-						name: "FK_MeasurementStations_Location_LocationId",
-						column: x => x.LocationId,
-						principalTable: "Location",
+						name: "FK_MeasurementStationProject_MeasurementStations_StationsId",
+						column: x => x.StationsId,
+						principalTable: "MeasurementStations",
 						principalColumn: "Id",
-						onDelete: ReferentialAction.Restrict);
+						onDelete: ReferentialAction.Cascade);
 					table.ForeignKey(
-						name: "FK_MeasurementStations_Project_ProjectId",
-						column: x => x.ProjectId,
+						name: "FK_MeasurementStationProject_Project_ProjectsId",
+						column: x => x.ProjectsId,
 						principalTable: "Project",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
@@ -279,14 +297,14 @@ namespace Rise.Persistence.Migrations {
 				column: "ZoneId");
 
 			migrationBuilder.CreateIndex(
+				name: "IX_MeasurementStationProject_StationsId",
+				table: "MeasurementStationProject",
+				column: "StationsId");
+
+			migrationBuilder.CreateIndex(
 				name: "IX_MeasurementStations_LocationId",
 				table: "MeasurementStations",
 				column: "LocationId");
-
-			migrationBuilder.CreateIndex(
-				name: "IX_MeasurementStations_ProjectId",
-				table: "MeasurementStations",
-				column: "ProjectId");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_Project_Code",
@@ -354,7 +372,7 @@ namespace Rise.Persistence.Migrations {
 		/// <inheritdoc />
 		protected override void Down(MigrationBuilder migrationBuilder) {
 			migrationBuilder.DropTable(
-				name: "MeasurementStations");
+				name: "MeasurementStationProject");
 
 			migrationBuilder.DropTable(
 				name: "Product");
@@ -378,7 +396,7 @@ namespace Rise.Persistence.Migrations {
 				name: "UserTokens");
 
 			migrationBuilder.DropTable(
-				name: "Location");
+				name: "MeasurementStations");
 
 			migrationBuilder.DropTable(
 				name: "Project");
@@ -388,6 +406,9 @@ namespace Rise.Persistence.Migrations {
 
 			migrationBuilder.DropTable(
 				name: "Users");
+
+			migrationBuilder.DropTable(
+				name: "Location");
 
 			migrationBuilder.DropTable(
 				name: "MeasurementNetwork");

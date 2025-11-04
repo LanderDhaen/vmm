@@ -8,9 +8,11 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Index {
+
 	[Inject] public required IProjectService ProjectService { get; set; }
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
+
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
