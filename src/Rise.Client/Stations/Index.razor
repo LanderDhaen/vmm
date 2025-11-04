@@ -22,12 +22,13 @@
 		</ToolBarContent>
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" /> 
-			<TemplateColumn Title="Status">
-				<CellTemplate Context="ctx">
+			<PropertyColumn Property="x => x.Code" Title="#" />
+			
+			<PropertyColumn Property="x => x.Status" Title="Status">
+				<CellTemplate Context="row">
 					@{
-						var raw = ctx.Item.Status ?? string.Empty;
-						string nl = raw switch
+						var raw = row.Item.Status ?? string.Empty;
+						var nl = raw switch
 						{
 							"Active" or "Actief"     => "Actief",
 							"Inactive" or "Inactief" => "Inactief",
@@ -36,14 +37,14 @@
 					}
 					<span>@nl</span>
 				</CellTemplate>
-			</TemplateColumn>
+			</PropertyColumn>
 
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
-			
+
 			<PropertyColumn Property="x => x.Location" Title="Locatie" />
 			<PropertyColumn Property="x => x.City" Title="Gemeente" />
-			
+
 			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
 		</Columns>
 

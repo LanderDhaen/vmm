@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rise.Persistence.Migrations {
 	/// <inheritdoc />
-	public partial class simplify_station_config : Migration {
+	public partial class SimplifyStationConfig : Migration {
 		/// <inheritdoc />
 		protected override void Up(MigrationBuilder migrationBuilder) {
 			migrationBuilder.DropTable(

@@ -12,8 +12,8 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251104130756_simplify_station_config")]
-    partial class simplify_station_config
+    [Migration("20251104130756_SimplifyStationConfig")]
+    partial class SimplifyStationConfig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
