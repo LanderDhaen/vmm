@@ -23,31 +23,29 @@
 
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#" />
-			<PropertyColumn Property="x => x.Status" Title="Status" />
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
-			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
-			<PropertyColumn Property="x => x.Location.Name" Title="Locatie" />
-			<PropertyColumn Property="x => x.Location.Address.City" Title="Gemeente" />
-
-			<TemplateColumn Title="Projecten">
+			
+			<TemplateColumn Title="Status">
 				<CellTemplate Context="ctx">
 					@{
-						var count = ctx.Item.ProjectsCount;
+						var raw = ctx.Item.Status?.ToString() ?? string.Empty;
+						string nl = raw switch
+						{
+							"Active" or "Actief"     => "Actief",
+							"Inactive" or "Inactief" => "Inactief",
+							_                        => raw
+						};
 					}
-					@if (count == 0)
-					{
-						<span>Geen projecten</span>
-					}
-					else if (count == 1)
-					{
-						<span>Onderdeel van 1 project</span>
-					}
-					else
-					{
-						<span>Onderdeel van @count projecten</span>
-					}
+					<span>@nl</span>
 				</CellTemplate>
 			</TemplateColumn>
+
+			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
+			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
+
+			<PropertyColumn Property="x => x.Location.Name" Title="Locatie" />
+			<PropertyColumn Property="x => x.Location.Address.City" Title="Gemeente" />
+			
+			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
 		</Columns>
 
 		<PagerContent>
