@@ -7,7 +7,7 @@ using Xunit;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects; 
+using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Services.Stations;
 using Rise.Shared.Common;
@@ -69,7 +69,7 @@ namespace Rise.Services.Tests.Stations
                     status: i % 2 == 0 ? "Active" : "Inactive",
                     location: loc,
                     installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-                    projects: new[] { project } // <-- many-to-many: assign as collection
+                    projects: new[] { project }
                 );
 
                 db.MeasurementStations.Add(station);
@@ -81,7 +81,8 @@ namespace Rise.Services.Tests.Stations
             {
                 Skip = 0,
                 Take = 3,
-                OrderBy = "Code"
+                OrderBy = "Code",
+                OrderDescending = false
             };
 
             var result = await service.GetIndexAsync(request);
@@ -96,10 +97,44 @@ namespace Rise.Services.Tests.Stations
             var codes = payload.Stations.Select(s => s.Code).ToArray();
             Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
             
-            Assert.All(payload.Stations, s => Assert.Equal("Test Project", s.ProjectName));
-            Assert.All(payload.Stations, s => Assert.Equal("TP2025", s.ProjectCode));
+            Assert.All(payload.Stations, s => Assert.Equal("TestLoc", s.Location));
+            Assert.All(payload.Stations, s => Assert.Equal("City", s.City));
             
             Assert.All(payload.Stations, s => Assert.Equal(1, s.ProjectsCount));
+        }
+
+        [Fact]
+        public async Task GetIndexAsync_ShouldRespectOrderDescending()
+        {
+            var db = CreateDbContext(out var projectId, out var project, out var loc);
+            var service = new MeasurementStationService(db);
+            
+            foreach (var code in new[] { "STN-1", "STN-2", "STN-3" })
+            {
+                db.MeasurementStations.Add(new MeasurementStation(
+                    code: code,
+                    status: "Active",
+                    location: loc,
+                    installation: new Installation(DateTime.UtcNow),
+                    projects: new[] { project }
+                ));
+            }
+
+            await db.SaveChangesAsync();
+
+            var request = new QueryRequest.SkipTake
+            {
+                Skip = 0,
+                Take = 10,
+                OrderBy = nameof(MeasurementStationDto.Index.Code),
+                OrderDescending = true
+            };
+
+            var result = await service.GetIndexAsync(request);
+            Assert.True(result.IsSuccess);
+
+            var codes = result.Value!.Stations.Select(s => s.Code).ToArray();
+            Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
         }
     }
 }
