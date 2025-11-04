@@ -43,7 +43,7 @@ public class ProjectShould {
 
 	[Theory]
 	[InlineData(null)]
-	public void NotBeCreatedWithAnInvalidDateRange(DateRange dateRange) {
+	public void NotBeCreatedWithAnInvalidDateRange(DateRange? dateRange) {
 		Should.Throw<ArgumentException>(() =>
 			new Project("TestProject", "CODE123", dateRange, DummyMeasurementNetwork)
 		);
@@ -51,7 +51,7 @@ public class ProjectShould {
 
 	[Theory]
 	[InlineData(null)]
-	public void NotBeCreatedWithAnInvalidMeasurementNetwork(MeasurementNetwork measurementNetwork) {
+	public void NotBeCreatedWithAnInvalidMeasurementNetwork(MeasurementNetwork? measurementNetwork) {
 		Should.Throw<ArgumentException>(() =>
 			new Project("TestProject", "CODE123", DummyDateRange, measurementNetwork));
 	}
