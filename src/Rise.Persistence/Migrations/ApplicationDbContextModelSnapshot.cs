@@ -22,6 +22,21 @@ namespace Rise.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MeasurementStationProject", b =>
+                {
+                    b.Property<Guid>("ProjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StationsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectsId", "StationsId");
+
+                    b.HasIndex("StationsId");
+
+                    b.ToTable("MeasurementStationProject");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -243,21 +258,6 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectStations", b =>
-                {
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("StationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProjectId", "StationId");
-
-                    b.HasIndex("StationId");
-
-                    b.ToTable("ProjectStations", (string)null);
-                });
-
             modelBuilder.Entity("Rise.Domain.Locations.Location", b =>
                 {
                     b.Property<Guid>("Id")
@@ -445,6 +445,21 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("MeasurementStations", (string)null);
                 });
 
+            modelBuilder.Entity("MeasurementStationProject", b =>
+                {
+                    b.HasOne("Rise.Domain.Projects.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", null)
+                        .WithMany()
+                        .HasForeignKey("StationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -492,21 +507,6 @@ namespace Rise.Persistence.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectStations", b =>
-                {
-                    b.HasOne("Rise.Domain.Projects.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rise.Domain.Stations.MeasurementStation", null)
-                        .WithMany()
-                        .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
