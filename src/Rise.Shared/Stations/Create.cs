@@ -1,8 +1,7 @@
 namespace Rise.Shared.Stations;
 
 public static partial class MeasurementStationRequest {
-	public class Create
-	{
+	public class Create {
 		public string Code { get; set; } = default!;
 		public string Status { get; set; } = default!;
 		public Guid LocationId { get; set; }

@@ -52,7 +52,7 @@ try {
 	builder.Services.AddHttpClient<IProjectService, ProjectService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
-	
+
 	builder.Services.AddHttpClient<StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});

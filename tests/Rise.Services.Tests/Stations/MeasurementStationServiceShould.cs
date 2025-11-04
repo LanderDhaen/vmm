@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
@@ -13,128 +13,121 @@ using Rise.Services.Stations;
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
 
-namespace Rise.Services.Tests.Stations
-{
-    public class MeasurementStationServiceShould
-    {
-        private static readonly Location DummyLocation = new(
-            "Aalst",
-            new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
-            new Coordinate(6.0, 7.0)
-        );
+using Xunit;
 
-        private static readonly DateRange DummyDateRange = new(
-            new DateOnly(2025, 1, 5),
-            new DateOnly(2025, 5, 10)
-        );
+namespace Rise.Services.Tests.Stations {
+	public class MeasurementStationServiceShould {
+		private static readonly Location DummyLocation = new(
+			"Aalst",
+			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+			new Coordinate(6.0, 7.0)
+		);
 
-        private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
+		private static readonly DateRange DummyDateRange = new(
+			new DateOnly(2025, 1, 5),
+			new DateOnly(2025, 5, 10)
+		);
 
-        private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location)
-        {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
+		private static readonly Project DummyProject = new Project("dummyproject", "DP-1", DummyDateRange, DummyLocation);
 
-            var context = new ApplicationDbContext(options);
+		private static ApplicationDbContext CreateDbContext(out Guid projectId, out Project project, out Location location) {
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(Guid.NewGuid().ToString())
+				.Options;
 
-            location = new Location(
-                "TestLoc",
-                new Address("Line1", "Line2", "City", "1234"),
-                new Coordinate(4.35, 50.85));
+			var context = new ApplicationDbContext(options);
 
-            context.Locations.Add(location);
-            context.SaveChanges();
+			location = new Location(
+				"TestLoc",
+				new Address("Line1", "Line2", "City", "1234"),
+				new Coordinate(4.35, 50.85));
 
-            var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-            project = new Project("Test Project", "TP2025", dateRange, location);
+			context.Locations.Add(location);
+			context.SaveChanges();
 
-            context.Projects.Add(project);
-            context.SaveChanges();
+			var dateRange = new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+			project = new Project("Test Project", "TP2025", dateRange, location);
 
-            projectId = project.Id;
-            return context;
-        }
+			context.Projects.Add(project);
+			context.SaveChanges();
 
-        [Fact]
-        public async Task GetIndexAsync_ShouldReturnPagedResults()
-        {
-            var db = CreateDbContext(out var projectId, out var project, out var loc);
-            var service = new MeasurementStationService(db);
+			projectId = project.Id;
+			return context;
+		}
 
-            for (int i = 0; i < 5; i++)
-            {
-                var station = new MeasurementStation(
-                    code: $"STN-{i}",
-                    status: i % 2 == 0 ? "Active" : "Inactive",
-                    location: loc,
-                    installation: new Installation(DateTime.UtcNow.AddDays(-i)),
-                    projects: new[] { project }
-                );
+		[Fact]
+		public async Task GetIndexAsync_ShouldReturnPagedResults() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
 
-                db.MeasurementStations.Add(station);
-            }
+			for (int i = 0; i < 5; i++) {
+				var station = new MeasurementStation(
+					code: $"STN-{i}",
+					status: i % 2 == 0 ? "Active" : "Inactive",
+					location: loc,
+					installation: new Installation(DateTime.UtcNow.AddDays(-i)),
+					projects: new[] { project }
+				);
 
-            await db.SaveChangesAsync();
+				db.MeasurementStations.Add(station);
+			}
 
-            var request = new QueryRequest.SkipTake
-            {
-                Skip = 0,
-                Take = 3,
-                OrderBy = "Code",
-                OrderDescending = false
-            };
+			await db.SaveChangesAsync();
 
-            var result = await service.GetIndexAsync(request);
+			var request = new QueryRequest.SkipTake {
+				Skip = 0,
+				Take = 3,
+				OrderBy = "Code",
+				OrderDescending = false
+			};
 
-            Assert.True(result.IsSuccess);
-            Assert.NotNull(result.Value);
+			var result = await service.GetIndexAsync(request);
 
-            var payload = result.Value!;
-            Assert.Equal(5, payload.TotalCount);
-            Assert.Equal(3, payload.Stations.Count());
+			Assert.True(result.IsSuccess);
+			Assert.NotNull(result.Value);
 
-            var codes = payload.Stations.Select(s => s.Code).ToArray();
-            Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
-            
-            Assert.All(payload.Stations, s => Assert.Equal("TestLoc", s.Location));
-            Assert.All(payload.Stations, s => Assert.Equal("City", s.City));
-            
-            Assert.All(payload.Stations, s => Assert.Equal(1, s.ProjectsCount));
-        }
+			var payload = result.Value!;
+			Assert.Equal(5, payload.TotalCount);
+			Assert.Equal(3, payload.Stations.Count());
 
-        [Fact]
-        public async Task GetIndexAsync_ShouldRespectOrderDescending()
-        {
-            var db = CreateDbContext(out var projectId, out var project, out var loc);
-            var service = new MeasurementStationService(db);
-            
-            foreach (var code in new[] { "STN-1", "STN-2", "STN-3" })
-            {
-                db.MeasurementStations.Add(new MeasurementStation(
-                    code: code,
-                    status: "Active",
-                    location: loc,
-                    installation: new Installation(DateTime.UtcNow),
-                    projects: new[] { project }
-                ));
-            }
+			var codes = payload.Stations.Select(s => s.Code).ToArray();
+			Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
 
-            await db.SaveChangesAsync();
+			Assert.All(payload.Stations, s => Assert.Equal("TestLoc", s.Location));
+			Assert.All(payload.Stations, s => Assert.Equal("City", s.City));
 
-            var request = new QueryRequest.SkipTake
-            {
-                Skip = 0,
-                Take = 10,
-                OrderBy = nameof(MeasurementStationDto.Index.Code),
-                OrderDescending = true
-            };
+			Assert.All(payload.Stations, s => Assert.Equal(1, s.ProjectsCount));
+		}
 
-            var result = await service.GetIndexAsync(request);
-            Assert.True(result.IsSuccess);
+		[Fact]
+		public async Task GetIndexAsync_ShouldRespectOrderDescending() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
 
-            var codes = result.Value!.Stations.Select(s => s.Code).ToArray();
-            Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
-        }
-    }
+			foreach (var code in new[] { "STN-1", "STN-2", "STN-3" }) {
+				db.MeasurementStations.Add(new MeasurementStation(
+					code: code,
+					status: "Active",
+					location: loc,
+					installation: new Installation(DateTime.UtcNow),
+					projects: new[] { project }
+				));
+			}
+
+			await db.SaveChangesAsync();
+
+			var request = new QueryRequest.SkipTake {
+				Skip = 0,
+				Take = 10,
+				OrderBy = nameof(MeasurementStationDto.Index.Code),
+				OrderDescending = true
+			};
+
+			var result = await service.GetIndexAsync(request);
+			Assert.True(result.IsSuccess);
+
+			var codes = result.Value!.Stations.Select(s => s.Code).ToArray();
+			Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
+		}
+	}
 }

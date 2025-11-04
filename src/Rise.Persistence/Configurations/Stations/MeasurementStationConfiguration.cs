@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using Rise.Domain.Stations;
 
 namespace Rise.Persistence.Configurations.Stations;
 
-public class MeasurementStationConfiguration : IEntityTypeConfiguration<MeasurementStation>
-{
-	public void Configure(EntityTypeBuilder<MeasurementStation> builder)
-	{
+public class MeasurementStationConfiguration : IEntityTypeConfiguration<MeasurementStation> {
+	public void Configure(EntityTypeBuilder<MeasurementStation> builder) {
 		builder.ToTable("MeasurementStations");
 
 		builder.HasKey(x => x.Id);
@@ -25,8 +24,7 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Restrict);
 
-		builder.OwnsOne(x => x.Installation, b =>
-		{
+		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt)
 				.HasColumnName("InstalledAt")
 				.IsRequired();
@@ -36,7 +34,7 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 
 			b.WithOwner();
 		});
-		
+
 		builder.HasMany(s => s.Projects)
 			.WithMany(p => p.Stations);
 	}
