@@ -14,5 +14,4 @@ public static class AddressDto {
 		public required string PostalCode { get; init; }
 		public required string CountryIso { get; init; }
 	}
-
 }

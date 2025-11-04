@@ -6,5 +6,6 @@ namespace Rise.Shared.Stations;
 ///     Provides methods for managing measurementstation-related operations.
 /// </summary>
 public interface IMeasurementStationService {
-	Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request, CancellationToken ctx = default);
+	Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+		CancellationToken ctx = default);
 }

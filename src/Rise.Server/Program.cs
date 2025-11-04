@@ -13,6 +13,7 @@ using Rise.Services;
 using Rise.Services.Identity;
 using Rise.Services.Stations;
 using Rise.Shared.Products;
+using Rise.Shared.Stations;
 
 using Serilog.Events;
 
@@ -49,7 +50,7 @@ try {
 		.AddScoped<ISessionContextProvider,
 			HttpContextSessionProvider>() // Provides the current user from the HttpContext to the session provider.
 		.AddApplicationServices() // You'll need to add your own services in this function call.
-		.AddScoped<Rise.Shared.Stations.IMeasurementStationService, MeasurementStationService>()
+		.AddScoped<IMeasurementStationService, MeasurementStationService>()
 		.AddAuthorization()
 		.AddFastEndpoints(o => {
 			o.IncludeAbstractValidators =

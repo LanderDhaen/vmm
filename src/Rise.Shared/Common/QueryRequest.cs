@@ -50,7 +50,7 @@ public static class QueryRequest {
 		public Dictionary<string, object?> Filters { get; set; } = new();
 
 		/// <summary>
-		///		Converts the current pagination and sorting parameters into a URL query string
+		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
 
 		public string AsQuery() => $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";

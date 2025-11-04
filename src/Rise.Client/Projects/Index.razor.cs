@@ -21,10 +21,9 @@ public partial class Index {
 
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
 
-		return new GridData<ProjectDto.Index>() {
+		return new GridData<ProjectDto.Index> {
 			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Projects,
+			Items = result.Value.Projects
 		};
-
 	}
 }

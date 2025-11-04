@@ -1,8 +1,3 @@
-using System;
-
-using Rise.Shared.Common;     // DateRangeDto
-using Rise.Shared.Locations;  // LocationDto
-
 namespace Rise.Shared.Projects;
 
 /// <summary>
@@ -16,9 +11,19 @@ public static class ProjectDto {
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string Code { get; set; }
+		public required DateOnly StartDate { get; set; }
+		public required DateOnly? EndDate { get; set; }
+		public required string MeasurementNetwork { get; set; }
+		public required string Zone { get; set; }
+	}
 
-		public required DateRangeDto.Index DateRange { get; init; }
-
-		public required LocationDto.Index Location { get; init; }
+	public class History {
+		public required Guid Id { get; set; }
+		public required string Name { get; set; }
+		public required string Code { get; set; }
+		public required DateOnly StartDate { get; set; }
+		public required DateOnly? EndDate { get; set; }
+		public required DateTime PeriodStart { get; set; }
+		public required DateTime PeriodEnd { get; set; }
 	}
 }

@@ -1,5 +1,3 @@
-using Rise.Domain.Locations;
-
 namespace Rise.Domain.Projects;
 
 /// <summary>
@@ -16,11 +14,11 @@ public class Project : Entity {
 	private Project() {
 	}
 
-	public Project(string name, string code, DateRange dateRange, Location location) {
+	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		Name = name;
 		Code = code;
 		DateRange = Guard.Against.Null(dateRange);
-		Location = Guard.Against.Null(location);
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 	}
 
 	public string Name {

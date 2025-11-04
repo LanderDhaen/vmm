@@ -31,7 +31,8 @@ public class Location : Entity {
 	public Address? Address { get; init; }
 
 	/// <summary>
-	///     The coordinate is immutable and owned by the <see cref="Location" />. If you want to change the coordinate, create a new
+	///     The coordinate is immutable and owned by the <see cref="Location" />. If you want to change the coordinate, create
+	///     a new
 	///     Coordinate and link it to the location.
 	///     <see cref="LocationConfiguration" />
 	/// </summary>

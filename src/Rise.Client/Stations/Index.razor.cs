@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -15,7 +12,6 @@ public partial class Index {
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
@@ -27,7 +23,7 @@ public partial class Index {
 
 		return new GridData<MeasurementStationDto.Index> {
 			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Stations,
+			Items = result.Value.Stations
 		};
 	}
 }

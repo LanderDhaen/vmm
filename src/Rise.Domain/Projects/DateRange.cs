@@ -1,5 +1,3 @@
-using Rise.Domain.Locations;
-
 namespace Rise.Domain.Projects;
 
 /// <summary>
