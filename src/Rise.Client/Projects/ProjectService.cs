@@ -14,7 +14,6 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-		
 		Result<ProjectResponse.Index>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{request.AsQuery()}", ctx);
 		return result!;

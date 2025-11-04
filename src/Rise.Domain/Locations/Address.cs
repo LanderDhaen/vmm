@@ -24,7 +24,7 @@ public class Address : ValueObject {
 	public string City { get; }
 	public string PostalCode { get; }
 	public string CountryIso { get; }
-	
+
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return PostalCode;

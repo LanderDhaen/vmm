@@ -48,12 +48,13 @@ public static class QueryRequest {
 		///     to further refine query results based on specified conditions.
 		/// </summary>
 		public Dictionary<string, object?> Filters { get; set; } = new();
-		
+
 		/// <summary>
-		///		Converts the current pagination and sorting parameters into a URL query string
+		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
-		
-		public string AsQuery() => $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
+		public string AsQuery() {
+			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
+		}
 	}
 
 	/// <summary>

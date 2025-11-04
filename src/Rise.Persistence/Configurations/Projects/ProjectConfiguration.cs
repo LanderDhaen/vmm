@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Rise.Domain.Products;
 using Rise.Domain.Projects;
 
 namespace Rise.Persistence.Configurations.Projects;
@@ -21,9 +20,9 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		builder.HasOne(x => x.MeasurementNetwork)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
-		
+
 		// Constraints
-		
+
 		builder.HasIndex(x => x.Code).IsUnique();
 
 
