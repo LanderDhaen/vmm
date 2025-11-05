@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.Services.Tests", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.Client.Tests", "tests\Rise.Client.Tests\Rise.Client.Tests.csproj", "{CBC3C9A6-904F-4FBF-969C-E9B93347A25C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workbench", "workbench", "{28775552-A4FE-4223-8801-8513238469CC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workbench-temporal", "workbench-temporal", "{28775552-A4FE-4223-8801-8513238469CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temporal.Domain", "workbench\Temporal.Domain\Temporal.Domain.csproj", "{993CEC97-6F5A-4E78-873E-33E7A759CD6D}"
 EndProject
