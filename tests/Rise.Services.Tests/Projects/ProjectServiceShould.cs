@@ -1,100 +1,91 @@
-using System;
-using System.Threading.Tasks;
+using System.Security.Claims;
+
 using Ardalis.Result;
+
 using Microsoft.EntityFrameworkCore;
+
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Services.Projects;
 using Rise.Shared.Projects;
-using Shouldly;
-using Xunit;
-using System.Security.Claims;
 
-namespace Rise.Services.Tests.Projects
-{
-    public class ProjectServiceInMemoryTests
-    {
-        private ApplicationDbContext CreateDbContext(string dbName)
-        {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: dbName)
-                .Options;
+namespace Rise.Services.Tests.Projects;
 
-            return new ApplicationDbContext(options);
-        }
+public class ProjectServiceInMemoryTests {
+	private ApplicationDbContext CreateDbContext(string dbName) {
+		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName)
+			.Options;
 
-        private ISessionContextProvider CreateFakeSession(string userId)
-        {
-            var claims = new ClaimsPrincipal(new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId)
-            }, "TestAuthentication"));
+		return new ApplicationDbContext(options);
+	}
 
-            return new FakeSessionContextProvider(claims);
-        }
+	private ISessionContextProvider CreateFakeSession(string userId) {
+		ClaimsPrincipal claims = new(new ClaimsIdentity(new[] {
+			new Claim(ClaimTypes.NameIdentifier, userId)
+		}, "TestAuthentication"));
 
-        [Fact]
-        public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist()
-        {
-            // Arrange
-            using var context = CreateDbContext("Db_NotFound");
-            var session = CreateFakeSession("technician1");
+		return new FakeSessionContextProvider(claims);
+	}
 
-            var service = new ProjectService(context, session);
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+		// Arrange
+		using ApplicationDbContext context = CreateDbContext("Db_NotFound");
+		ISessionContextProvider session = CreateFakeSession("technician1");
 
-            // Act
-            Result<ProjectResponse.Detail> result = await service.GetDetailAsync(Guid.NewGuid());
+		ProjectService service = new(context, session);
 
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Errors.ShouldContain(e => e.Contains("was not found"));
-        }
+		// Act
+		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(Guid.NewGuid());
 
-        [Fact]
-        public async Task GetDetailAsync_ShouldReturnSuccess_WhenProjectExists()
-        {
-            // Arrange
-            using var context = CreateDbContext("Db_ProjectExists");
+		// Assert
+		result.IsSuccess.ShouldBeFalse();
+		result.Errors.ShouldContain(e => e.Contains("was not found"));
+	}
 
-            // Maak de domain entities
-            var zone = new Zone("Gent", "Z001");
-            context.Zones.Add(zone);
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnSuccess_WhenProjectExists() {
+		// Arrange
+		using ApplicationDbContext context = CreateDbContext("Db_ProjectExists");
 
-            var network = new MeasurementNetwork("Meetnet West", zone);
-            context.MeasurementNetworks.Add(network);
+		// Maak de domain entities
+		Zone zone = new("Gent", "Z001");
+		context.Zones.Add(zone);
 
-            var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow), DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
-            var project = new Project("Watermetingen", "WTR-01", dateRange, network);
-            context.Projects.Add(project);
+		MeasurementNetwork network = new("Meetnet West", zone);
+		context.MeasurementNetworks.Add(network);
 
-            await context.SaveChangesAsync();
+		DateRange dateRange = new(DateOnly.FromDateTime(DateTime.UtcNow),
+			DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
+		Project project = new("Watermetingen", "WTR-01", dateRange, network);
+		context.Projects.Add(project);
 
-            var session = CreateFakeSession("technician1");
+		await context.SaveChangesAsync();
 
-            var service = new ProjectService(context, session);
+		ISessionContextProvider session = CreateFakeSession("technician1");
 
-            // Act
-            Result<ProjectResponse.Detail> result = await service.GetDetailAsync(project.Id);
+		ProjectService service = new(context, session);
 
-            // Assert
-            result.IsSuccess.ShouldBeTrue();
-            result.Value.ShouldNotBeNull();
-            result.Value!.Project.Name.ShouldBe("Watermetingen");
-            result.Value.Project.Code.ShouldBe("WTR-01");
-            result.Value.Project.MeasurementNetwork.ShouldBe("Meetnet West");
-            result.Value.Project.Zone.ShouldBe("Gent");
-        }
-    }
+		// Act
+		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(project.Id);
 
-    // Fake SessionContextProvider zoals jij eerder had
-    public class FakeSessionContextProvider : ISessionContextProvider
-    {
-        public FakeSessionContextProvider(ClaimsPrincipal user)
-        {
-            User = user;
-        }
+		// Assert
+		result.IsSuccess.ShouldBeTrue();
+		result.Value.ShouldNotBeNull();
+		result.Value!.Project.Name.ShouldBe("Watermetingen");
+		result.Value.Project.Code.ShouldBe("WTR-01");
+		result.Value.Project.MeasurementNetwork.ShouldBe("Meetnet West");
+		result.Value.Project.Zone.ShouldBe("Gent");
+	}
+}
 
-        public ClaimsPrincipal? User { get; }
-    }
+// Fake SessionContextProvider zoals jij eerder had
+public class FakeSessionContextProvider : ISessionContextProvider {
+	public FakeSessionContextProvider(ClaimsPrincipal user) {
+		User = user;
+	}
+
+	public ClaimsPrincipal? User { get; }
 }
