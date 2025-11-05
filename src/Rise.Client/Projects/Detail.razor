@@ -57,70 +57,64 @@ else
 		<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon>
 	</div>
 
-	@* Conditionally render the panels based on the selected index *@
-	@if (_selectedTab == 0)
+
+	@switch (_selectedTab)
 	{
-		<MudContainer>
+		/* Conditionally render the panels based on the selected index */
+		case 0:
+			//name and edit icon
+			<div class="d-flex align-center mt-2 mb-2">
+				<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
+				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+			</div>
 
-		</MudContainer>
-		//name and edit icon
-		<div class="d-flex align-center mt-2 mb-2">
-			<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
-			<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
-		</div>
+			//details grid
+			<MudGrid Class="p-2">
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
+					<MudPaper Class="p-2">@_project.Code</MudPaper>
+				</MudItem>
 
-		//details grid
-		<MudGrid Class="p-2">
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-				<MudPaper Class="p-2">@_project.Code</MudPaper>
-			</MudItem>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudPaper Class="p-2">@_project.Name</MudPaper>
+				</MudItem>
 
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Naam</MudText>
-				<MudPaper Class="p-2">@_project.Name</MudPaper>
-			</MudItem>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Start datum</MudText>
+					<MudPaper Class="p-2">@_project.StartDate</MudPaper>
+				</MudItem>
 
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Start datum</MudText>
-				<MudPaper Class="p-2">@_project.StartDate</MudPaper>
-			</MudItem>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Eind datum</MudText>
+					<MudPaper Class="p-2">@_project.EndDate</MudPaper>
+				</MudItem>
 
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-				<MudPaper Class="p-2">@_project.EndDate</MudPaper>
-			</MudItem>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+					<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
+				</MudItem>
 
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-				<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
-			</MudItem>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Zone</MudText>
+					<MudPaper Class="p-2">@_project.Zone</MudPaper>
+				</MudItem>
 
-			<MudItem xs="12" sm="6">
-				<MudText Typo="Typo.subtitle2">Zone</MudText>
-				<MudPaper Class="p-2">@_project.Zone</MudPaper>
-			</MudItem>
-
-			<MudItem xs="12">
-				<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
-				<MudTextField
-					@bind-Value="_remarks"
-					FullWidth="true"
-					Lines="4"
-					Class="white"/>
-			</MudItem>
-		</MudGrid>
-	}
-	else if (_selectedTab == 1)
-	{
-		<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
-	}
-	else if (_selectedTab == 2)
-	{
-		<MudText Typo="Typo.body1">[Lijst van historiek]</MudText>
-	}
-
-	@code {
-
+				<MudItem xs="12">
+					<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
+					<MudTextField
+						@bind-Value="_remarks"
+						FullWidth="true"
+						Lines="4"
+						Class="white"/>
+				</MudItem>
+			</MudGrid>
+			break;
+		case 1:
+			<MudText Typo="Typo.body1">[Lijst van meetstations]</MudText>
+			break;
+		case 2:
+			<MudText Typo="Typo.body1">[Lijst van historiek]</MudText>
+			break;
 	}
 }
