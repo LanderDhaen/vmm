@@ -39,4 +39,14 @@ public partial class Create {
 			}
 		}
 	}
+
+	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
+		if (string.IsNullOrEmpty(value)) {
+			return networks.Select(x => (Guid?)x.Id);
+		}
+
+		return networks
+			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+			.Select(x => (Guid?)x.Id);
+	}
 }
