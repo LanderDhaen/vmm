@@ -39,6 +39,7 @@ public partial class Detail {
 			_project = result.Value.Project;
 
 			_items.Clear();
+			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
 			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
 			_items.Add(new BreadcrumbItem(_project?.Code ?? "Detail", null, true));
 		}

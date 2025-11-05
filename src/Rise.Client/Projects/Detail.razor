@@ -13,7 +13,7 @@ else
 {
 	// Desktop
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudBreadcrumbs Items="_items">
+		<MudBreadcrumbs Items="_items" Class="p-0 m-2 gutter-2">
 			<SeparatorTemplate>
 				<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
 			</SeparatorTemplate>
@@ -35,7 +35,7 @@ else
 	@* </div> *@
 
 	// ====== Tabs ======
-	<div class="d-flex justify-space-between p-4 align-center" role="tablist" aria-label="Project tabs">
+	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Project tabs">
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			@onclick="() => SetTab(0)">
@@ -64,8 +64,8 @@ else
 		/* Conditionally render the panels based on the selected index */
 		case 0:
 			//name and edit icon
-			<div class="d-flex align-center mt-2 mb-2">
-				<MudText Class="p-2" Typo="Typo.h5">@_project.Name</MudText>
+			<div class="d-flex align-center m-2">
+				<MudText Class="pr-2" Typo="Typo.h5">@_project.Name</MudText>
 				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
 			</div>
 
