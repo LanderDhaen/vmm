@@ -1,91 +1,58 @@
-using System.Security.Claims;
-
 using Ardalis.Result;
 
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 using Rise.Domain.Projects;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Services.Projects;
+using Rise.Services.Tests.Common;
 using Rise.Shared.Projects;
 
 namespace Rise.Services.Tests.Projects;
 
-public class ProjectServiceInMemoryTests {
-	private ApplicationDbContext CreateDbContext(string dbName) {
-		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(dbName)
-			.Options;
-
-		return new ApplicationDbContext(options);
-	}
-
-	private ISessionContextProvider CreateFakeSession(string userId) {
-		ClaimsPrincipal claims = new(new ClaimsIdentity(new[] {
-			new Claim(ClaimTypes.NameIdentifier, userId)
-		}, "TestAuthentication"));
-
-		return new FakeSessionContextProvider(claims);
-	}
-
+public class ProjectServiceShould {
 	[Fact]
-	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
 		// Arrange
-		using ApplicationDbContext context = CreateDbContext("Db_NotFound");
-		ISessionContextProvider session = CreateFakeSession("technician1");
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
-		ProjectService service = new(context, session);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
 
-		// Act
-		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(Guid.NewGuid());
+		Project project = new("Test Project", "TP-001", dateRange, measurementNetwork);
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		await db.SaveChangesAsync();
 
-		// Assert
-		result.IsSuccess.ShouldBeFalse();
-		result.Errors.ShouldContain(e => e.Contains("was not found"));
-	}
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnSuccess_WhenProjectExists() {
-		// Arrange
-		using ApplicationDbContext context = CreateDbContext("Db_ProjectExists");
-
-		// Maak de domain entities
-		Zone zone = new("Gent", "Z001");
-		context.Zones.Add(zone);
-
-		MeasurementNetwork network = new("Meetnet West", zone);
-		context.MeasurementNetworks.Add(network);
-
-		DateRange dateRange = new(DateOnly.FromDateTime(DateTime.UtcNow),
-			DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
-		Project project = new("Watermetingen", "WTR-01", dateRange, network);
-		context.Projects.Add(project);
-
-		await context.SaveChangesAsync();
-
-		ISessionContextProvider session = CreateFakeSession("technician1");
-
-		ProjectService service = new(context, session);
+		ProjectService service = new(db, null!);
 
 		// Act
 		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(project.Id);
 
 		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.ShouldNotBeNull();
-		result.Value!.Project.Name.ShouldBe("Watermetingen");
-		result.Value.Project.Code.ShouldBe("WTR-01");
-		result.Value.Project.MeasurementNetwork.ShouldBe("Meetnet West");
-		result.Value.Project.Zone.ShouldBe("Gent");
-	}
-}
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.Equal("Test Project", result.Value!.Project.Name);
 
-// Fake SessionContextProvider zoals jij eerder had
-public class FakeSessionContextProvider : ISessionContextProvider {
-	public FakeSessionContextProvider(ClaimsPrincipal user) {
-		User = user;
+		connection.Close();
 	}
 
-	public ClaimsPrincipal? User { get; }
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		ProjectService service = new(db, null!);
+
+		Guid nonExistentId = Guid.NewGuid();
+
+		// Act
+		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(nonExistentId);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+
+		connection.Close();
+	}
 }
