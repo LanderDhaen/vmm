@@ -1,5 +1,7 @@
 using Rise.Domain.Projects;
 using Rise.Domain.Locations;
+using Rise.Domain.Networks;
+
 using Shouldly;
 using Xunit;
 
