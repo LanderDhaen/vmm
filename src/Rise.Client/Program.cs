@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+using MudBlazor;
 using MudBlazor.Services;
 
 using Rise.Client;
@@ -37,7 +38,10 @@ try {
 	builder.Services.AddAuthorizationCore();
 
 	// setup mud blazor
-	builder.Services.AddMudServices();
+	builder.Services.AddMudServices(config => {
+		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+	});
 
 // register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
