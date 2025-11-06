@@ -8,6 +8,6 @@ namespace Rise.Shared.Stations;
 public interface IMeasurementStationService {
 	Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default);
-	
+
 	Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ctx = default);
 }

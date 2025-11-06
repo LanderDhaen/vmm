@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
+
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
-public partial class Detail
-{
+public partial class Detail {
 	// ===== Breadcrumbs =====
 	private readonly List<BreadcrumbItem> _items = new();
 
@@ -14,7 +15,7 @@ public partial class Detail
 	private readonly List<string> _tabs = new()
 	{
 		"Info",
-		"Apparaten",   
+		"Apparaten",
 		"Historiek"
 	};
 
@@ -29,13 +30,11 @@ public partial class Detail
 
 	private void SetTab(int index) => _selectedTab = index;
 
-	protected override async Task OnInitializedAsync()
-	{
+	protected override async Task OnInitializedAsync() {
 		Result<MeasurementStationResponse.Detail> result = await StationService.GetDetailAsync(StationId);
 		_loaded = true;
 
-		if (result.IsSuccess)
-		{
+		if (result.IsSuccess) {
 			_station = result.Value.Station;
 
 			_items.Clear();
@@ -50,13 +49,11 @@ public partial class Detail
 	private static string FormatDate(DateTime? dt)
 		=> dt is null ? "-" : dt.Value.ToShortDateString();
 
-	private static string FormatStatus(string? raw)
-	{
-		return raw switch
-		{
-			"Active" or "Actief"     => "Actief",
+	private static string FormatStatus(string? raw) {
+		return raw switch {
+			"Active" or "Actief" => "Actief",
 			"Inactive" or "Inactief" => "Inactief",
-			_                        => raw ?? "-"
+			_ => raw ?? "-"
 		};
 	}
 }

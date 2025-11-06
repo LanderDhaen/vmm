@@ -1,9 +1,7 @@
 namespace Rise.Shared.Stations;
 
-public static class MeasurementStationDto
-{
-	public sealed class Index
-	{
+public static class MeasurementStationDto {
+	public sealed class Index {
 		public Guid Id { get; set; }
 		public string Code { get; set; } = default!;
 		public string Status { get; set; } = default!;
@@ -13,8 +11,7 @@ public static class MeasurementStationDto
 		public string? City { get; set; }
 		public int ProjectsCount { get; set; }
 	}
-	public sealed class Detail
-	{
+	public sealed class Detail {
 		public Guid Id { get; set; }
 		public string Code { get; set; } = default!;
 		public string Status { get; set; } = default!;

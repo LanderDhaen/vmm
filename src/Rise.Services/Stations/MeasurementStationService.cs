@@ -80,7 +80,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			TotalCount = totalCount
 		});
 	}
-	
+
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ct = default) {
 		var station = await dbContext.MeasurementStations
 			.AsNoTracking()
