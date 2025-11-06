@@ -5,64 +5,6 @@
 
 @* Drawer wrapper: toggles .is-open class when _open is true so CSS can disable pointer-events on underlying content *@
 <div class="drawer-root @(_open ? "is-open" : "")">
-  <!-- DESKTOP: persistent/transparent drawer (visible on md and up) -->
-  <MudHidden Breakpoint="Breakpoint.SmAndDown">
-    @* MudCollapse is used to control show/hide animation via the MudBlazor component
-       (the drawer is hidden on the homepage by setting ShowDrawer = false) *@
-    <MudCollapse Expanded="@(_isLarge && ShowDrawer)">
-      <MudDrawer Open="@(_isLarge && _open && ShowDrawer)"
-                 Elevation="0"
-                 Class="main-drawer"
-                 Style="background: white; box-shadow: none; border-right: none;">
-        <MudDrawerHeader style="padding:0rem 0; display:flex; align-items:center; background:#126B8D;">
-          @if (_open && ShowDrawer)
-          {
-            <div class="drawer-image" style="padding:0rem 0; display:flex; justify-content:left; align-items:center;">
-              <img src="/img/logo.png" alt="Logo" style="max-width:300px; width:auto; height:64px; border-radius:0px;" />
-            </div>
-          }
-        </MudDrawerHeader>
-
-        <MudNavMenu>
-          <MudNavLink Href="/projects" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Folder"
-                           Style="color: gray;"
-                           AriaLabel="projects" />
-            Projecten
-          </MudNavLink>
-
-          <MudNavLink Href="/stations" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Map"
-                           Style="color: gray;"
-                           AriaLabel="meetstations" />
-            Meetstations
-          </MudNavLink>
-
-          <MudNavLink Href="/devices" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.ImportantDevices"
-                           Style="color: gray;"
-                           AriaLabel="devices" />
-            Apparaten
-          </MudNavLink>
-
-          <MudNavLink Href="/orders" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Archive"
-                           Style="color: gray;"
-                           AriaLabel="orders" />
-            Werkbonnen
-          </MudNavLink>
-
-          <MudNavLink Href="/account" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle"
-                           Style="color: gray;"
-                           AriaLabel="account" />
-            Account
-          </MudNavLink>
-        </MudNavMenu>
-      </MudDrawer>
-    </MudCollapse>
-  </MudHidden>
-
   <!-- MOBILE: temporary drawer that overlays content -->
   <MudHidden Breakpoint="Breakpoint.MdAndUp">
     @* Also on mobile we use MudCollapse so MudBlazor handles the show/hide animation.
@@ -76,58 +18,14 @@
                  Class="main-drawer-mobile sort-drawer"
                  CloseOnOutsideClick="true"
                  Style="height:100vh; max-width:420px;">
-        <MudDrawerHeader style="padding:0rem 0; display:flex; align-items:center; background:#126B8D;">
-          @if (_open && ShowDrawer)
-          {
-            <div class="drawer-image" style="padding:0rem 0; display:flex; justify-content:left; align-items:center;">
-              <img src="/img/logo.png" alt="Logo" style="max-width:250px; width:auto; height:64px; border-radius:0px;" />
-            </div>
-          }
-        </MudDrawerHeader>
-
-        <MudNavMenu>
-          <MudNavLink Href="/projects" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Folder"
-                           Style="color: gray;"
-                           AriaLabel="projects" />
-            Projecten
-          </MudNavLink>
-
-          <MudNavLink Href="/stations" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Map"
-                           Style="color: gray;"
-                           AriaLabel="meetstations" />
-            Meetstations
-          </MudNavLink>
-
-          <MudNavLink Href="/devices" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.ImportantDevices"
-                           Style="color: gray;"
-                           AriaLabel="devices" />
-            Apparaten
-          </MudNavLink>
-
-          <MudNavLink Href="/orders" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.Archive"
-                           Style="color: gray;"
-                           AriaLabel="orders" />
-            Werkbonnen
-          </MudNavLink>
-
-          <MudNavLink Href="/account" Match="NavLinkMatch.All">
-            <MudIconButton Icon="@Icons.Material.Filled.AccountCircle"
-                           Style="color: gray;"
-                           AriaLabel="account" />
-            Account
-          </MudNavLink>
-        </MudNavMenu>
+        <Rise.Client.Components.DrawerMenu/>
       </MudDrawer>
     </MudCollapse>
   </MudHidden>
 
   <!-- MAIN CONTENT -->
-  <MudMainContent Class="main-content main-content-with-nav" Style="flex:1 1 auto; overflow:auto;">
-    <MudContainer Class="content-container">
+  <MudMainContent>
+    <MudContainer>
         @ChildContent
     </MudContainer>
   </MudMainContent>
