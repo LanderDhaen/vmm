@@ -9,6 +9,13 @@ namespace Rise.Client.Stations;
 
 public partial class Index {
 	[Inject] public required StationService StationService { get; set; }
+	
+	private readonly List<BreadcrumbItem> _items =
+	[
+		new("Home", href: "#"),
+		new("Meetstations", null, true),
+	];
+
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {

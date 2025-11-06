@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
-using MudBlazor;
 
 namespace Rise.Client.Layout {
 	public partial class Drawer : LayoutComponentBase, IDisposable {
@@ -20,20 +18,17 @@ namespace Rise.Client.Layout {
 		// Drawer state
 		private bool _open = false;
 		private const int LargeScreenThreshold = 960;
-
-		// Breadcrumbs: list of (Text, Href)
-		private readonly List<(string Text, string Href)> _breadcrumbs = new();
+		
 
 		// cached last known "is large" state to use in render
 		private bool _isLarge;
 
 		// ShowDrawer: determines whether the drawer should be shown based on breadcrumbs (homepage => only "Home")
 		// We avoid an explicit IsHome boolean - the decision is derived from the breadcrumb-like structure.
-		private bool ShowDrawer => _breadcrumbs.Count > 1;
+		private bool ShowDrawer => true;
 
 		protected override void OnInitialized() {
 			NavigationManager.LocationChanged += OnLocationChanged;
-			BuildBreadcrumbs();
 		}
 
 		protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -44,7 +39,6 @@ namespace Rise.Client.Layout {
 		}
 
 		private async void OnLocationChanged(object? sender, LocationChangedEventArgs e) {
-			BuildBreadcrumbs();
 			await ApplyResponsiveOpenRuleAsync();
 			await InvokeAsync(StateHasChanged);
 		}
@@ -87,37 +81,6 @@ namespace Rise.Client.Layout {
 			// All retries failed — log an error so this is visible in diagnostics and return a safe default.
 			Logger?.LogError("GetWindowWidthAsync: failed to retrieve window width after {MaxRetries} attempts; returning 0 as fallback.", maxRetries);
 			return 0;
-		}
-
-		private void BuildBreadcrumbs() {
-			_breadcrumbs.Clear();
-
-			// use base-relative path; remove query string and leading/trailing slashes
-			var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?').FirstOrDefault() ?? string.Empty;
-			relative = relative.Trim('/');
-
-			if (string.IsNullOrEmpty(relative)) {
-				// only Home segment -> breadcrumbs contains exactly "Home"
-				_breadcrumbs.Add(("Home", "/"));
-				return;
-			}
-
-			var segments = relative.Split('/', StringSplitOptions.RemoveEmptyEntries);
-			var accumulated = string.Empty;
-
-			// add Home link first
-			_breadcrumbs.Add(("Home", "/"));
-
-			for (int i = 0; i < segments.Length; i++) {
-				accumulated += (i == 0 ? "" : "/") + segments[i];
-				// humanize segment if needed (you can integrate a nicer display here)
-				var text = Uri.UnescapeDataString(segments[i]).Replace('-', ' ');
-				// Capitalize first letter
-				if (!string.IsNullOrEmpty(text))
-					text = char.ToUpperInvariant(text[0]) + text.Substring(1);
-
-				_breadcrumbs.Add((text, "/" + accumulated));
-			}
 		}
 
 		public void Dispose() {

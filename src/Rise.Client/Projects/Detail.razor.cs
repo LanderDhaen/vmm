@@ -8,7 +8,7 @@ namespace Rise.Client.Projects;
 
 public partial class Detail {
 	//===== Breadcrumbs =====
-	private readonly List<BreadcrumbItem> _items = new();
+	private List<BreadcrumbItem> _items = [];
 
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
@@ -36,10 +36,11 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
 
-			_items.Clear();
-			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
-			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
-			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
+			_items = [
+				new("Home", "#"),
+				new("Projecten", "/projects"),
+				new($"{_project.Code} - {_project.Name}", null, true)
+			];
 		}
 	}
 

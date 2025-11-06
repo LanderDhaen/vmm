@@ -4,7 +4,9 @@
 
 <PageTitle>Projecten</PageTitle>
 
-<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+<Breadcrumbs Items="_items"></Breadcrumbs>
+
+<MudPaper Elevation="2" Rounded="true">
 	<MudDataGrid T="ProjectDto.Index"
 	             ServerData="GetProjectsAsync"
 	             RowsPerPage="10"

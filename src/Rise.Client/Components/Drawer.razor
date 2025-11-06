@@ -128,23 +128,7 @@
   <!-- MAIN CONTENT -->
   <MudMainContent Class="main-content main-content-with-nav" Style="flex:1 1 auto; overflow:auto;">
     <MudContainer Class="content-container">
-      <div class="content-nav-wrapper">
-        <NavBar OnToggleDrawer="ToggleDrawerAsync" />
-      </div>
-
-      @* Breadcrumbs directly under the navbar *@
-      <div class="content-breadcrumbs" style="margin:0.5rem 0;">
-        <MudBreadcrumbs SeparatorIcon="@Icons.Material.Filled.ChevronRight">
-          @foreach (var b in _breadcrumbs)
-          {
-            <MudBreadcrumbItem Href="@b.Href">@b.Text</MudBreadcrumbItem>
-          }
-        </MudBreadcrumbs>
-      </div>
-
-      <div>
         @ChildContent
-      </div>
     </MudContainer>
   </MudMainContent>
 </div>
