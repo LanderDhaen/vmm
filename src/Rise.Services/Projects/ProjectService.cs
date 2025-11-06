@@ -31,7 +31,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
 
 		if (measurementNetwork == null) {
-			return Result.Conflict("Meetnet niet gevonden.");
+			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
