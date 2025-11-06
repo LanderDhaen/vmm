@@ -8,7 +8,7 @@ using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Shared.Common;
-using Rise.Shared.Projects;   
+using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Services.Stations;
@@ -167,7 +167,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
 	}
-	
+
 	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(Guid stationId, CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
@@ -175,7 +175,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		if (!exists)
 			return Result.NotFound("Meetstation niet gevonden.");
-		
+
 		var projects = await dbContext.Projects
 			.AsNoTracking()
 			.Where(p => p.Stations.Any(s => s.Id == stationId))

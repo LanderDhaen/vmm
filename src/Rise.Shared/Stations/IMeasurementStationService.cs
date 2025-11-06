@@ -11,8 +11,8 @@ public interface IMeasurementStationService {
 		CancellationToken ctx = default);
 
 	Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ctx = default);
-	
-	
+
+
 	Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
 		Guid stationId,
 		CancellationToken ctx = default);
