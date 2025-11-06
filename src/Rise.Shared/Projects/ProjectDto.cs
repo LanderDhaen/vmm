@@ -1,7 +1,3 @@
-// DateRangeDto
-
-// LocationDto
-
 namespace Rise.Shared.Projects;
 
 /// <summary>

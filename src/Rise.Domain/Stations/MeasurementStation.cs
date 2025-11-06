@@ -1,10 +1,19 @@
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations.ValueObjects;
 
 namespace Rise.Domain.Stations;
 
-public class MeasurementStation {
+public class MeasurementStation : Entity {
+	public string Code { get; private set; } = default!;
+	public string Status { get; private set; } = default!;
+
+	public Location Location { get; private set; } = default!;
+
+	public ICollection<Project> Projects { get; private set; } = new List<Project>();
+	public Installation Installation { get; private set; } = default!;
+
 	private MeasurementStation() { }
 
 	public MeasurementStation(
@@ -12,14 +21,15 @@ public class MeasurementStation {
 		string status,
 		Location location,
 		Installation installation,
-		Project project
+		IEnumerable<Project> projects
 	) {
 		Code = code;
 		Status = status;
 
 		Location = location ?? throw new ArgumentNullException(nameof(location));
 		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
-		Project = project ?? throw new ArgumentNullException(nameof(project));
+		if (projects is null) throw new ArgumentNullException(nameof(projects));
+		foreach (var p in projects) Projects.Add(p);
 	}
 
 	public Guid Id { get; private set; }

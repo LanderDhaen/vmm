@@ -1,6 +1,7 @@
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
+@using Rise.Shared.Locations
 
 <PageTitle>Stations</PageTitle>
 
@@ -12,27 +13,38 @@
 	             Striped="true"
 	             Hover="true"
 	             Dense="false"
-	             Elevation="0">
+	             Elevation="0"
+               >
 
 		<ToolBarContent>
 			<ToolBar/>
 		</ToolBarContent>
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#"/>
-			<PropertyColumn Property="x => x.Status" Title="Status"/>
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd"/>
-			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd"/>
-			<PropertyColumn Property="x => x.Location.Name" Title="Locatie"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Coordinate.X} - {x.Location.Coordinate.Y}")"
-			                Title="Coördinaten"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Address.AddressLine1}, {x.Location.Address.AddressLine2}")"
-			                Title="Adres"/>
-			<PropertyColumn Property="@(x => $"{x.Location.Address.City}, {x.Location.Address.PostalCode}")"
-			                Title="Gemeente"/>
-			<PropertyColumn Property="x => x.Location.Address.CountryIso" Title="Land"/>
-			<PropertyColumn Property="x => x.ProjectName" Title="Project"/>
-			<PropertyColumn Property="x => x.ProjectCode" Title="Projectcode"/>
+			<PropertyColumn Property="x => x.Code" Title="#" />
+			
+			<PropertyColumn Property="x => x.Status" Title="Status">
+				<CellTemplate Context="row">
+					@{
+						var raw = row.Item.Status ?? string.Empty;
+						var nl = raw switch
+						{
+							"Active" or "Actief"     => "Actief",
+							"Inactive" or "Inactief" => "Inactief",
+							_                        => raw
+						};
+					}
+					<span>@nl</span>
+				</CellTemplate>
+			</PropertyColumn>
+
+			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
+			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
+
+			<PropertyColumn Property="x => x.Location" Title="Locatie" />
+			<PropertyColumn Property="x => x.City" Title="Gemeente" />
+
+			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
 		</Columns>
 
 		<PagerContent>

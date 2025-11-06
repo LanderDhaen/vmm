@@ -1,29 +1,24 @@
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
-@implements IDisposable
+<MudAppBar Elevation="1" Color="Color.Primary" Dense="true">
+	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+		<MudButton Href="/" Color="Color.Inherit" Variant="Variant.Text">
+			Home
+		</MudButton>
 
-<MudAppBar Elevation="1" Style="color: gray; background: #126B8D;" Dense="true" Fixed="false">
-	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Style="margin: 0.5rem;">
-		@if (IsHome)
-		{
-			<MudButton
-				Href="/projects"
-				Color="Color.Default"
-				Variant="Variant.Text"
-				Style="border-radius: 5px; color: gray; background: white;"
-			>Projecten
-			</MudButton>
-		}
-		else
-		{
-			<MudFab OnClick="@GoBack" Style="color: gray;border-radius: 5px;background: white;"
-			        StartIcon="@Icons.Material.Filled.ArrowBackIos" Size="Size.Small" AriaLabel="Terug"/>
-		}
+		<MudButton Href="/projects" Color="Color.Inherit" Variant="Variant.Text">
+			Projects
+		</MudButton>
 
-		<MudSpacer/>
+		<MudButton Href="/stations" Color="Color.Inherit" Variant="Variant.Text">
+			Stations
+		</MudButton>
 	</MudStack>
 
 	<MudSpacer/>
+
+	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+		<MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Inherit">
+			Login
+		</MudButton>
 
 	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
 		@if (IsHome)

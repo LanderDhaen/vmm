@@ -2,17 +2,14 @@
 @inherits LayoutComponentBase
 
 <MudLayout>
-	<MudHidden Breakpoint="Breakpoint.Xs">
-		<NavBar/>
-	</MudHidden>
-	@* padding changes the top white part on maincontent *@
+	<NavBar/>
 	<MudMainContent>
 		<MudContainer>
 			@Body
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-<MudThemeProvider Theme="_vmm"/>
+<MudThemeProvider/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>

@@ -22,6 +22,21 @@ namespace Rise.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MeasurementStationProject", b =>
+                {
+                    b.Property<Guid>("ProjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StationsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectsId", "StationsId");
+
+                    b.HasIndex("StationsId");
+
+                    b.ToTable("MeasurementStationProject");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -484,10 +499,13 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<Guid>("LocationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -495,13 +513,29 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("ProjectId");
-
                     b.ToTable("MeasurementStations", (string)null);
+                });
+
+            modelBuilder.Entity("MeasurementStationProject", b =>
+                {
+                    b.HasOne("Rise.Domain.Projects.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", null)
+                        .WithMany()
+                        .HasForeignKey("StationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -679,12 +713,6 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Rise.Domain.Projects.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("Rise.Domain.Stations.ValueObjects.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationId")
@@ -710,8 +738,6 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
-
-                    b.Navigation("Project");
                 });
 #pragma warning restore 612, 618
         }
