@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Ardalis.Result;
+
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
@@ -127,6 +129,50 @@ namespace Rise.Services.Tests.Stations {
 
 			var codes = result.Value!.Stations.Select(s => s.Code).ToArray();
 			Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
+		}
+
+
+		[Fact]
+		public async Task GetDetailAsync_ShouldReturnStationDetails_WhenStationExists() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
+
+			var installedAt = new DateTime(2024, 11, 6, 0, 0, 0, DateTimeKind.Utc);
+			var station = new MeasurementStation(
+				code: "STN-002",
+				status: "Inactive",
+				location: loc,
+				installation: new Installation(installedAt),
+				projects: new[] { project }
+			);
+
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var result = await service.GetDetailAsync(station.Id);
+
+			Assert.True(result.IsSuccess);
+			Assert.NotNull(result.Value);
+
+			var dto = result.Value!.Station;
+			Assert.Equal(station.Id, dto.Id);
+			Assert.Equal("STN-002", dto.Code);
+			Assert.Equal("Inactive", dto.Status);
+			Assert.Equal(installedAt, dto.InstalledAt);
+			Assert.Null(dto.RemovedAt);
+			Assert.Equal("TestLoc", dto.Location);
+			Assert.Equal("City", dto.City);
+			Assert.Equal(1, dto.ProjectsCount);
+		}
+
+		[Fact]
+		public async Task GetDetailAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
+
+			var result = await service.GetDetailAsync(Guid.NewGuid());
+
+			Assert.Equal(ResultStatus.NotFound, result.Status);
 		}
 	}
 }
