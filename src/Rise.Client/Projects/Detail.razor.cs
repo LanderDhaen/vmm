@@ -7,9 +7,10 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Detail {
-	//BREADCRUMB
+	//===== Breadcrumbs =====
 	private readonly List<BreadcrumbItem> _items = new();
 
+	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
 		"Meetstations",
@@ -20,9 +21,6 @@ public partial class Detail {
 	private ProjectDto.Detail? _project;
 
 	private string? _remarks;
-	// private RealTimeMap.LoadParameters? _parameters;
-
-	// ====== Tabs ======
 	private int _selectedTab;
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
@@ -41,12 +39,12 @@ public partial class Detail {
 			_items.Clear();
 			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
 			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
-			_items.Add(new BreadcrumbItem(_project?.Code ?? "Detail", null, true));
+			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
 		}
 	}
 
-	//NAV
-	private void NavigateToProjects() {
-		Navigation.NavigateTo("/projects/");
-	}
+	// //NAV
+	// private void NavigateToProjects() {
+	// 	Navigation.NavigateTo("/projects/");
+	// }
 }

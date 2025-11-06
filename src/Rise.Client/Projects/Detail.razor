@@ -22,36 +22,28 @@ else
 
 	// Mobile
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
+		@* <ArrowHeader Title="Site" OnBack="NavigateToProjects"/> *@
 		@* <Header Title="Projecten"></Header> *@
 	</MudHidden>
-
-	@* <div class="d-flex justify-space-between p-4 align-center"> *@
-	@* 	<MudText>Info</MudText> *@
-	@* 	<MudText>Meetstations</MudText> *@
-	@* 	<MudText>Historiek</MudText> *@
-	@* 	<MudDivider Vertical="true" FlexItem="true"/> *@
-	@* 	<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon> *@
-	@* </div> *@
 
 	// ====== Tabs ======
 	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Project tabs">
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			@onclick="() => SetTab(0)">
-			Info
+			@_tabs[0]
 		</MudText>
 
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
 			@onclick="() => SetTab(1)">
-			Meetstations
+			@_tabs[1]
 		</MudText>
 
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")"
 			@onclick="() => SetTab(2)">
-			Historiek
+			@_tabs[2]
 		</MudText>
 
 		<MudDivider Vertical="true" FlexItem="true"/>
