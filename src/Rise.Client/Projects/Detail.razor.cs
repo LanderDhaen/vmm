@@ -43,8 +43,8 @@ public partial class Detail {
 		}
 	}
 
-	// //NAV
-	// private void NavigateToProjects() {
-	// 	Navigation.NavigateTo("/projects/");
-	// }
+	//NAV
+	private void NavigateToProjects() {
+		Navigation.NavigateTo("/projects/");
+	}
 }

@@ -20,60 +20,8 @@
 			Login
 		</MudButton>
 
-	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-		@if (IsHome)
-		{
-			<MudFab OnClick="@GoToLogin" Style="color: gray;border-radius: 5px;background: white;"
-			        StartIcon="@Icons.Material.Filled.Person" Size="Size.Small" AriaLabel="Login"/>
-		}
-		else
-		{
-			<!-- Klik op dit icoon navigeert nu naar /logout -->
-			<MudFab OnClick="@GoToLogout" Style="color: gray;border-radius: 5px;background: white;"
-			        StartIcon="@Icons.Material.Filled.HowToReg" Size="Size.Small" AriaLabel="Logout"/>
-		}
+		<MudButton Href="/register" Variant="Variant.Filled" Color="Color.Secondary">
+			Register
+		</MudButton>
 	</MudStack>
 </MudAppBar>
-
-@code {
-
-	// Computed property that checks whether we're on the root (home) route.
-	private bool IsHome => string.IsNullOrEmpty(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-
-	protected override void OnInitialized()
-	{
-		// Subscribe to navigation events so the component re-renders when the URL changes.
-		NavigationManager.LocationChanged += OnLocationChanged;
-	}
-
-	private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-	{
-		// Ensure re-render on the UI thread
-		InvokeAsync(StateHasChanged);
-	}
-
-	// Called when the back button is clicked — instructs the browser to go back in history.
-	private async Task GoBack()
-	{
-		await JSRuntime.InvokeVoidAsync("history.back");
-	}
-
-	// Navigeer naar de login pagina
-	private void GoToLogin()
-	{
-		NavigationManager.NavigateTo("/login");
-	}
-
-	// Navigeer naar de logout pagina
-	private void GoToLogout()
-	{
-		NavigationManager.NavigateTo("/logout");
-	}
-
-	public void Dispose()
-	{
-		// Unsubscribe to avoid memory leaks
-		NavigationManager.LocationChanged -= OnLocationChanged;
-	}
-
-}

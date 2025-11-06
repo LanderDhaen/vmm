@@ -1,4 +1,3 @@
-using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations.ValueObjects;
@@ -6,14 +5,6 @@ using Rise.Domain.Stations.ValueObjects;
 namespace Rise.Domain.Stations;
 
 public class MeasurementStation : Entity {
-	public string Code { get; private set; } = default!;
-	public string Status { get; private set; } = default!;
-
-	public Location Location { get; private set; } = default!;
-
-	public ICollection<Project> Projects { get; private set; } = new List<Project>();
-	public Installation Installation { get; private set; } = default!;
-
 	private MeasurementStation() { }
 
 	public MeasurementStation(
@@ -28,19 +19,21 @@ public class MeasurementStation : Entity {
 
 		Location = location ?? throw new ArgumentNullException(nameof(location));
 		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
-		if (projects is null) throw new ArgumentNullException(nameof(projects));
-		foreach (var p in projects) Projects.Add(p);
-	}
+		if (projects is null) {
+			throw new ArgumentNullException(nameof(projects));
+		}
 
-	public Guid Id { get; private set; }
+		foreach (Project p in projects) {
+			Projects.Add(p);
+		}
+	}
 
 	public string Code { get; private set; } = default!;
 	public string Status { get; private set; } = default!;
 
-
 	public Location Location { get; private set; } = default!;
-	public Project Project { get; private set; } = default!;
 
+	public ICollection<Project> Projects { get; } = new List<Project>();
 	public Installation Installation { get; private set; } = default!;
 
 	public void UpdateStatus(string status) {
