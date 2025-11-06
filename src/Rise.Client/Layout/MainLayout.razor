@@ -1,15 +1,42 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor.Utilities
+@inherits LayoutComponentBase
 
 <MudLayout>
-	<NavBar />
+	<NavBar/>
 	<MudMainContent>
 		<MudContainer>
 			@Body
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-<MudThemeProvider Theme="VmmTheme" />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudThemeProvider Theme="_vmm"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
+@code{
+
+	readonly MudTheme _vmm = new()
+	{
+		PaletteLight = new PaletteLight
+		{
+			Primary = new MudColor("#126B8D")
+			// MudDocs
+			// Secondary = Colors.Green.Accent4,
+			// AppbarBackground = Colors.Red.Default,
+		},
+
+		PaletteDark = new PaletteDark
+		{
+			Primary = Colors.Blue.Lighten1
+		}
+
+		// MudDocs
+		// LayoutProperties = new LayoutProperties()
+		// {
+		// 	DrawerWidthLeft = "260px",
+		// 	DrawerWidthRight = "300px"
+		// }
+	};
+
+}

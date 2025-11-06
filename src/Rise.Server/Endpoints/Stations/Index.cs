@@ -1,6 +1,8 @@
-using Rise.Services.Stations;          // <- import the interface
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
+// <- import the interface
+
+// <- import the interface
 
 namespace Rise.Server.Endpoints.Stations;
 
@@ -10,10 +12,8 @@ namespace Rise.Server.Endpoints.Stations;
 /// </summary>
 /// <param name="stationService"></param>
 public class Index(IMeasurementStationService stationService)
-	: Endpoint<QueryRequest.SkipTake, Result<MeasurementStationResponse.Index>>
-{
-	public override void Configure()
-	{
+	: Endpoint<QueryRequest.SkipTake, Result<MeasurementStationResponse.Index>> {
+	public override void Configure() {
 		Get("/api/stations");
 
 		// Allow for now until Auth is correctly implemented in frontend
@@ -21,6 +21,7 @@ public class Index(IMeasurementStationService stationService)
 	}
 
 	public override Task<Result<MeasurementStationResponse.Index>> ExecuteAsync(
-		QueryRequest.SkipTake req, CancellationToken ct)
-		=> stationService.GetIndexAsync(req, ct);
+		QueryRequest.SkipTake req, CancellationToken ct) {
+		return stationService.GetIndexAsync(req, ct);
+	}
 }

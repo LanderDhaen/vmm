@@ -8,4 +8,8 @@ public static partial class ProjectResponse {
 		public IEnumerable<ProjectDto.Index> Projects { get; set; } = [];
 		public int TotalCount { get; set; }
 	}
+
+	public class Detail {
+		public required ProjectDto.Detail Project { get; set; }
+	}
 }

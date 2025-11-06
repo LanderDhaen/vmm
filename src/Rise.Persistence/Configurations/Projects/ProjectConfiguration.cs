@@ -20,9 +20,9 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		builder.HasOne(x => x.MeasurementNetwork)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
-		
+
 		// Constraints
-		
+
 		builder.HasIndex(x => x.Code).IsUnique();
 
 

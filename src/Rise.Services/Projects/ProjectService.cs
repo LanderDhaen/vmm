@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
@@ -43,7 +44,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			ProjectId = p.Id
 		});
 	}
-
+	
 	public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
@@ -52,7 +53,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
 
-		// User must be logged in to perform an edit.
 		Technician? loggedInTechnician = await dbContext.Technicians
 			.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
 
@@ -84,21 +84,47 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.Skip(request.Skip)
 			.Take(request.Take);
 
-		List<ProjectDto.Index> projects = await Queryable
-			.Select(page, p => new ProjectDto.Index {
+		List<ProjectDto.Index> projects = await page
+			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
 				Name = p.Name,
 				Code = p.Code,
 				StartDate = p.DateRange.StartDate,
 				EndDate = p.DateRange.EndDate,
 				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name,
+				Zone = p.MeasurementNetwork.Zone.Name
 			})
 			.ToListAsync(ctx);
 
 		return Result.Success(new ProjectResponse.Index {
 			Projects = projects,
 			TotalCount = totalCount
+		});
+	}
+
+	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
+		Project? project = await dbContext.Projects
+			.AsNoTracking()
+			.Include(p => p.MeasurementNetwork)
+			.ThenInclude(mn => mn.Zone)
+			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project with Id '{projectId}' was not found.");
+		}
+
+		ProjectDto.Detail projectDto = new() {
+			Id = project.Id,
+			Name = project.Name,
+			Code = project.Code,
+			StartDate = project.DateRange.StartDate,
+			EndDate = project.DateRange.EndDate,
+			MeasurementNetwork = project.MeasurementNetwork.Name,
+			Zone = project.MeasurementNetwork.Zone.Name
+		};
+
+		return Result.Success(new ProjectResponse.Detail {
+			Project = projectDto
 		});
 	}
 }

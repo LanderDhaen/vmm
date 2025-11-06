@@ -1,28 +1,25 @@
-using Rise.Domain.Common;
-
 namespace Rise.Domain.Stations.ValueObjects;
 
-public sealed class Installation : ValueObject
-{
-	public DateTime InstalledAt { get; private set; }
-	public DateTime? RemovedAt { get; private set; }
-	
+public sealed class Installation : ValueObject {
 	private Installation() { }
 
-	public Installation(DateTime installedAt, DateTime? removedAt = null)
-	{
-		if (removedAt is not null && removedAt < installedAt)
+	public Installation(DateTime installedAt, DateTime? removedAt = null) {
+		if (removedAt is not null && removedAt < installedAt) {
 			throw new ArgumentException("RemovedAt cannot be earlier than InstalledAt.", nameof(removedAt));
+		}
 
 		InstalledAt = installedAt;
 		RemovedAt = removedAt;
 	}
 
-	public Installation MarkRemoved(DateTime removedAt)
-		=> new(InstalledAt, removedAt);
+	public DateTime InstalledAt { get; }
+	public DateTime? RemovedAt { get; }
 
-	protected override IEnumerable<object> GetEqualityComponents()
-	{
+	public Installation MarkRemoved(DateTime removedAt) {
+		return new Installation(InstalledAt, removedAt);
+	}
+
+	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return InstalledAt;
 		yield return RemovedAt ?? default(DateTime?);
 	}

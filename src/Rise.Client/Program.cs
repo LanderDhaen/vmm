@@ -31,10 +31,10 @@ try {
 
 	Log.Information("Starting web application");
 
-// register the cookie handler
+	// register the cookie handler
 	builder.Services.AddTransient<CookieHandler>();
 
-// set up authorization
+	// set up authorization
 	builder.Services.AddAuthorizationCore();
 
 	// setup mud blazor
@@ -43,12 +43,12 @@ try {
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 	});
 
-// register the custom state provider
+	// register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
-// register the account management interface
+	// register the account management interface
 	builder.Services.AddScoped(sp => (IAccountManager)sp.GetRequiredService<AuthenticationStateProvider>());
 
-// configure client for auth interactions
+	// configure client for auth interactions
 	builder.Services.AddHttpClient("SecureApi",
 			opt => opt.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001"))
 		.AddHttpMessageHandler<CookieHandler>();
@@ -68,7 +68,6 @@ try {
 	builder.Services.AddHttpClient<INetworkService, NetworkService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
-
 	
 	builder.Services.AddHttpClient<StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
