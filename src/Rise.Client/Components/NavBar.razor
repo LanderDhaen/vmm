@@ -1,0 +1,55 @@
+@namespace Rise.Client.Layout
+@inherits LayoutComponentBase
+@using System
+@using MudBlazor
+
+<div class="content-nav" role="navigation">
+    <MudPaper Class="content-nav-paper" Elevation="0" Square="true" Style="background:transparent; box-shadow:none; width:100%; padding:0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; padding:0.5rem;">
+
+            <!-- LEFT: breadcrumb / back (visible on md and up) -->
+            <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
+                <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                    <MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight" Style="align-items:center; gap:0.5rem;" />
+                </MudHidden>
+
+                <!-- SMALL: left-aligned compact title (show last breadcrumb text except when it's "VMM") -->
+                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                    @{
+                        // safe evaluation: only show when we have more than one breadcrumb
+                        // and the last breadcrumb text is not "VMM" (case-insensitive)
+                        var showSmallTitle = _breadcrumbs is not null
+                            && _breadcrumbs.Count > 1
+                            && !string.Equals(_breadcrumbs.Last().Text, "VMM", StringComparison.OrdinalIgnoreCase);
+                    }
+                    @if (showSmallTitle)
+                    {
+                        <div style="display:flex; align-items:center; gap:0.5rem; justify-content:flex-start; width:100%;">
+                            <MudText Typo="Typo.h3"
+                                     Class="project-title"
+                                     Style="color: black; margin:0;">
+                                @_breadcrumbs.LastOrDefault()?.Text
+                            </MudText>
+                        </div>
+                    }
+                </MudHidden>
+            </div>
+
+            <!-- RIGHT: actions (menu visible on small screens, right-aligned) -->
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                    @* Only render menu icon on mobile when NOT on homepage (breadcrumbs.Count > 1) *@
+                    @if (_breadcrumbs is not null && _breadcrumbs.Count > 1)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                                       Size="Size.Large"
+                                       Style="color: var(--app-accent, #126B8D);"
+                                       Edge="Edge.End"
+                                       OnClick="@(() => OnToggleDrawer.InvokeAsync())"
+                                       AriaLabel="Menu" />
+                    }
+                </MudHidden>
+            </div>
+        </div>
+    </MudPaper>
+</div>
