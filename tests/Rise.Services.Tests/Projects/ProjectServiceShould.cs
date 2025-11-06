@@ -2,6 +2,7 @@ using Ardalis.Result;
 
 using Microsoft.Data.Sqlite;
 
+using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Projects;
