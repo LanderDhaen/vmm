@@ -80,6 +80,30 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			TotalCount = totalCount
 		});
 	}
+	
+	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ct = default) {
+		var station = await dbContext.MeasurementStations
+			.AsNoTracking()
+			.Include(s => s.Location)
+			.Include(s => s.Projects)
+			.SingleOrDefaultAsync(s => s.Id == stationId, ct);
+
+		if (station is null)
+			return Result.NotFound();
+
+		var dto = new MeasurementStationDto.Detail {
+			Id = station.Id,
+			Code = station.Code,
+			Status = station.Status,
+			InstalledAt = station.Installation.InstalledAt,
+			RemovedAt = station.Installation.RemovedAt,
+			Location = station.Location.Name,
+			City = station.Location.Address.City,
+			ProjectsCount = station.Projects.Count()
+		};
+
+		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
+	}
 
 	public async Task<Result<Guid>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ct = default) {
 		var location = await dbContext.Set<Location>()
