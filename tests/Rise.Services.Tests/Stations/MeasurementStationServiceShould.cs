@@ -174,5 +174,69 @@ namespace Rise.Services.Tests.Stations {
 
 			Assert.Equal(ResultStatus.NotFound, result.Status);
 		}
+
+		[Fact]
+		public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
+
+			var station = new MeasurementStation(
+				code: "STN-100",
+				status: "Active",
+				location: loc,
+				installation: new Installation(DateTime.UtcNow),
+				projects: new[] { project }
+			);
+			db.MeasurementStations.Add(station);
+
+			var p2 = new Project("Second Project", "SP-2",
+				new DateRange(new DateOnly(2025, 2, 1), null), DummyMeasurementNetwork);
+			db.Projects.Add(p2);
+			station.Projects.Add(p2);
+
+			await db.SaveChangesAsync();
+
+			var result = await service.GetProjectsAsync(station.Id);
+
+			Assert.True(result.IsSuccess);
+			Assert.NotNull(result.Value);
+			var items = result.Value!;
+			Assert.Equal(2, items.Count);
+
+			Assert.Contains(items, x => x.Id == project.Id && x.Code == project.Code && x.Name == project.Name);
+			Assert.Contains(items, x => x.Id == p2.Id && x.Code == p2.Code && x.Name == p2.Name);
+		}
+
+		[Fact]
+		public async Task GetProjectsAsync_ShouldReturnEmptyList_WhenStationHasNoProjects() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
+
+			var station = new MeasurementStation(
+				code: "STN-EMPTY",
+				status: "Inactive",
+				location: loc,
+				installation: new Installation(DateTime.UtcNow),
+				projects: Array.Empty<Project>()
+			);
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var result = await service.GetProjectsAsync(station.Id);
+
+			Assert.True(result.IsSuccess);
+			Assert.NotNull(result.Value);
+			Assert.Empty(result.Value);
+		}
+
+		[Fact]
+		public async Task GetProjectsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+			var db = CreateDbContext(out var projectId, out var project, out var loc);
+			var service = new MeasurementStationService(db);
+
+			var result = await service.GetProjectsAsync(Guid.NewGuid());
+
+			Assert.Equal(ResultStatus.NotFound, result.Status);
+		}
 	}
 }
