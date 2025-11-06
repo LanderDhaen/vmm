@@ -72,3 +72,16 @@ h1:focus {
 .loading-progress-text:after {
 	content: var(--blazor-load-percentage-text, "Loading");
 }
+
+/*====== Tabs ======*/
+.tab-item {
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	padding-bottom: 4px;
+	transition: border-color 0.4s ease;
+}
+
+.tab-item.active {
+	border-bottom-color: #126B8D; /* of var(--mud-palette-primary) */
+	font-weight: bold;
+}

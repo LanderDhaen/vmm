@@ -17,13 +17,13 @@ public static class ProjectDto {
 		public required string Zone { get; set; }
 	}
 
-	public class History {
+	public class Detail {
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string Code { get; set; }
 		public required DateOnly StartDate { get; set; }
 		public required DateOnly? EndDate { get; set; }
-		public required DateTime PeriodStart { get; set; }
-		public required DateTime PeriodEnd { get; set; }
+		public required string MeasurementNetwork { get; set; }
+		public required string Zone { get; set; }
 	}
 }

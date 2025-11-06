@@ -14,9 +14,14 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-
 		Result<ProjectResponse.Index>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{request.AsQuery()}", ctx);
+		return result!;
+	}
+
+	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
+		Result<ProjectResponse.Detail>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Detail>>($"/api/projects/{projectId}", ctx);
 		return result!;
 	}
 }

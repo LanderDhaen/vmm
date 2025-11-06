@@ -15,7 +15,7 @@ namespace Rise.Domain.Tests.Stations;
 public class MeasurementStationShould {
 	private static readonly Location DummyLocation = new(
 		"Aalst",
-		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
 		new Coordinate(6.0, 7.0)
 	);
 

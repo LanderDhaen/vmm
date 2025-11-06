@@ -73,4 +73,30 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			TotalCount = totalCount
 		});
 	}
+
+	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
+		Project? project = await dbContext.Projects
+			.AsNoTracking()
+			.Include(p => p.MeasurementNetwork)
+			.ThenInclude(mn => mn.Zone)
+			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project with Id '{projectId}' was not found.");
+		}
+
+		ProjectDto.Detail projectDto = new() {
+			Id = project.Id,
+			Name = project.Name,
+			Code = project.Code,
+			StartDate = project.DateRange.StartDate,
+			EndDate = project.DateRange.EndDate,
+			MeasurementNetwork = project.MeasurementNetwork.Name,
+			Zone = project.MeasurementNetwork.Zone.Name
+		};
+
+		return Result.Success(new ProjectResponse.Detail {
+			Project = projectDto
+		});
+	}
 }
