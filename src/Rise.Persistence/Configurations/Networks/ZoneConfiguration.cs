@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Rise.Domain.Projects;
+using Rise.Domain.Networks;
 
-namespace Rise.Persistence.Configurations.Projects;
+namespace Rise.Persistence.Configurations.Networks;
 
 /// <summary>
 ///     Specific configuration for <see cref="Zone" />.
