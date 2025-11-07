@@ -30,12 +30,11 @@ jobs:
 
       - name: Check formatting
         id: format
-        run: |
-          dotnet format --verify-no-changes --verbosity diagnostic
+        run: dotnet format --verify-no-changes --verbosity normal
         continue-on-error: true
 
       - name: Comment on PR with format errors
-        if: failure() && github.event_name == 'pull_request'
+        if: steps.format.outcome == 'failure' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
