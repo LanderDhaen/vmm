@@ -1,9 +1,60 @@
-<!-- Implement searching, filtering, sorting & actions in ToolBarContent (all with sidebar from the right & drawer from the bottom on mobile -->
-<!-- Sorting can also be implemented on columnheader when on desktop -->
+@using MudBlazor
 
-<MudText Typo="Typo.h6">Zoekbalk</MudText>
-<MudSpacer/>
-<MudButton Href="/projects/create" Variant="Variant.Filled" Color="Color.Primary">Project toevoegen</MudButton>
-<MudText Class="pr-2">Filters</MudText>
-<MudText Class="pr-2">Sorteren</MudText>
-<MudText>Acties</MudText>
+<MudPaper Elevation="0" Square="true" Class="toolbar-paper" Style="padding:0.25rem 0.5rem;">
+  <MudHidden Breakpoint="Breakpoint.SmAndDown">
+    <div style="display:flex; align-items:center; width:100%;">
+      <div style="flex:0 1 44%; min-width:44%; max-width:70%; display:flex; align-items:center;">
+        <MudTextField T="string" Label="Zoek" Variant="Variant.Filled"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Inherit" Color="Color.Primary"
+                      Style="width:100%; background-color:white;" />
+      </div>
+
+      <div style="display:flex; align-items:center; margin-left:auto; gap:0.5rem;">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ViewColumn" Color="Color.Primary" Style="white-space:nowrap;">Kolommen</MudButton>
+
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" Style="white-space:nowrap;">Filteren</MudButton>
+
+        <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="height:36px; margin:0 0.25rem;" />
+
+        @* Note: OnClick is an attribute on the button tag itself *@
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.MoreHoriz"
+                   Color="Color.Primary"
+                   Style="white-space:nowrap;"
+                   OnClick="@(async () => await OnOpenActionsDrawer.InvokeAsync(Anchor.Bottom))">
+          Acties
+        </MudButton>
+      </div>
+    </div>
+  </MudHidden>
+
+  <MudHidden Breakpoint="Breakpoint.MdAndUp">
+    <div style="display:flex; align-items:center; width:100%;">
+      <div style="flex:0 1 33%; min-width:33%; max-width:80%; display:flex; align-items:center;">
+        <MudTextField T="string" Label="Zoek" Variant="Variant.Filled"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Inherit" Color="Color.Primary"
+                      Style="width:100%; background-color:white;" />
+      </div>
+
+      <div style="display:flex; align-items:center; margin-left:auto; gap:0.5rem;">
+        <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha" Color="Color.Primary" />
+
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" />
+
+        <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="height:36px; margin:0 0.25rem;" />
+
+        @* mobile More button also invokes the callback *@
+        <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
+                       Color="Color.Primary"
+                       OnClick="@(async () => await OnOpenActionsDrawer.InvokeAsync(Anchor.Bottom))" />
+      </div>
+    </div>
+  </MudHidden>
+</MudPaper>
+
+@code {
+  // Parent can set this callback to open the drawer.
+  [Parameter] public EventCallback<Anchor> OnOpenActionsDrawer { get; set; }
+}

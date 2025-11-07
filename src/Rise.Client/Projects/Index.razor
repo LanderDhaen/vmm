@@ -1,35 +1,121 @@
 @page "/projects"
 @using Rise.Client.Components
 @using Rise.Shared.Projects
+@using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Projecten</PageTitle>
-
-<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-	<MudDataGrid T="ProjectDto.Index"
-	             ServerData="GetProjectsAsync"
-	             RowsPerPage="10"
-	             Bordered="true"
-	             Striped="true"
-	             Hover="true"
-	             Dense="false"
-	             Elevation="0"
-	             RowClick="OnRowClick">
-
-		<ToolBarContent>
-			<ToolBar/>
-		</ToolBarContent>
-
-		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#"/>
-			<PropertyColumn Property="x => x.Name" Title="Naam"/>
-			<PropertyColumn Property="x => x.StartDate" Title="Startdatum"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
-			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet"/>
-			<PropertyColumn Property="x => x.Zone" Title="Zone"/>
-		</Columns>
-
-		<PagerContent>
-			<Pagination T="ProjectDto.Index"/>
-		</PagerContent>
-	</MudDataGrid>
+@* Toolbar: render in normal document flow (not sticky here) *@
+<MudPaper Elevation="0" Square="true" Style="box-sizing:border-box; background:transparent; box-shadow:none; border:none; margin-bottom: 0.75rem;">
+  <Rise.Client.Components.ToolBar/>
 </MudPaper>
+
+<MudPaper Elevation="2" Rounded="true">
+
+  <MudPaper Elevation="2" Rounded="true">
+    <MudHidden Breakpoint="Breakpoint.Xs">
+      <MudDataGrid 
+      T="ProjectDto.Index"
+                   ServerData="GetProjectsAsync"
+                  
+                   HeaderClass="gridhead"
+                   RowsPerPage="10"
+                   Bordered="true"
+                   Striped="true"
+                   Hover="true"
+                   Dense="false"
+                   Elevation="0"
+                   RowClick="OnRowClick">
+
+        <Columns>
+          <PropertyColumn Property="x => x.Code" Title="#" />
+          <PropertyColumn Property="x => x.Name" Title="Naam" />
+          <PropertyColumn Property="x => x.StartDate" Title="Startdatum" />
+          <PropertyColumn Property="x => x.EndDate" Title="Einddatum" />
+          <PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" />
+          <PropertyColumn Property="x => x.Zone" Title="Zone" />
+        </Columns>
+
+        <PagerContent>
+          <Pagination T="ProjectDto.Index" />
+        </PagerContent>
+      </MudDataGrid>
+    </MudHidden>
+
+    <!-- MOBILE: list with MudCard components (visible on xs and down).
+         Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+      <MudGrid GutterSize="2" Style="margin-top: 0.75rem; padding-left:0.75rem; padding-right:0.75rem; padding-bottom:0.75rem; background: none; box-shadow: none; border: none;">
+        @if (_mobileItems is null)
+        {
+          <MudItem xs="12">
+            <div style="display:flex; justify-content:center; padding:1rem;">
+              <MudProgressCircular Indeterminate="true" />
+            </div>
+          </MudItem>
+        }
+        else if (!_mobileItems.Any())
+        {
+          <MudItem xs="12">
+            <MudText>Geen projecten</MudText>
+          </MudItem>
+        }
+        else
+        {
+          @foreach (var item in _mobileItems)
+          {
+            <MudItem xs="12">
+              @* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
+              <MudCard 
+                       Elevation="2"
+                       Style="border-radius:8px; background:white; cursor:pointer;"
+                       @onclick="() => NavigateToProject(item.Id)">
+
+                <MudCardHeader>
+                  <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <div style="display:flex; flex-direction:column;">
+                      <MudText Typo="Typo.subtitle2" Bold="true">@item.Code</MudText>
+                      <MudText Typo="Typo.h6" Style="margin-top:2px;">@item.Name</MudText>
+                    </div>
+                    @* Quick action icon - click stops propagation so the card doesn't navigate *@
+                    <div>
+                      <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                                     Size="Size.Medium"
+                                     Color="Color.Default"
+                                     />
+                    </div>
+                  </div>
+                </MudCardHeader>
+
+                <MudCardContent>
+                  <div style="display:flex; flex-direction:column; gap:0.25rem; margin-top:4px;">
+                    <MudText Typo="Typo.caption">Start: @item.StartDate.ToString("yyyy-MM-dd")</MudText>
+                    <MudText Typo="Typo.caption">Eind: @(item.EndDate?.ToString("yyyy-MM-dd") ?? "")</MudText>
+                    <MudText Typo="Typo.caption" Style="white-space:normal;">Zone: @item.Zone</MudText>
+                  </div>
+                </MudCardContent>
+
+                <MudCardActions>
+                  <MudSpacer />
+
+                </MudCardActions>
+              </MudCard>
+            </MudItem>
+          }
+        }
+      </MudGrid>
+
+    </MudHidden>
+  </MudPaper>
+
+</MudPaper>
+
+<Style>
+.gridhead, .mud-table thead ,
+.gridhead thead{
+  background-color: #126B8D;
+}
+.gridhead, .mud-table thead th ,
+.gridhead thead th{
+  color: white !important;
+}
+</Style>

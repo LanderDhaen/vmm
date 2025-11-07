@@ -11,7 +11,7 @@ namespace Rise.Client.Projects;
 public partial class Create {
 	private Result<ProjectResponse.Create>? _result;
 	private IEnumerable<MeasurementNetworkDto.Index>? networks;
-	[Inject] private ISnackbar Snackbar {get; set;}
+	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }

@@ -4,10 +4,19 @@
 @using Rise.Shared.Locations
 
 <PageTitle>Stations</PageTitle>
+@* Toolbar: render in normal document flow (not sticky here) *@
+<MudPaper Elevation="0" Square="true" Style="box-sizing:border-box; background:transparent; box-shadow:none; border:none; margin-bottom: 0.75rem;">
+  <Rise.Client.Components.ToolBar/>
+</MudPaper>
 
-<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+<MudPaper Elevation="2" Rounded="true">
+
+  <MudPaper Elevation="2" Rounded="true">
+    <MudHidden Breakpoint="Breakpoint.Xs">
 	<MudDataGrid T="MeasurementStationDto.Index"
 	             ServerData="GetStationsAsync"
+							 
+							 HeaderClass="gridhead"
 	             RowsPerPage="10"
 	             Bordered="true"
 	             Striped="true"
@@ -16,13 +25,8 @@
 	             Elevation="0"
                >
 
-		<ToolBarContent>
-			<ToolBar/>
-		</ToolBarContent>
-
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" />
-			
+			<PropertyColumn Property="x => x.Code" Title="#" />		
 			<PropertyColumn Property="x => x.Status" Title="Status">
 				<CellTemplate Context="row">
 					@{
@@ -37,13 +41,10 @@
 					<span>@nl</span>
 				</CellTemplate>
 			</PropertyColumn>
-
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
-
 			<PropertyColumn Property="x => x.Location" Title="Locatie" />
 			<PropertyColumn Property="x => x.City" Title="Gemeente" />
-
 			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
 		</Columns>
 
@@ -51,4 +52,83 @@
 			<Pagination T="MeasurementStationDto.Index"/>
 		</PagerContent>
 	</MudDataGrid>
+	    <!-- MOBILE: list with MudCard components (visible on xs and down).
+         Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+      <MudGrid GutterSize="2" Style="margin-top: 0.75rem; padding-left:0.75rem; padding-right:0.75rem; padding-bottom:0.75rem; background: none; box-shadow: none; border: none;">
+        @if (_mobileStations is null)
+        {
+          <MudItem xs="12">
+            <div style="display:flex; justify-content:center; padding:1rem;">
+              <MudProgressCircular Indeterminate="true" />
+            </div>
+          </MudItem>
+        }
+        else if (!_mobileStations.Any())
+        {
+          <MudItem xs="12">
+            <MudText>Geen meetstations</MudText>
+          </MudItem>
+        }
+        else
+        {
+          @foreach (var item in _mobileStations)
+          {
+            <MudItem xs="12">
+              @* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
+              <MudCard Class="mobile-project-card"
+                       Elevation="2"
+                       Style="border-radius:8px; background:white; cursor:pointer;"
+                       >
+
+                <MudCardHeader>
+                  <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <div style="display:flex; flex-direction:column;">
+                      <MudText Typo="Typo.subtitle2" Bold="true">@item.Code</MudText>
+                      <MudText Typo="Typo.h6" Style="margin-top:2px;">@item.Status</MudText>
+                      
+                    </div>
+                    @* Quick action icon - click stops propagation so the card doesn't navigate *@
+                    <div>
+                      <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                                     Size="Size.Medium"
+                                     Color="Color.Default"
+                                     />
+                    </div>
+                  </div>
+                </MudCardHeader>
+
+                <MudCardContent>
+                  <div style="display:flex; flex-direction:column; gap:0.25rem; margin-top:4px;">
+                    <MudText Typo="Typo.caption">Start: @item.InstalledAt.ToString("yyyy-MM-dd")</MudText>
+                    <MudText Typo="Typo.caption">Eind: @(item.RemovedAt?.ToString("yyyy-MM-dd") ?? "")</MudText>
+                    <MudText Typo="Typo.caption" Style="white-space:normal;">@item.Location</MudText>
+										<MudText Typo="Typo.caption" Style="white-space:normal;">@item.City</MudText>
+										<MudText Typo="Typo.caption" Style="white-space:normal;">@item.ProjectsCount</MudText>
+                  </div>
+                </MudCardContent>
+
+                <MudCardActions>
+                  <MudSpacer />
+
+                </MudCardActions>
+              </MudCard>
+            </MudItem>
+          }
+        }
+      </MudGrid>
+
+    </MudHidden>
+	</MudHidden>
+	</MudPaper>
 </MudPaper>
+<Style>
+.gridhead, .mud-table thead ,
+.gridhead thead{
+  background-color: #126B8D;
+}
+.gridhead, .mud-table thead th ,
+.gridhead thead th{
+  color: white !important;
+}
+</Style>
