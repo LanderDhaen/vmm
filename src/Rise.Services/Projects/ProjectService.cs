@@ -44,7 +44,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			ProjectId = p.Id
 		});
 	}
-	
+
 	public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);

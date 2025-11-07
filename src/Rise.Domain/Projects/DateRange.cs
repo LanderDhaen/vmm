@@ -10,7 +10,7 @@ public class DateRange : ValueObject {
 	}
 
 	public DateRange(DateOnly startDate, DateOnly? endDate = null) {
-		
+
 		Guard.Against.OutOfRange(startDate, nameof(startDate), new DateOnly(2000, 1, 1), DateOnly.MaxValue);
 
 		StartDate = startDate;

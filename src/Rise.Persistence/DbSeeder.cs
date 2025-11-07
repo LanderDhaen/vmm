@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
+using Rise.Domain.Networks;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
-using Rise.Domain.Networks;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
 
