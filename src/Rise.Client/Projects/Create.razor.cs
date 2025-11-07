@@ -18,6 +18,8 @@ public partial class Create {
 	private ProjectRequest.Create Model { get; } = new();
 	private readonly ProjectRequest.Create.Validator validator = new();
 	MudForm form;
+	// flag to prevent multiple submissions
+	private bool _isSaving;
 
 	protected override async Task OnInitializedAsync() {
 		QueryRequest.SkipTake request = new() {
@@ -31,17 +33,24 @@ public partial class Create {
 	}
 
 	private async Task CreateProjectAsync() {
-		await form.Validate();
+		if (_isSaving) return;
+		_isSaving = true;
 
-		if (form.IsValid) {
-			_result = await ProjectService.CreateAsync(Model);
-			if (_result.IsSuccess) {
-				Snackbar.Add("Project succesvol aangemaakt!", Severity.Success);
-				await Task.Delay(2000);
-				NavigationManager.NavigateTo("/projects");
-			} else {
-				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+		try {
+			await form.Validate();
+
+			if (form.IsValid) {
+				_result = await ProjectService.CreateAsync(Model);
+				if (_result.IsSuccess) {
+					Snackbar.Add("Project succesvol aangemaakt!", Severity.Success);
+					await Task.Delay(2000);
+					NavigationManager.NavigateTo("/projects");
+				} else {
+					Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+				}
 			}
+		} finally {
+			_isSaving = false;
 		}
 	}
 
