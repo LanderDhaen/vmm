@@ -1,3 +1,5 @@
+@namespace Rise.Client.Layout
+@using Microsoft.AspNetCore.Components
 @using MudBlazor
 
 <MudPaper Elevation="0" Square="true" Class="toolbar-paper" Style="padding:0.25rem 0.5rem;">
@@ -12,17 +14,15 @@
 
       <div style="display:flex; align-items:center; margin-left:auto; gap:0.5rem;">
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ViewColumn" Color="Color.Primary" Style="white-space:nowrap;">Kolommen</MudButton>
-
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" Style="white-space:nowrap;">Filteren</MudButton>
-
         <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="height:36px; margin:0 0.25rem;" />
 
-        @* Note: OnClick is an attribute on the button tag itself *@
+        @* call the parent callback with the requested anchor *@
         <MudButton Variant="Variant.Filled"
                    StartIcon="@Icons.Material.Filled.MoreHoriz"
                    Color="Color.Primary"
                    Style="white-space:nowrap;"
-                   OnClick="@(async () => await OnOpenActionsDrawer.InvokeAsync(Anchor.Bottom))">
+                   OnClick="@OpenActionsDrawer">
           Acties
         </MudButton>
       </div>
@@ -40,21 +40,16 @@
 
       <div style="display:flex; align-items:center; margin-left:auto; gap:0.5rem;">
         <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha" Color="Color.Primary" />
-
         <MudIconButton Icon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" />
-
         <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="height:36px; margin:0 0.25rem;" />
 
-        @* mobile More button also invokes the callback *@
         <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
                        Color="Color.Primary"
-                       OnClick="@(async () => await OnOpenActionsDrawer.InvokeAsync(Anchor.Bottom))" />
+                       OnClick="@OpenActionsDrawer"/>
       </div>
     </div>
   </MudHidden>
 </MudPaper>
 
-@code {
-  // Parent can set this callback to open the drawer.
-  [Parameter] public EventCallback<Anchor> OnOpenActionsDrawer { get; set; }
-}
+<ActionsDrawer Open="@_actionsDrawerOpen"
+            OnClose="CloseActionsDrawer"/>

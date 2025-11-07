@@ -14,7 +14,7 @@ public partial class Index {
 	private int _mobileTotal;
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
-		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
+		await FetchMobileItemsAsync(); // gebruikt default page = 0, pageSize = 10
 	}
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
@@ -40,7 +40,7 @@ public partial class Index {
 	};
 	// --- Mobile data (cards) --------------------------------------------
 
-	// Default parameter values make fields unnecessary; call without parameters for page 0 / size 10
+	// Default parameter values maken velden overbodig; roep parameterloos aan voor page 0 / size 10
 	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
 		try {
 			var req = BuildRequest(page * pageSize, pageSize, orderBy);
