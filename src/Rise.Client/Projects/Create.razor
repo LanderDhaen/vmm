@@ -1,5 +1,4 @@
 @page "/projects/create"
-@using Rise.Shared.Networks
 
 <MudText Typo="Typo.h3">Project toevoegen</MudText>
 <MudCard>
@@ -20,7 +19,7 @@
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Start datum</MudText>
-					<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy"
+					<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy" Placeholder="dd/MM/yyyy"
 					               Variant="Variant.Outlined"/>
 				</MudItem>
 
