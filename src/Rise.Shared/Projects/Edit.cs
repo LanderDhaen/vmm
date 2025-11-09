@@ -34,7 +34,7 @@ public static partial class ProjectRequest {
 				RuleFor(x => x.MeasurementNetworkId)
 					.NotNull().WithMessage("Je moet een meetnet selecteren.");
 			}
-			
+
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
 				var result =
 					await ValidateAsync(ValidationContext<Edit>.CreateWithOptions((Edit)model,

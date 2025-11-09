@@ -23,11 +23,11 @@ public partial class Edit {
 	protected override async Task OnInitializedAsync() {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
 		networks = result.Value.measurementsNetworks;
-		
+
 		Result<ProjectResponse.Detail> project = await ProjectService.GetDetailAsync(ProjectId);
 
 		if (project.IsSuccess) {
-			Model = new ProjectRequest.Edit{
+			Model = new ProjectRequest.Edit {
 				ProjectId = project.Value.Project.Id,
 				Name = project.Value.Project.Name,
 				Code = project.Value.Project.Code,

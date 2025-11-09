@@ -37,14 +37,15 @@ public class Project : Entity {
 	}
 
 	public DateRange DateRange {
-		get => _dateRange; 
+		get => _dateRange;
 		set => _dateRange = Guard.Against.Null(value);
 	}
 
-	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
+	public ICollection<Stations.MeasurementStation> Stations { get; private set; } =
+		new List<Stations.MeasurementStation>();
 
 	public MeasurementNetwork MeasurementNetwork {
-		get => _measurementNetwork; 
+		get => _measurementNetwork;
 		set => _measurementNetwork = Guard.Against.Null(value);
 	}
 
