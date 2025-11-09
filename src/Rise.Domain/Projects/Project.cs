@@ -9,8 +9,9 @@ using Networks;
 /// </summary>
 public class Project : Entity {
 	private string _code = string.Empty;
-
 	private string _name = string.Empty;
+	private DateRange _dateRange;
+	private MeasurementNetwork _measurementNetwork;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -21,8 +22,8 @@ public class Project : Entity {
 	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		Name = name;
 		Code = code;
-		DateRange = Guard.Against.Null(dateRange);
-		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
+		DateRange = dateRange;
+		MeasurementNetwork = measurementNetwork;
 	}
 
 	public string Name {
@@ -35,13 +36,22 @@ public class Project : Entity {
 		set => _code = Guard.Against.NullOrWhiteSpace(value);
 	}
 
-	public DateRange DateRange { get; init; } = default!;
+	public DateRange DateRange {
+		get => _dateRange; 
+		set => _dateRange = Guard.Against.Null(value);
+	}
 
 	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
 
-	public MeasurementNetwork MeasurementNetwork { get; init; } = default!;
+	public MeasurementNetwork MeasurementNetwork {
+		get => _measurementNetwork; 
+		set => _measurementNetwork = Guard.Against.Null(value);
+	}
 
-	public void Edit(string name) {
-		Name = Guard.Against.NullOrEmpty(name);
+	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+		Name = name;
+		Code = code;
+		DateRange = dateRange;
+		MeasurementNetwork = measurementNetwork;
 	}
 }

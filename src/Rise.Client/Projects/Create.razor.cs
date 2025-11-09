@@ -20,13 +20,7 @@ public partial class Create {
 	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 50,
-			OrderBy = "Id"
-		};
-
-		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
+		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
 		networks = result.Value.measurementsNetworks;
 	}
 

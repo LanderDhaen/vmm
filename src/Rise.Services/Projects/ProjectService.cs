@@ -7,6 +7,7 @@ using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Identity;
 using Rise.Shared.Locations;
+using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 
 namespace Rise.Services.Projects;
@@ -50,17 +51,24 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
-			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
+			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
 		}
 
-		Technician? loggedInTechnician = await dbContext.Technicians
-			.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
-
-		if (loggedInTechnician is null) {
-			return Result.Unauthorized("You are not authorized to edit this project.");
+		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId)) {
+			Log.Warning("Project met code '{Code}' bestaat al.", req.Code);
+			return Result.Conflict($"Project met code '{req.Code}' bestaat al.");
 		}
 
-		project.Edit(req.Name);
+		var startdate = DateOnly.FromDateTime(req.StartDate!.Value);
+		DateOnly? enddate = req.EndDate.HasValue ? DateOnly.FromDateTime(req.EndDate.Value) : null;
+		var measurementNetwork = await dbContext.MeasurementNetworks
+			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId);
+
+		if (measurementNetwork == null) {
+			return Result.NotFound("Meetnet niet gevonden.");
+		}
+
+		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate), measurementNetwork);
 
 		await dbContext.SaveChangesAsync(ctx);
 
@@ -119,8 +127,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			Code = project.Code,
 			StartDate = project.DateRange.StartDate,
 			EndDate = project.DateRange.EndDate,
-			MeasurementNetwork = project.MeasurementNetwork.Name,
-			Zone = project.MeasurementNetwork.Zone.Name
+			MeasurementNetwork = new MeasurementNetworkDto.Index() {
+				Id = project.MeasurementNetwork.Id,
+				Name = project.MeasurementNetwork.Name,
+				Zone = project.MeasurementNetwork.Zone.Name
+			},
 		};
 
 		return Result.Success(new ProjectResponse.Detail {

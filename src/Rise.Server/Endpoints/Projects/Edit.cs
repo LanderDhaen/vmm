@@ -10,8 +10,9 @@ namespace Rise.Server.Endpoints.Projects;
 /// <param name="projectService"></param>
 public class Edit(IProjectService projectService) : Endpoint<ProjectRequest.Edit, Result> {
 	public override void Configure() {
-		Put("/api/projects");
-		Roles(AppRoles.Technician, AppRoles.Administrator);
+		Put("/api/projects/{ProjectId}");
+		AllowAnonymous();
+		//Roles(AppRoles.Technician, AppRoles.Administrator);
 	}
 
 	public override Task<Result> ExecuteAsync(ProjectRequest.Edit req, CancellationToken ctx) {

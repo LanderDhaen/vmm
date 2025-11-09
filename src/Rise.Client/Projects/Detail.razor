@@ -58,7 +58,8 @@ else
 			//name and edit icon
 			<div class="d-flex align-center m-2">
 				<MudText Class="pr-2" Typo="Typo.h5">@_project.Name</MudText>
-				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+				<MudIconButton Href="@($"/projects/edit/{ProjectId}")" Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" />
+
 			</div>
 
 			//details grid
@@ -85,12 +86,12 @@ else
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-					<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
+					<MudPaper Class="p-2">@_project.MeasurementNetwork.Name</MudPaper>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Zone</MudText>
-					<MudPaper Class="p-2">@_project.Zone</MudPaper>
+					<MudPaper Class="p-2">@_project.MeasurementNetwork.Zone</MudPaper>
 				</MudItem>
 
 				<MudItem xs="12">
