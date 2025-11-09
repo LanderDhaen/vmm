@@ -56,7 +56,7 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-	
+
 	[Fact]
 	public async Task EditAsync_ShouldReturnResultSuccess() {
 		// Arrange
@@ -64,7 +64,8 @@ public class ProjectServiceShould {
 
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025,1,1)), measurementNetwork);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
 
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
@@ -81,13 +82,13 @@ public class ProjectServiceShould {
 			StartDate = new DateTime(2025, 1, 1),
 			EndDate = new DateTime(2025, 12, 31),
 		};
-		
+
 		// Act
 		Result result = await service.EditAsync(request);
 
 		// Assert
 		Assert.True(result.IsSuccess);
-		
+
 		Project? updated = await db.Projects.FindAsync(project.Id);
 		Assert.NotNull(updated);
 		Assert.Equal("Updated Project", updated!.Name);
@@ -98,14 +99,15 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-	
+
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenProjectIsNotFound() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025,1,1)), measurementNetwork);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
 
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
@@ -131,15 +133,17 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-	
+
 	[Fact]
 	public async Task EditAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025,1,1)), measurementNetwork);
-		Project project1 = new("Existing Project", "EP-002", new DateRange(new DateOnly(2025,3,8)), measurementNetwork);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+		Project project1 = new("Existing Project", "EP-002", new DateRange(new DateOnly(2025, 3, 8)),
+			measurementNetwork);
 
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
@@ -166,7 +170,7 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-	
+
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
 		// Arrange
@@ -174,7 +178,8 @@ public class ProjectServiceShould {
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		MeasurementNetwork measurementNetwork1 = new("TestNetwork1", zone);
-		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025,1,1)), measurementNetwork);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
 
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
