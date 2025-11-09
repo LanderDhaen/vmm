@@ -67,9 +67,14 @@ public class CreateShould : TestContext {
 		cut.FindComponent<MudAutocomplete<Guid?>>()
 			.SetParametersAndRender(p => p.Add(c => c.Value, firstNetwork.Id));
 		
-		cut.FindComponent<MudForm>().Instance.Validate();
-
-		cut.Render();
+		//cut.FindComponent<MudForm>().Instance.Validate();
+		//cut.FindComponent<MudButton>().Click();
+		var button = cut.FindAll("button")
+			.First(b => b.TextContent.Contains("Opslaan"));
+		
+		// https://cgi-fr.github.io/IoT-Hub-Portal/dev/dev-guide/testing/unit-tests-on-blazor-components/#how-to-unit-test-a-component-requiring-an-external-component
+		
+		//cut.Render();
 		cut.FindAll("div")
 			.Any(d => d.TextContent.Contains("Naam mag niet leeg zijn."))
 			.ShouldBeTrue();
