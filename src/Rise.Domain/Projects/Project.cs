@@ -1,8 +1,7 @@
-using Rise.Domain.Locations;
+using Rise.Domain.Networks;
+using Rise.Domain.Stations;
 
 namespace Rise.Domain.Projects;
-
-using Networks;
 
 /// <summary>
 ///     A project is something that owns multiple measuring stations.
@@ -39,7 +38,8 @@ public class Project : Entity {
 
 	public DateRange DateRange { get; init; } = default!;
 
-	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
+	public ICollection<MeasurementStation> Stations { get; private set; } =
+		new List<MeasurementStation>();
 
 	public MeasurementNetwork MeasurementNetwork { get; init; } = default!;
 

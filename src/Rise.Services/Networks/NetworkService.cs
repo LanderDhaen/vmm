@@ -9,7 +9,8 @@ using Rise.Shared.Networks;
 namespace Rise.Services.Networks;
 
 /// <summary>
-///     Service for measurement networks. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
+///     Service for measurement networks. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
+///     this layer
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
@@ -31,16 +32,16 @@ public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvi
 			.Skip(request.Skip)
 			.Take(request.Take);
 
-		List<MeasurementNetworkDto.Index> networks = await Queryable
-			.Select(page, p => new MeasurementNetworkDto.Index {
+		List<MeasurementNetworkDto.Index> networks = await page
+			.Select(p => new MeasurementNetworkDto.Index {
 				Id = p.Id,
 				Name = p.Name,
-				Zone = p.Zone.Name,
+				Zone = p.Zone.Name
 			})
 			.ToListAsync(ctx);
 
 		return Result.Success(new NetworkResponse.Index {
-			measurementsNetworks = networks,
+			measurementsNetworks = networks
 		});
 	}
 }

@@ -26,6 +26,7 @@ public partial class Index {
 			Items = result.Value.Stations
 		};
 	}
+
 	private void OnRowClick(DataGridRowClickEventArgs<MeasurementStationDto.Index> e) {
 		NavigationManager.NavigateTo($"/stations/{e.Item.Id}");
 	}

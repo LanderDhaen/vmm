@@ -15,6 +15,7 @@ public static class ProjectDto {
 		public required DateOnly? EndDate { get; set; }
 		public required string MeasurementNetwork { get; set; }
 		public required string Zone { get; set; }
+		public required Status Status { get; set; }
 	}
 
 	public class Detail {
@@ -25,5 +26,6 @@ public static class ProjectDto {
 		public required DateOnly? EndDate { get; set; }
 		public required string MeasurementNetwork { get; set; }
 		public required string Zone { get; set; }
+		public required Status Status { get; set; }
 	}
 }

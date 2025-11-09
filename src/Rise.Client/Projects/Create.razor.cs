@@ -9,15 +9,15 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Create {
+	private readonly ProjectRequest.Create.Validator validator = new();
 	private Result<ProjectResponse.Create>? _result;
+	private MudForm form;
 	private IEnumerable<MeasurementNetworkDto.Index>? networks;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Create Model { get; } = new();
-	private readonly ProjectRequest.Create.Validator validator = new();
-	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
 		QueryRequest.SkipTake request = new() {
