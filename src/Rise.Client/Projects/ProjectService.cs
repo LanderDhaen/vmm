@@ -32,7 +32,7 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Detail>>($"/api/projects/{projectId}", ctx);
 		return result!;
 	}
-	
+
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/projects/status", req, ctx);
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
