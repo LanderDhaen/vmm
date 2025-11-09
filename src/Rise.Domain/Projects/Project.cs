@@ -18,11 +18,13 @@ public class Project : Entity {
 	private Project() {
 	}
 
-	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork,
+		Status status = Status.Active) {
 		Name = name;
 		Code = code;
 		DateRange = Guard.Against.Null(dateRange);
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
+		Status = status;
 	}
 
 	public string Name {
@@ -40,6 +42,8 @@ public class Project : Entity {
 	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
 
 	public MeasurementNetwork MeasurementNetwork { get; init; } = default!;
+
+	public Status Status { get; private set; } = Status.Active;
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);
