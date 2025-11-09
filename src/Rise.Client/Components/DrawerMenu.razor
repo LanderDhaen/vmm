@@ -1,14 +1,35 @@
-@* src/Rise.Client/Components/DrawerMenu.razor *@
-<MudNavMenu>
-	<MudDrawerHeader Class="p-0">
-		<img src="/img/logo.png" alt="VMM logo" style="width:auto"/>
+@namespace Rise.Client.Components
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+
+<MudNavMenu Style="width:100%; padding:0;">
+	@* Header with no padding/margin so the logo sits flush against the top of the screen. *@
+	<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
+		<MudImage Src="/img/logo.png"
+		          Alt="Logo"
+		          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;" />
 	</MudDrawerHeader>
 
 	@foreach (var item in _items)
 	{
-		<MudNavLink Href="@GetHref(item.Slug)" Match="NavLinkMatch.All">
-			<MudIconButton Icon="@item.Icon"/>
-			@item.Title
-		</MudNavLink>
+		@* Desktop (md and up): more compact styling *@
+		<MudHidden Breakpoint="Breakpoint.SmAndDown">
+			<MudNavLink Match="NavLinkMatch.All"
+			            Icon="@item.Icon"
+			            OnClick="@(async _ => await NavigateToAsync(GetHref(item.Slug)))"
+			            Style="font-size:0.95rem; padding:10px 14px; margin-bottom:8px; display:flex; align-items:center; gap:10px;">
+				@item.Title
+			</MudNavLink>
+		</MudHidden>
+
+		@* Mobile (sm and down): larger, more spacious styling *@
+		<MudHidden Breakpoint="Breakpoint.MdAndUp">
+			<MudNavLink Match="NavLinkMatch.All"
+			            Icon="@item.Icon"
+			            OnClick="@(async _ => await NavigateToAsync(GetHref(item.Slug)))"
+			            Style="font-size:1.125rem; padding:14px 18px; margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+				@item.Title
+			</MudNavLink>
+		</MudHidden>
 	}
 </MudNavMenu>
