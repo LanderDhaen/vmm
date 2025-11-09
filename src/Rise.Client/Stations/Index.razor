@@ -1,7 +1,6 @@
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
-@using Rise.Shared.Locations
 
 <PageTitle>Stations</PageTitle>
 
@@ -16,37 +15,37 @@
 	             Hover="true"
 	             Dense="false"
 	             Elevation="0"
-               >
+	>
 
 		<ToolBarContent>
 			<ToolBar/>
 		</ToolBarContent>
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" />
-			
+			<PropertyColumn Property="x => x.Code" Title="#"/>
+
 			<PropertyColumn Property="x => x.Status" Title="Status">
 				<CellTemplate Context="row">
 					@{
 						var raw = row.Item.Status ?? string.Empty;
 						var nl = raw switch
 						{
-							"Active" or "Actief"     => "Actief",
+							"Active" or "Actief" => "Actief",
 							"Inactive" or "Inactief" => "Inactief",
-							_                        => raw
+							_ => raw
 						};
 					}
 					<span>@nl</span>
 				</CellTemplate>
 			</PropertyColumn>
 
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
-			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
+			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd"/>
+			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd"/>
 
-			<PropertyColumn Property="x => x.Location" Title="Locatie" />
-			<PropertyColumn Property="x => x.City" Title="Gemeente" />
+			<PropertyColumn Property="x => x.Location" Title="Locatie"/>
+			<PropertyColumn Property="x => x.City" Title="Gemeente"/>
 
-			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
+			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten"/>
 		</Columns>
 
 		<PagerContent>

@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Locations;
+using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Identity;
-using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 
 namespace Rise.Services.Projects;
@@ -26,8 +25,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
-		var startdate = DateOnly.FromDateTime(request.StartDate!.Value);
-		var measurementNetwork = await dbContext.MeasurementNetworks
+		DateOnly startdate = DateOnly.FromDateTime(request.StartDate!.Value);
+		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
 			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
 
 		if (measurementNetwork == null) {

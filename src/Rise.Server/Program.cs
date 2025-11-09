@@ -34,8 +34,8 @@ try {
 		.AddEntityFrameworkStores<ApplicationDbContext>()
 		.Services.AddDbContext<ApplicationDbContext>(o => {
 			string connectionString = builder.Configuration.GetConnectionString("DatabaseConnection") ??
-									  throw new InvalidOperationException(
-										  "Connection string 'DatabaseConnection' not found.");
+			                          throw new InvalidOperationException(
+				                          "Connection string 'DatabaseConnection' not found.");
 
 			o.UseSqlServer(connectionString);
 			o.EnableDetailedErrors();

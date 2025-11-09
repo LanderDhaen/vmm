@@ -1,5 +1,3 @@
-using Rise.Shared.Identity;
-using Rise.Shared.Products;
 using Rise.Shared.Projects;
 
 namespace Rise.Server.Endpoints.Projects;

@@ -36,11 +36,11 @@ public class LocationService(ApplicationDbContext dbContext) : ILocationService 
 					AddressLine2 = l.Address.Addressline2,
 					City = l.Address.City,
 					PostalCode = l.Address.PostalCode,
-					CountryIso = l.Address.CountryIso,
+					CountryIso = l.Address.CountryIso
 				},
 				Coordinate = new CoordinateDto.Index {
 					X = l.Coordinate.X,
-					Y = l.Coordinate.Y,
+					Y = l.Coordinate.Y
 				}
 			})
 			.ToListAsync(ctx);

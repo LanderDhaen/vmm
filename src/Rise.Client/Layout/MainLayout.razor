@@ -1,25 +1,22 @@
 ﻿@namespace Rise.Client.Layout
 @inherits LayoutComponentBase
-@using MudBlazor.Utilities
-
-@using Microsoft.AspNetCore.Components
-@using MudBlazor
 
 @* Providers and layout wrapper *@
-<MudThemeProvider />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-<div class="app-background" style="min-height:100vh; display:flex; flex-direction:column;">
-  <MudLayout Class="main-layout" Style="flex:1 1 auto; display:flex; flex-direction:column; min-height:100vh; background-color: #f5f5f5;">
-    <!-- Drawer contains NavBar, Drawer/menu and MainContent -->
-    <Drawer >
-      @Body
-    </Drawer>
-  </MudLayout>
-  <MudThemeProvider Theme="_vmm"/>
-
+<MudThemeProvider/>
+<MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
+
+<div class="app-background" style="min-height:100vh; display:flex; flex-direction:column;">
+	<MudLayout Class="main-layout"
+	           Style="flex:1 1 auto; display:flex; flex-direction:column; min-height:100vh; background-color: #f5f5f5;">
+		<!-- Drawer contains NavBar, Drawer/menu and MainContent -->
+		<Drawer>
+			@Body
+		</Drawer>
+	</MudLayout>
+	<MudThemeProvider Theme="_vmm"/>
+
+	<MudDialogProvider/>
+	<MudSnackbarProvider/>
 </div>

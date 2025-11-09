@@ -1,5 +1,3 @@
-using System;
-
 namespace Rise.Shared.Stations;
 
 public static class MeasurementStationDto {

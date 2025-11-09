@@ -8,14 +8,13 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Index {
+	private readonly List<BreadcrumbItem> _items = [
+		new("Home", "#"),
+		new("Projecten", null, true)
+	];
+
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
-
-	private readonly List<BreadcrumbItem> _items =
-	[
-		new("Home", href: "#"),
-		new("Projecten", null, true),
-	];
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		QueryRequest.SkipTake request = new() {

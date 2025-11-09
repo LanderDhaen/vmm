@@ -7,15 +7,15 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Detail {
-	//===== Breadcrumbs =====
-	private List<BreadcrumbItem> _items = [];
-
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
 		"Meetstations",
 		"Historiek"
 	};
+
+	//===== Breadcrumbs =====
+	private List<BreadcrumbItem> _items = [];
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
@@ -37,9 +37,9 @@ public partial class Detail {
 			_project = result.Value.Project;
 
 			_items = [
-				new("Home", "#"),
-				new("Projecten", "/projects"),
-				new($"{_project.Code} - {_project.Name}", null, true)
+				new BreadcrumbItem("Home", "#"),
+				new BreadcrumbItem("Projecten", "/projects"),
+				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
 			];
 		}
 	}
