@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
 using MudBlazor.Utilities;
 
@@ -12,18 +13,15 @@ public partial class MainLayout : LayoutComponentBase {
 
 	[Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-	protected override void OnInitialized()
-	{
+	protected override void OnInitialized() {
 		// Subscribe to location changes so we can close the mobile drawer after navigation.
 		// Use a handler with the exact expected signature.
 		NavigationManager.LocationChanged += HandleLocationChanged;
 	}
 
 	// Exact match for EventHandler<LocationChangedEventArgs>
-	private void HandleLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
-	{
-		if (_open)
-		{
+	private void HandleLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e) {
+		if (_open) {
 			_open = false;
 			// Ensure StateHasChanged runs on the renderer/UI thread
 			InvokeAsync(StateHasChanged);
@@ -31,18 +29,15 @@ public partial class MainLayout : LayoutComponentBase {
 	}
 
 	// Toggle is invoked directly from the MudIconButton.
-	public Task ToggleDrawerAsync()
-	{
+	public Task ToggleDrawerAsync() {
 		_open = !_open;
 		InvokeAsync(StateHasChanged);
 		return Task.CompletedTask;
 	}
 
 	// Explicit Close method (can be called by child components if they expose an EventCallback)
-	public Task CloseDrawerAsync()
-	{
-		if (_open)
-		{
+	public Task CloseDrawerAsync() {
+		if (_open) {
 			_open = false;
 			InvokeAsync(StateHasChanged);
 		}
@@ -50,10 +45,8 @@ public partial class MainLayout : LayoutComponentBase {
 	}
 
 	// MudDrawer calls OnClose when the drawer is closed (e.g., clicking outside).
-	private Task OnDrawerClosed()
-	{
-		if (_open)
-		{
+	private Task OnDrawerClosed() {
+		if (_open) {
 			_open = false;
 			InvokeAsync(StateHasChanged);
 		}
@@ -61,8 +54,7 @@ public partial class MainLayout : LayoutComponentBase {
 		return Task.CompletedTask;
 	}
 
-	public void Dispose()
-	{
+	public void Dispose() {
 		// Unsubscribe to avoid memory leaks / duplicate handlers
 		NavigationManager.LocationChanged -= HandleLocationChanged;
 	}

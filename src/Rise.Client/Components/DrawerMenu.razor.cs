@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
 
-namespace Rise.Client.Components
-{
-	public partial class DrawerMenu : ComponentBase
-	{
+namespace Rise.Client.Components {
+	public partial class DrawerMenu : ComponentBase {
 		// Parent can pass this callback: <Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
 		[Parameter] public EventCallback OnNavigate { get; set; }
 
@@ -24,8 +24,7 @@ namespace Rise.Client.Components
 
 		private string GetHref(string slug) => "/" + (slug ?? string.Empty).Trim().ToLowerInvariant();
 
-		private async Task NavigateToAsync(string href)
-		{
+		private async Task NavigateToAsync(string href) {
 			// Programmatic navigation so we can call OnNavigate afterwards.
 			NavigationManager.NavigateTo(href);
 
