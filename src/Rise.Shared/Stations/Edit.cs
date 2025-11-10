@@ -16,8 +16,8 @@ public static partial class MeasurementStationRequest {
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {
 				RuleFor(x => x.StationId).NotEmpty();
-				RuleFor(x => x.Code).NotEmpty().MaximumLength(64);
-				RuleFor(x => x.Status).NotEmpty().MaximumLength(64);
+				RuleFor(x => x.Code).NotEmpty().WithMessage("Code mag niet leeg zijn.").MaximumLength(64);
+				RuleFor(x => x.Status).NotEmpty();
 				RuleFor(x => x.LocationId).NotEmpty();
 				RuleFor(x => x.ProjectId).NotEmpty();
 
