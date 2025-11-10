@@ -26,6 +26,7 @@ public class Project : Entity {
 		Status = status;
 	}
 
+
 	public string Name {
 		get => _name;
 		set => _name = Guard.Against.NullOrWhiteSpace(value);
@@ -43,7 +44,7 @@ public class Project : Entity {
 
 	public MeasurementNetwork MeasurementNetwork { get; init; } = default!;
 
-	public Status Status { get; private set; } = Status.Active;
+	public Status Status { get; } = Status.Active;
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

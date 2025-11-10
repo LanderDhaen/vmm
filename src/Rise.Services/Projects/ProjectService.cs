@@ -8,7 +8,8 @@ using Rise.Shared.Common;
 using Rise.Shared.Identity;
 using Rise.Shared.Projects;
 
-using Status = Rise.Shared.Projects.Status;
+using SharedStatus = Rise.Shared.Projects.Status;
+using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Projects;
 
@@ -99,7 +100,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				EndDate = p.DateRange.EndDate,
 				MeasurementNetwork = p.MeasurementNetwork.Name,
 				Zone = p.MeasurementNetwork.Zone.Name,
-				Status = p.Status
+				Status = (SharedStatus)p.Status
 			})
 			.ToListAsync(ctx);
 
@@ -127,7 +128,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			StartDate = p.DateRange.StartDate,
 			EndDate = p.DateRange.EndDate,
 			MeasurementNetwork = p.MeasurementNetwork.Name,
-			Zone = p.MeasurementNetwork.Zone.Name
+			Zone = p.MeasurementNetwork.Zone.Name,
+			Status = (SharedStatus)p.Status
 		};
 
 		return Result.Success(new ProjectResponse.Detail {
@@ -151,10 +153,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 
 		// Update status en EndDate
-		project.Status = req.NewStatus;
-		if (req.NewStatus == Status.Afgesloten) {
+		project.Status = (Status)req.NewStatus;
+		if (req.NewStatus == SharedStatus.Afgesloten) {
 			project.DateRange.EndDate ??= DateOnly.FromDateTime(DateTime.UtcNow);
-		} else if (req.NewStatus == Status.Actief) {
+		} else if (req.NewStatus == SharedStatus.Actief) {
 			project.DateRange.EndDate = null;
 		}
 

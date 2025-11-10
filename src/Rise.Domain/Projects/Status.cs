@@ -7,15 +7,14 @@ namespace Rise.Domain.Projects;
 /// </summary>
 public enum Status {
 	//no end date -> null in db
-	Active,
+	Actief,
 
 	//end date in the past -> not active anymore
-	Inactive,
+	Afgesloten,
 
 	//end date in the future -> not active yet
-	Planned
+	Gepland
 
 
-	// Paused,
-	// UnderConstruction
+	// Gepauzeerd,
 }
