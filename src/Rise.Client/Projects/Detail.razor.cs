@@ -65,7 +65,6 @@ public partial class Detail {
 		}
 
 		_open = false;
-		StateHasChanged();
 	}
 
 	private async Task Start() {
@@ -84,7 +83,6 @@ public partial class Detail {
 		}
 
 		_open = false;
-		StateHasChanged();
 	}
 
 	private void OpenDrawer() {
