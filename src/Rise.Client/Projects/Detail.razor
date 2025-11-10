@@ -101,14 +101,25 @@ else
 					var isActive = _project.Status == Status.Actief;
 				}
 
-				<MudBadge Dot="true" Color="@badgeColor" Origin="Origin.CenterLeft">
+				<MudHidden Breakpoint="Breakpoint.Xs">
+					<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Class="m-0"
+					         Color="badgeColor">@_project.Status
+					</MudChip>
 					<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
-				</MudBadge>
+				</MudHidden>
+
+				<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+					<MudBadge Dot="true" Color="@badgeColor" Origin="Origin.CenterLeft">
+						<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
+					</MudBadge>
+				</MudHidden>
+
 
 				<MudIconButton Disabled="!isActive"
 				               Icon="@Icons.Material.Filled.Edit"
 				               Color="Color.Primary">
 				</MudIconButton>
+
 			</div>
 
 			//details grid
