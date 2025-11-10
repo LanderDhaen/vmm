@@ -19,16 +19,16 @@ else
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="Close"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
+				   Color="Color.Error"
+				   OnClick="ShowCloseConfirmationAsync"
+				   Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="Start"
-			           Disabled="@(_project?.Status == Status.Actief)">
+				   Color="Color.Success"
+				   OnClick="ShowStartConfirmationAsync"
+				   Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
 		</MudDrawer>
@@ -44,16 +44,16 @@ else
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="Close"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
+				   Color="Color.Error"
+				   OnClick="ShowCloseConfirmationAsync"
+				   Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="Start"
-			           Disabled="@(_project?.Status == Status.Actief)">
+				   Color="Color.Success"
+				   OnClick="ShowStartConfirmationAsync"
+				   Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
 		</MudDrawer>
@@ -111,8 +111,8 @@ else
 
 
 				<MudIconButton Disabled="!IsActive"
-				               Icon="@Icons.Material.Filled.Edit"
-				               Color="Color.Primary">
+						       Icon="@Icons.Material.Filled.Edit"
+						       Color="Color.Primary">
 				</MudIconButton>
 
 			</div>

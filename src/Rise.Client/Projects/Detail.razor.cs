@@ -28,6 +28,7 @@ public partial class Detail {
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	[Inject] private IDialogService DialogService { get; set; } = default!;
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
@@ -101,6 +102,40 @@ public partial class Detail {
 
 	private void OpenDrawer() {
 		_open = !_open;
+	}
+
+
+	// Confirmation wrappers that show a dialog first
+	private async Task ShowCloseConfirmationAsync()
+	{
+		bool? result = await DialogService.ShowMessageBox(
+			"Bevestiging",
+			"Weet u zeker dat u het project wilt afsluiten?",
+			yesText: "Bevestig",
+			noText: "Annuleren",
+			options: new DialogOptions { CloseOnEscapeKey = true }
+		);
+
+		if (result == true)
+		{
+			await Close();
+		}
+	}
+
+	private async Task ShowStartConfirmationAsync()
+	{
+		bool? result = await DialogService.ShowMessageBox(
+			"Bevestiging",
+			"Weet u zeker dat u het project wilt opstarten?",
+			yesText: "Bevestig",
+			noText: "Annuleren",
+			options: new DialogOptions { CloseOnEscapeKey = true }
+		);
+
+		if (result == true)
+		{
+			await Start();
+		}
 	}
 
 
