@@ -5,7 +5,6 @@ using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
-using Rise.Shared.Identity;
 using Rise.Shared.Projects;
 
 using SharedStatus = Rise.Shared.Projects.Status;
@@ -147,12 +146,12 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
 
-		Technician? loggedInTechnician = await dbContext.Technicians
-			.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
-
-		if (loggedInTechnician is null) {
-			return Result.Unauthorized("You are not authorized to edit this project.");
-		}
+		// Technician? loggedInTechnician = await dbContext.Technicians
+		// 	.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
+		//
+		// if (loggedInTechnician is null) {
+		// 	return Result.Unauthorized("You are not authorized to edit this project.");
+		// }
 
 
 		project.UpdateStatus((Status)req.NewStatus);
