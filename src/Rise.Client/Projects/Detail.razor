@@ -96,26 +96,21 @@ else
 			//name and edit icon
 			<div class="d-flex align-center m-2">
 
-				@{
-					var badgeColor = _project.Status == Status.Actief ? Color.Success : Color.Error;
-					var isActive = _project.Status == Status.Actief;
-				}
-
 				<MudHidden Breakpoint="Breakpoint.Xs">
 					<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Class="m-0"
-					         Color="badgeColor">@_project.Status
+					         Color="BadgeColor">@_project.Status
 					</MudChip>
 					<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
 				</MudHidden>
 
 				<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-					<MudBadge Dot="true" Color="@badgeColor" Origin="Origin.CenterLeft">
+					<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
 						<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
 					</MudBadge>
 				</MudHidden>
 
 
-				<MudIconButton Disabled="!isActive"
+				<MudIconButton Disabled="!IsActive"
 				               Icon="@Icons.Material.Filled.Edit"
 				               Color="Color.Primary">
 				</MudIconButton>

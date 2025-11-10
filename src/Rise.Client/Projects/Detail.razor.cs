@@ -28,6 +28,8 @@ public partial class Detail {
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
+	private bool IsActive => _project?.Status == Status.Actief;
 
 
 	private void SetTab(int index) {
@@ -56,15 +58,21 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
+			if (_project is not null) {
+				_project.Status = Status.Afgesloten;
+				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow); // optioneel: meteen tonen
+			}
+
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
+			_open = false;
+
+			StateHasChanged(); // 🔥 UI updaten
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
-
-		_open = false;
 	}
 
 	private async Task Start() {
@@ -74,15 +82,21 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
+			if (_project is not null) {
+				_project.Status = Status.Actief;
+				_project.EndDate = null; // 🔥 maakt actief, dus einddatum wissen
+			}
+
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
+			_open = false;
+
+			StateHasChanged(); // 🔥 hertekenen
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
-
-		_open = false;
 	}
 
 	private void OpenDrawer() {
