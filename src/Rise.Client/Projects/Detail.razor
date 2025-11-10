@@ -1,5 +1,6 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Client.Components
+@using Rise.Shared.Projects
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -71,9 +72,20 @@ else
 				@* <MudBadge Color="@_project.Status.Equals(Status.Actief) ? Color.Success : Color.Error" Dot="true" *@
 				@* Origin="Origin.CenterLeft" *@
 				@* BadgeAriaLabel="Project Status"> *@
-				<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
 				@* </MudBadge> *@
-				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+				@if (_project.Status.Equals(Status.Actief))
+				{
+					<MudBadge Dot="true" Color="Color.Success" Origin="Origin.CenterLeft">
+						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
+					</MudBadge>
+					<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+				}
+				else
+				{
+					<MudBadge Dot="true" Color="Color.Error" Origin="Origin.CenterLeft">
+						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
+					</MudBadge>
+				}
 			</div>
 
 			//details grid
