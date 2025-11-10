@@ -92,28 +92,22 @@ else
 
 	@switch (_selectedTab)
 	{
-		/* Conditionally render the panels based on the selected index */
 		case 0:
 			//name and edit icon
 			<div class="d-flex align-center m-2">
 
-				@if (_project.Status.Equals(Status.Actief))
-				{
-					<MudBadge Dot="true" Color="Color.Success" Origin="Origin.CenterLeft">
-						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
-					</MudBadge>
-					@* <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon> *@
+				@{
+					var badgeColor = _project.Status == Status.Actief ? Color.Success : Color.Error;
+					var isActive = _project.Status == Status.Actief;
 				}
-				else
-				{
-					<MudBadge Dot="true" Color="Color.Error" Origin="Origin.CenterLeft">
-						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
-					</MudBadge>
-				}
-				<MudIconButton Disabled="@_project.Status.Equals(Status.Afgesloten)"
+
+				<MudBadge Dot="true" Color="@badgeColor" Origin="Origin.CenterLeft">
+					<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
+				</MudBadge>
+
+				<MudIconButton Disabled="!isActive"
 				               Icon="@Icons.Material.Filled.Edit"
-				               Color="Color.Primary"
-				>
+				               Color="Color.Primary">
 				</MudIconButton>
 			</div>
 

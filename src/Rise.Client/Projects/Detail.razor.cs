@@ -63,6 +63,9 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
+
+		_open = false;
+		StateHasChanged();
 	}
 
 	private async Task Start() {
@@ -79,6 +82,9 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
+
+		_open = false;
+		StateHasChanged();
 	}
 
 	private void OpenDrawer() {
