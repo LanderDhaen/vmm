@@ -16,7 +16,7 @@ public class Project : Entity {
 		Code = code;
 		DateRange = dateRange;
 		MeasurementNetwork = measurementNetwork;
-		Status = Status.Actief;
+		UpdateStatusBasedOnEndDate();
 	}
 
 	public string Name {
@@ -53,6 +53,8 @@ public class Project : Entity {
 		Code = code;
 		DateRange = dateRange;
 		MeasurementNetwork = measurementNetwork;
+
+		UpdateStatusBasedOnEndDate();
 	}
 
 	public void UpdateStatus(Status newStatus) {
@@ -61,5 +63,17 @@ public class Project : Entity {
 		}
 
 		Status = newStatus;
+	}
+
+	public void UpdateStatusBasedOnEndDate() {
+		if (DateRange.EndDate.HasValue) {
+			if (DateRange.EndDate.Value < DateOnly.FromDateTime(DateTime.UtcNow)) {
+				Status = Status.Afgesloten;
+			} else {
+				Status = Status.Actief;
+			}
+		} else {
+			Status = Status.Actief;
+		}
 	}
 }
