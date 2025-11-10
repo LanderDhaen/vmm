@@ -9,6 +9,8 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using SharedStatus = Rise.Shared.Projects.Status;
+
 namespace Rise.Services.Stations;
 
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService {
@@ -133,7 +135,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				StartDate = p.DateRange.StartDate,
 				EndDate = p.DateRange.EndDate,
 				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name
+				Zone = p.MeasurementNetwork.Zone.Name,
+				Status = (SharedStatus)p.Status
 			})
 			.ToListAsync(ct);
 
