@@ -12,14 +12,13 @@
 }
 else
 {
-	// Drawer
-	<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
-		<MudDrawerHeader>Acties</MudDrawerHeader>
-		<MudButton StartIcon="@Icons.Material.Filled.Cancel">Project afsluiten</MudButton>
-	</MudDrawer>
-
 	// Desktop
+
 	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
+			<MudDrawerHeader>Acties</MudDrawerHeader>
+			<MudButton StartIcon="@Icons.Material.Filled.Cancel">Project afsluiten</MudButton>
+		</MudDrawer>
 		<MudBreadcrumbs Items="_items" Class="p-0 m-2 gutter-2">
 			<SeparatorTemplate>
 				<MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small"/>
@@ -29,6 +28,10 @@ else
 
 	// Mobile
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom" Elevation="1" Variant="DrawerVariant.Temporary">
+			<MudDrawerHeader>Acties</MudDrawerHeader>
+			<MudButton StartIcon="@Icons.Material.Filled.Cancel">Project afsluiten</MudButton>
+		</MudDrawer>
 		<ArrowHeader Title="Site" OnBack="NavigateToProjects"/>
 		@* <Header Title="Projecten"></Header> *@
 	</MudHidden>
@@ -54,7 +57,7 @@ else
 		</MudText>
 		<MudDivider Vertical="true" FlexItem="true"/>
 		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"></MudIconButton>
+			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" OnClick="@(() => OpenDrawer())"></MudIconButton>
 		</MudHidden>
 		<MudHidden Breakpoint="Breakpoint.Xs">
 			<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer())">Acties</MudButton>
