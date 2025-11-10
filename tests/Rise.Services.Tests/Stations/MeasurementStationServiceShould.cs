@@ -238,5 +238,168 @@ namespace Rise.Services.Tests.Stations {
 
 			Assert.Equal(ResultStatus.NotFound, result.Status);
 		}
+
+
+		[Fact]
+		public async Task EditAsync_ShouldUpdateFields_WhenValid() {
+			var db = CreateDbContext(out var projectId, out var project1, out var loc1);
+			var loc2 = new Location("Loc-2", new Address("l1", "l2", "City2", "2222"), new Coordinate(4.4, 50.9));
+			var project2 = new Project("Second Project", "SP-2",
+				new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 12, 31)), DummyMeasurementNetwork);
+			db.Locations.Add(loc2);
+			db.Projects.Add(project2);
+			await db.SaveChangesAsync();
+
+			var originalInstalled = new DateTime(2024, 10, 1, 0, 0, 0, DateTimeKind.Utc);
+			var station = new MeasurementStation(
+				code: "STN-200",
+				status: "Active",
+				location: loc1,
+				installation: new Installation(originalInstalled),
+				projects: new[] { project1 }
+			);
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var service = new MeasurementStationService(db);
+
+			var newInstalled = new DateTime(2024, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+			var newRemoved = new DateTime(2024, 12, 1, 0, 0, 0, DateTimeKind.Utc);
+
+			var req = new MeasurementStationRequest.Edit {
+				StationId = station.Id,
+				Code = "STN-200",
+				Status = "Inactive",
+				LocationId = loc2.Id,
+				ProjectId = project2.Id,
+				InstalledAt = newInstalled,
+				RemovedAt = newRemoved
+			};
+
+			var result = await service.EditAsync(req);
+
+			Assert.True(result.IsSuccess);
+
+			var reloaded = await db.MeasurementStations
+				.Include(s => s.Location)
+				.Include(s => s.Projects)
+				.SingleAsync(s => s.Id == station.Id);
+
+			Assert.Equal("Inactive", reloaded.Status);
+			Assert.Equal(loc2.Id, reloaded.Location.Id);
+			Assert.Single(reloaded.Projects);
+			Assert.Equal(project2.Id, reloaded.Projects.First().Id);
+			Assert.Equal(newInstalled, reloaded.Installation.InstalledAt);
+			Assert.Equal(newRemoved, reloaded.Installation.RemovedAt);
+		}
+
+		[Fact]
+		public async Task EditAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+			var db = CreateDbContext(out var _, out var _, out var _);
+			var service = new MeasurementStationService(db);
+
+			var req = new MeasurementStationRequest.Edit {
+				StationId = Guid.NewGuid(),
+				Code = "NOPE",
+				Status = "Active",
+				LocationId = Guid.NewGuid(),
+				ProjectId = Guid.NewGuid(),
+				InstalledAt = DateTime.UtcNow
+			};
+
+			var result = await service.EditAsync(req);
+
+			Assert.Equal(ResultStatus.NotFound, result.Status);
+		}
+
+		[Fact]
+		public async Task EditAsync_ShouldReturnNotFound_WhenNewLocationDoesNotExist() {
+			var db = CreateDbContext(out var _, out var project, out var loc);
+			var station = new MeasurementStation(
+				code: "STN-404L",
+				status: "Active",
+				location: loc,
+				installation: new Installation(DateTime.UtcNow.AddDays(-4)),
+				projects: new[] { project }
+			);
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var service = new MeasurementStationService(db);
+
+			var req = new MeasurementStationRequest.Edit {
+				StationId = station.Id,
+				Code = station.Code,
+				Status = "Active",
+				LocationId = Guid.NewGuid(),
+				ProjectId = project.Id,
+				InstalledAt = station.Installation.InstalledAt
+			};
+
+			var result = await service.EditAsync(req);
+
+			Assert.Equal(ResultStatus.NotFound, result.Status);
+		}
+
+		[Fact]
+		public async Task EditAsync_ShouldReturnNotFound_WhenNewProjectDoesNotExist() {
+			var db = CreateDbContext(out var _, out var project, out var loc);
+			var station = new MeasurementStation(
+				code: "STN-404P",
+				status: "Active",
+				location: loc,
+				installation: new Installation(DateTime.UtcNow.AddDays(-4)),
+				projects: new[] { project }
+			);
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var service = new MeasurementStationService(db);
+
+			var req = new MeasurementStationRequest.Edit {
+				StationId = station.Id,
+				Code = station.Code,
+				Status = "Active",
+				LocationId = loc.Id,
+				ProjectId = Guid.NewGuid(),
+				InstalledAt = station.Installation.InstalledAt
+			};
+
+			var result = await service.EditAsync(req);
+
+			Assert.Equal(ResultStatus.NotFound, result.Status);
+		}
+
+		[Fact]
+		public async Task EditAsync_ShouldThrow_WhenRemovedBeforeInstalled() {
+			var db = CreateDbContext(out var _, out var project, out var loc);
+			var station = new MeasurementStation(
+				code: "STN-DATE",
+				status: "Active",
+				location: loc,
+				installation: new Installation(DateTime.UtcNow.AddDays(-10)),
+				projects: new[] { project }
+			);
+			db.MeasurementStations.Add(station);
+			await db.SaveChangesAsync();
+
+			var service = new MeasurementStationService(db);
+
+			var installed = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc);
+			var removed = new DateTime(2025, 1, 5, 0, 0, 0, DateTimeKind.Utc);
+
+			var req = new MeasurementStationRequest.Edit {
+				StationId = station.Id,
+				Code = station.Code,
+				Status = "Active",
+				LocationId = loc.Id,
+				ProjectId = project.Id,
+				InstalledAt = installed,
+				RemovedAt = removed
+			};
+
+			await Assert.ThrowsAsync<ArgumentException>(async () => await service.EditAsync(req));
+		}
+
 	}
 }
