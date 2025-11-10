@@ -1,5 +1,6 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Client.Components
+@using Rise.Shared.Projects
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -57,11 +58,16 @@ else
 		case 0:
 			//name and edit icon
 			<div class="d-flex align-center m-2">
-				<MudText Class="pr-2" Typo="Typo.h5">@_project.Name</MudText>
+				<MudBadge Color="@_project.Status.Equals(Status.Actief) ? Color.Success : Color.Error" Dot="true"
+				          Origin="Origin.CenterLeft"
+				          BadgeAriaLabel="Project Status">
+					<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
+				</MudBadge>
 				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
 			</div>
 
 			//details grid
+			// TODO: use MudTextField for editable fields
 			<MudGrid Class="p-2">
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
