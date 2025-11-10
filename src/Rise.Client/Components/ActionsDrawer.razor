@@ -1,50 +1,25 @@
 @namespace Rise.Client.Layout
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
 @using MudBlazor
 
-@inject NavigationManager NavigationManager
+@implements IDisposable
 
-@* Bottom sheet sort drawer. Ensure the MudDrawer itself has the classes
-   so our global CSS can target the rendered drawer regardless of portal. *@
-  <MudHidden Breakpoint="Breakpoint.MdAndDown">
-<MudDrawer @bind-Open="Open"
-           Anchor="Anchor.Right"
-           Variant="DrawerVariant.Temporary"
-           Elevation="8"
-           CloseOnOutsideClick="true"
-           OnClose="@HandleClose"
-           >
-
-    <!-- Body: allow internal scrolling -->
-    <div style="padding:16px; overflow:auto;">
-<div style="display:flex; align-items:center; gap:0.5rem;">
-    <MudIconButton Icon="@Icons.Material.Outlined.AddBox"
+<MudBreakpointProvider OnBreakpointChanged="@(bp => {
+    CurrentAnchor = bp <= Breakpoint.Md ? Anchor.Bottom : Anchor.Right;
+    StateHasChanged();
+})">
+    <MudDrawer @bind-Open="_open"
+               Anchor="@CurrentAnchor"
+               Variant="DrawerVariant.Temporary"
+               Elevation="8"
+               CloseOnOutsideClick="true"
+               OnClose="@HandleClose">
+        <MudButton StartIcon="@Icons.Material.Filled.AddBox"
                    Color="Color.Primary"
-                   Size="Size.Small"
-                   OnClick="@NavigateToCreate"/> 
-    <MudText Typo="Typo.subtitle2" Style="margin:0;">Voeg project toe</MudText>
-</div>
-    </div>
-</MudDrawer>
-  </MudHidden>
-  <MudHidden Breakpoint="Breakpoint.MdAndUp">
-<MudDrawer @bind-Open="Open"
-           Anchor="Anchor.Bottom"
-           Variant="DrawerVariant.Temporary"
-           Elevation="8"
-           CloseOnOutsideClick="true"
-           OnClose="@HandleClose"
-           >
-
-    <!-- Body: allow internal scrolling -->
-    <div style="padding:16px; overflow:auto;">
-<div style="display:flex; align-items:center; gap:0.5rem;">
-    <MudIconButton Icon="@Icons.Material.Outlined.AddBox"
-                   Color="Color.Primary"
-                   Size="Size.Small"
-                   OnClick="@NavigateToCreate"/> 
-    <MudText Typo="Typo.subtitle2" Style="margin:0;">Voeg project toe</MudText>
-</div>
-    </div>
-</MudDrawer>
-  </MudHidden>
+                   Size="Size.Large"
+                   OnClick="@NavigateToCreate">
+            @ButtonText
+        </MudButton>
+    </MudDrawer>
+</MudBreakpointProvider>

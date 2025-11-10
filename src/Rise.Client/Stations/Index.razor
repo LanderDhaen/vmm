@@ -4,14 +4,12 @@
 @using Rise.Shared.Locations
 
 <PageTitle>Stations</PageTitle>
-
-@* Toolbar: render in normal document flow (not sticky here) *@
 <MudPaper Elevation="0" Square="true" Style="box-sizing:border-box; background:transparent; box-shadow:none; border:none; margin-bottom: 0.75rem;">
   <ToolBar />
 </MudPaper>
 
 <MudPaper Elevation="2" Rounded="true">
-  @* DATAGRID: alleen zichtbaar op md en groter *@
+  @* DESKTOP*@
   <MudHidden Breakpoint="Breakpoint.SmAndDown">
     <MudDataGrid T="MeasurementStationDto.Index"
                  ServerData="GetStationsAsync"
@@ -42,7 +40,7 @@
     </MudDataGrid>
   </MudHidden>
 
-  @* MOBILE: alleen zichtbaar op sm en xs *@
+  @* MOBILE*@
   <MudHidden Breakpoint="Breakpoint.MdAndUp">
     <MudGrid GutterSize="2" Style="margin-top: 0.75rem; padding-left:0.75rem; padding-right:0.75rem; padding-bottom:0.75rem; background: none; box-shadow: none; border: none;">
       @if (_mobileStations is null)

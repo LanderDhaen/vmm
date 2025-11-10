@@ -14,7 +14,7 @@ public partial class Index {
 	private int _mobileTotal;
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
-		await FetchMobileItemsAsync(); // gebruikt default page = 0, pageSize = 10
+		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
 	}
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
@@ -40,7 +40,7 @@ public partial class Index {
 	};
 	// --- Mobile data (cards) --------------------------------------------
 
-	// Default parameter values maken velden overbodig; roep parameterloos aan voor page 0 / size 10
+	// Default parameter values make fields unnecessary; call parameterless for page 0 / size 10
 	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
 		try {
 			var req = BuildRequest(page * pageSize, pageSize, orderBy);
@@ -62,19 +62,14 @@ public partial class Index {
 
 		await InvokeAsync(StateHasChanged);
 	}
-	    private static string TranslateStatus(string raw)
-    {
-        if (string.IsNullOrWhiteSpace(raw))
-            return string.Empty;
+	private static string TranslateStatus(string raw) {
+		if (string.IsNullOrWhiteSpace(raw))
+			return string.Empty;
 
-        return raw switch
-        {
-            "Active"   or "Actief"     => "Actief",
-            "Inactive" or "Inactief"   => "Inactief",
-            // optionele extra mappings:
-            "Pending"                   => "In afwachting",
-            "Maintenance"               => "Onderhoud",
-            _                           => raw
-        };
-    }
+		return raw switch {
+			"Active" or "Actief" => "Actief",
+			"Inactive" or "Inactief" => "Inactief",
+			_ => raw
+		};
+	}
 }
