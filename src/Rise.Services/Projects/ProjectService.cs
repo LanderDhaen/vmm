@@ -149,16 +149,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
 
 		if (loggedInTechnician is null) {
-			return Result.Unauthorized("You are not authorized to update project status.");
+			return Result.Unauthorized("You are not authorized to edit this project.");
 		}
 
-		// Update status en EndDate
-		project.Status = (Status)req.NewStatus;
-		if (req.NewStatus == SharedStatus.Afgesloten) {
-			project.DateRange.EndDate ??= DateOnly.FromDateTime(DateTime.UtcNow);
-		} else if (req.NewStatus == SharedStatus.Actief) {
-			project.DateRange.EndDate = null;
-		}
+
+		project.UpdateStatus((Status)req.NewStatus);
 
 		await dbContext.SaveChangesAsync(ctx);
 
