@@ -17,6 +17,9 @@ public partial class Detail {
 		"Historiek"
 	};
 
+	//DRAWER
+	private bool _open;
+
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
 
@@ -42,6 +45,11 @@ public partial class Detail {
 			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
 		}
 	}
+
+	private void OpenDrawer() {
+		_open = !_open;
+	}
+
 
 	//NAV
 	private void NavigateToProjects() {

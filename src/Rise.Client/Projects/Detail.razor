@@ -1,6 +1,5 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Client.Components
-@using Rise.Shared.Projects
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -12,6 +11,12 @@
 }
 else
 {
+	// Drawer
+	<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom">
+		<MudDrawerHeader>Acties</MudDrawerHeader>
+		<MudButton StartIcon="@Icons.Material.Filled.Cancel">Project afsluiten</MudButton>
+	</MudDrawer>
+
 	// Desktop
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudBreadcrumbs Items="_items" Class="p-0 m-2 gutter-2">
@@ -46,9 +51,13 @@ else
 			@onclick="() => SetTab(2)">
 			@_tabs[2]
 		</MudText>
-
 		<MudDivider Vertical="true" FlexItem="true"/>
-		<MudIcon Icon="@Icons.Material.Outlined.MoreHoriz"></MudIcon>
+		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"></MudIconButton>
+		</MudHidden>
+		<MudHidden Breakpoint="Breakpoint.Xs">
+			<MudButton Variant="Variant.Text" OnClick="@(() => OpenDrawer())">Acties</MudButton>
+		</MudHidden>
 	</div>
 
 
@@ -58,11 +67,12 @@ else
 		case 0:
 			//name and edit icon
 			<div class="d-flex align-center m-2">
-				<MudBadge Color="@_project.Status.Equals(Status.Actief) ? Color.Success : Color.Error" Dot="true"
-				          Origin="Origin.CenterLeft"
-				          BadgeAriaLabel="Project Status">
-					<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
-				</MudBadge>
+				@* TODO: to complex for now *@
+				@* <MudBadge Color="@_project.Status.Equals(Status.Actief) ? Color.Success : Color.Error" Dot="true" *@
+				@* Origin="Origin.CenterLeft" *@
+				@* BadgeAriaLabel="Project Status"> *@
+				<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
+				@* </MudBadge> *@
 				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
 			</div>
 
