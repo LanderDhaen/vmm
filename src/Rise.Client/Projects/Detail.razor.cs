@@ -58,7 +58,10 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
 		} else {
-			Snackbar.Add(result.Errors.ToString(), Severity.Error);
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
 		}
 	}
 
@@ -71,7 +74,10 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
 		} else {
-			Snackbar.Add(result.Errors.ToString(), Severity.Error);
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
 		}
 	}
 

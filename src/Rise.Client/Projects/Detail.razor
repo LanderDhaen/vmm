@@ -96,17 +96,13 @@ else
 		case 0:
 			//name and edit icon
 			<div class="d-flex align-center m-2">
-				@* TODO: to complex for now *@
-				@* <MudBadge Color="@_project.Status.Equals(Status.Actief) ? Color.Success : Color.Error" Dot="true" *@
-				@* Origin="Origin.CenterLeft" *@
-				@* BadgeAriaLabel="Project Status"> *@
-				@* </MudBadge> *@
+
 				@if (_project.Status.Equals(Status.Actief))
 				{
 					<MudBadge Dot="true" Color="Color.Success" Origin="Origin.CenterLeft">
 						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
 					</MudBadge>
-					<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+					@* <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon> *@
 				}
 				else
 				{
@@ -114,6 +110,11 @@ else
 						<MudText Class="p-4" Typo="Typo.h5">@_project.Name</MudText>
 					</MudBadge>
 				}
+				<MudIconButton Disabled="@_project.Status.Equals(Status.Afgesloten)"
+				               Icon="@Icons.Material.Filled.Edit"
+				               Color="Color.Primary"
+				>
+				</MudIconButton>
 			</div>
 
 			//details grid
