@@ -9,13 +9,13 @@ public class MeasurementStation : Entity {
 
 	public MeasurementStation(
 		string code,
-		string status,
+		//string status, 
 		Location location,
 		Installation installation,
 		IEnumerable<Project> projects
 	) {
 		Code = code;
-		Status = status;
+		//Status = status;
 
 		Location = location ?? throw new ArgumentNullException(nameof(location));
 		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
@@ -29,16 +29,16 @@ public class MeasurementStation : Entity {
 	}
 
 	public string Code { get; private set; } = default!;
-	public string Status { get; private set; } = default!;
+	//public string Status { get; private set; } = default!;
 
 	public Location Location { get; private set; } = default!;
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
 	public Installation Installation { get; private set; } = default!;
 
-	public void UpdateStatus(string status) {
+	/*public void UpdateStatus(string status) {
 		Status = status;
-	}
+	}*/
 
 	public void MoveTo(Location newLocation) {
 		Location = newLocation ?? throw new ArgumentNullException(nameof(newLocation));

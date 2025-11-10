@@ -64,7 +64,7 @@ namespace Rise.Services.Tests.Stations {
 			for (int i = 0; i < 5; i++) {
 				var station = new MeasurementStation(
 					code: $"STN-{i}",
-					status: i % 2 == 0 ? "Active" : "Inactive",
+					//status: i % 2 == 0 ? "Active" : "Inactive",
 					location: loc,
 					installation: new Installation(DateTime.UtcNow.AddDays(-i)),
 					projects: new[] { project }
@@ -108,7 +108,7 @@ namespace Rise.Services.Tests.Stations {
 			foreach (var code in new[] { "STN-1", "STN-2", "STN-3" }) {
 				db.MeasurementStations.Add(new MeasurementStation(
 					code: code,
-					status: "Active",
+					//status: "Active",
 					location: loc,
 					installation: new Installation(DateTime.UtcNow),
 					projects: new[] { project }
@@ -140,7 +140,7 @@ namespace Rise.Services.Tests.Stations {
 			var installedAt = new DateTime(2024, 11, 6, 0, 0, 0, DateTimeKind.Utc);
 			var station = new MeasurementStation(
 				code: "STN-002",
-				status: "Inactive",
+				//status: "Inactive",
 				location: loc,
 				installation: new Installation(installedAt),
 				projects: new[] { project }
@@ -157,7 +157,7 @@ namespace Rise.Services.Tests.Stations {
 			var dto = result.Value!.Station;
 			Assert.Equal(station.Id, dto.Id);
 			Assert.Equal("STN-002", dto.Code);
-			Assert.Equal("Inactive", dto.Status);
+			//Assert.Equal("Inactive", dto.Status);
 			Assert.Equal(installedAt, dto.InstalledAt);
 			Assert.Null(dto.RemovedAt);
 			Assert.Equal("TestLoc", dto.Location);
@@ -182,7 +182,7 @@ namespace Rise.Services.Tests.Stations {
 
 			var station = new MeasurementStation(
 				code: "STN-100",
-				status: "Active",
+				//status: "Active",
 				location: loc,
 				installation: new Installation(DateTime.UtcNow),
 				projects: new[] { project }
@@ -214,7 +214,7 @@ namespace Rise.Services.Tests.Stations {
 
 			var station = new MeasurementStation(
 				code: "STN-EMPTY",
-				status: "Inactive",
+				//status: "Inactive",
 				location: loc,
 				installation: new Installation(DateTime.UtcNow),
 				projects: Array.Empty<Project>()

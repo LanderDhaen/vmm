@@ -508,10 +508,10 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Status")
+                    /*b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(32)");*/
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");

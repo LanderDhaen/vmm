@@ -112,7 +112,7 @@ namespace Rise.Persistence.Migrations {
 				columns: table => new {
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-					Status = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+					//Status = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
 					LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
 					RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),

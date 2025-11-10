@@ -23,7 +23,7 @@
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#" />
 
-			<PropertyColumn Property="x => x.Status" Title="Status">
+			@*<PropertyColumn Property="x => x.Status" Title="Status">
 				<CellTemplate Context="row">
 					@{
 						var raw = row.Item.Status ?? string.Empty;
@@ -36,7 +36,7 @@
 					}
 					<span>@nl</span>
 				</CellTemplate>
-			</PropertyColumn>
+			</PropertyColumn>*@
 
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />

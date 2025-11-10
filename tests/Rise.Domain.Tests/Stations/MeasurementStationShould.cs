@@ -44,14 +44,14 @@ public class MeasurementStationShould {
 
 		var station = new MeasurementStation(
 			code: "STN-001",
-			status: "Active",
+			//status: "Active",
 			location: location,
 			installation: new Installation(installed),
 			projects: new[] { DummyProject }
 		);
 
 		station.Code.ShouldBe("STN-001");
-		station.Status.ShouldBe("Active");
+		//station.Status.ShouldBe("Active");
 		station.Location.ShouldNotBeNull();
 		station.Installation.InstalledAt.ShouldBe(installed);
 		station.Installation.RemovedAt.ShouldBeNull();
@@ -64,17 +64,17 @@ public class MeasurementStationShould {
 	public void AllowUpdatingStatusAndRemovalDate() {
 		var station = new MeasurementStation(
 			code: "STN-001",
-			status: "Active",
+			//status: "Active",
 			location: MakeLocation(),
 			installation: new Installation(DateTime.UtcNow.AddDays(-30)),
 			projects: new[] { DummyProject }
 		);
 
-		station.UpdateStatus("Inactive");
+		//station.UpdateStatus("Inactive");
 		var removedAt = DateTime.UtcNow;
 		station.UpdateInstallation(new Installation(station.Installation.InstalledAt, removedAt));
 
-		station.Status.ShouldBe("Inactive");
+		//station.Status.ShouldBe("Inactive");
 		station.Installation.RemovedAt.ShouldNotBeNull();
 		station.Installation.RemovedAt!.Value.ShouldBe(removedAt, TimeSpan.FromSeconds(1));
 
@@ -86,7 +86,7 @@ public class MeasurementStationShould {
 		var originalLocation = MakeLocation("Old Place");
 		var station = new MeasurementStation(
 			code: "STN-100",
-			status: "Active",
+			//status: "Active",
 			location: originalLocation,
 			installation: new Installation(DateTime.UtcNow.AddDays(-5)),
 			projects: new[] { DummyProject }

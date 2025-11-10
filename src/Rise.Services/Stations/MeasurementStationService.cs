@@ -49,9 +49,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 					=> desc ? query.OrderByDescending(s => s.Code)
 							: query.OrderBy(s => s.Code),
 
-				nameof(MeasurementStationDto.Index.Status)
+				/*nameof(MeasurementStationDto.Index.Status)
 					=> desc ? query.OrderByDescending(s => s.Status)
-							: query.OrderBy(s => s.Status),
+							: query.OrderBy(s => s.Status),*/
 
 				_ => desc ? query.OrderByDescending(s => EF.Property<object>(s, request.OrderBy!))
 						  : query.OrderBy(s => EF.Property<object>(s, request.OrderBy!)),
@@ -67,7 +67,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
 				Code = s.Code,
-				Status = s.Status,
+				//Status = s.Status,
 				InstalledAt = s.Installation.InstalledAt,
 				RemovedAt = s.Installation.RemovedAt,
 				Location = s.Location.Name,
@@ -95,7 +95,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		var dto = new MeasurementStationDto.Detail {
 			Id = station.Id,
 			Code = station.Code,
-			Status = station.Status,
+			//Status = station.Status,
 			InstalledAt = station.Installation.InstalledAt,
 			RemovedAt = station.Installation.RemovedAt,
 			Location = station.Location.Name,
@@ -121,7 +121,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		var station = new MeasurementStation(
 			code: request.Code,
-			status: request.Status,
+			//status: request.Status,
 			location: location,
 			installation: new Installation(installedAt),
 			projects: new[] { project }
@@ -144,7 +144,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		if (station is null)
 			return Result.NotFound();
 
-		station.UpdateStatus(request.Status);
+		//station.UpdateStatus(request.Status);
 
 		var installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
 		station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));

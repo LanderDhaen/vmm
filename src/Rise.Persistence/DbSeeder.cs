@@ -244,7 +244,7 @@ public class DbSeeder(
 
 		var station1 = new MeasurementStation(
 			code: "STN-001",
-			status: "Active",
+			//status: "Active",
 			location: locations[l0],
 			installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
 			projects: new[] { projects[p0] }
@@ -252,7 +252,7 @@ public class DbSeeder(
 
 		var station2 = new MeasurementStation(
 			code: "STN-002",
-			status: "Inactive",
+			//status: "Inactive",
 			location: locations[l1],
 			installation: new Installation(
 				installedAt: DateTime.UtcNow.AddYears(-1),
