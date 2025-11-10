@@ -57,10 +57,9 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
+		} else {
+			Snackbar.Add(result.Errors.ToString(), Severity.Error);
 		}
-		// else {
-		// 	Snackbar.Add(result.Message, Severity.Error);
-		// }
 	}
 
 	private async Task Start() {
@@ -71,10 +70,9 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
+		} else {
+			Snackbar.Add(result.Errors.ToString(), Severity.Error);
 		}
-		// else {
-		// 	Snackbar.Add(result.Message, Severity.Error);
-		// }
 	}
 
 	private void OpenDrawer() {

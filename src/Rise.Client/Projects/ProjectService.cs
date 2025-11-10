@@ -7,7 +7,8 @@ namespace Rise.Client.Projects;
 
 public class ProjectService(HttpClient httpClient) : IProjectService {
 	public async Task<Result> EditAsync(ProjectRequest.Edit request, CancellationToken ctx = default) {
-		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/projects", request, ctx);
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{request.ProjectId}", request, ctx);
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
@@ -34,7 +35,9 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 	}
 
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
-		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/projects/status", req, ctx);
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/status", req, ctx);
+
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
