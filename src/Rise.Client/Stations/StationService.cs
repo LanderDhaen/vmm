@@ -6,15 +6,28 @@ using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
-public class StationService(HttpClient httpClient) {
-	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request, CancellationToken ctx = default)
-		=> (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.Index>>($"/api/stations?{request.AsQuery()}", ctx))!;
-	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ctx = default)
-		=> (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.Detail>>($"/api/stations/{stationId}", ctx))!;
+/// <summary>
+/// Client-side service for interacting with the Stations API.
+/// Mirrors the structure and behavior of the ProjectService.
+/// </summary>
+public class StationService(HttpClient httpClient) : IMeasurementStationService {
+	public async Task<Result> EditAsync(MeasurementStationRequest.Edit request, CancellationToken ctx = default) {
+		var response = await httpClient.PutAsJsonAsync("/api/stations", request, ctx);
+		return (await response.Content.ReadFromJsonAsync<Result>(cancellationToken: ctx))!;
+	}
+
+	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
+		QueryRequest.SkipTake request, CancellationToken ctx = default)
+		=> (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.Index>>(
+			$"/api/stations?{request.AsQuery()}", ctx))!;
+
+	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
+		Guid stationId, CancellationToken ctx = default)
+		=> (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.Detail>>(
+			$"/api/stations/{stationId}", ctx))!;
 
 	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
-		Guid stationId,
-		CancellationToken ctx = default)
+		Guid stationId, CancellationToken ctx = default)
 		=> (await httpClient.GetFromJsonAsync<Result<List<ProjectDto.Index>>>(
 			$"/api/stations/{stationId}/projects", ctx))!;
 }

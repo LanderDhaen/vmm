@@ -14,7 +14,7 @@
 }
 else
 {
-    // ===== Desktop =====
+    <!-- ===== Desktop ===== -->
     <MudHidden Breakpoint="Breakpoint.Xs">
         <MudBreadcrumbs Items="_items" Class="p-0 m-2 gutter-2">
             <SeparatorTemplate>
@@ -23,7 +23,7 @@ else
         </MudBreadcrumbs>
     </MudHidden>
 
-    // ===== Mobile =====
+    <!-- ===== Mobile ===== -->
     <MudHidden Breakpoint="Breakpoint.SmAndUp">
         <ArrowHeader Title="Meetstation" OnBack="NavigateToStations" />
     </MudHidden>
@@ -54,7 +54,10 @@ else
         case 0:
             <div class="d-flex align-center m-2">
                 <MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
-                <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                               Color="Color.Primary"
+                               Href="@($"/stations/edit/{_station.Id}")"
+                               Title="Bewerken" />
             </div>
 
             <MudGrid Class="p-2">
