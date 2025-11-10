@@ -14,7 +14,7 @@ public static partial class ProjectRequest {
 		public required string Code { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
-		public required Guid MeasurementNetworkId { get; set; }
+		public Guid? MeasurementNetworkId { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {

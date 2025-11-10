@@ -57,14 +57,4 @@ public partial class Edit {
 			}
 		}
 	}
-
-	private async Task<IEnumerable<Guid>> Search(string value, CancellationToken token) {
-		if (string.IsNullOrEmpty(value)) {
-			return networks.Select(x => x.Id);
-		}
-
-		return networks
-			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-			.Select(x => x.Id);
-	}
 }

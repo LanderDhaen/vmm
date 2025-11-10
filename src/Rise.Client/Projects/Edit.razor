@@ -33,17 +33,14 @@
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
-						@if (networks != null)
-						{
-							<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-							<MudAutocomplete SearchFunc="Search"
-							                 ToStringFunc="id => networks.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
-							                 @bind-Value="Model.MeasurementNetworkId"
-							                 For="@(() => Model.MeasurementNetworkId)"
-							                 Placeholder="Selecteer een meetnet: " Clearable="true"
-							                 Variant="Variant.Outlined">
-							</MudAutocomplete>
-						}
+						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId" For="@(() => Model.MeasurementNetworkId)"
+						           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
+							@foreach (var network in networks)
+							{
+								<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
+							}
+						</MudSelect>
 					</MudItem>
 				</MudGrid>
 			</MudCardContent>
