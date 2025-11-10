@@ -6,10 +6,19 @@ namespace Temporal.Domain.Projects;
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-	private string _code = string.Empty;
-
-	private string _name = string.Empty;
-
+	public string Name {
+		get;
+		private set;
+	}
+	public string Code {
+		get;
+		private set;
+	}
+	public DateRange DateRange { get; init; } = default!;
+	
+	private readonly List<ProjectHistory> _projectHistories = [];
+	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
+	
 	/// <summary>
 	///     Entity Framework Core Constructor
 	/// </summary>
@@ -17,22 +26,45 @@ public class Project : Entity {
 	}
 
 	public Project(string name, string code, DateRange dateRange) {
+		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
+	}
+
+	public void Edit(string name, string code) {
+		
+		// Validate the input before creating the history & assigning the values
+		
+		Guard.Against.NullOrWhiteSpace(name, nameof(name));
+		Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		
+		// Create history object using the old values
+		
+		ValidityRange validityRange = new(UpdatedAt, DateTime.Now);
+		ProjectHistory projectHistory = new(Name, Code, new DateRange(DateRange.StartDate, DateRange.EndDate),  validityRange);
+		_projectHistories.Add(projectHistory);
+		
+		// Assign the new values
+
 		Name = name;
 		Code = code;
-		DateRange = Guard.Against.Null(dateRange);
 	}
+}
 
-	public string Name {
-		get => _name;
-		set => _name = Guard.Against.NullOrWhiteSpace(value);
+public class ProjectHistory : HistoryEntity {
+	public string Name { get; private set; }
+	public string Code { get; private set; }
+	public DateRange DateRange { get; init; }
+	
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private ProjectHistory() {
 	}
-
-	public string Code {
-		get => _code;
-		set => _code = Guard.Against.NullOrWhiteSpace(value);
+	public ProjectHistory(string name, string code, DateRange dateRange, ValidityRange validityRange) {
+		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		DateRange = Guard.Against.Null(dateRange,  nameof(dateRange));
+		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
-
-	public DateRange DateRange { get; init; } = default!;
-
-	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
 }

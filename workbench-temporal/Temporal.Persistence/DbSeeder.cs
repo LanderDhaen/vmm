@@ -15,7 +15,7 @@ public class DbSeeder(
 	public async Task SeedAsync() {
 		await LocationAsync();
 		await ProjectsAsync();
-		await StationsAsync();
+		await ProjectHistoryAsync();
 	}
 
 	private async Task LocationAsync() {
@@ -80,46 +80,17 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private async Task StationsAsync() {
-		if (dbContext.MeasurementStations.Any())
-			return;
+	private async Task ProjectHistoryAsync() {
+		List<Project> projects = await dbContext.Projects.ToListAsync();
 
-		var locations = dbContext.Locations.Local.Any()
-			? dbContext.Locations.Local.ToList()
-			: await dbContext.Locations.ToListAsync();
+		foreach (Project project in projects) {
 
-		var projects = dbContext.Projects.Local.Any()
-			? dbContext.Projects.Local.ToList()
-			: await dbContext.Projects.ToListAsync();
-
-		if (!locations.Any() || !projects.Any())
-			return;
-
-		int l0 = 0;
-		int l1 = Math.Min(1, locations.Count - 1);
-		int p0 = 0;
-		int p1 = Math.Min(1, projects.Count - 1);
-
-		var station1 = new MeasurementStation(
-			code: "STN-001",
-			status: "Active",
-			location: locations[l0],
-			installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
-			projects: new[] { projects[p0] }
-		);
-
-		var station2 = new MeasurementStation(
-			code: "STN-002",
-			status: "Inactive",
-			location: locations[l1],
-			installation: new Installation(
-				installedAt: DateTime.UtcNow.AddYears(-1),
-				removedAt: DateTime.UtcNow.AddDays(-30)
-			),
-			projects: new[] { projects[p1], projects[p0] }
-		);
-
-		dbContext.MeasurementStations.AddRange(station1, station2);
+			string name = project.Name;
+			
+			project.Edit("I've changed this", project.Code);
+			project.Edit(name + " v2", project.Code);
+		}
+		
 		await dbContext.SaveChangesAsync();
 	}
 }

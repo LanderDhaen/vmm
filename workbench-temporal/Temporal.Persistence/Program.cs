@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
+using Temporal.Domain.Projects;
+
 namespace Temporal.Persistence;
 
 public class Program
@@ -23,5 +25,14 @@ public class Program
 		await seeder.SeedAsync();
 
 		Console.WriteLine("Database created and seeded successfully.");
+		
+		List<Project> projects = await db.Projects.Include(p => p.ProjectHistories).ToListAsync();
+
+		foreach (Project p in projects) {
+			Console.WriteLine($"Project: {p.Name}, {p.Code} ");
+			foreach (ProjectHistory h in p.ProjectHistories) {
+				Console.WriteLine($"  - History: {h.Name}, {h.Code} ({h.ValidityRange.ValidFrom} - {h.ValidityRange.ValidTo})");
+			}
+		}
 	}
 }

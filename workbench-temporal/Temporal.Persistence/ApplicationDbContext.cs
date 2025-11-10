@@ -21,6 +21,7 @@ namespace Temporal.Persistence;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) { 
 	public DbSet<Location> Locations => Set<Location>();
 	public DbSet<Project> Projects => Set<Project>();
+	public DbSet<ProjectHistory> ProjectHistories => Set<ProjectHistory>();
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {

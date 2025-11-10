@@ -34,8 +34,5 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 
 			b.WithOwner();
 		});
-
-		builder.HasMany(s => s.Projects)
-			.WithMany(p => p.Stations);
 	}
 }
