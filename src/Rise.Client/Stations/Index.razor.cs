@@ -62,4 +62,19 @@ public partial class Index {
 
 		await InvokeAsync(StateHasChanged);
 	}
+	    private static string TranslateStatus(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return string.Empty;
+
+        return raw switch
+        {
+            "Active"   or "Actief"     => "Actief",
+            "Inactive" or "Inactief"   => "Inactief",
+            // optionele extra mappings:
+            "Pending"                   => "In afwachting",
+            "Maintenance"               => "Onderhoud",
+            _                           => raw
+        };
+    }
 }
