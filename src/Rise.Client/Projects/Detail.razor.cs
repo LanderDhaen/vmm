@@ -27,6 +27,8 @@ public partial class Detail {
 	private int _selectedTab;
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
+	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+
 
 	private void SetTab(int index) {
 		_selectedTab = index;
@@ -44,6 +46,35 @@ public partial class Detail {
 			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
 			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
 		}
+	}
+
+
+	private async Task Close() {
+		Result result = await ProjectService.UpdateStatusAsync(new ProjectRequest.UpdateStatus {
+			ProjectId = ProjectId,
+			NewStatus = Status.Afgesloten
+		});
+
+		if (result.IsSuccess) {
+			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
+		}
+		// else {
+		// 	Snackbar.Add(result.Message, Severity.Error);
+		// }
+	}
+
+	private async Task Start() {
+		Result result = await ProjectService.UpdateStatusAsync(new ProjectRequest.UpdateStatus {
+			ProjectId = ProjectId,
+			NewStatus = Status.Actief
+		});
+
+		if (result.IsSuccess) {
+			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
+		}
+		// else {
+		// 	Snackbar.Add(result.Message, Severity.Error);
+		// }
 	}
 
 	private void OpenDrawer() {
