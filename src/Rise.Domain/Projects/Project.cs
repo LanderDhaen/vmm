@@ -14,8 +14,8 @@ public class Project : Entity {
 	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		Name = name;
 		Code = code;
-		DateRange = dateRange;
-		MeasurementNetwork = measurementNetwork;
+		DateRange = Guard.Against.Null(dateRange);
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 		UpdateStatusBasedOnEndDate();
 	}
 
