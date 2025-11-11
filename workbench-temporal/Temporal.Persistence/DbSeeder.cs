@@ -94,10 +94,13 @@ public class DbSeeder(
 			string name = project.Name;
 			
 			project.Edit("I've changed this", project.Code);
+			await dbContext.SaveChangesAsync();
+			
+			await Task.Delay(TimeSpan.FromSeconds(1));
+			
 			project.Edit(name + " v2", project.Code);
+			await dbContext.SaveChangesAsync();
 		}
-		
-		await dbContext.SaveChangesAsync();
 	}
 
 	private async Task MeasurementStationAsync() {
@@ -141,13 +144,12 @@ public class DbSeeder(
 			string code = measurementStation.Code;
 			
 			measurementStation.Edit("I've changed this");
+			await dbContext.SaveChangesAsync();
 			
-			await Task.Delay(TimeSpan.FromSeconds(5));
+			await Task.Delay(TimeSpan.FromSeconds(1));
 			
 			measurementStation.Edit(code + " v2");
+			await dbContext.SaveChangesAsync();
 		}
-		
-		await dbContext.SaveChangesAsync();
 	}
-	
 }

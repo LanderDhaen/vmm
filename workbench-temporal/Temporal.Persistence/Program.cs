@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Temporal.Domain.Projects;
 using Temporal.Domain.Stations;
+using Temporal.Persistence.Triggers;
 
 namespace Temporal.Persistence;
 
@@ -11,11 +12,14 @@ public class Program
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseSqlServer("Server=localhost;Database=TemporalDb;Trusted_Connection=True;TrustServerCertificate=True;")
+			.EnableDetailedErrors()
+			.UseTriggers(options => options.AddTrigger<EntityBeforeSaveTrigger>())
 			.Options;
 
 		var db = new ApplicationDbContext(options);
 		
 		Console.WriteLine("Deleting database...");
+		
 		await db.Database.EnsureDeletedAsync();
 
 		Console.WriteLine("Creating database...");
