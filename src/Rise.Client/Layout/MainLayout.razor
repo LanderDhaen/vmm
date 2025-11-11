@@ -1,7 +1,8 @@
 ﻿@using MudBlazor.Utilities
 @inherits LayoutComponentBase
 
-<MudLayout>
+@* TODO: add footer instead of 100vh *@
+<MudLayout Style="height: 100vh; background-color: #ececec">
 	<NavBar/>
 	<MudMainContent>
 		<MudContainer>
@@ -21,22 +22,7 @@
 		PaletteLight = new PaletteLight
 		{
 			Primary = new MudColor("#126B8D")
-			// MudDocs
-			// Secondary = Colors.Green.Accent4,
-			// AppbarBackground = Colors.Red.Default,
-		},
-
-		PaletteDark = new PaletteDark
-		{
-			Primary = Colors.Blue.Lighten1
 		}
-
-		// MudDocs
-		// LayoutProperties = new LayoutProperties()
-		// {
-		// 	DrawerWidthLeft = "260px",
-		// 	DrawerWidthRight = "300px"
-		// }
 	};
 
 }
