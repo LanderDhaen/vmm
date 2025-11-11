@@ -1,10 +1,16 @@
 @page "/projects/edit/{ProjectId:guid}"
 
-<MudText Typo="Typo.h3">Bewerk project</MudText>
-@if (Model != null)
+@if (Model is null)
 {
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	<MudText Class="my-4" Typo="Typo.h3">Bewerk project</MudText>
 	<MudCard>
-		<MudForm Model="@Model" @ref="form" Validation="validator.ValidateValue" ValidationDelay="0">
+		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 			<MudCardContent>
 				<MudGrid>
 					<MudItem xs="12" sm="6">
@@ -34,9 +40,10 @@
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId" For="@(() => Model.MeasurementNetworkId)"
+						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId"
+						           For="@(() => Model.MeasurementNetworkId)"
 						           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
-							@foreach (var network in networks)
+							@foreach (var network in _networks)
 							{
 								<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
 							}
@@ -52,8 +59,4 @@
 			</MudButton>
 		</MudCardActions>
 	</MudCard>
-}
-else
-{
-	<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
 }

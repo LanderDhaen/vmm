@@ -9,19 +9,19 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Create {
+	private readonly ProjectRequest.Create.Validator _validator = new();
+	private IEnumerable<MeasurementNetworkDto.Index>? _networks;
 	private Result<ProjectResponse.Create>? _result;
-	private IEnumerable<MeasurementNetworkDto.Index>? networks;
+	private MudForm form;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Create Model { get; } = new();
-	private readonly ProjectRequest.Create.Validator validator = new();
-	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
-		networks = result.Value.measurementsNetworks;
+		_networks = result.Value.measurementsNetworks;
 	}
 
 	private async Task CreateProjectAsync() {
@@ -41,10 +41,10 @@ public partial class Create {
 
 	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
 		if (string.IsNullOrEmpty(value)) {
-			return networks.Select(x => (Guid?)x.Id);
+			return _networks.Select(x => (Guid?)x.Id);
 		}
 
-		return networks
+		return _networks
 			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
 			.Select(x => (Guid?)x.Id);
 	}

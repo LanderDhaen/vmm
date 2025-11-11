@@ -9,20 +9,20 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Edit {
+	private readonly ProjectRequest.Edit.Validator _validator = new();
+	private IEnumerable<MeasurementNetworkDto.Index>? _networks;
 	private Result? _result;
-	private IEnumerable<MeasurementNetworkDto.Index>? networks;
+	private MudForm form;
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Edit Model { get; set; }
-	private readonly ProjectRequest.Edit.Validator validator = new();
-	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
-		networks = result.Value.measurementsNetworks;
+		_networks = result.Value.measurementsNetworks;
 
 		Result<ProjectResponse.Detail> project = await ProjectService.GetDetailAsync(ProjectId);
 

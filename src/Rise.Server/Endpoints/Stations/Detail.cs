@@ -9,8 +9,9 @@ public class Detail(IMeasurementStationService stationService)
 		AllowAnonymous();
 	}
 
-	public override Task<Result<MeasurementStationResponse.Detail>> ExecuteAsync(EmptyRequest req, CancellationToken ct) {
-		var stationId = Route<Guid>("stationId");
+	public override Task<Result<MeasurementStationResponse.Detail>>
+		ExecuteAsync(EmptyRequest req, CancellationToken ct) {
+		Guid stationId = Route<Guid>("stationId");
 		return stationService.GetDetailAsync(stationId, ct);
 	}
 }

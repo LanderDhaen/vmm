@@ -1,4 +1,6 @@
-﻿namespace Rise.Shared.Projects;
+﻿using FluentValidation.Results;
+
+namespace Rise.Shared.Projects;
 
 public static partial class ProjectRequest {
 	public class Edit {
@@ -11,6 +13,7 @@ public static partial class ProjectRequest {
 		///     The name of the project.
 		/// </summary>
 		public required string Name { get; set; }
+
 		public required string Code { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
@@ -36,11 +39,13 @@ public static partial class ProjectRequest {
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
-				var result =
+				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Edit>.CreateWithOptions((Edit)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid)
+				if (result.IsValid) {
 					return Array.Empty<string>();
+				}
+
 				return result.Errors.Select(e => e.ErrorMessage);
 			};
 		}

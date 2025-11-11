@@ -15,7 +15,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
@@ -43,7 +43,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		ProjectService service = new(db, null!);
 
 		Guid nonExistentId = Guid.NewGuid();
@@ -60,7 +60,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task EditAsync_ShouldReturnResultSuccess() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
@@ -80,7 +80,7 @@ public class ProjectServiceShould {
 			Code = project.Code,
 			MeasurementNetworkId = project.MeasurementNetwork.Id,
 			StartDate = new DateTime(2025, 1, 1),
-			EndDate = new DateTime(2025, 12, 31),
+			EndDate = new DateTime(2025, 12, 31)
 		};
 
 		// Act
@@ -103,7 +103,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenProjectIsNotFound() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
@@ -137,7 +137,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task EditAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
@@ -166,7 +166,7 @@ public class ProjectServiceShould {
 
 		// Assert
 		Assert.Equal(ResultStatus.Conflict, result.Status);
-		Assert.Equal($"Project met code 'EP-001' bestaat al.", result.Errors.First());
+		Assert.Equal("Project met code 'EP-001' bestaat al.", result.Errors.First());
 
 		connection.Close();
 	}
@@ -174,7 +174,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		MeasurementNetwork measurementNetwork1 = new("TestNetwork1", zone);

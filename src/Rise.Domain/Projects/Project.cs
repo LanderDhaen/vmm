@@ -1,17 +1,16 @@
-using Rise.Domain.Locations;
+using Rise.Domain.Networks;
+using Rise.Domain.Stations;
 
 namespace Rise.Domain.Projects;
-
-using Networks;
 
 /// <summary>
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
 	private string _code = string.Empty;
-	private string _name = string.Empty;
 	private DateRange _dateRange;
 	private MeasurementNetwork _measurementNetwork;
+	private string _name = string.Empty;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -41,8 +40,8 @@ public class Project : Entity {
 		set => _dateRange = Guard.Against.Null(value);
 	}
 
-	public ICollection<Stations.MeasurementStation> Stations { get; private set; } =
-		new List<Stations.MeasurementStation>();
+	public ICollection<MeasurementStation> Stations { get; private set; } =
+		new List<MeasurementStation>();
 
 	public MeasurementNetwork MeasurementNetwork {
 		get => _measurementNetwork;

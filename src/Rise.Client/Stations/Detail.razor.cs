@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -13,19 +12,19 @@ public partial class Detail {
 	private readonly List<BreadcrumbItem> _items = new();
 
 	// ===== Tabs =====
-	private readonly List<string> _tabs = new()
-	{
+	private readonly List<string> _tabs = new() {
 		"Info",
 		"Apparaten",
 		"Projecten",
 		"Historiek"
 	};
 
-	// ===== Main =====
-	private MeasurementStationDto.Detail? _station;
+	private bool _loaded;
 	private List<ProjectDto.Index>? _projects;
 	private int _selectedTab;
-	private bool _loaded;
+
+	// ===== Main =====
+	private MeasurementStationDto.Detail? _station;
 
 	[Parameter] public Guid StationId { get; set; }
 
@@ -35,8 +34,8 @@ public partial class Detail {
 		_selectedTab = index;
 
 		if (index == 2 && _projects is null) {
-			var res = await StationService.GetProjectsAsync(StationId);
-			_projects = res.IsSuccess ? res.Value : new();
+			Result<List<ProjectDto.Index>> res = await StationService.GetProjectsAsync(StationId);
+			_projects = res.IsSuccess ? res.Value : new List<ProjectDto.Index>();
 			StateHasChanged();
 		}
 	}
@@ -57,13 +56,16 @@ public partial class Detail {
 		}
 	}
 
-	private void NavigateToStations() => Navigation.NavigateTo("/stations/");
+	private void NavigateToStations() {
+		Navigation.NavigateTo("/stations/");
+	}
 
 	private Task<GridData<ProjectDto.Index>> GetProjectsGridAsync(GridState<ProjectDto.Index> state) {
-		if (_projects is null)
+		if (_projects is null) {
 			return LoadAndSliceAsync(state);
+		}
 
-		var items = _projects
+		List<ProjectDto.Index> items = _projects
 			.Skip(state.Page * state.PageSize)
 			.Take(state.PageSize)
 			.ToList();
@@ -75,10 +77,10 @@ public partial class Detail {
 	}
 
 	private async Task<GridData<ProjectDto.Index>> LoadAndSliceAsync(GridState<ProjectDto.Index> state) {
-		var res = await StationService.GetProjectsAsync(StationId);
-		_projects = res.IsSuccess ? res.Value : new();
+		Result<List<ProjectDto.Index>> res = await StationService.GetProjectsAsync(StationId);
+		_projects = res.IsSuccess ? res.Value : new List<ProjectDto.Index>();
 
-		var items = _projects
+		List<ProjectDto.Index> items = _projects
 			.Skip(state.Page * state.PageSize)
 			.Take(state.PageSize)
 			.ToList();
@@ -93,8 +95,9 @@ public partial class Detail {
 		Navigation.NavigateTo($"/projects/{args.Item.Id}");
 	}
 
-	private static string FormatDate(DateTime? dt)
-		=> dt is null ? "-" : dt.Value.ToShortDateString();
+	private static string FormatDate(DateTime? dt) {
+		return dt is null ? "-" : dt.Value.ToShortDateString();
+	}
 
 	private static string FormatStatus(string? raw) {
 		return raw switch {
