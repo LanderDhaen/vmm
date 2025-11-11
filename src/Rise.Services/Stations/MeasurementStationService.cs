@@ -8,7 +8,6 @@ using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Shared.Common;
-using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Services.Stations;
@@ -82,30 +81,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		});
 	}
 
-	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ct = default) {
-		var station = await dbContext.MeasurementStations
-			.AsNoTracking()
-			.Include(s => s.Location)
-			.Include(s => s.Projects)
-			.SingleOrDefaultAsync(s => s.Id == stationId, ct);
-
-		if (station is null)
-			return Result.NotFound();
-
-		var dto = new MeasurementStationDto.Detail {
-			Id = station.Id,
-			Code = station.Code,
-			Status = station.Status,
-			InstalledAt = station.Installation.InstalledAt,
-			RemovedAt = station.Installation.RemovedAt,
-			Location = station.Location.Name,
-			City = station.Location.Address.City,
-			ProjectsCount = station.Projects.Count()
-		};
-
-		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
-	}
-
 	public async Task<Result<Guid>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ct = default) {
 		var location = await dbContext.Set<Location>()
 			.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
@@ -166,30 +141,5 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
-	}
-
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(Guid stationId, CancellationToken ct = default) {
-		bool exists = await dbContext.MeasurementStations
-			.AsNoTracking()
-			.AnyAsync(s => s.Id == stationId, ct);
-
-		if (!exists)
-			return Result.NotFound("Meetstation niet gevonden.");
-
-		var projects = await dbContext.Projects
-			.AsNoTracking()
-			.Where(p => p.Stations.Any(s => s.Id == stationId))
-			.Select(p => new ProjectDto.Index {
-				Id = p.Id,
-				Name = p.Name,
-				Code = p.Code,
-				StartDate = p.DateRange.StartDate,
-				EndDate = p.DateRange.EndDate,
-				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name
-			})
-			.ToListAsync(ct);
-
-		return Result.Success(projects);
 	}
 }

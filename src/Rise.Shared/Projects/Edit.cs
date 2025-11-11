@@ -1,6 +1,6 @@
 ﻿namespace Rise.Shared.Projects;
 
-public static partial class ProjectRequest {
+public static class ProjectRequest {
 	public class Edit {
 		/// <summary>
 		///     The unique identifier of the project.

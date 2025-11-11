@@ -2,8 +2,6 @@ using Rise.Domain.Locations;
 
 namespace Rise.Domain.Projects;
 
-using Networks;
-
 /// <summary>
 ///     A project is something that owns multiple measuring stations.
 /// </summary>

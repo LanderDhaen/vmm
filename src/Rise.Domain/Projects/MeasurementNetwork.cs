@@ -1,4 +1,4 @@
-namespace Rise.Domain.Networks;
+namespace Rise.Domain.Projects;
 
 /// <summary>
 ///     A measurement network is something that owns multiple projects.

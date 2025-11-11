@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 
 using Rise.Domain.Locations;
-using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
