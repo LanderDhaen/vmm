@@ -19,16 +19,16 @@ else
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-				   Color="Color.Error"
-				   OnClick="ShowCloseConfirmationAsync"
-				   Disabled="@(_project?.Status == Status.Afgesloten)">
+			           Color="Color.Error"
+			           OnClick="ShowCloseConfirmationAsync"
+			           Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
-				   Color="Color.Success"
-				   OnClick="ShowStartConfirmationAsync"
-				   Disabled="@(_project?.Status == Status.Actief)">
+			           Color="Color.Success"
+			           OnClick="ShowStartConfirmationAsync"
+			           Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
 		</MudDrawer>
@@ -44,16 +44,16 @@ else
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-				   Color="Color.Error"
-				   OnClick="ShowCloseConfirmationAsync"
-				   Disabled="@(_project?.Status == Status.Afgesloten)">
+			           Color="Color.Error"
+			           OnClick="ShowCloseConfirmationAsync"
+			           Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
-				   Color="Color.Success"
-				   OnClick="ShowStartConfirmationAsync"
-				   Disabled="@(_project?.Status == Status.Actief)">
+			           Color="Color.Success"
+			           OnClick="ShowStartConfirmationAsync"
+			           Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
 		</MudDrawer>
@@ -93,27 +93,35 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			//name and edit icon
+			// name
 			<div class="d-flex align-center m-2">
 
+				@* chip desktop *@
 				<MudHidden Breakpoint="Breakpoint.Xs">
 					<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Class="m-0"
-					         Color="BadgeColor">@_project.Status
-					</MudChip>
+					         Color="BadgeColor">@_project.Status</MudChip>
 					<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
 				</MudHidden>
 
+				@* badge mobile *@
 				<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
 					<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
 						<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
 					</MudBadge>
 				</MudHidden>
 
+				@* edit-icon *@
 
-				<MudIconButton Disabled="!IsActive"
-						       Icon="@Icons.Material.Filled.Edit"
-						       Color="Color.Primary">
-				</MudIconButton>
+				<MudTooltip Delay="400"
+				            Placement="Placement.Right"
+				            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
+					<MudIconButton
+						Disabled="@(!IsActive)"
+						Icon="@Icons.Material.Filled.Edit"
+						Color="Color.Primary"
+						AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
+				</MudTooltip>
+
 
 			</div>
 
@@ -122,38 +130,39 @@ else
 			<MudGrid Class="p-2">
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-					<MudPaper Class="p-2">@_project.Code</MudPaper>
+					<MudTextField T="string" @bind-Value="_code" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Naam</MudText>
-					<MudPaper Class="p-2">@_project.Name</MudPaper>
+					<MudTextField T="string" @bind-Value="_name" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Start datum</MudText>
-					<MudPaper Class="p-2">@_project.StartDate</MudPaper>
+					<MudTextField T="string" @bind-Value="_startDate" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-					<MudPaper Class="p-2">@_project.EndDate</MudPaper>
+					<MudTextField T="string" @bind-Value="_endDate" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-					<MudPaper Class="p-2">@_project.MeasurementNetwork</MudPaper>
+					<MudTextField T="string" @bind-Value="_measurementNetwork" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Zone</MudText>
-					<MudPaper Class="p-2">@_project.Zone</MudPaper>
+					<MudTextField T="string" @bind-Value="_zone" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12">
 					<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
 					<MudTextField
 						@bind-Value="_remarks"
+						ReadOnly="true"
 						FullWidth="true"
 						Lines="4"
 						Class="white"/>

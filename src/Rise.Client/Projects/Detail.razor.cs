@@ -23,6 +23,14 @@ public partial class Detail {
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
 
+	// Backing fields for MudTextField bindings (read-only in UI)
+	private string _code = string.Empty;
+	private string _name = string.Empty;
+	private string _startDate = string.Empty;
+	private string? _endDate = string.Empty;
+	private string _measurementNetwork = string.Empty;
+	private string _zone = string.Empty;
+
 	private string? _remarks;
 	private int _selectedTab;
 	[Parameter] public Guid ProjectId { get; set; }
@@ -32,6 +40,30 @@ public partial class Detail {
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
+	private void UpdateBoundFields()
+	{
+		if (_project is null)
+		{
+			_code = string.Empty;
+			_name = string.Empty;
+			_startDate = string.Empty;
+			_endDate = string.Empty;
+			_measurementNetwork = string.Empty;
+			_zone = string.Empty;
+			_remarks = string.Empty;
+			return;
+		}
+
+		_code = _project.Code ?? string.Empty;
+		_name = _project.Name ?? string.Empty;
+		// DateOnly formatting - fall back to empty when null
+		_startDate = _project.StartDate.ToString();
+		_endDate = _project.EndDate?.ToString() ?? string.Empty;
+		_measurementNetwork = _project.MeasurementNetwork ?? string.Empty;
+		_zone = _project.Zone ?? string.Empty;
+		// ProjectDto.Detail does not include remarks; keep remarks empty by default
+		_remarks = string.Empty;
+	}
 
 	private void SetTab(int index) {
 		_selectedTab = index;
@@ -48,6 +80,8 @@ public partial class Detail {
 			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
 			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
 			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
+			// populate bound text fields
+			UpdateBoundFields();
 		}
 	}
 
@@ -62,6 +96,8 @@ public partial class Detail {
 			if (_project is not null) {
 				_project.Status = Status.Afgesloten;
 				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow); // optioneel: meteen tonen
+				// refresh the bound end date
+				_endDate = _project.EndDate?.ToString() ?? string.Empty;
 			}
 
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
@@ -86,6 +122,8 @@ public partial class Detail {
 			if (_project is not null) {
 				_project.Status = Status.Actief;
 				_project.EndDate = null; // 🔥 maakt actief, dus einddatum wissen
+				// refresh the bound end date
+				_endDate = string.Empty;
 			}
 
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
