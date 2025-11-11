@@ -63,9 +63,7 @@ public class Project : Entity {
 		}
 
 		DateRange = newStatus switch {
-			// Als het project terug Actief wordt gemaakt
 			Status.Actief => new DateRange(DateRange.StartDate),
-			// If the project has no end date and is being closed
 			Status.Afgesloten when !DateRange.EndDate.HasValue => new DateRange(DateRange.StartDate,
 				DateOnly.FromDateTime(DateTime.UtcNow)),
 			_ => DateRange
@@ -75,12 +73,8 @@ public class Project : Entity {
 	}
 
 	private void UpdateStatusBasedOnEndDate() {
-		if (DateRange.EndDate.HasValue) {
-			Status = DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow)
-				? Status.Afgesloten
-				: Status.Actief;
-		} else {
-			Status = Status.Actief;
-		}
+		Status = DateRange.EndDate.HasValue
+			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
+			: Status.Actief;
 	}
 }
