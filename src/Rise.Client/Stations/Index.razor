@@ -14,7 +14,7 @@
 	             Hover="true"
 	             Dense="false"
 	             Elevation="0"
-               >
+	             RowClick="OnRowClick">
 
 		<ToolBarContent>
 			<ToolBar/>
@@ -22,7 +22,7 @@
 
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#" />
-			
+
 			<PropertyColumn Property="x => x.Status" Title="Status">
 				<CellTemplate Context="row">
 					@{
@@ -48,7 +48,7 @@
 		</Columns>
 
 		<PagerContent>
-			<Pagination T="MeasurementStationDto.Index"/>
+			<Pagination T="MeasurementStationDto.Index" />
 		</PagerContent>
 	</MudDataGrid>
 </MudPaper>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
+using Rise.Domain.Networks;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;

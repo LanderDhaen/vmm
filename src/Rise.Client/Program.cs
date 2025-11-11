@@ -2,13 +2,18 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+using MudBlazor;
 using MudBlazor.Services;
 
 using Rise.Client;
 using Rise.Client.Identity;
+using Rise.Client.Locations;
+using Rise.Client.Networks;
 using Rise.Client.Products;
 using Rise.Client.Projects;
 using Rise.Client.Stations;
+using Rise.Shared.Locations;
+using Rise.Shared.Networks;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
 
@@ -33,7 +38,10 @@ try {
 	builder.Services.AddAuthorizationCore();
 
 	// setup mud blazor
-	builder.Services.AddMudServices();
+	builder.Services.AddMudServices(config => {
+		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+	});
 
 	// register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
@@ -50,6 +58,14 @@ try {
 	});
 
 	builder.Services.AddHttpClient<IProjectService, ProjectService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	});
+
+	builder.Services.AddHttpClient<ILocationService, LocationService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	});
+
+	builder.Services.AddHttpClient<INetworkService, NetworkService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
 
