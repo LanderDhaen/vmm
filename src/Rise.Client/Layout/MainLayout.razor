@@ -10,10 +10,18 @@
 <MudSnackbarProvider/>
 
 <MudLayout Style="height: 100vh;">
-	<NavMenu/>
-	<MudAppBar Color="Color.Transparent" Elevation="0">
-		<MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight"/>
-	</MudAppBar>
+	@* Desktop *@
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<NavMenu/>
+		<MudAppBar Color="Color.Transparent" Elevation="0">
+			<MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight"/>
+		</MudAppBar>
+	</MudHidden>
+	@* Mobile *@
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<Header title="Projecten"></Header>
+	</MudHidden>
+
 	<MudMainContent>
 		<MudContainer>
 			@Body
