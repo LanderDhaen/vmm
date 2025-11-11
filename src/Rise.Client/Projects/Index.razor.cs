@@ -1,9 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
+
+using Serilog;
 
 namespace Rise.Client.Projects;
 
@@ -21,17 +28,23 @@ public partial class Index {
 	}
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		QueryRequest.SkipTake request = new() {
-			Skip = state.Page * state.PageSize,
-			Take = state.PageSize,
-			OrderBy = "Id"
-		};
+		// Use centralized fetch to avoid duplicating error handling
+		int skip = state.Page * state.PageSize;
+		int take = state.PageSize;
+		// OrderBy can be adapted to use state sorting if available; keep "Id" to match previous behavior
+		var result = await FetchProjectsAsync(skip, take, "Id");
 
-		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
+		if (result?.Value is not null) {
+			return new GridData<ProjectDto.Index> {
+				TotalItems = result.Value.TotalCount,
+				Items = result.Value.Projects
+			};
+		}
 
+		// On error or empty result return an empty dataset so grid can render safely
 		return new GridData<ProjectDto.Index> {
-			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Projects
+			TotalItems = 0,
+			Items = Array.Empty<ProjectDto.Index>()
 		};
 	}
 
@@ -46,24 +59,35 @@ public partial class Index {
 			OrderBy = orderBy,
 		};
 
+	// --- Centralized fetch used by both grid and mobile -----------------
+
+	/// <summary>
+	/// Centralized fetch that builds the request, calls the service and handles logging/errors.
+	/// Returns null on exception so callers can handle fallback behaviour.
+	/// </summary>
+	private async Task<Result<ProjectResponse.Index>?> FetchProjectsAsync(int skip, int take, string? orderBy = null) {
+		try {
+			var req = BuildRequest(skip, take, orderBy);
+			var result = await ProjectService.GetIndexAsync(req);
+			return result;
+		} catch (Exception ex) {
+			// Single place for logging errors for all callers
+			Log.Error(ex, "FetchProjectsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy})", skip, take, orderBy);
+			return null;
+		}
+	}
+
 	// --- Mobile data (cards) --------------------------------------------
 
 	// Default parameter values make fields unnecessary; call without parameters for page 0 / size 10
 	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
-		try {
-			var req = BuildRequest(page * pageSize, pageSize, orderBy);
-			var result = await ProjectService.GetIndexAsync(req);
+		var response = await FetchProjectsAsync(page * pageSize, pageSize, orderBy);
 
-			if (result?.Value is not null) {
-				_mobileItems = result.Value.Projects?.ToList() ?? new List<ProjectDto.Index>();
-				_mobileTotal = result.Value.TotalCount;
-			} else {
-				Log.Warning("FetchMobileItemsAsync: service returned null or empty result");
-				_mobileItems = new List<ProjectDto.Index>();
-				_mobileTotal = 0;
-			}
-		} catch (Exception ex) {
-			Log.Error(ex, "Failed to fetch mobile project items");
+		if (response?.Value is not null) {
+			_mobileItems = response.Value.Projects?.ToList() ?? new List<ProjectDto.Index>();
+			_mobileTotal = response.Value.TotalCount;
+		} else {
+			Log.Warning("FetchMobileItemsAsync: service returned null or empty result");
 			_mobileItems = new List<ProjectDto.Index>();
 			_mobileTotal = 0;
 		}

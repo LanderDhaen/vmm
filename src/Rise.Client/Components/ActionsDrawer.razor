@@ -1,10 +1,14 @@
 @namespace Rise.Client.Layout
 @using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Routing
 @using MudBlazor
 
-@implements IDisposable
-
+<!--
+  ActionsDrawer.razor
+  - Responsive Drawer (Anchor changes with breakpoint).
+  - Binds MudDrawer.Open to the internal property `_open` (which intercepts changes).
+  - The MudDrawer component in this version does not provide an OnClose event, therefore
+    we detect closes by observing the bound `_open` property's setter.
+-->
 <MudBreakpointProvider OnBreakpointChanged="@(bp => {
     CurrentAnchor = bp <= Breakpoint.Md ? Anchor.Bottom : Anchor.Right;
     StateHasChanged();
@@ -13,8 +17,7 @@
                Anchor="@CurrentAnchor"
                Variant="DrawerVariant.Temporary"
                Elevation="8"
-               CloseOnOutsideClick="true"
-               OnClose="@HandleClose">
+               OverlayAutoClose="true">
         <MudButton StartIcon="@Icons.Material.Filled.AddBox"
                    Color="Color.Primary"
                    Size="Size.Large"
@@ -23,3 +26,4 @@
         </MudButton>
     </MudDrawer>
 </MudBreakpointProvider>
+

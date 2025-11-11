@@ -4,14 +4,14 @@
 @using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Projecten</PageTitle>
-<MudPaper Elevation="0" Square="true" Style="box-sizing:border-box; background:transparent; box-shadow:none; border:none; margin-bottom: 0.75rem;">
+<MudPaper Elevation="0" Class="d-flex flex-column flex-grow-1 gap-4">
   <ToolBar/>
 </MudPaper>
 
 
-<MudPaper Elevation="2" Rounded="true">
+<MudPaper Elevation="2" >
 
-  <MudPaper Elevation="2" Rounded="true">
+  <MudPaper Class="d-flex flex-column flex-grow-1 gap-4">
     <MudHidden Breakpoint="Breakpoint.Xs">
       <MudDataGrid 
       T="ProjectDto.Index"
@@ -44,11 +44,11 @@
     <!-- MOBILE: list with MudCard components (visible on xs and down).
          Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
     <MudHidden Breakpoint="Breakpoint.MdAndUp">
-      <MudGrid GutterSize="2" Style="margin-top: 0.75rem; padding-left:0.75rem; padding-right:0.75rem; padding-bottom:0.75rem; background: none; box-shadow: none; border: none;">
+      <MudGrid  >
         @if (_mobileItems is null)
         {
           <MudItem xs="12">
-            <div style="display:flex; justify-content:center; padding:1rem;">
+            <div >
               <MudProgressCircular Indeterminate="true" />
             </div>
           </MudItem>
@@ -67,29 +67,16 @@
               @* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
               <MudCard 
                        Elevation="2"
-                       Style="border-radius:8px; background:white; cursor:pointer;"
+                       Style="border-radius:8px; background:white; cursor:pointer; margin: 0.7rem;"
                        @onclick="() => NavigateToProject(item.Id)">
-
-                <MudCardHeader>
-                  <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                    <div style="display:flex; flex-direction:column;">
-                      <MudText Typo="Typo.subtitle2" Bold="true">@item.Code</MudText>
-                      <MudText Typo="Typo.h6" Style="margin-top:2px;">@item.Name</MudText>
-                    </div>
-                  </div>
-                </MudCardHeader>
-
-                <MudCardContent>
-                  <div style="display:flex; flex-direction:column; gap:0.25rem; margin-top:4px;">
-                    <MudText Typo="Typo.caption">Start: @item.StartDate.ToString("yyyy-MM-dd")</MudText>
-                    <MudText Typo="Typo.caption">Eind: @(item.EndDate?.ToString("yyyy-MM-dd") ?? "")</MudText>
-                    <MudText Typo="Typo.caption" Style="white-space:normal;">Zone: @item.Zone</MudText>
-                  </div>
-                </MudCardContent>
-
+                      <MudText Style="margin-left:0.5rem; margin-top: 1rem; margin-bottom: 1rem;"  Typo="Typo.subtitle2">Code: @item.Code</MudText>
+                      <MudText Style="margin:0.5rem;" Typo="Typo.subtitle2">Naam: @item.Name</MudText>
+                    <MudText Style="margin:0.5rem;"  Typo="Typo.caption">Start: @item.StartDate.ToString("dd/MM/yyyy")</MudText>
+                    <MudText Style="margin:0.5rem;"  Typo="Typo.caption">Eind: @(item.EndDate?.ToString("dd/MM/yyyy") ?? "")</MudText>
+                    <MudText Style="margin:0.5rem;"  Typo="Typo.caption">Meetnet: @item.MeasurementNetwork</MudText>
+                    <MudText Style="margin:0.5rem;"  Typo="Typo.caption" >Zone: @item.Zone</MudText>
                 <MudCardActions>
                   <MudSpacer />
-
                 </MudCardActions>
               </MudCard>
             </MudItem>

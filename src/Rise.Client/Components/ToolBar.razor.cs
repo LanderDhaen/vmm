@@ -1,38 +1,31 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
 
-using MudBlazor;
-
 namespace Rise.Client.Layout {
+	// Partial class for the ToolBar component (code-behind).
 	public partial class ToolBar : ComponentBase {
-		// Search is initialized inline to ensure it's never null and supports two-way binding from parent
+		// Search parameter with two-way binding support
 		[Parameter] public string Search { get; set; } = string.Empty;
 		[Parameter] public EventCallback<string> SearchChanged { get; set; }
 
-		// Callbacks for desktop actions (unchanged behaviour)
+		// These are callbacks the parent of ToolBar could pass in; not used directly by the drawer.
 		[Parameter] public EventCallback OnColumnsClicked { get; set; }
 		[Parameter] public EventCallback OnFilterClicked { get; set; }
 		[Parameter] public EventCallback OnActionsClicked { get; set; }
 
-		// Callback used to inform parent of sort change from the drawer (string: "" = reset; otherwise "Column:dir")
+		// Callback used by the drawer to notify the parent of sort changes (if implemented).
 		[Parameter] public EventCallback<string> OnSortChanged { get; set; }
 
-		// Internal drawer state
+		// Internal boolean bound to ActionsDrawer via @bind-Open.
+		// When this is true, the drawer opens. When false, it closes.
 		private bool _actionsDrawerOpen = false;
 
-		// Default columns passed to SortDrawer; parent may override by supplying its own Columns param on ToolBar if needed.
-
-		// Open the drawer (called by mobile Sort icon)
+		// Called from the toolbar UI when the user requests "Acties" / More actions.
+		// Setting this to true causes the bound ActionsDrawer's _open to become true,
+		// which causes the MudDrawer to display.
 		private void OpenActionsDrawer() {
 			_actionsDrawerOpen = true;
-		}
-
-		// Close the drawer (called by drawer OnClose)
-		private Task CloseActionsDrawer() {
-			_actionsDrawerOpen = false;
-			return Task.CompletedTask;
 		}
 	}
 }
