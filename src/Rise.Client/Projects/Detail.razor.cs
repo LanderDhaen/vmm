@@ -17,22 +17,22 @@ public partial class Detail {
 		"Historiek"
 	};
 
-	//DRAWER
+	// Backing fields for MudTextField bindings (read-only in UI)
+	private string _code = string.Empty;
+	private string? _endDate = string.Empty;
+	private string _measurementNetwork = string.Empty;
+	private string _name = string.Empty;
+
+	// Drawer
 	private bool _open;
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
 
-	// Backing fields for MudTextField bindings (read-only in UI)
-	private string _code = string.Empty;
-	private string _name = string.Empty;
-	private string _startDate = string.Empty;
-	private string? _endDate = string.Empty;
-	private string _measurementNetwork = string.Empty;
-	private string _zone = string.Empty;
-
 	private string? _remarks;
 	private int _selectedTab;
+	private string _startDate = string.Empty;
+	private string _zone = string.Empty;
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
@@ -40,10 +40,8 @@ public partial class Detail {
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
-	private void UpdateBoundFields()
-	{
-		if (_project is null)
-		{
+	private void UpdateBoundFields() {
+		if (_project is null) {
 			_code = string.Empty;
 			_name = string.Empty;
 			_startDate = string.Empty;
@@ -61,7 +59,7 @@ public partial class Detail {
 		_endDate = _project.EndDate?.ToString() ?? string.Empty;
 		_measurementNetwork = _project.MeasurementNetwork ?? string.Empty;
 		_zone = _project.Zone ?? string.Empty;
-		// ProjectDto.Detail does not include remarks; keep remarks empty by default
+		// ProjectDto.Detail does not include remarks; keep remarks empty by default; could be extended later
 		_remarks = string.Empty;
 	}
 
@@ -80,7 +78,7 @@ public partial class Detail {
 			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
 			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
 			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
-			// populate bound text fields
+			// Initialize bound fields
 			UpdateBoundFields();
 		}
 	}
@@ -95,7 +93,7 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			if (_project is not null) {
 				_project.Status = Status.Afgesloten;
-				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow); // optioneel: meteen tonen
+				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
 				// refresh the bound end date
 				_endDate = _project.EndDate?.ToString() ?? string.Empty;
 			}
@@ -103,7 +101,7 @@ public partial class Detail {
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
 			_open = false;
 
-			StateHasChanged(); // 🔥 UI updaten
+			StateHasChanged();
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
@@ -121,7 +119,7 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			if (_project is not null) {
 				_project.Status = Status.Actief;
-				_project.EndDate = null; // 🔥 maakt actief, dus einddatum wissen
+				_project.EndDate = null;
 				// refresh the bound end date
 				_endDate = string.Empty;
 			}
@@ -129,7 +127,7 @@ public partial class Detail {
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
 			_open = false;
 
-			StateHasChanged(); // 🔥 hertekenen
+			StateHasChanged();
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
@@ -143,35 +141,31 @@ public partial class Detail {
 	}
 
 
-	// Confirmation wrappers that show a dialog first
-	private async Task ShowCloseConfirmationAsync()
-	{
+	// Show confirmation dialogs
+	private async Task ShowCloseConfirmationAsync() {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt afsluiten?",
-			yesText: "Bevestig",
-			noText: "Annuleren",
+			"Bevestig",
+			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);
 
-		if (result == true)
-		{
+		if (result == true) {
 			await Close();
 		}
 	}
 
-	private async Task ShowStartConfirmationAsync()
-	{
+	private async Task ShowStartConfirmationAsync() {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt opstarten?",
-			yesText: "Bevestig",
-			noText: "Annuleren",
+			"Bevestig",
+			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);
 
-		if (result == true)
-		{
+		if (result == true) {
 			await Start();
 		}
 	}
