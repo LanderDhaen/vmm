@@ -5,6 +5,7 @@ using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
+using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 
 using SharedStatus = Rise.Shared.Projects.Status;
@@ -128,7 +129,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			Code = p.Code,
 			StartDate = p.DateRange.StartDate,
 			EndDate = p.DateRange.EndDate,
-			MeasurementNetwork = p.MeasurementNetwork.Name,
+			MeasurementNetwork = new MeasurementNetworkDto.Index {
+				Id = p.MeasurementNetwork.Id,
+				Name = p.MeasurementNetwork.Name,
+				Zone = p.MeasurementNetwork.Zone.Name
+			},
 			Zone = p.MeasurementNetwork.Zone.Name,
 			Status = (SharedStatus)p.Status
 		};
