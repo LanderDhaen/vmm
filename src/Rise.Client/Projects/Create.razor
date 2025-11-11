@@ -1,9 +1,8 @@
 @page "/projects/create"
-@using Rise.Shared.Networks
 
-<MudText Typo="Typo.h3">Project toevoegen</MudText>
+<MudText Class="my-4" Typo="Typo.h3">Project toevoegen</MudText>
 <MudCard>
-	<MudForm Model="@Model" @ref="form" Validation="validator.ValidateValue" ValidationDelay="0">
+	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 		<MudCardContent>
 			<MudGrid>
 				<MudItem xs="12" sm="6">
@@ -25,11 +24,11 @@
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					@if (networks != null)
+					@if (_networks != null)
 					{
 						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
 						<MudAutocomplete T="Guid?" SearchFunc="Search"
-						                 ToStringFunc="id => networks.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
+						                 ToStringFunc="id => _networks.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
 						                 @bind-Value="Model.MeasurementNetworkId"
 						                 For="@(() => Model.MeasurementNetworkId)"
 						                 Placeholder="Selecteer een meetnet: " Clearable="true"

@@ -2,10 +2,6 @@ using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 
-using Shouldly;
-
-using Xunit;
-
 namespace Rise.Domain.Tests.Projects;
 
 public class ProjectShould {
@@ -16,16 +12,17 @@ public class ProjectShould {
 
 	private static readonly Location DummyLocation = new(
 		"Aalst",
-		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000", "BE"),
+		new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
 		new Coordinate(6.0, 7.0)
 	);
+
 	private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
 	private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
 
 
 	[Fact]
 	public void BeCreated() {
-		var project = new Project("Testing Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
+		Project project = new("Testing Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
 		project.Name.ShouldBe("Testing Project");
 		project.Code.ShouldBe("CODE123");
 		project.DateRange.ShouldBe(DummyDateRange);
