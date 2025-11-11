@@ -95,34 +95,38 @@ else
 		case 0:
 			// name
 			<div class="d-flex align-center m-2">
-
-				@* chip desktop *@
+				@* desktop *@
 				<MudHidden Breakpoint="Breakpoint.Xs">
-					<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small" Class="m-0"
-					         Color="BadgeColor">@_project.Status</MudChip>
-					<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
+					<MudText Typo="Typo.h5">@_project.Name</MudText>
+					<MudTooltip Delay="400"
+					            Placement="Placement.Right"
+					            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
+						<MudIconButton
+							Disabled="@(!IsActive)"
+							Icon="@Icons.Material.Filled.Edit"
+							Color="Color.Primary"
+							AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
+					</MudTooltip>
+					<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
+					         Color="BadgeColor">@_project.Status
+					</MudChip>
 				</MudHidden>
 
-				@* badge mobile *@
+				@* mobile *@
 				<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
 					<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
 						<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
 					</MudBadge>
+					<MudTooltip Delay="400"
+					            Placement="Placement.Right"
+					            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
+						<MudIconButton
+							Disabled="@(!IsActive)"
+							Icon="@Icons.Material.Filled.Edit"
+							Color="Color.Primary"
+							AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
+					</MudTooltip>
 				</MudHidden>
-
-				@* edit-icon *@
-
-				<MudTooltip Delay="400"
-				            Placement="Placement.Right"
-				            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
-					<MudIconButton
-						Disabled="@(!IsActive)"
-						Icon="@Icons.Material.Filled.Edit"
-						Color="Color.Primary"
-						AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
-				</MudTooltip>
-
-
 			</div>
 
 			//details grid

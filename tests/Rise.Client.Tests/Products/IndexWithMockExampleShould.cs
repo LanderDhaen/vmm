@@ -27,7 +27,8 @@ public class IndexWithMockExampleShould : TestContext {
 
 		// Mock
 		IEnumerable<ProductDto.Index> products = Enumerable.Range(1, 5)
-			.Select(i => new ProductDto.Index { Id = Guid.NewGuid(), Name = $"Product {i}", Description = $"Description {i}" });
+			.Select(i => new ProductDto.Index
+				{ Id = Guid.NewGuid(), Name = $"Product {i}", Description = $"Description {i}" });
 
 		ProductResponse.Index wrapper = new() {
 			Products = products,
