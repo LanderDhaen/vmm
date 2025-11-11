@@ -16,6 +16,8 @@ public class DbSeeder(
 		await LocationAsync();
 		await ProjectsAsync();
 		await ProjectHistoryAsync();
+		await MeasurementStationAsync();
+		await MeasurementStationHistoryAsync();
 	}
 
 	private async Task LocationAsync() {
@@ -81,6 +83,10 @@ public class DbSeeder(
 	}
 
 	private async Task ProjectHistoryAsync() {
+		if (!dbContext.Projects.Any()) {
+			return;
+		}
+		
 		List<Project> projects = await dbContext.Projects.ToListAsync();
 
 		foreach (Project project in projects) {
@@ -93,4 +99,55 @@ public class DbSeeder(
 		
 		await dbContext.SaveChangesAsync();
 	}
+
+	private async Task MeasurementStationAsync() {
+		if (dbContext.MeasurementStations.Any()) {
+			return;
+		}
+		
+		List<Location> locations = await dbContext.Locations.ToListAsync();
+		
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15), new DateTime(2025, 6, 30)),
+			new Installation(new DateTime(2025, 2, 1), new DateTime(2025, 8, 15)),
+			new Installation(new DateTime(2025, 3, 10), new DateTime(2025, 9, 25)),
+			new Installation(new DateTime(2025, 4, 5), null),
+			new Installation(new DateTime(2025, 5, 12), new DateTime(2025, 12, 31)),
+			new Installation(new DateTime(2025, 5, 12), null)
+		};
+
+		List<MeasurementStation> measurementStations = new() {
+			new MeasurementStation("STN-001", locations[0], installations[0]),
+			new MeasurementStation("STN-002", locations[1], installations[1]),
+			new MeasurementStation("STN-003", locations[2], installations[2]),
+			new MeasurementStation("STN-004", locations[3], installations[3]),
+			new MeasurementStation("STN-005", locations[4], installations[4]),
+			new MeasurementStation("STN-006", locations[5], installations[5]),
+		};
+		
+		dbContext.AddRange(measurementStations);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private async Task MeasurementStationHistoryAsync() {
+		if (!dbContext.MeasurementStations.Any()) {
+			return;
+		}
+		
+		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations.ToListAsync();
+
+		foreach (MeasurementStation measurementStation in measurementStations) {
+
+			string code = measurementStation.Code;
+			
+			measurementStation.Edit("I've changed this");
+			
+			await Task.Delay(TimeSpan.FromSeconds(5));
+			
+			measurementStation.Edit(code + " v2");
+		}
+		
+		await dbContext.SaveChangesAsync();
+	}
+	
 }
