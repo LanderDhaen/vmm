@@ -1,6 +1,5 @@
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
-using Rise.Shared.Products;
 
 namespace Rise.Server.Endpoints.Locations;
 

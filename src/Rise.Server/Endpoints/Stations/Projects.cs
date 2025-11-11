@@ -11,7 +11,7 @@ public sealed class Projects(IMeasurementStationService stationService)
 	}
 
 	public override async Task<Result<List<ProjectDto.Index>>> ExecuteAsync(CancellationToken ct) {
-		var stationId = Route<Guid>("stationId");
+		Guid stationId = Route<Guid>("stationId");
 		return await stationService.GetProjectsAsync(stationId, ct);
 	}
 }
