@@ -10,6 +10,13 @@ namespace Rise.Client.Stations;
 public partial class Index {
 	[Inject] public required StationService StationService { get; set; }
 
+	protected override void OnInitialized() {
+		BreadcrumbService.Set(
+			new BreadcrumbItem("Home", "/", icon: Icons.Material.Filled.Home),
+			new BreadcrumbItem("Meetstations", "", true)
+		);
+	}
+
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
 		QueryRequest.SkipTake request = new() {
