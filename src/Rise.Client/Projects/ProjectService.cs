@@ -21,16 +21,24 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		Result<ProjectResponse.Index>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{request.AsQuery()}", ctx);
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
 		return result!;
 	}
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Result<ProjectResponse.Detail>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Detail>>($"/api/projects/{projectId}", ctx);
+		return result!;
+	}
+
+	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/status", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
 }

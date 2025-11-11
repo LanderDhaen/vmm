@@ -5,8 +5,10 @@ using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
-using Rise.Shared.Networks;
 using Rise.Shared.Projects;
+
+using SharedStatus = Rise.Shared.Projects.Status;
+using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Projects;
 
@@ -73,22 +75,22 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
-	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
 		int totalCount = await query.CountAsync(ctx);
 
-		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
-			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
+		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
+			query = query.OrderBy(p => EF.Property<object>(p, req.OrderBy));
 		} else {
 			query = query.OrderBy(p => p.Name);
 		}
 
 		IQueryable<Project> page = query
 			.AsNoTracking()
-			.Skip(request.Skip)
-			.Take(request.Take);
+			.Skip(req.Skip)
+			.Take(req.Take);
 
 		List<ProjectDto.Index> projects = await page
 			.Select(p => new ProjectDto.Index {
@@ -98,7 +100,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				StartDate = p.DateRange.StartDate,
 				EndDate = p.DateRange.EndDate,
 				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name
+				Zone = p.MeasurementNetwork.Zone.Name,
+				Status = (SharedStatus)p.Status
 			})
 			.ToListAsync(ctx);
 
@@ -109,31 +112,52 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	}
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
-		Project? project = await dbContext.Projects
+		Project? p = await dbContext.Projects
 			.AsNoTracking()
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
 
-		if (project is null) {
+		if (p is null) {
 			return Result.NotFound($"Project with Id '{projectId}' was not found.");
 		}
 
 		ProjectDto.Detail projectDto = new() {
-			Id = project.Id,
-			Name = project.Name,
-			Code = project.Code,
-			StartDate = project.DateRange.StartDate,
-			EndDate = project.DateRange.EndDate,
-			MeasurementNetwork = new MeasurementNetworkDto.Index {
-				Id = project.MeasurementNetwork.Id,
-				Name = project.MeasurementNetwork.Name,
-				Zone = project.MeasurementNetwork.Zone.Name
-			}
+			Id = p.Id,
+			Name = p.Name,
+			Code = p.Code,
+			StartDate = p.DateRange.StartDate,
+			EndDate = p.DateRange.EndDate,
+			MeasurementNetwork = p.MeasurementNetwork.Name,
+			Zone = p.MeasurementNetwork.Zone.Name,
+			Status = (SharedStatus)p.Status
 		};
 
 		return Result.Success(new ProjectResponse.Detail {
 			Project = projectDto
 		});
+	}
+
+	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
+		Project? project = await dbContext.Projects
+			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
+		}
+
+		// Technician? loggedInTechnician = await dbContext.Technicians
+		// 	.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
+		//
+		// if (loggedInTechnician is null) {
+		// 	return Result.Unauthorized("You are not authorized to edit this project.");
+		// }
+
+
+		project.UpdateStatus((Status)req.NewStatus);
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
 	}
 }

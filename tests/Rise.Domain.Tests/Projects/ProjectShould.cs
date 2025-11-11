@@ -29,6 +29,76 @@ public class ProjectShould {
 		project.MeasurementNetwork.ShouldBe(DummyMeasurementNetwork);
 	}
 
+	[Fact]
+	public void HaveStatus_Afgesloten_WhenEndDateIsInThePast() {
+		Project project = new("Past Project", "CODE123", DummyDateRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Afgesloten);
+	}
+
+	[Fact]
+	public void HaveStatus_Actief_WhenNoEndDateIsProvided() {
+		DateRange openRange = new(new DateOnly(2025, 1, 1));
+		Project project = new("Open Project", "CODE123", openRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Actief);
+	}
+
+	[Fact]
+	public void HaveStatus_Actief_WhenEndDateIsInTheFuture() {
+		DateOnly futureEnd = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(30);
+		DateRange futureRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1), futureEnd);
+		Project project = new("Future Project", "CODE123", futureRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Actief);
+	}
+
+	// removing end date to reopen project
+	[Fact]
+	public void UpdateStatus_ReopensProject_ByRemovingEndDate() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-20),
+			DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Afgesloten);
+
+		project.UpdateStatus(Status.Actief);
+
+		project.Status.ShouldBe(Status.Actief);
+		project.DateRange.EndDate.HasValue.ShouldBeFalse();
+	}
+
+	//edge: end date equal to today should be considered Afgesloten (<= today)
+	[Fact]
+	public void HaveStatus_Afgesloten_WhenEndDateIsToday() {
+		DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+		DateRange range = new(today.AddDays(-5), today);
+		Project project = new("Today Project", "CODE123", range, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Afgesloten);
+	}
+
+	//edge: updating to the same status should be a no-operation and not change the end date
+	[Fact]
+	public void UpdateStatus_NoOp_WhenSameStatus() {
+		DateRange openRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-10));
+		Project project = new("Open Project", "CODE123", openRange, DummyMeasurementNetwork);
+
+		project.UpdateStatus(Status.Actief);
+
+		project.Status.ShouldBe(Status.Actief);
+		project.DateRange.EndDate.HasValue.ShouldBeFalse();
+	}
+
+	//closed projects cannot be edited
+	[Fact]
+	public void Edit_Throws_WhenProjectIsClosed() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30),
+			DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Afgesloten);
+
+		Should.Throw<InvalidOperationException>(() =>
+			project.Edit("New Name", "NEWCODE", new DateRange(DateOnly.FromDateTime(DateTime.UtcNow)),
+				DummyMeasurementNetwork)
+		);
+	}
+
 	[Theory]
 	[InlineData(null)]
 	[InlineData("   ")]

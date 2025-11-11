@@ -19,7 +19,7 @@ public static partial class ProjectRequest {
 					.MaximumLength(250).WithMessage("Naam mag maar max. 250 karakter hebben.");
 				RuleFor(x => x.Code)
 					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
-					.MaximumLength(50).WithMessage("Code mag maar max. 50 karakter hebben.");
+					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
 				RuleFor(x => x.StartDate)
 					.NotNull().WithMessage("Startdatum mag niet leeg zijn!")
 					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet boven 1 januari 2000 liggen.")
