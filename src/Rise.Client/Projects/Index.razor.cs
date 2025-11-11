@@ -11,6 +11,13 @@ public partial class Index {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 
+	protected override void OnInitialized() {
+		BreadcrumbService.Set(
+			new BreadcrumbItem("Home", "/", icon: Icons.Material.Filled.Home),
+			new BreadcrumbItem("Projecten", "", true)
+		);
+	}
+
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,

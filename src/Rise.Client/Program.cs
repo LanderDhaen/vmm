@@ -8,6 +8,7 @@ using Rise.Client;
 using Rise.Client.Identity;
 using Rise.Client.Products;
 using Rise.Client.Projects;
+using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
@@ -39,6 +40,9 @@ try {
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
 	// register the account management interface
 	builder.Services.AddScoped(sp => (IAccountManager)sp.GetRequiredService<AuthenticationStateProvider>());
+
+	// breadcrumb service for components to set the current breadcrumbs
+	builder.Services.AddScoped<BreadcrumbService>();
 
 	// configure client for auth interactions
 	builder.Services.AddHttpClient("SecureApi",

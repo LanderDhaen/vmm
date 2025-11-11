@@ -1,18 +1,24 @@
 ﻿@using MudBlazor.Utilities
+@using Rise.Client.Services
 @inherits LayoutComponentBase
+@inject BreadcrumbService BreadcrumbService
 
-<MudLayout Style="height: 100vh">
-	<NavBar/>
+<MudThemeProvider Theme="_vmm"/>
+<MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout Style="height: 100vh;">
+	<NavMenu/>
+	<MudAppBar Color="Color.Transparent" Elevation="0">
+		<MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight"/>
+	</MudAppBar>
 	<MudMainContent>
 		<MudContainer>
 			@Body
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-<MudThemeProvider Theme="_vmm"/>
-<MudPopoverProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
 
 @code{
 
@@ -21,22 +27,32 @@
 		PaletteLight = new PaletteLight
 		{
 			Primary = new MudColor("#126B8D")
-			// MudDocs
-			// Secondary = Colors.Green.Accent4,
-			// AppbarBackground = Colors.Red.Default,
-		},
-
-		PaletteDark = new PaletteDark
-		{
-			Primary = Colors.Blue.Lighten1
 		}
 
-		// MudDocs
-		// LayoutProperties = new LayoutProperties()
+		// Could Have
+		// PaletteDark = new PaletteDark
 		// {
-		// 	DrawerWidthLeft = "260px",
-		// 	DrawerWidthRight = "300px"
+		// 	Primary = Colors.Blue.Lighten1
 		// }
 	};
+
+	private IReadOnlyList<BreadcrumbItem> _breadcrumbs => BreadcrumbService.Items.Count > 0
+		? BreadcrumbService.Items
+		: new[] { new BreadcrumbItem("Home", "", true, Icons.Material.Filled.Home) };
+
+	protected override void OnInitialized()
+	{
+		BreadcrumbService.OnChanged += BreadcrumbsChanged;
+	}
+
+	private void BreadcrumbsChanged()
+	{
+		InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		BreadcrumbService.OnChanged -= BreadcrumbsChanged;
+	}
 
 }

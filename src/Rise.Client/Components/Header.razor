@@ -1,7 +1,9 @@
 <div class="d-flex align-center">
-	<MudText Class="" Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
-	@* TODO: menu will always be shown -> declare this higher up *@
+	<MudText Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
 	<div class="ml-auto">
-		<MudIcon Icon="@Icons.Material.Outlined.Menu" Color="Color.Primary" Style="font-size: 3rem;"/>
+		<MudIconButton Icon="@Icons.Material.Outlined.Menu"
+		               Color="Color.Primary"
+		               Style="font-size: 3rem;"
+		               OnClick="@(() => OnMenuClick.InvokeAsync())"/>
 	</div>
 </div>

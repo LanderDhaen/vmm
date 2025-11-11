@@ -2,14 +2,12 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects;
 
 public partial class Detail {
-	//===== Breadcrumbs =====
-	private readonly List<BreadcrumbItem> _items = new();
-
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
@@ -22,6 +20,7 @@ public partial class Detail {
 
 	private string? _remarks;
 	private int _selectedTab;
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 
@@ -36,10 +35,11 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
 
-			_items.Clear();
-			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
-			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
-			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
+			BreadcrumbService.Set(
+				new BreadcrumbItem("Home", "/", icon: Icons.Material.Filled.Home),
+				new BreadcrumbItem("Projecten", "/projects"),
+				new BreadcrumbItem(_project.Code + " - " + _project.Name, "", true)
+			);
 		}
 	}
 

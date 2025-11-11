@@ -1,8 +1,12 @@
 @page "/projects"
 @using Rise.Client.Components
+@using Rise.Client.Services
 @using Rise.Shared.Projects
+@inject BreadcrumbService BreadcrumbService
 
 <PageTitle>Projecten</PageTitle>
+
+
 
 <MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 	<MudDataGrid T="ProjectDto.Index"
