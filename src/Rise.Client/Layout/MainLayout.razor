@@ -1,5 +1,4 @@
 ﻿@using MudBlazor.Utilities
-@using Rise.Client.Components
 @using Rise.Client.Services
 @inherits LayoutComponentBase
 @inject BreadcrumbService BreadcrumbService
@@ -12,14 +11,20 @@
 <MudLayout Style="height: 100vh;">
 	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<NavMenu/>
+		<SideNav Variant="DrawerVariant.Persistent"/>
 		<MudAppBar Color="Color.Transparent" Elevation="0">
 			<MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight"/>
 		</MudAppBar>
 	</MudHidden>
+
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<Header title="Projecten"></Header>
+		<MudAppBar Color="Color.Transparent" Elevation="0" Class="d-flex">
+			<MudText Typo="Typo.h4">VMM Rise</MudText>
+			<MudIconButton Icon="@Icons.Material.Outlined.Menu" Size="Size.Large" Color="Color.Primary" Edge="Edge.End"
+			               Class="ml-auto" OnClick="@ToggleDrawer"/>
+		</MudAppBar>
+		<SideNav Variant="DrawerVariant.Temporary" @bind-Open="_mobileDrawerOpen" Anchor="Anchor.Right"/>
 	</MudHidden>
 
 	<MudMainContent>
@@ -37,17 +42,13 @@
 		{
 			Primary = new MudColor("#126B8D")
 		}
-
-		// Could Have
-		// PaletteDark = new PaletteDark
-		// {
-		// 	Primary = Colors.Blue.Lighten1
-		// }
 	};
 
 	private IReadOnlyList<BreadcrumbItem> _breadcrumbs => BreadcrumbService.Items.Count > 0
 		? BreadcrumbService.Items
 		: new[] { new BreadcrumbItem("Home", "", true, Icons.Material.Filled.Home) };
+
+	private bool _mobileDrawerOpen;
 
 	protected override void OnInitialized()
 	{
@@ -57,6 +58,12 @@
 	private void BreadcrumbsChanged()
 	{
 		InvokeAsync(StateHasChanged);
+	}
+
+	private void ToggleDrawer()
+	{
+		// Toggle the temporary mobile drawer
+		_mobileDrawerOpen = !_mobileDrawerOpen;
 	}
 
 	public void Dispose()

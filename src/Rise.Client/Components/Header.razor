@@ -1,9 +1,4 @@
-<div class="d-flex align-center">
+<div class="d-flex align-center mb-4">
 	<MudText Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
-	<div class="ml-auto">
-		<MudIconButton Icon="@Icons.Material.Outlined.Menu"
-		               Color="Color.Primary"
-		               Style="font-size: 3rem;"
-		               OnClick="@(() => OnMenuClick.InvokeAsync())"/>
-	</div>
+	<Hamburger></Hamburger>
 </div>

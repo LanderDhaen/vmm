@@ -1,4 +1,4 @@
-<div class="d-flex align-center">
+<div class="d-flex align-center mb-4">
 	<MudIconButton
 		Size="Size.Large"
 		Class="p-0"
@@ -7,8 +7,5 @@
 		Color="Color.Primary"/>
 	<MudText Class="ml-1" Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
 
-	@* TODO: menu will always be shown -> declare this higher up *@
-	<div class="ml-auto">
-		<MudIcon Icon="@Icons.Material.Outlined.Menu" Color="Color.Primary" Style="font-size: 3rem;"/>
-	</div>
+	<Hamburger></Hamburger>
 </div>
