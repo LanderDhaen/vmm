@@ -11,10 +11,37 @@
 <MudLayout Style="height: 100vh;">
 	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<SideNav Variant="DrawerVariant.Persistent"/>
+		@* <SideNav Variant="DrawerVariant.Persistent"/> *@
 		<MudAppBar Color="Color.Transparent" Elevation="0">
 			<MudBreadcrumbs Items="@_breadcrumbs" SeparatorIcon="@Icons.Material.Filled.ChevronRight"/>
 		</MudAppBar>
+		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
+			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
+				<MudImage Src="/img/vmm.webp"
+				          Alt="Logo"
+				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
+			</MudDrawerHeader>
+			<MudNavMenu>
+				<MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Folder"
+				            IconColor="Color.Inherit">Projecten
+				</MudNavLink>
+				<MudNavLink Href="/stations" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Map"
+				            IconColor="Color.Inherit">Meetstations
+				</MudNavLink>
+				<MudNavLink Href="/apparaten" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportantDevices"
+				            IconColor="Color.Inherit">Apparaten
+				</MudNavLink>
+				<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
+				            IconColor="Color.Inherit">Werkbonnen
+				</MudNavLink>
+				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+			</MudNavMenu>
+		</MudDrawer>
 	</MudHidden>
 
 	@* Mobile *@
@@ -22,9 +49,37 @@
 		<MudAppBar Color="Color.Transparent" Elevation="0" Class="d-flex">
 			<MudText Typo="Typo.h4">VMM Rise</MudText>
 			<MudIconButton Icon="@Icons.Material.Outlined.Menu" Size="Size.Large" Color="Color.Primary" Edge="Edge.End"
-			               Class="ml-auto" OnClick="@ToggleDrawer"/>
+			               Class="ml-auto" OnClick="@ToggleDrawer"
+			/>
 		</MudAppBar>
-		<SideNav Variant="DrawerVariant.Temporary" @bind-Open="_mobileDrawerOpen" Anchor="Anchor.Right"/>
+		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
+		           OverlayAutoClose="_overlayAutoClose">
+			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
+				<MudImage Src="/img/vmm.webp"
+				          Alt="Logo"
+				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
+			</MudDrawerHeader>
+			<MudNavMenu>
+				<MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Folder"
+				            IconColor="Color.Inherit">Projecten
+				</MudNavLink>
+				<MudNavLink Href="/stations" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Map"
+				            IconColor="Color.Inherit">Meetstations
+				</MudNavLink>
+				<MudNavLink Href="/apparaten" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportantDevices"
+				            IconColor="Color.Inherit">Apparaten
+				</MudNavLink>
+				<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
+				            IconColor="Color.Inherit">Werkbonnen
+				</MudNavLink>
+				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+			</MudNavMenu>
+		</MudDrawer>
 	</MudHidden>
 
 	<MudMainContent>
@@ -48,7 +103,13 @@
 		? BreadcrumbService.Items
 		: new[] { new BreadcrumbItem("Home", "", true, Icons.Material.Filled.Home) };
 
-	private bool _mobileDrawerOpen;
+	private bool _open;
+	private readonly bool _overlayAutoClose = true;
+
+	private void ToggleDrawer()
+	{
+		_open = !_open;
+	}
 
 	protected override void OnInitialized()
 	{
@@ -60,10 +121,6 @@
 		InvokeAsync(StateHasChanged);
 	}
 
-	private void ToggleDrawer()
-	{
-		_mobileDrawerOpen = !_mobileDrawerOpen;
-	}
 
 	public void Dispose()
 	{
