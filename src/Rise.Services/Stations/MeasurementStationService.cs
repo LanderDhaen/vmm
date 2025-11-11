@@ -90,7 +90,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		});
 	}
 
-	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId,
+	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
+		Guid stationId,
 		CancellationToken ct = default) {
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.AsNoTracking()
@@ -116,7 +117,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
 	}
 
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(Guid stationId, CancellationToken ct = default) {
+	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
+		Guid stationId,
+		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
 			.AnyAsync(s => s.Id == stationId, ct);
@@ -143,7 +146,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(projects);
 	}
 
-	public async Task<Result<Guid>> CreateAsync(MeasurementStationRequest.Create request,
+	public async Task<Result<Guid>> CreateAsync(
+		MeasurementStationRequest.Create request,
 		CancellationToken ct = default) {
 		Location? location = await dbContext.Set<Location>()
 			.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
@@ -173,7 +177,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(station.Id);
 	}
 
-	public async Task<Result> UpdateAsync(Guid id, MeasurementStationRequest.Edit request,
+	public async Task<Result> UpdateAsync(
+		Guid id,
+		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Location)
@@ -211,31 +217,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
 	}
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(Guid stationId, CancellationToken ct = default) {
-		bool exists = await dbContext.MeasurementStations
-			.AsNoTracking()
-			.AnyAsync(s => s.Id == stationId, ct);
 
-		if (!exists)
-			return Result.NotFound("Meetstation niet gevonden.");
-
-		var projects = await dbContext.Projects
-			.AsNoTracking()
-			.Where(p => p.Stations.Any(s => s.Id == stationId))
-			.Select(p => new ProjectDto.Index {
-				Id = p.Id,
-				Name = p.Name,
-				Code = p.Code,
-				StartDate = p.DateRange.StartDate,
-				EndDate = p.DateRange.EndDate,
-				MeasurementNetwork = p.MeasurementNetwork.Name,
-				Zone = p.MeasurementNetwork.Zone.Name
-			})
-			.ToListAsync(ct);
-
-		return Result.Success(projects);
-	}
-
-	public Task<Result> EditAsync(MeasurementStationRequest.Edit request, CancellationToken ct = default)
+	public Task<Result> EditAsync(
+		MeasurementStationRequest.Edit request,
+		CancellationToken ct = default)
 		=> UpdateAsync(request.StationId, request, ct);
 }

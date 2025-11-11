@@ -1,6 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
 using AngleSharp.Dom;
 
 using Ardalis.Result;
+
+using Bunit;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using MudBlazor;
 using MudBlazor.Services;
@@ -13,6 +23,7 @@ using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using Xunit;
 
 internal sealed class ClientTestContext : IDisposable {
 	public TestContext Ctx { get; } = new();
@@ -71,8 +82,9 @@ namespace Rise.Client.Tests.Stations {
 						StartDate = new DateOnly(2025, 1, 1),
 						EndDate = null,
 						MeasurementNetwork = "Net",
-						Zone = "Zone"
-					}
+						Zone = "Zone",
+						Status = new Status() // ✅ added required member
+                    }
 				}
 			};
 			projectSvc.GetIndexAsync(Arg.Any<QueryRequest.SkipTake>(), Arg.Any<CancellationToken>())
@@ -165,7 +177,6 @@ namespace Rise.Client.Tests.Stations {
 			await stationSvc.Received(1).EditAsync(
 				Arg.Any<MeasurementStationRequest.Edit>(),
 				Arg.Any<CancellationToken>());
-
 		}
 	}
 }
