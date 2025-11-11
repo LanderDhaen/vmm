@@ -130,32 +130,32 @@ else
 			<MudGrid Class="p-2">
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-					<MudTextField T="string" @bind-Value="_code" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="string" @bind-Value="_project.Code" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Naam</MudText>
-					<MudTextField T="string" @bind-Value="_name" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="string" @bind-Value="_project.Name" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Start datum</MudText>
-					<MudTextField T="string" @bind-Value="_startDate" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="DateOnly" @bind-Value="_project.StartDate" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-					<MudTextField T="string" @bind-Value="_endDate" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="DateOnly?" @bind-Value="_project.EndDate" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-					<MudTextField T="string" @bind-Value="_measurementNetwork" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="string" @bind-Value="_project.MeasurementNetwork" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Zone</MudText>
-					<MudTextField T="string" @bind-Value="_zone" ReadOnly="true" Class="p-2"/>
+					<MudTextField T="string" @bind-Value="_project.Zone" ReadOnly="true" Class="p-2"/>
 				</MudItem>
 
 				<MudItem xs="12">
