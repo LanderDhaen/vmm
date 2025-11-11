@@ -33,32 +33,9 @@ public partial class Detail {
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
-	private void UpdateBoundFields() {
-		if (_project is null) {
-			// _code = string.Empty;
-			// _name = string.Empty;
-			// _startDate = string.Empty;
-			// _endDate = string.Empty;
-			// _measurementNetwork = string.Empty;
-			// _zone = string.Empty;
-			// _remarks = string.Empty;
-		}
-
-		// _code = _project.Code ?? string.Empty;
-		// _name = _project.Name ?? string.Empty;
-		// DateOnly formatting - fall back to empty when null
-		// _startDate = _project.StartDate.ToString();
-		// _endDate = _project.EndDate?.ToString() ?? string.Empty;
-		// _measurementNetwork = _project.MeasurementNetwork ?? string.Empty;
-		// _zone = _project.Zone ?? string.Empty;
-		// ProjectDto.Detail does not include remarks; keep remarks empty by default; could be extended later
-		// _remarks = string.Empty;
-	}
-
 	private void SetTab(int index) {
 		_selectedTab = index;
 	}
-
 
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.Detail> result = await ProjectService.GetDetailAsync(ProjectId);
@@ -72,7 +49,6 @@ public partial class Detail {
 			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
 		}
 	}
-
 
 	private async Task Close() {
 		Result result = await ProjectService.UpdateStatusAsync(new ProjectRequest.UpdateStatus {
@@ -125,7 +101,6 @@ public partial class Detail {
 	private void OpenDrawer() {
 		_open = !_open;
 	}
-
 
 	// Show confirmation dialogs
 	private async Task ShowCloseConfirmationAsync() {
