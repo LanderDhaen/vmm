@@ -1,3 +1,5 @@
+using Rise.Shared.Networks;
+
 namespace Rise.Shared.Projects;
 
 /// <summary>

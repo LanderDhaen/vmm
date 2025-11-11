@@ -18,7 +18,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
@@ -55,7 +55,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 		ProjectService service = new(db, null!);
 
 		Guid nonExistentId = Guid.NewGuid();
@@ -85,6 +85,78 @@ public class ProjectServiceShould {
 
 		// Assert
 		Assert.Equal(ResultStatus.NotFound, result.Status);
+	public async Task EditAsync_ShouldReturnResultSuccess() {
+		// Arrange
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = project.Id,
+			Name = "Updated Project",
+			Code = project.Code,
+			MeasurementNetworkId = project.MeasurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1),
+			EndDate = new DateTime(2025, 12, 31)
+		};
+
+		// Act
+		Result result = await service.EditAsync(request);
+
+		// Assert
+		Assert.True(result.IsSuccess);
+
+		Project? updated = await db.Projects.FindAsync(project.Id);
+		Assert.NotNull(updated);
+		Assert.Equal("Updated Project", updated!.Name);
+		Assert.Equal("EP-001", updated.Code);
+		Assert.Equal(new DateOnly(2025, 1, 1), updated.DateRange.StartDate);
+		Assert.Equal(new DateOnly(2025, 12, 31), updated.DateRange.EndDate);
+		Assert.Equal(measurementNetwork.Id, updated.MeasurementNetwork.Id);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldReturnNotFound_WhenProjectIsNotFound() {
+		// Arrange
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = Guid.NewGuid(),
+			Name = "Updated Project",
+			Code = project.Code,
+			MeasurementNetworkId = project.MeasurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result result = await service.EditAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Project met Id '{request.ProjectId}' was niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}
@@ -99,6 +171,52 @@ public class ProjectServiceShould {
 		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
 
 		Project project = new("Test Project", "TP-002", dateRange, measurementNetwork);
+	public async Task EditAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
+		// Arrange
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+		Project project1 = new("Existing Project", "EP-002", new DateRange(new DateOnly(2025, 3, 8)),
+			measurementNetwork);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		db.Projects.Add(project1);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = project1.Id,
+			Name = project1.Name,
+			Code = "EP-001",
+			MeasurementNetworkId = project1.MeasurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result result = await service.EditAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+		Assert.Equal("Project met code 'EP-001' bestaat al.", result.Errors.First());
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
+		// Arrange
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		MeasurementNetwork measurementNetwork1 = new("TestNetwork1", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
 		db.Projects.Add(project);
@@ -120,6 +238,20 @@ public class ProjectServiceShould {
 		// Reload from DB to verify change persisted
 		Project updated = await db.Projects.SingleAsync(p => p.Id == project.Id);
 		Assert.Equal(Domain.Projects.Status.Afgesloten, updated.Status);
+		ProjectRequest.Edit request = new() {
+			ProjectId = project.Id,
+			Name = "Updated Project",
+			Code = project.Code,
+			MeasurementNetworkId = measurementNetwork1.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result result = await service.EditAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal("Meetnet niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}
