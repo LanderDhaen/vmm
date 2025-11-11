@@ -14,13 +14,7 @@
 else
 {
     <!-- ===== Desktop ===== -->
-    <MudHidden Breakpoint="Breakpoint.Xs">
-        <MudBreadcrumbs Items="_items" Class="p-0 m-2 gutter-2">
-            <SeparatorTemplate>
-                <MudIcon Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small" />
-            </SeparatorTemplate>
-        </MudBreadcrumbs>
-    </MudHidden>
+    
 
     <!-- ===== Mobile ===== -->
     <MudHidden Breakpoint="Breakpoint.SmAndUp">
@@ -67,37 +61,41 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<div class="d-flex align-center m-2">
-				<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
-				<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
-			</div>
+			<MudPaper Class="p-4">
 
-			<MudGrid Class="p-2">
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Status</MudText>
-					<MudPaper Class="p-2">@FormatStatus(_station.Status)</MudPaper>
-				</MudItem>
+				<div class="d-flex align-center m-2">
+					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
+					<MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"></MudIcon>
+				</div>
 
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-					<MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
-				</MudItem>
+				<MudGrid Class="p-2">
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Status</MudText>
+						<MudPaper Class="p-2">@FormatStatus(_station.Status)</MudPaper>
+					</MudItem>
 
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-					<MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
-				</MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
+						<MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
+					</MudItem>
 
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Locatie</MudText>
-					<MudPaper Class="p-2">@_station.Location</MudPaper>
-				</MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
+						<MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
+					</MudItem>
 
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Gemeente</MudText>
-					<MudPaper Class="p-2">@_station.City</MudPaper>
-				</MudItem>
-			</MudGrid>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudPaper Class="p-2">@_station.Location</MudPaper>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Gemeente</MudText>
+						<MudPaper Class="p-2">@_station.City</MudPaper>
+					</MudItem>
+				</MudGrid>
+			</MudPaper>
+
 			break;
 
 		case 1:
