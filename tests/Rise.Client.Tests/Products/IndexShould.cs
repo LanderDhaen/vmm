@@ -14,8 +14,8 @@ public class IndexShould : TestContext {
 	public IndexShould(ITestOutputHelper outputHelper) {
 		Services.AddXunitLogger(outputHelper);
 		Services.AddScoped<IProductService, FakeProductService>(); // Use our own Faker
-		// Authenticate as a test user for all the tests in this class
-		// Can also be done on the test level.
+																   // Authenticate as a test user for all the tests in this class
+																   // Can also be done on the test level.
 		this.AddTestAuthorization().SetAuthorized("TEST USER");
 	}
 

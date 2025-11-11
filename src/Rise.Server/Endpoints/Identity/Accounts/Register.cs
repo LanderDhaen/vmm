@@ -15,7 +15,7 @@ public class Register(UserManager<IdentityUser> userManager, IUserStore<Identity
 	public override void Configure() {
 		Post("/api/identity/accounts/register");
 		AllowAnonymous(); // Open for all at the moment, but you can restrict it to only admins.
-		// Roles(AppRoles.Administrator);
+						  // Roles(AppRoles.Administrator);
 	}
 
 	public override async Task<Result> ExecuteAsync(AccountRequest.Register req, CancellationToken ctx) {
