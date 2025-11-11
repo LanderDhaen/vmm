@@ -1,36 +1,60 @@
-using Temporal.Domain.Common;
 using Temporal.Domain.Locations;
-using Temporal.Domain.Projects;
 
 namespace Temporal.Domain.Stations;
 
 public class MeasurementStation : Entity {
 	public string Code { get; private set; } = default!;
-	public string Status { get; private set; } = default!;
-
 	public Location Location { get; private set; } = default!;
-	public Installation Installation { get; private set; } = default!;
-
+	public Installation Installation { get; init; } = default!;
+	
+	private readonly List<MeasurementStationHistory> _measurementStationHistories = [];
+	public IReadOnlyList<MeasurementStationHistory> MeasurementStationHistories => _measurementStationHistories.AsReadOnly();
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
 	private MeasurementStation() { }
 
-	public MeasurementStation(
-		string code,
-		string status,
-		Location location,
-		Installation installation
-	) {
-		Code = code;
-		Status = status;
-
-		Location = location ?? throw new ArgumentNullException(nameof(location));
-		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
+	public MeasurementStation(string code, Location location, Installation installation) {
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		Location = Guard.Against.Null(location, nameof(location));
+		Installation = Guard.Against.Null(installation,  nameof(installation));
 	}
+	
+	public void Edit(string code) {
+		
+		// Validate the input before creating the history & assigning the values
+		
+		Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		
+		// Create history object using the old values
+		
+		ValidityRange validityRange = new(UpdatedAt, DateTime.Now);
+		MeasurementStationHistory measurementStationHistory = new(Code, Location, new Installation(Installation.InstalledAt, Installation.RemovedAt),  validityRange);
+		_measurementStationHistories.Add(measurementStationHistory);
+		
+		// Assign the new values
+		
+		Code = code;
+	}
+}
 
-	public void UpdateStatus(string status) => Status = status;
 
-	public void MoveTo(Location newLocation)
-		=> Location = newLocation ?? throw new ArgumentNullException(nameof(newLocation));
-
-	public void UpdateInstallation(Installation installation)
-		=> Installation = installation ?? throw new ArgumentNullException(nameof(installation));
+public class MeasurementStationHistory : HistoryEntity {
+	public string Code { get; private set; }
+	
+	public Location Location { get; private set; }
+	
+	public Installation Installation { get; init; }
+	
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private MeasurementStationHistory() {
+	}
+	public MeasurementStationHistory(string code, Location location, Installation installation, ValidityRange validityRange) {
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		Location = Guard.Against.Null(location, nameof(location));
+		Installation = Guard.Against.Null(installation,  nameof(installation));
+		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
+	}
 }

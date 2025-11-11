@@ -6,14 +6,8 @@ namespace Temporal.Domain.Projects;
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-	public string Name {
-		get;
-		private set;
-	}
-	public string Code {
-		get;
-		private set;
-	}
+	public string Name { get; private set; }
+	public string Code { get; private set; }
 	public DateRange DateRange { get; init; } = default!;
 	
 	private readonly List<ProjectHistory> _projectHistories = [];
