@@ -2,39 +2,82 @@
 @using Microsoft.AspNetCore.Components
 @using MudBlazor
 
-@implements IDisposable
 @inherits LayoutComponentBase
 
 <MudPopoverProvider/>
 
 	<MudLayout>
-			<MudHidden Breakpoint="Breakpoint.SmAndDown">
-					<MudDrawer Open="@(ShowDrawer)"        
-					           Variant="DrawerVariant.Persistent"  
-					           Elevation="2"
-					           >
-						<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
-					</MudDrawer>
-			</MudHidden>
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		@* <SideNav Variant="DrawerVariant.Persistent"/> *@
+		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
+			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
+				<MudImage Src="/img/logo.png"
+				          Alt="Logo"
+				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
+			</MudDrawerHeader>
+			<MudNavMenu>
+				<MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Folder"
+				            IconColor="Color.Inherit">Projecten
+				</MudNavLink>
+				<MudNavLink Href="/stations" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Map"
+				            IconColor="Color.Inherit">Meetstations
+				</MudNavLink>
+				<MudNavLink Href="/apparaten" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportantDevices"
+				            IconColor="Color.Inherit">Apparaten
+				</MudNavLink>
+				<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
+				            IconColor="Color.Inherit">Werkbonnen
+				</MudNavLink>
+				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+			</MudNavMenu>
+		</MudDrawer>
+	</MudHidden>
 
-			<MudHidden Breakpoint="Breakpoint.MdAndUp">
-			<MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
-							<MudIcon Icon="@Icons.Material.Filled.Menu"
-							         Class="mr-4  mb-n20"			
-				               Style="font-size: 3rem;"
-				               Color="Color.Primary"
-				               @onclick="ToggleDrawerAsync"
-				               title="Menu"/>
-			</MudPaper>
-				<MudDrawer @bind-Open="_open"
-				           Anchor="Anchor.Right"
-				           Variant="DrawerVariant.Temporary"
-				           Width="70vw"
-				           Elevation="2"
-				           >
-					<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
-				</MudDrawer>
-			</MudHidden>
+	@* Mobile *@
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+      <MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
+              <MudIcon Icon="@Icons.Material.Filled.Menu"
+                       Class="mr-4  mb-n20"     
+                       Style="font-size: 3rem;"
+                       Color="Color.Primary"
+                       @onclick="ToggleDrawer"
+                       title="Menu"/>
+      </MudPaper>
+
+		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
+		           OverlayAutoClose="_overlayAutoClose">
+			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
+				<MudImage Src="/img/logo.png"
+				          Alt="Logo"
+				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
+			</MudDrawerHeader>
+			<MudNavMenu>
+				<MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Folder"
+				            IconColor="Color.Inherit">Projecten
+				</MudNavLink>
+				<MudNavLink Href="/stations" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Map"
+				            IconColor="Color.Inherit">Meetstations
+				</MudNavLink>
+				<MudNavLink Href="/apparaten" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportantDevices"
+				            IconColor="Color.Inherit">Apparaten
+				</MudNavLink>
+				<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
+				            IconColor="Color.Inherit">Werkbonnen
+				</MudNavLink>
+				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				            IconColor="Color.Inherit">Account
+				</MudNavLink>
+			</MudNavMenu>
+		</MudDrawer>
+	</MudHidden>
 
 		<MudMainContent Style="height: 100vh;">
 			<MudContainer>
