@@ -28,30 +28,35 @@ public class Program
 		Console.WriteLine("Seeding data...");
 		var seeder = new DbSeeder(db);
 		await seeder.SeedAsync();
-
+		
 		Console.WriteLine("Database created and seeded successfully.");
-		
+
+		await ListProjects(db);
+		await ListMeasurementStations(db);
+	}
+	
+	private static async Task ListProjects(ApplicationDbContext db) {
 		List<Project> projects = await db.Projects.Include(p => p.ProjectHistories).ToListAsync();
-		
+            		
 		Console.WriteLine("--- Projects ---");
 		foreach (Project p in projects) {
 			Console.WriteLine($"Project: {p.Name}, {p.Code} ");
 			foreach (ProjectHistory h in p.ProjectHistories) {
-				Console.WriteLine(
-					$"  - History: {h.Name}, {h.Code} ({h.ValidityRange.ValidFrom} - {h.ValidityRange.ValidTo})");
+				Console.WriteLine($"  - History: {h}");
 			}
 		}
+	}
 
+	private static async Task ListMeasurementStations(ApplicationDbContext db) {
 		List<MeasurementStation> measurementStations =
-			await db.MeasurementStations.Include(m => m.MeasurementStationHistories).ToListAsync();
-			
-		Console.WriteLine("--- Measurement Stations ---");
-		foreach (MeasurementStation m in measurementStations) {
-			Console.WriteLine($"Measurement Station: {m.Code}");
-			foreach (MeasurementStationHistory h in m.MeasurementStationHistories) {
-				Console.WriteLine($"  - History: {h.Code} ({h.ValidityRange.ValidFrom} - {h.ValidityRange.ValidTo})");
-			}
-		}
-		
+        			await db.MeasurementStations.Include(m => m.MeasurementStationHistories).ToListAsync();
+        			
+        		Console.WriteLine("--- Measurement Stations ---");
+        		foreach (MeasurementStation m in measurementStations) {
+        			Console.WriteLine($"Measurement Station: {m.Code}");
+        			foreach (MeasurementStationHistory h in m.MeasurementStationHistories) {
+        				Console.WriteLine($"  - History: {h}");
+        			}
+        		}
 	}
 }

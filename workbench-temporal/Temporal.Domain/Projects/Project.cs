@@ -61,4 +61,8 @@ public class ProjectHistory : HistoryEntity {
 		DateRange = Guard.Against.Null(dateRange,  nameof(dateRange));
 		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
+
+	public override string ToString() {
+		return $"{Name}, {Code} " + base.ToString();
+	} 
 }

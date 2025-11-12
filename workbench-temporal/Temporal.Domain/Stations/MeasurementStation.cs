@@ -57,4 +57,8 @@ public class MeasurementStationHistory : HistoryEntity {
 		Installation = Guard.Against.Null(installation,  nameof(installation));
 		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
+	
+	public override string ToString() {
+		return $"{Code} " + base.ToString();
+	} 
 }

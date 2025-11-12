@@ -56,4 +56,8 @@ public abstract class HistoryEntity {
 	public override int GetHashCode() {
 		return (GetType().ToString() + Id).GetHashCode();
 	}
+
+	public override string ToString() {
+		return $"({ValidityRange.ValidFrom} - {ValidityRange.ValidTo})";
+	} 
 }
