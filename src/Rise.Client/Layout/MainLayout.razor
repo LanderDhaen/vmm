@@ -7,25 +7,17 @@
 
 <MudPopoverProvider/>
 
-<div >
 	<MudLayout>
-
-		<div>
 			<MudHidden Breakpoint="Breakpoint.SmAndDown">
-				<MudCollapse Expanded="@(ShowDrawer)">
 					<MudDrawer Open="@(ShowDrawer)"        
 					           Variant="DrawerVariant.Persistent"  
-					           Elevation="0"
+					           Elevation="2"
 					           >
 						<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
 					</MudDrawer>
-				</MudCollapse>
 			</MudHidden>
 
-	
-
 			<MudHidden Breakpoint="Breakpoint.MdAndUp">
-
 			<MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
 							<MudIcon Icon="@Icons.Material.Filled.Menu"
 							         Class="mr-4  mb-n20"			
@@ -34,17 +26,15 @@
 				               @onclick="ToggleDrawerAsync"
 				               title="Menu"/>
 			</MudPaper>
-
 				<MudDrawer @bind-Open="_open"
 				           Anchor="Anchor.Right"
 				           Variant="DrawerVariant.Temporary"
 				           Width="70vw"
-				           Elevation="8"
+				           Elevation="2"
 				           >
 					<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
 				</MudDrawer>
 			</MudHidden>
-		</div>
 
 		<MudMainContent Style="height: 100vh;">
 			<MudContainer>
@@ -56,4 +46,3 @@
 	<MudThemeProvider Theme="_vmm"/>
 	<MudDialogProvider/>
 	<MudSnackbarProvider/>
-</div>
