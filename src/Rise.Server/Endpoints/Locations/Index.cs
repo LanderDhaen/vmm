@@ -1,4 +1,5 @@
 using Rise.Shared.Common;
+using Rise.Shared.Identity;
 using Rise.Shared.Locations;
 
 namespace Rise.Server.Endpoints.Locations;
@@ -11,7 +12,7 @@ namespace Rise.Server.Endpoints.Locations;
 public class Index(ILocationService locationService) : Endpoint<QueryRequest.SkipTake, Result<LocationResponse.Index>> {
 	public override void Configure() {
 		Get("/api/locations");
-		AllowAnonymous();
+		Roles(AppRoles.Administrator);
 	}
 
 	public override Task<Result<LocationResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct) {
