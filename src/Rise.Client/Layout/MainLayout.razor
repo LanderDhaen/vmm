@@ -5,65 +5,47 @@
 @implements IDisposable
 @inherits LayoutComponentBase
 
-@* Providers and layout wrapper *@
-<MudThemeProvider/>
 <MudPopoverProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
 
-<div class="app-background" style="min-height:100vh; display:flex; flex-direction:column;">
-	<MudLayout 
-	           Style="flex:1 1 auto; display:flex; flex-direction:column; min-height:100vh; background-color: #f5f5f5;">
+<div >
+	<MudLayout>
 
-		@* ---------------------------
-		   Integrated Drawer (was a separate component)
-		   --------------------------- *@
-		<div style="position:relative;">
+		<div>
 			<MudHidden Breakpoint="Breakpoint.SmAndDown">
-				@* Desktop: show permanent/persistent drawer when ShowDrawer is true *@
 				<MudCollapse Expanded="@(ShowDrawer)">
 					<MudDrawer Open="@(ShowDrawer)"        
 					           Variant="DrawerVariant.Persistent"  
 					           Elevation="0"
-					           Class="main-drawer"
-					           Style="background: transparent; box-shadow: none; border-right: none;">
+					           >
 						<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
 					</MudDrawer>
 				</MudCollapse>
 			</MudHidden>
 
-			<!-- MOBILE: menu button top-right and temporary drawer -->
+			<!-- MOBILE: menuknop als MudIcon (klikbaar via @onclick) -->
 			<MudHidden Breakpoint="Breakpoint.MdAndUp">
-				<!-- Menu button (fixed, top-right) -->
-				<MudIconButton Icon="@Icons.Material.Filled.Menu"
-				               Size="Size.Large"
-				               Style="font-size: 3rem; position:fixed; top:50px; right:8px; z-index:2000; height:65px; width: 85px; background: none;"
-				               Edge="Edge.End"
-											 Color="Color.Primary"
-				               OnClick="@ToggleDrawerAsync"
-											 AriaLabel="Menu"/>
+				<!-- Icon als knop (klikbaar) -->
+				<MudIcon Icon="@Icons.Material.Filled.Menu"
+				Class="d-flex justify-end flex-grow-1"
+				
+				         Style="font-size: 3rem;"
+				         Color="Color.Primary"
+				         @onclick="ToggleDrawerAsync"
+				         title="Menu"/>
 
-				<!-- Collapse + Temporary Drawer: closes on outside click and updates state via OnClose -->
-				<MudCollapse Expanded="@(_open && ShowDrawer)">
-					<MudDrawer Open="@(_open && ShowDrawer)"
-					           Anchor="Anchor.Right"
-					           Variant="DrawerVariant.Temporary"
-					           Width="70vw"
-					           Elevation="8"
-					           CloseOnOutsideClick="true"
-					           OnClose="@OnDrawerClosed"
-					           Style="height:100vh; max-width:420px;">
-						<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
-					</MudDrawer>
-				</MudCollapse>
+				<!-- Drawer zoals je hierboven al hebt -->
+				<MudDrawer @bind-Open="_open"
+				           Anchor="Anchor.Right"
+				           Variant="DrawerVariant.Temporary"
+				           Width="70vw"
+				           Elevation="8"
+				           >
+					<Rise.Client.Components.DrawerMenu OnNavigate="CloseDrawerAsync" />
+				</MudDrawer>
 			</MudHidden>
 		</div>
-		@* ---------------------------
-		   End integrated Drawer
-		   --------------------------- *@
 
-		<!-- MAIN CONTENT -->
-		<MudMainContent>
+		<MudMainContent Style="height: 100vh;">
 			<MudContainer>
 				@Body
 			</MudContainer>
