@@ -8,7 +8,7 @@ namespace Temporal.Domain.Projects;
 public class Project : Entity {
 	public string Name { get; private set; }
 	public string Code { get; private set; }
-	public DateRange DateRange { get; init; } = default!;
+	public DateRange DateRange { get; private set; } = default!;
 	
 	private readonly List<ProjectHistory> _projectHistories = [];
 	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
@@ -25,29 +25,30 @@ public class Project : Entity {
 		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
 	}
 
-	public void Edit(string name, string code) {
+	public void EditDateRange(DateRange dateRange) {
 		
-		// Validate the input before creating the history & assigning the values
+		// Check if the values are the same as the old values
+		// Also split it up into functions and only track what's really important like changing the enddate or location or status
 		
-		Guard.Against.NullOrWhiteSpace(name, nameof(name));
-		Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		if(dateRange.Equals(DateRange)) {
+			Console.WriteLine("I've returned");
+			return;
+		}
 		
 		// Create history object using the old values
 		
 		ValidityRange validityRange = new(UpdatedAt, DateTime.Now);
-		ProjectHistory projectHistory = new(Name, Code, new DateRange(DateRange.StartDate, DateRange.EndDate),  validityRange);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate),  validityRange);
 		_projectHistories.Add(projectHistory);
 		
 		// Assign the new values
-
-		Name = name;
-		Code = code;
+		
+		DateRange = dateRange;
+		
 	}
 }
 
 public class ProjectHistory : HistoryEntity {
-	public string Name { get; private set; }
-	public string Code { get; private set; }
 	public DateRange DateRange { get; init; }
 	
 	/// <summary>
@@ -55,14 +56,12 @@ public class ProjectHistory : HistoryEntity {
 	/// </summary>
 	private ProjectHistory() {
 	}
-	public ProjectHistory(string name, string code, DateRange dateRange, ValidityRange validityRange) {
-		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
 		DateRange = Guard.Against.Null(dateRange,  nameof(dateRange));
 		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
 
 	public override string ToString() {
-		return $"{Name}, {Code} " + base.ToString();
+		return $"Start: {DateRange.StartDate}, Einde: {DateRange.EndDate} " + base.ToString();
 	} 
 }

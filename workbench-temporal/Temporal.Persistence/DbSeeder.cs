@@ -91,14 +91,14 @@ public class DbSeeder(
 
 		foreach (Project project in projects) {
 
-			string name = project.Name;
+			DateRange dateRange = project.DateRange;
 			
-			project.Edit("I've changed this", project.Code);
+			project.EditDateRange(new DateRange(dateRange.StartDate, DateOnly.FromDateTime(DateTime.Now)));
 			await dbContext.SaveChangesAsync();
 			
 			await Task.Delay(TimeSpan.FromSeconds(1));
 			
-			project.Edit(name + " v2", project.Code);
+			project.EditDateRange(dateRange);
 			await dbContext.SaveChangesAsync();
 		}
 	}

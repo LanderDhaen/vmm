@@ -32,8 +32,6 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 internal class ProjectHistoryConfiguration : HistoryEntityConfiguration<ProjectHistory> {
 	public override void Configure(EntityTypeBuilder<ProjectHistory> builder) {
 		base.Configure(builder);
-		builder.Property(x => x.Code).IsRequired().HasMaxLength(50);
-		builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
 		builder.OwnsOne(x => x.DateRange, d => {
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
