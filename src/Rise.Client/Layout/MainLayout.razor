@@ -22,18 +22,19 @@
 				</MudCollapse>
 			</MudHidden>
 
-			<!-- MOBILE: menuknop als MudIcon (klikbaar via @onclick) -->
-			<MudHidden Breakpoint="Breakpoint.MdAndUp">
-				<!-- Icon als knop (klikbaar) -->
-				<MudIcon Icon="@Icons.Material.Filled.Menu"
-				Class="d-flex justify-end flex-grow-1"
-				
-				         Style="font-size: 3rem;"
-				         Color="Color.Primary"
-				         @onclick="ToggleDrawerAsync"
-				         title="Menu"/>
+	
 
-				<!-- Drawer zoals je hierboven al hebt -->
+			<MudHidden Breakpoint="Breakpoint.MdAndUp">
+
+			<MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
+							<MudIcon Icon="@Icons.Material.Filled.Menu"
+							         Class="mr-4  mb-n20"			
+				               Style="font-size: 3rem;"
+				               Color="Color.Primary"
+				               @onclick="ToggleDrawerAsync"
+				               title="Menu"/>
+			</MudPaper>
+
 				<MudDrawer @bind-Open="_open"
 				           Anchor="Anchor.Right"
 				           Variant="DrawerVariant.Temporary"
