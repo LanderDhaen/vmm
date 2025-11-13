@@ -1,4 +1,4 @@
-namespace Temporal.Domain.Common;
+namespace Rise.Domain.Common;
 
 /// <summary>
 ///     A temporal ValidityRange using the <see cref="ValueObject" /> design pattern.

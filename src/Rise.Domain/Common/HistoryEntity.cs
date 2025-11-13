@@ -1,4 +1,4 @@
-namespace Temporal.Domain.Common;
+namespace Rise.Domain.Common;
 
 /// <summary>
 ///     History Entity Base Class, all history entities should inherit from this. (read: History Entity = Row in history table in SQL terms)
