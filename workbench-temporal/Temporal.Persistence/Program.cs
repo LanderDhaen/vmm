@@ -38,7 +38,7 @@ public class Program {
 
 		Console.WriteLine("--- Projects ---");
 		foreach (Project p in projects) {
-			Console.WriteLine($"Project: {p.Name}, {p.Code}, Start: {p.DateRange}, Einde: {p.DateRange.EndDate} ");
+			Console.WriteLine($"Project: {p.Name}, {p.Code}, Start: {p.DateRange.StartDate}, Einde: {p.DateRange.EndDate} ");
 			foreach (ProjectHistory h in p.ProjectHistories) {
 				Console.WriteLine($"  - History: {h}");
 			}
