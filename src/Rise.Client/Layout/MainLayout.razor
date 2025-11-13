@@ -1,8 +1,8 @@
-﻿@using MudBlazor.Utilities
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 @* TODO: add footer instead of 100vh *@
 <MudLayout Style="height: 100vh; background-color: #ececec">
+	<NavBar/>
 	<MudMainContent>
 		<MudContainer>
 			@Body
@@ -13,15 +13,3 @@
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
-
-@code{
-
-	readonly MudTheme _vmm = new()
-	{
-		PaletteLight = new PaletteLight
-		{
-			Primary = new MudColor("#126B8D")
-		}
-	};
-
-}
