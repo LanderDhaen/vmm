@@ -86,18 +86,18 @@ public class DbSeeder(
 		if (!dbContext.Projects.Any()) {
 			return;
 		}
-		
+
 		List<Project> projects = await dbContext.Projects.ToListAsync();
 
 		foreach (Project project in projects) {
 
 			DateRange dateRange = project.DateRange;
-			
+
 			project.EditDateRange(new DateRange(dateRange.StartDate, DateOnly.FromDateTime(DateTime.Now)));
 			await dbContext.SaveChangesAsync();
-			
+
 			await Task.Delay(TimeSpan.FromSeconds(1));
-			
+
 			project.EditDateRange(dateRange);
 			await dbContext.SaveChangesAsync();
 		}
@@ -107,9 +107,9 @@ public class DbSeeder(
 		if (dbContext.MeasurementStations.Any()) {
 			return;
 		}
-		
+
 		List<Location> locations = await dbContext.Locations.ToListAsync();
-		
+
 		List<Installation> installations = new() {
 			new Installation(new DateTime(2025, 1, 15), new DateTime(2025, 6, 30)),
 			new Installation(new DateTime(2025, 2, 1), new DateTime(2025, 8, 15)),
@@ -127,7 +127,7 @@ public class DbSeeder(
 			new MeasurementStation("STN-005", locations[4], installations[4]),
 			new MeasurementStation("STN-006", locations[5], installations[5]),
 		};
-		
+
 		dbContext.AddRange(measurementStations);
 		await dbContext.SaveChangesAsync();
 	}
@@ -136,18 +136,18 @@ public class DbSeeder(
 		if (!dbContext.MeasurementStations.Any()) {
 			return;
 		}
-		
+
 		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations.ToListAsync();
 
 		foreach (MeasurementStation measurementStation in measurementStations) {
 
 			string code = measurementStation.Code;
-			
+
 			measurementStation.Edit("I've changed this");
 			await dbContext.SaveChangesAsync();
-			
+
 			await Task.Delay(TimeSpan.FromSeconds(1));
-			
+
 			measurementStation.Edit(code + " v2");
 			await dbContext.SaveChangesAsync();
 		}

@@ -59,5 +59,5 @@ public abstract class HistoryEntity {
 
 	public override string ToString() {
 		return $"({ValidityRange.ValidFrom} - {ValidityRange.ValidTo})";
-	} 
+	}
 }

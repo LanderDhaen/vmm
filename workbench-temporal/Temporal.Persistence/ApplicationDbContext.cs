@@ -18,7 +18,7 @@ namespace Temporal.Persistence;
 ///     See https://enterprisecraftsmanship.com/posts/should-you-abstract-database/
 /// </summary>
 /// <param name="opts"></param>
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) { 
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) {
 	public DbSet<Location> Locations => Set<Location>();
 	public DbSet<Project> Projects => Set<Project>();
 	public DbSet<ProjectHistory> ProjectHistories => Set<ProjectHistory>();

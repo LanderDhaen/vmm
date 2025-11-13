@@ -34,7 +34,7 @@ internal class HistoryEntityConfiguration<TEntity> : IEntityTypeConfiguration<TE
 	public virtual void Configure(EntityTypeBuilder<TEntity> builder) {
 		// Table name = class name (singular)
 		builder.ToTable(typeof(TEntity).Name);
-		
+
 		builder.OwnsOne(x => x.ValidityRange, d => {
 			d.Property(x => x.ValidFrom).IsRequired().HasColumnName(nameof(ValidityRange.ValidFrom));
 			d.Property(x => x.ValidTo).IsRequired().HasColumnName(nameof(ValidityRange.ValidTo));

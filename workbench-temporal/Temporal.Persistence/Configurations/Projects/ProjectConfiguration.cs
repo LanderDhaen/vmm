@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Temporal.Domain.Projects;
 using Temporal.Domain.Common;
+using Temporal.Domain.Projects;
 
 namespace Temporal.Persistence.Configurations.Projects;
 
@@ -22,7 +22,7 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		// Constraints
 
 		builder.HasIndex(x => x.Code).IsUnique();
-		
+
 		// Relations
 
 		builder.HasMany(x => x.ProjectHistories);
@@ -36,9 +36,9 @@ internal class ProjectHistoryConfiguration : HistoryEntityConfiguration<ProjectH
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange).IsRequired();
-		
+
 		// History
-		
+
 		builder.OwnsOne(x => x.ValidityRange, v => {
 			v.Property(x => x.ValidFrom).IsRequired().HasColumnName(nameof(ValidityRange.ValidFrom));
 			v.Property(x => x.ValidTo).IsRequired().HasColumnName(nameof(ValidityRange.ValidTo));

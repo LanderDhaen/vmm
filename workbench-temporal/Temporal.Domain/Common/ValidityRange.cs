@@ -10,11 +10,11 @@ public class ValidityRange : ValueObject {
 	}
 
 	public ValidityRange(DateTime validFrom, DateTime validTo) {
-		
+
 		if (validTo < validFrom) {
 			throw new ArgumentException("End date cannot be before start date");
 		}
-		
+
 		ValidFrom = validFrom;
 		ValidTo = validTo;
 	}
