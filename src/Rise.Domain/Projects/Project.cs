@@ -1,14 +1,30 @@
 using Rise.Domain.Networks;
 using Rise.Domain.Stations;
+using Rise.Domain.Common;
 
 namespace Rise.Domain.Projects;
 
 public class Project : Entity {
-	private string _code = string.Empty;
-	private DateRange _dateRange;
-	private MeasurementNetwork _measurementNetwork;
-	private string _name = string.Empty;
+	
+	// Properties
 
+	public string Name { get; private set; }
+	public string Code { get; private set; }
+	public DateRange DateRange { get; private set; } = default!;
+	
+	public Status Status { get; private set; } = Status.Actief;
+	
+	// Relations
+	
+	public MeasurementNetwork MeasurementNetwork { get; private set; }
+	
+	public ICollection<MeasurementStation> Stations { get; private set; } =
+		new List<MeasurementStation>();
+	
+	// History
+
+	private readonly List<ProjectHistory> _projectHistories = [];
+	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
 	private Project() { }
 
 	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
@@ -18,31 +34,6 @@ public class Project : Entity {
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 		UpdateStatusBasedOnEndDate();
 	}
-
-	public string Name {
-		get => _name;
-		private set => _name = Guard.Against.NullOrWhiteSpace(value);
-	}
-
-	public string Code {
-		get => _code;
-		private set => _code = Guard.Against.NullOrWhiteSpace(value);
-	}
-
-	public DateRange DateRange {
-		get => _dateRange;
-		private set => _dateRange = Guard.Against.Null(value);
-	}
-
-	public ICollection<MeasurementStation> Stations { get; private set; } =
-		new List<MeasurementStation>();
-
-	public MeasurementNetwork MeasurementNetwork {
-		get => _measurementNetwork;
-		private set => _measurementNetwork = Guard.Against.Null(value);
-	}
-
-	public Status Status { get; private set; } = Status.Actief;
 
 	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		if (Status == Status.Afgesloten) {
@@ -76,5 +67,23 @@ public class Project : Entity {
 		Status = DateRange.EndDate.HasValue
 			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
 			: Status.Actief;
+	}
+}
+
+public class ProjectHistory : HistoryEntity {
+	public DateRange DateRange { get; init; }
+
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private ProjectHistory() {
+	}
+	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
+		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
+		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
+	}
+
+	public override string ToString() {
+		return $"Start: {DateRange.StartDate}, Einde: {DateRange.EndDate} " + base.ToString();
 	}
 }
