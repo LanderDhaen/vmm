@@ -34,6 +34,11 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
+	public async Task<Result<ProjectResponse.History>>
+		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		throw new NotImplementedException();
+	}
+
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		HttpResponseMessage response =
 			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/status", req, ctx);

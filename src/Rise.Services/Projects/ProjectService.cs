@@ -143,6 +143,40 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		});
 	}
 
+	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		
+		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
+		
+		ProjectDto.History? project = await query
+			.Where(p => p.Id == projectId)
+			.Select(p => new ProjectDto.History {
+				Id = p.Id,
+				Name = p.Name,
+				Code = p.Code,
+				StartDate = p.DateRange.StartDate,
+				EndDate = p.DateRange.EndDate,
+				ProjectHistories = p.ProjectHistories
+					.OrderByDescending(h => h.ValidityRange.ValidTo)
+					.Select(h => new ProjectHistoryDto.Index {
+						Id = h.Id,
+						StartDate = h.DateRange.StartDate,
+						EndDate = h.DateRange.EndDate,
+						ValidFrom = h.ValidityRange.ValidFrom,
+						ValidTo = h.ValidityRange.ValidTo,
+					}).ToList()
+			})
+			.FirstOrDefaultAsync(ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project with Id '{projectId}' was not found");
+		}
+
+		return Result.Success(new ProjectResponse.History {
+			Project = project
+		});
+	}
+
+
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
