@@ -1,5 +1,6 @@
 @page "/projects/create"
-@attribute [Authorize]
+@using Rise.Shared.Identity
+@attribute [Authorize(Roles = AppRoles.Administrator)]
 
 <MudText Typo="Typo.h3">Project toevoegen</MudText>
 <MudCard>
