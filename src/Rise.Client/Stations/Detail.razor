@@ -7,115 +7,121 @@
 
 @if (_station is null)
 {
-    <MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
-        <MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary" />
-    </MudContainer>
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
 }
 else
 {
-    <!-- ===== Desktop ===== -->
+	<!-- ===== Desktop ===== -->
 
-    <!-- ===== Mobile ===== -->
-    <MudHidden Breakpoint="Breakpoint.SmAndUp">
-        <ArrowHeader Title="Meetstation" OnBack="NavigateToStations" />
-    </MudHidden>
-    
-    <div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
-        <MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
-                 @onclick="async () => await SetTabAsync(0)">
-            @_tabs[0]
-        </MudText>
+	<!-- ===== Mobile ===== -->
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<ArrowHeader Title="Meetstation" OnBack="NavigateToStations"/>
+	</MudHidden>
 
-        <MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
-                 @onclick="async () => await SetTabAsync(1)">
-            @_tabs[1]
-        </MudText>
+	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
+		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(0)">
+			@_tabs[0]
+		</MudText>
 
-        <MudText Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")"
-                 @onclick="async () => await SetTabAsync(2)">
-            @_tabs[2]
-        </MudText>
+		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(1)">
+			@_tabs[1]
+		</MudText>
 
-        <MudText Class="@($"tab-item {(_selectedTab == 3 ? "active" : "")}")"
-                 @onclick="async () => await SetTabAsync(3)">
-            @_tabs[3]
-        </MudText>
-    </div>
+		<MudText Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(2)">
+			@_tabs[2]
+		</MudText>
 
-    @switch (_selectedTab)
-    {
-        case 0:
-            <MudPaper Class="p-4">
-                <div class="d-flex align-center m-2">
-                    <MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                   Color="Color.Primary"
-                                   Href="@($"/stations/edit/{_station.Id}")"
-                                   Title="Bewerken" />
-                </div>
+		<MudText Class="@($"tab-item {(_selectedTab == 3 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(3)">
+			@_tabs[3]
+		</MudText>
+	</div>
 
-                <MudGrid Class="p-2">
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Status</MudText>
-                        <MudPaper Class="p-2">@FormatStatus(_station.Status)</MudPaper>
-                    </MudItem>
+	@switch (_selectedTab)
+	{
+		case 0:
+			<MudPaper Class="p-4">
+				<div class="d-flex align-center m-2">
+					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
+					<MudIconButton Icon="@Icons.Material.Filled.Edit"
+					               Color="Color.Primary"
+					               Href="@($"/stations/edit/{_station.Id}")"
+					               Title="Bewerken"/>
+				</div>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-                        <MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
-                    </MudItem>
+				<MudGrid Class="p-2">
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Status</MudText>
+						<MudPaper Class="p-2">@FormatStatus(_station.Status)</MudPaper>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-                        <MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
+						<MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Locatie</MudText>
-                        <MudPaper Class="p-2">@_station.Location</MudPaper>
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
+						<MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Gemeente</MudText>
-                        <MudPaper Class="p-2">@_station.City</MudPaper>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-            break;
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudPaper Class="p-2">@_station.Location</MudPaper>
+					</MudItem>
 
-        case 1:
-            <MudText Typo="Typo.body1" Class="m-4">[Lijst van apparaten]</MudText>
-            break;
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Gemeente</MudText>
+						<MudPaper Class="p-2">@_station.City</MudPaper>
+					</MudItem>
+				</MudGrid>
+			</MudPaper>
+			break;
 
-        case 2:
-            <MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-                <MudDataGrid T="ProjectDto.Index"
-                             ServerData="GetProjectsGridAsync"
-                             RowsPerPage="10"
-                             Bordered="true"
-                             Striped="true"
-                             Hover="true"
-                             Dense="false"
-                             Elevation="0"
-                             RowClick="OnProjectRowClick">
-                    <Columns>
-                        <PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false" Groupable="false" />
-                        <PropertyColumn Property="x => x.Name" Title="Naam" Sortable="false" Filterable="false" Groupable="false" />
-                        <PropertyColumn Property="x => x.StartDate" Title="Startdatum" Sortable="false" Filterable="false" Groupable="false" />
-                        <PropertyColumn Property="x => x.EndDate" Title="Einddatum" Sortable="false" Filterable="false" Groupable="false" />
-                        <PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" Sortable="false" Filterable="false" Groupable="false" />
-                        <PropertyColumn Property="x => x.Zone" Title="Zone" Sortable="false" Filterable="false" Groupable="false" />
-                    </Columns>
+		case 1:
+			<MudText Typo="Typo.body1" Class="m-4">[Lijst van apparaten]</MudText>
+			break;
 
-                    <PagerContent>
-                        <Pagination T="ProjectDto.Index" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudPaper>
-            break;
+		case 2:
+			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+				<MudDataGrid T="ProjectDto.Index"
+				             ServerData="GetProjectsGridAsync"
+				             RowsPerPage="10"
+				             Bordered="true"
+				             Striped="true"
+				             Hover="true"
+				             Dense="false"
+				             Elevation="0"
+				             RowClick="OnProjectRowClick">
+					<Columns>
+						<PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false"
+						                Groupable="false"/>
+						<PropertyColumn Property="x => x.Name" Title="Naam" Sortable="false" Filterable="false"
+						                Groupable="false"/>
+						<PropertyColumn Property="x => x.StartDate" Title="Startdatum" Sortable="false"
+						                Filterable="false" Groupable="false"/>
+						<PropertyColumn Property="x => x.EndDate" Title="Einddatum" Sortable="false" Filterable="false"
+						                Groupable="false"/>
+						<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" Sortable="false"
+						                Filterable="false" Groupable="false"/>
+						<PropertyColumn Property="x => x.Zone" Title="Zone" Sortable="false" Filterable="false"
+						                Groupable="false"/>
+					</Columns>
 
-        case 3:
-            <MudText Typo="Typo.body1" Class="m-4">[Historiek van dit meetstation]</MudText>
-            break;
-    }
+					<PagerContent>
+						<Pagination T="ProjectDto.Index"/>
+					</PagerContent>
+				</MudDataGrid>
+			</MudPaper>
+			break;
+
+		case 3:
+			<MudText Typo="Typo.body1" Class="m-4">[Historiek van dit meetstation]</MudText>
+			break;
+	}
 }

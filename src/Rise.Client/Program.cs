@@ -18,8 +18,6 @@ using Rise.Shared.Products;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
-using Serilog;
-
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 
