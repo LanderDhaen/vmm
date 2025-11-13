@@ -3,7 +3,8 @@
 <CascadingAuthenticationState>
 	<Router AppAssembly="@typeof(App).Assembly">
 		<Found Context="routeData">
-			<AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+			<AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"
+			                    NotAuthorized="@(_ => RedirectToLogin())"/>
 			<FocusOnNavigate RouteData="@routeData" Selector="h1"/>
 		</Found>
 		<NotFound>
@@ -22,3 +23,14 @@
 		</NotFound>
 	</Router>
 </CascadingAuthenticationState>
+
+
+@code {
+	[Inject] private NavigationManager Navigation { get; set; } = null!;
+
+	private RenderFragment RedirectToLogin()
+	{
+		return builder => { Navigation.NavigateTo("/login", true); };
+	}
+
+}
