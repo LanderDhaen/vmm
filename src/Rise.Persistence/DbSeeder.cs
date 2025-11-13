@@ -27,6 +27,7 @@ public class DbSeeder(
 		await MeasurementNetworksAsync();
 		await LocationAsync();
 		await ProjectsAsync();
+		await ProjectHistoriesAsync();
 		await StationsAsync();
 	}
 
@@ -220,6 +221,38 @@ public class DbSeeder(
 
 		dbContext.Projects.AddRange(projects);
 		await dbContext.SaveChangesAsync();
+	}
+	
+	private async Task ProjectHistoriesAsync() {
+		if (!dbContext.Projects.Any()) {
+			return;
+		}
+
+		List<Project> projects = await dbContext.Projects.Include(p => p.DateRange).Include(p => p.MeasurementNetwork).ToListAsync();
+
+		foreach (Project project in projects) {
+
+			DateRange dateRange = project.DateRange;
+
+			if (project.Status.Equals(Status.Afgesloten)) {
+				project.UpdateStatus(Status.Actief);
+			}
+			
+			// Move the start date one day into the future
+			
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate), project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+			
+			// Move the end date to today
+			
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, DateOnly.FromDateTime(DateTime.Now)), project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+			
+			// Revert changes to keep the original state
+
+			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+		}
 	}
 
 	private async Task StationsAsync() {
