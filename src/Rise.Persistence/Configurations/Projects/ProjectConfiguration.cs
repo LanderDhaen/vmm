@@ -30,3 +30,13 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		// Other Project configuration here.
 	}
 }
+
+internal class ProjectHistoryConfiguration : HistoryEntityConfiguration<ProjectHistory> {
+	public override void Configure(EntityTypeBuilder<ProjectHistory> builder) {
+		base.Configure(builder);
+		builder.OwnsOne(x => x.DateRange, d => {
+			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
+			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
+		}).Navigation(x => x.DateRange).IsRequired();
+	}
+}
