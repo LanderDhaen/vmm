@@ -1,10 +1,11 @@
-﻿@using MudBlazor
+﻿@inherits LayoutComponentBase
 
-@inherits LayoutComponentBase
-
+<MudThemeProvider Theme="_vmm"/>
 <MudPopoverProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
-	<MudLayout>
+<MudLayout>
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		@* <SideNav Variant="DrawerVariant.Persistent"/> *@
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
@@ -29,7 +30,7 @@
 				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
 				            IconColor="Color.Inherit">Account
 				</MudNavLink>
-				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				<MudNavLink Href="/instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
 				            IconColor="Color.Inherit">Account
 				</MudNavLink>
 			</MudNavMenu>
@@ -38,14 +39,14 @@
 
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-      <MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
-              <MudIcon Icon="@Icons.Material.Filled.Menu"
-                       Class="mr-4  mb-n20"     
-                       Style="font-size: 3rem;"
-                       Color="Color.Primary"
-                       @onclick="ToggleDrawer"
-                       title="Menu"/>
-      </MudPaper>
+		<MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
+			<MudIcon Icon="@Icons.Material.Filled.Menu"
+			         Class="mr-4  mb-n20"
+			         Style="font-size: 3rem;"
+			         Color="Color.Primary"
+			         @onclick="ToggleDrawer"
+			         title="Menu"/>
+		</MudPaper>
 
 		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
 		           OverlayAutoClose="_overlayAutoClose">
@@ -67,23 +68,20 @@
 				<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
 				            IconColor="Color.Inherit">Werkbonnen
 				</MudNavLink>
-				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBalance"
+				<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person"
 				            IconColor="Color.Inherit">Account
 				</MudNavLink>
-				<MudNavLink Href="/Instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
-				            IconColor="Color.Inherit">Account
+				<MudNavLink Href="/instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+				            IconColor="Color.Inherit">Instellingen
 				</MudNavLink>
 			</MudNavMenu>
 		</MudDrawer>
 	</MudHidden>
 
-		<MudMainContent Style="height: 100vh;">
-			<MudContainer>
-				@Body
-			</MudContainer>
-		</MudMainContent>
-	</MudLayout>
+	<MudMainContent Style="height: 100vh;">
+		<MudContainer>
+			@Body
+		</MudContainer>
+	</MudMainContent>
+</MudLayout>
 
-	<MudThemeProvider Theme="_vmm"/>
-	<MudDialogProvider/>
-	<MudSnackbarProvider/>
