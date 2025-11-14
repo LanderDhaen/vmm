@@ -1,21 +1,12 @@
 <MudNavMenu>
-	<MudNavLink Href="/projects" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Folder"
-	            IconColor="Color.Inherit">Projecten
-	</MudNavLink>
-	<MudNavLink Href="/stations" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Map"
-	            IconColor="Color.Inherit">Meetstations
-	</MudNavLink>
-	<MudNavLink Href="/apparaten" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ImportantDevices"
-	            IconColor="Color.Inherit">Apparaten
-	</MudNavLink>
-	<MudNavLink Href="/werkbonnen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Archive"
-	            IconColor="Color.Inherit">Werkbonnen
-	</MudNavLink>
-	<MudNavLink Href="/account" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Person"
-	            IconColor="Color.Inherit">Account
-	</MudNavLink>
-	<MudNavLink Href="/instellingen" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
-	            IconColor="Color.Inherit">Instellingen
-	</MudNavLink>
+	@foreach (var item in _menuItems)
+	{
+		<MudNavLink Href="@item.Href"
+		            Match="@item.Match"
+		            Icon="@item.Icon"
+		            IconColor="Color.Inherit">
+			@item.Label
+		</MudNavLink>
+	}
 </MudNavMenu>
 
