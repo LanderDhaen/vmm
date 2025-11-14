@@ -46,7 +46,8 @@ try {
 
 	// register breadcrumb service
 	builder.Services.AddSingleton<BreadcrumbService>();
-
+	// register header service
+	builder.Services.AddSingleton<HeaderService>();
 	// register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
 	// register the account management interface

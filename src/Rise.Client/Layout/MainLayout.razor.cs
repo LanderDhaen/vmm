@@ -17,9 +17,11 @@ public partial class MainLayout : LayoutComponentBase {
 	private bool _open;
 
 	[Inject] public BreadcrumbService BreadcrumbService { get; set; } = null!;
+	[Inject] public HeaderService HeaderService { get; set; } = null!;
 
 	protected override void OnInitialized() {
 		BreadcrumbService.OnChange += BreadcrumbsChanged;
+		HeaderService.OnChange += HeaderChanged;
 	}
 
 	private void ToggleDrawer() {
@@ -30,7 +32,12 @@ public partial class MainLayout : LayoutComponentBase {
 		InvokeAsync(StateHasChanged);
 	}
 
+	private void HeaderChanged() {
+		InvokeAsync(StateHasChanged);
+	}
+
 	public void Dispose() {
 		BreadcrumbService.OnChange -= BreadcrumbsChanged;
+		HeaderService.OnChange -= HeaderChanged;
 	}
 }

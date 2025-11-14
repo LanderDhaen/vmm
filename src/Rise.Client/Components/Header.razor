@@ -1,3 +1,12 @@
 <div class="d-flex align-center">
-	<MudText Class="" Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
+	@if (!string.IsNullOrEmpty(Icon))
+	{
+		<MudIconButton
+			Size="Size.Large"
+			Icon="@Icon"
+			OnClick="@OnBack"
+			Color="Color.Primary"
+			Class="pl-0"/>
+	}
+	<MudText Class="ml-1" Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
 </div>
