@@ -38,8 +38,33 @@ else {
 		    </PagerContent>
 	    </MudDataGrid>
     } else {
-	    <div>
-		    Tijdslijn
-	    </div>
+	    <MudTimeline>
+		    <MudTimelineItem Color="Color.Primary">
+			    <ItemOpposite>
+				    <MudText>Huidig project</MudText>
+			    </ItemOpposite>
+			    <ItemContent>
+				    <MudText Typo="Typo.h6">@_project.Code - @_project.Name</MudText>
+				    <MudText>Startdatum: @_project.StartDate</MudText>
+				    <MudText>Einddatum: @_project.EndDate</MudText>
+			    </ItemContent>
+		    </MudTimelineItem>
+		    
+		    @foreach (var h in _project.ProjectHistories)
+		    {
+			    <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+				    <ItemOpposite>
+					    @h.ValidFrom - @h.ValidTo
+				    </ItemOpposite>
+				    <ItemContent>
+					    <MudText Typo="Typo.h6">@_project.Code - @_project.Name</MudText>
+					    <MudText>Startdatum: @h.StartDate</MudText>
+					    <MudText>Einddatum: @h.EndDate</MudText>
+				    </ItemContent>
+			    </MudTimelineItem>
+		    }
+
+	    </MudTimeline>
+
     }
 }
