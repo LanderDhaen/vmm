@@ -87,7 +87,7 @@ public partial class Edit {
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", "/projects"),
-			new BreadcrumbItem("Bewerk", $"/projects/{StationId}/edit", true)
+			new BreadcrumbItem("Bewerk", $"/stations/edit/{StationId}", true)
 		);
 
 		// set header

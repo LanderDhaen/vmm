@@ -60,7 +60,7 @@ public partial class Detail {
 			"Detail",
 			Icons.Material.Filled.ArrowBack,
 			() => {
-				Navigation.NavigateTo("/projects/");
+				Navigation.NavigateTo("/stations/");
 				return Task.CompletedTask;
 			}
 		);
