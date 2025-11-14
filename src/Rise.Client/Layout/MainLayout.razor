@@ -6,7 +6,8 @@
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-<MudLayout Style="">
+<MudLayout>
+	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudAppBar Color="Color.Transparent" Elevation="0">
 			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
@@ -24,7 +25,7 @@
 
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<div class="d-flex justify-space-between align-center p-4">
+		<div class="d-flex justify-space-between p-4 mb-2">
 			<Header Title="@HeaderService.State.Title" Icon="@HeaderService.State.Icon"
 			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)"></Header>
 			<MudIconButton Class="p-0" Icon="@Icons.Material.Filled.Menu"
