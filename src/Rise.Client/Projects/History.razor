@@ -1,0 +1,28 @@
+@using Rise.Client.Components
+@using Rise.Shared.Projects
+
+<PageTitle>Project Details</PageTitle>
+
+@if (_project is null) {
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+} else {
+	<MudDataGrid T="ProjectHistoryDto.Index"
+	             Items="_project.ProjectHistories"
+	             RowsPerPage="10"
+	             Striped="true"
+	             SortMode="SortMode.None">
+
+		<Columns>
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"  HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.ValidTo" Title="Geldig van" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.ValidFrom" Title="Geldig tot" HeaderClass="mud-theme-primary"/>
+		</Columns>
+
+		<PagerContent>
+			<Pagination T="ProjectHistoryDto.Index"/>
+		</PagerContent>
+	</MudDataGrid>
+}
