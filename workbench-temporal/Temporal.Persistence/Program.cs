@@ -8,13 +8,13 @@ namespace Temporal.Persistence;
 
 public class Program {
 	public static async Task Main() {
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseSqlServer("Server=localhost;Database=TemporalDb;Trusted_Connection=True;TrustServerCertificate=True;")
 			.EnableDetailedErrors()
 			.UseTriggers(options => options.AddTrigger<EntityBeforeSaveTrigger>())
 			.Options;
 
-		var db = new ApplicationDbContext(options);
+		ApplicationDbContext db = new(options);
 
 		Console.WriteLine("Deleting database...");
 
@@ -24,7 +24,7 @@ public class Program {
 		await db.Database.EnsureCreatedAsync();
 
 		Console.WriteLine("Seeding data...");
-		var seeder = new DbSeeder(db);
+		DbSeeder seeder = new(db);
 		await seeder.SeedAsync();
 
 		Console.WriteLine("Database created and seeded successfully.");
@@ -38,7 +38,8 @@ public class Program {
 
 		Console.WriteLine("--- Projects ---");
 		foreach (Project p in projects) {
-			Console.WriteLine($"Project: {p.Name}, {p.Code}, Start: {p.DateRange.StartDate}, Einde: {p.DateRange.EndDate} ");
+			Console.WriteLine(
+				$"Project: {p.Name}, {p.Code}, Start: {p.DateRange.StartDate}, Einde: {p.DateRange.EndDate} ");
 			foreach (ProjectHistory h in p.ProjectHistories) {
 				Console.WriteLine($"  - History: {h}");
 			}
@@ -47,7 +48,7 @@ public class Program {
 
 	private static async Task ListMeasurementStations(ApplicationDbContext db) {
 		List<MeasurementStation> measurementStations =
-					await db.MeasurementStations.Include(m => m.MeasurementStationHistories).ToListAsync();
+			await db.MeasurementStations.Include(m => m.MeasurementStationHistories).ToListAsync();
 
 		Console.WriteLine("--- Measurement Stations ---");
 		foreach (MeasurementStation m in measurementStations) {

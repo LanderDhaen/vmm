@@ -11,14 +11,13 @@ using Rise.Client.Locations;
 using Rise.Client.Networks;
 using Rise.Client.Products;
 using Rise.Client.Projects;
+using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Locations;
 using Rise.Shared.Networks;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
-
-using Serilog;
 
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -45,6 +44,10 @@ try {
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 	});
 
+	// register breadcrumb service
+	builder.Services.AddSingleton<BreadcrumbService>();
+	// register header service
+	builder.Services.AddSingleton<HeaderService>();
 	// register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();
 	// register the account management interface

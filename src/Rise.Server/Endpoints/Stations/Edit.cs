@@ -1,6 +1,3 @@
-using FastEndpoints;
-
-using Rise.Shared.Common;
 using Rise.Shared.Identity;
 using Rise.Shared.Stations;
 
@@ -13,6 +10,7 @@ public sealed class Edit(IMeasurementStationService stationService)
 		Roles(AppRoles.Technician, AppRoles.Administrator);
 	}
 
-	public override Task<Result> ExecuteAsync(MeasurementStationRequest.Edit req, CancellationToken ct)
-		=> stationService.EditAsync(req, ct);
+	public override Task<Result> ExecuteAsync(MeasurementStationRequest.Edit req, CancellationToken ct) {
+		return stationService.EditAsync(req, ct);
+	}
 }

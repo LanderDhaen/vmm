@@ -1,7 +1,12 @@
-<div class="d-flex align-center">
-	<MudText Class="" Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
-	@* TODO: menu will always be shown -> declare this higher up *@
-	<div class="ml-auto">
-		<MudIcon Icon="@Icons.Material.Outlined.Menu" Color="Color.Primary" Style="font-size: 3rem;"/>
-	</div>
+<div class="d-flex">
+	@if (!string.IsNullOrEmpty(Icon))
+	{
+		<MudIconButton
+			Size="Size.Large"
+			Icon="@Icon"
+			OnClick="@OnBack"
+			Color="Color.Primary"
+			Class="pl-0"/>
+	}
+	<MudText Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
 </div>

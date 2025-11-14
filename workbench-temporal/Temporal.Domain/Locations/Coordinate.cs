@@ -6,7 +6,6 @@ namespace Temporal.Domain.Locations;
 /// </summary>
 public class Coordinate : ValueObject {
 	private Coordinate() {
-
 	}
 
 	public Coordinate(double x, double y) {

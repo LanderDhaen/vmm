@@ -2,14 +2,12 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects;
 
 public partial class Detail {
-	//===== Breadcrumbs =====
-	private readonly List<BreadcrumbItem> _items = new();
-
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
@@ -28,6 +26,8 @@ public partial class Detail {
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
@@ -43,10 +43,22 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
 
-			_items.Clear();
-			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
-			_items.Add(new BreadcrumbItem("Projecten", "/projects"));
-			_items.Add(new BreadcrumbItem(_project.Code + " - " + _project.Name, null, true));
+			// set breadcrumbs
+			BreadcrumbService.SetBreadcrumbs(
+				new BreadcrumbItem("Home", "/"),
+				new BreadcrumbItem("Projecten", "/projects"),
+				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
+			);
+
+			// set header
+			HeaderService.Set(
+				"Detail",
+				Icons.Material.Filled.ArrowBack,
+				() => {
+					Navigation.NavigateTo("/projects/");
+					return Task.CompletedTask;
+				}
+			);
 		}
 	}
 

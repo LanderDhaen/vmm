@@ -2,10 +2,6 @@ using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 
-using Shouldly;
-
-using Xunit;
-
 namespace Rise.Domain.Tests.Projects;
 
 public class ProjectShould {

@@ -1,113 +1,109 @@
 @page "/stations/edit/{StationId:guid}"
+@inject NavigationManager Navigation
 
-@using MudBlazor
-@using Rise.Shared.Common
-@using Rise.Shared.Locations
-@using Rise.Shared.Projects
-@using Rise.Shared.Stations
 
 <MudText Typo="Typo.h3">Bewerk meetstation</MudText>
 
 @if (Model is null)
 {
-    <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+	<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
 }
 else
 {
-    <MudCard>
-        <MudForm Model="@Model"
-                 @ref="form"
-                 Validation="FieldValidator"
-                 ValidationDelay="0">
+	<MudCard>
+		<MudForm Model="@Model"
+		         @ref="form"
+		         Validation="FieldValidator"
+		         ValidationDelay="0">
 
-            <MudCardContent>
-                <MudGrid>
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Code</MudText>
-                        <MudTextField @bind-Value="Model.Code"
-                                      For="@(() => Model.Code)"
-                                      Counter="64"
-                                      MaxLength="64"
-                                      Immediate="true"
-                                      Variant="Variant.Outlined"
-                                      Placeholder="Code" />
-                    </MudItem>
+			<MudCardContent>
+				<MudGrid>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Code</MudText>
+						<MudTextField @bind-Value="Model.Code"
+						              For="@(() => Model.Code)"
+						              Counter="64"
+						              MaxLength="64"
+						              Immediate="true"
+						              Variant="Variant.Outlined"
+						              Placeholder="Code"/>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Status</MudText>
-                        <MudSelect T="string"
-                                   @bind-Value="Model.Status"
-                                   For="@(() => Model.Status)"
-                                   Variant="Variant.Outlined"
-                                   Placeholder="Kies status">
-                            @foreach (var s in _statuses)
-                            {
-                                <MudSelectItem Value="@s">@s</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Status</MudText>
+						<MudSelect T="string"
+						           @bind-Value="Model.Status"
+						           For="@(() => Model.Status)"
+						           Variant="Variant.Outlined"
+						           Placeholder="Kies status">
+							@foreach (var s in _statuses)
+							{
+								<MudSelectItem Value="@s">@s</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-                        <MudDatePicker @bind-Date="Model.InstalledAt"
-                                       For="@(() => Model.InstalledAt)"
-                                       DateFormat="dd/MM/yyyy"
-                                       Variant="Variant.Outlined" />
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
+						<MudDatePicker @bind-Date="Model.InstalledAt"
+						               For="@(() => Model.InstalledAt)"
+						               DateFormat="dd/MM/yyyy"
+						               Variant="Variant.Outlined"/>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Verwijderd op</MudText>
-                        <MudDatePicker @bind-Date="Model.RemovedAt"
-                                       For="@(() => Model.RemovedAt)"
-                                       DateFormat="dd/MM/yyyy"
-                                       Variant="Variant.Outlined" />
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Verwijderd op</MudText>
+						<MudDatePicker @bind-Date="Model.RemovedAt"
+						               For="@(() => Model.RemovedAt)"
+						               DateFormat="dd/MM/yyyy"
+						               Variant="Variant.Outlined"/>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Locatie</MudText>
-                        <MudSelect T="Guid"
-                                   @bind-Value="Model.LocationId"
-                                   For="@(() => Model.LocationId)"
-                                   Placeholder="Selecteer een locatie"
-                                   Clearable="false"
-                                   Variant="Variant.Outlined">
-                            @foreach (var l in _locations)
-                            {
-                                <MudSelectItem Value="@l.Id">@l.Name (@l.Address.City)</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudSelect T="Guid"
+						           @bind-Value="Model.LocationId"
+						           For="@(() => Model.LocationId)"
+						           Placeholder="Selecteer een locatie"
+						           Clearable="false"
+						           Variant="Variant.Outlined">
+							@foreach (var l in _locations)
+							{
+								<MudSelectItem Value="@l.Id">@l.Name (@l.Address.City)</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
 
-                    <MudItem xs="12" sm="6">
-                        <MudText Typo="Typo.subtitle2">Project</MudText>
-                        <MudSelect T="Guid"
-                                   @bind-Value="Model.ProjectId"
-                                   For="@(() => Model.ProjectId)"
-                                   Placeholder="Koppel aan project"
-                                   Clearable="false"
-                                   Variant="Variant.Outlined">
-                            @foreach (var p in _projects)
-                            {
-                                <MudSelectItem Value="@p.Id">@p.Name (@p.Code)</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
-                </MudGrid>
-            </MudCardContent>
-        </MudForm>
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Project</MudText>
+						<MudSelect T="Guid"
+						           @bind-Value="Model.ProjectId"
+						           For="@(() => Model.ProjectId)"
+						           Placeholder="Koppel aan project"
+						           Clearable="false"
+						           Variant="Variant.Outlined">
+							@foreach (var p in _projects)
+							{
+								<MudSelectItem Value="@p.Id">@p.Name (@p.Code)</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+				</MudGrid>
+			</MudCardContent>
+		</MudForm>
 
-        <MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       OnClick="@EditStationAsync">
-                Opslaan
-            </MudButton>
+		<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
+			<MudButton Variant="Variant.Filled"
+			           Color="Color.Primary"
+			           OnClick="@EditStationAsync">
+				Opslaan
+			</MudButton>
 
-            <MudButton Href="/stations"
-                       Variant="Variant.Outlined"
-                       Color="Color.Primary">
-                Annuleren
-            </MudButton>
-        </MudCardActions>
-    </MudCard>
+			<MudButton Href="/stations"
+			           Variant="Variant.Outlined"
+			           Color="Color.Primary">
+				Annuleren
+			</MudButton>
+		</MudCardActions>
+	</MudCard>
 }

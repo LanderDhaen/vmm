@@ -26,10 +26,10 @@ internal class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
 			.HasDefaultValue(false);
 	}
 }
+
 /// <summary>
 ///     Base configuration for an <see cref="HistoryEntity" />
 /// </summary>
-
 internal class HistoryEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : HistoryEntity {
 	public virtual void Configure(EntityTypeBuilder<TEntity> builder) {
 		// Table name = class name (singular)

@@ -11,7 +11,6 @@ namespace Temporal.Persistence;
 /// </summary>
 public class DbSeeder(
 	ApplicationDbContext dbContext) {
-
 	public async Task SeedAsync() {
 		await LocationAsync();
 		await ProjectsAsync();
@@ -90,7 +89,6 @@ public class DbSeeder(
 		List<Project> projects = await dbContext.Projects.ToListAsync();
 
 		foreach (Project project in projects) {
-
 			DateRange dateRange = project.DateRange;
 
 			project.EditDateRange(new DateRange(dateRange.StartDate, DateOnly.FromDateTime(DateTime.Now)));
@@ -114,9 +112,9 @@ public class DbSeeder(
 			new Installation(new DateTime(2025, 1, 15), new DateTime(2025, 6, 30)),
 			new Installation(new DateTime(2025, 2, 1), new DateTime(2025, 8, 15)),
 			new Installation(new DateTime(2025, 3, 10), new DateTime(2025, 9, 25)),
-			new Installation(new DateTime(2025, 4, 5), null),
+			new Installation(new DateTime(2025, 4, 5)),
 			new Installation(new DateTime(2025, 5, 12), new DateTime(2025, 12, 31)),
-			new Installation(new DateTime(2025, 5, 12), null)
+			new Installation(new DateTime(2025, 5, 12))
 		};
 
 		List<MeasurementStation> measurementStations = new() {
@@ -125,7 +123,7 @@ public class DbSeeder(
 			new MeasurementStation("STN-003", locations[2], installations[2]),
 			new MeasurementStation("STN-004", locations[3], installations[3]),
 			new MeasurementStation("STN-005", locations[4], installations[4]),
-			new MeasurementStation("STN-006", locations[5], installations[5]),
+			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
 
 		dbContext.AddRange(measurementStations);
@@ -140,7 +138,6 @@ public class DbSeeder(
 		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations.ToListAsync();
 
 		foreach (MeasurementStation measurementStation in measurementStations) {
-
 			string code = measurementStation.Code;
 
 			measurementStation.Edit("I've changed this");
