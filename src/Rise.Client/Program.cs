@@ -11,6 +11,7 @@ using Rise.Client.Locations;
 using Rise.Client.Networks;
 using Rise.Client.Products;
 using Rise.Client.Projects;
+using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Locations;
 using Rise.Shared.Networks;
@@ -42,6 +43,9 @@ try {
 		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 	});
+
+	// register breadcrumb service
+	builder.Services.AddSingleton<BreadcrumbService>();
 
 	// register the custom state provider
 	builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthenticationStateProvider>();

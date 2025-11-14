@@ -2,19 +2,24 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects;
 
 public partial class Index {
-	private readonly List<BreadcrumbItem> _items = [
-		new("Home", "#"),
-		new("Projecten", null, true)
-	];
-
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+
+	protected override void OnInitialized() {
+		// update breadcrumbs in de service
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Projecten", null, true)
+		);
+	}
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		QueryRequest.SkipTake request = new() {

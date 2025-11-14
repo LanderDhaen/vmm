@@ -7,6 +7,9 @@
 
 <MudLayout Style="">
 	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudAppBar Color="Color.Transparent" Elevation="0">
+			<MudBreadcrumbs Items="@BreadcrumbService.Items.ToList()"></MudBreadcrumbs>
+		</MudAppBar>
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
 			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
 				<MudImage Src="/img/logo.png"
@@ -38,17 +41,18 @@
 
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudPaper Class="d-flex justify-end flex-grow-1 mt-20 mb-n15" Elevation="0">
-			<MudIcon Icon="@Icons.Material.Filled.Menu"
-			         Class="mr-4  mb-n20"
-			         Style="font-size: 3rem;"
-			         Color="Color.Primary"
-			         @onclick="ToggleDrawer"
-			         title="Menu"/>
-		</MudPaper>
-
+		<MudAppBar Color="Color.Transparent" Elevation="0">
+			<MudBreadcrumbs Items="@BreadcrumbService.Items.ToList()"></MudBreadcrumbs>
+			<div Class="d-flex ml-auto my-auto">
+				<MudIconButton Class="p-0" Icon="@Icons.Material.Filled.Menu"
+				               Size="Size.Large"
+				               Color="Color.Primary"
+				               OnClick="@ToggleDrawer"
+				               title="Menu"/>
+			</div>
+		</MudAppBar>
 		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
-		           OverlayAutoClose="_overlayAutoClose">
+		           OverlayAutoClose="true">
 			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
 				<MudImage Src="/img/logo.png"
 				          Alt="Logo"

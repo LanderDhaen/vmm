@@ -2,19 +2,23 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
 public partial class Index {
-	private readonly List<BreadcrumbItem> _items = [
-		new("Home", "#"),
-		new("Meetstations", null, true)
-	];
-
 	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 
+	protected override void OnInitialized() {
+		// update breadcrumbs in de service
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Meetstations", null, true)
+		);
+	}
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
