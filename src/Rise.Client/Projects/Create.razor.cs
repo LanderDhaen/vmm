@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -17,6 +18,8 @@ public partial class Create {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
+
 	private ProjectRequest.Create Model { get; } = new();
 
 	protected override async Task OnInitializedAsync() {
@@ -28,6 +31,14 @@ public partial class Create {
 
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		networks = result.Value.measurementsNetworks;
+		HeaderService.Set(
+			"Voeg toe",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/projects/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task CreateProjectAsync() {

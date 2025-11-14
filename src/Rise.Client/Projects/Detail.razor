@@ -1,5 +1,4 @@
 @page "/projects/{ProjectId:guid}"
-@using Rise.Client.Components
 @inject NavigationManager Navigation
 <PageTitle>Project Details</PageTitle>
 
@@ -11,11 +10,6 @@
 }
 else
 {
-	// Mobile
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<ArrowHeader Title="Project" OnBack="NavigateToProjects"/>
-	</MudHidden>
-
 	// ====== Tabs ======
 	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Project tabs">
 		<MudText

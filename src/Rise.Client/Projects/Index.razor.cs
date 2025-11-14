@@ -12,13 +12,16 @@ public partial class Index {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	protected override void OnInitialized() {
-		// update breadcrumbs in de service
+		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", null, true)
 		);
+		// set header
+		HeaderService.Set("Projecten");
 	}
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {

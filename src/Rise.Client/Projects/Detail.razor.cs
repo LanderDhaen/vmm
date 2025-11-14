@@ -26,6 +26,7 @@ public partial class Detail {
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	private void SetTab(int index) {
 		_selectedTab = index;
@@ -38,11 +39,27 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
 
-			// Update breadcrumbs in de service
+			_items = [
+				new BreadcrumbItem("Home", "#"),
+				new BreadcrumbItem("Projecten", "/projects"),
+				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
+			];
+
+			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
 				new BreadcrumbItem("Home", "/"),
 				new BreadcrumbItem("Projecten", "/projects"),
 				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
+			);
+
+			// set header
+			HeaderService.Set(
+				"Detail",
+				Icons.Material.Filled.ArrowBack,
+				() => {
+					Navigation.NavigateTo("/projects/");
+					return Task.CompletedTask;
+				}
 			);
 		}
 	}
