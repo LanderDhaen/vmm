@@ -12,13 +12,14 @@
 			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
 		</MudAppBar>
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
-			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
-				<MudImage Src="/img/logo.png"
-				          Alt="Logo"
-				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
-			</MudDrawerHeader>
+			<DrawerHeader/>
 			<NavMenu/>
 		</MudDrawer>
+		<MudMainContent Style="height: 100vh;">
+			<MudContainer>
+				@Body
+			</MudContainer>
+		</MudMainContent>
 	</MudHidden>
 
 	@* Mobile *@
@@ -34,19 +35,14 @@
 		</div>
 		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
 		           OverlayAutoClose="true">
-			<MudDrawerHeader Style="width:100%; padding:0; margin:0; display:block;">
-				<MudImage Src="/img/logo.png"
-				          Alt="Logo"
-				          Style="width:100%; height:auto; object-fit:contain; display:block; margin:0;"/>
-			</MudDrawerHeader>
+			<DrawerHeader/>
 			<NavMenu/>
 		</MudDrawer>
+		<MudMainContent Style="height: 100vh;" Class="pt-0">
+			<MudContainer>
+				@Body
+			</MudContainer>
+		</MudMainContent>
 	</MudHidden>
-
-	<MudMainContent Style="height: 100vh;">
-		<MudContainer>
-			@Body
-		</MudContainer>
-	</MudMainContent>
 </MudLayout>
 
