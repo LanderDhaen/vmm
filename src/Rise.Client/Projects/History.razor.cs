@@ -10,6 +10,7 @@ public partial class History {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	
 	private ProjectDto.History? _project;
+	private bool displayTable { get; set; } = true;
 
 	protected override async Task OnInitializedAsync() {
 
