@@ -8,7 +8,7 @@
 /* Base fonts and horizontal overflow prevention */
 html, body {
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	overflow-x: hidden; /* prevent horizontal shifts caused by drawers */
+	overflow-x: hidden;
 }
 
 h1:focus {
