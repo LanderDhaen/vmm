@@ -47,6 +47,10 @@ public partial class Index {
 		};
 	}
 
+	private void OnRowClick(DataGridRowClickEventArgs<MeasurementStationDto.Index> args) {
+		NavigationManager.NavigateTo($"/stations/{args.Item.Id}");
+	}
+
 	private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy) {
 		return new QueryRequest.SkipTake {
 			Skip = skip,
