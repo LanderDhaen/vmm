@@ -146,6 +146,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(projects);
 	}
 
+	public Task<Result> EditAsync(
+		MeasurementStationRequest.Edit request,
+		CancellationToken ct = default) {
+		return UpdateAsync(request.StationId, request, ct);
+	}
+
 	public async Task<Result<Guid>> CreateAsync(
 		MeasurementStationRequest.Create request,
 		CancellationToken ct = default) {
@@ -217,9 +223,4 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
 	}
-
-	public Task<Result> EditAsync(
-		MeasurementStationRequest.Edit request,
-		CancellationToken ct = default)
-		=> UpdateAsync(request.StationId, request, ct);
 }

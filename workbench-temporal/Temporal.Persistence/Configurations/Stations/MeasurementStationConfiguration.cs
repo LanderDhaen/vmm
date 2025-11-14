@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Temporal.Domain.Common;
-using Temporal.Domain.Projects;
 using Temporal.Domain.Stations;
 
 namespace Temporal.Persistence.Configurations.Stations;

@@ -1,28 +1,49 @@
-﻿@using MudBlazor.Utilities
+﻿@using Rise.Client.Components
 @inherits LayoutComponentBase
 
-@* TODO: add footer instead of 100vh *@
-<MudLayout Style="height: 100vh; background-color: #ececec">
-	<NavBar/>
-	<MudMainContent>
-		<MudContainer>
-			@Body
-		</MudContainer>
-	</MudMainContent>
-</MudLayout>
 <MudThemeProvider Theme="_vmm"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-@code{
+<MudLayout Style="background-color: #ececec ">
+	@* Desktop *@
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudAppBar Color="Color.Transparent" Elevation="0">
+			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
+		</MudAppBar>
+		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
+			<DrawerHeader/>
+			<NavMenu/>
+		</MudDrawer>
+		<MudMainContent Style="height: 100vh;">
+			<MudContainer>
+				@Body
+			</MudContainer>
+		</MudMainContent>
+	</MudHidden>
 
-	readonly MudTheme _vmm = new()
-	{
-		PaletteLight = new PaletteLight
-		{
-			Primary = new MudColor("#126B8D")
-		}
-	};
+	@* Mobile *@
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<div class="d-flex justify-space-between p-4 mb-2">
+			<Header Title="@HeaderService.State.Title" Icon="@HeaderService.State.Icon"
+			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)"></Header>
+			<MudIconButton Class="p-0" Icon="@Icons.Material.Filled.Menu"
+			               Size="Size.Large"
+			               Color="Color.Primary"
+			               OnClick="@ToggleDrawer"
+			               title="Menu"/>
+		</div>
+		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
+		           OverlayAutoClose="true">
+			<DrawerHeader/>
+			<NavMenu/>
+		</MudDrawer>
+		<MudMainContent Style="height: 100vh;" Class="pt-0">
+			<MudContainer>
+				@Body
+			</MudContainer>
+		</MudMainContent>
+	</MudHidden>
+</MudLayout>
 
-}

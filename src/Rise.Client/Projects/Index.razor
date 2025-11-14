@@ -4,32 +4,82 @@
 
 <PageTitle>Projecten</PageTitle>
 
-<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-	<MudDataGrid T="ProjectDto.Index"
-	             ServerData="GetProjectsAsync"
-	             RowsPerPage="10"
-	             Bordered="true"
-	             Striped="true"
-	             Hover="true"
-	             Dense="false"
-	             Elevation="0"
-	             RowClick="OnRowClick">
+@* <MudPaper Elevation="0" Class="p-4"> *@
+<MudContainer>
+	<ToolBar/>
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudDataGrid T="ProjectDto.Index"
+		             ServerData="GetProjectsAsync"
+		             RowsPerPage="10"
+		             Striped="true"
+		             Hover="true"
+		             RowClick="OnRowClick">
 
-		<ToolBarContent>
-			<ToolBar/>
-		</ToolBarContent>
+			<Columns>
+				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary"/>
+			</Columns>
 
-		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#"/>
-			<PropertyColumn Property="x => x.Name" Title="Naam"/>
-			<PropertyColumn Property="x => x.StartDate" Title="Startdatum"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum"/>
-			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet"/>
-			<PropertyColumn Property="x => x.Zone" Title="Zone"/>
-		</Columns>
+			<PagerContent>
+				<Pagination T="ProjectDto.Index"/>
+			</PagerContent>
+		</MudDataGrid>
+	</MudHidden>
 
-		<PagerContent>
-			<Pagination T="ProjectDto.Index"/>
-		</PagerContent>
-	</MudDataGrid>
-</MudPaper>
+	<!-- MOBILE: list with MudCard components (visible on xs and down).
+		 Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudGrid Spacing="4">
+			@if (_mobileItems is null)
+			{
+				<MudItem xs="12">
+					<div>
+						<MudProgressCircular Indeterminate="true"/>
+					</div>
+				</MudItem>
+			}
+			else if (!_mobileItems.Any())
+			{
+				<MudItem xs="12">
+					<MudText>Geen projecten</MudText>
+				</MudItem>
+			}
+			else
+			{
+				@foreach (var item in _mobileItems)
+				{
+					<MudItem xs="12">
+						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
+						<MudCard
+							Elevation="2"
+							Style="border-radius: 8px"
+							@onclick="() => NavigateToProject(item.Id)">
+							<MudCardHeader Class="d-flex">
+								<CardHeaderContent>
+									<MudText Typo="Typo.subtitle1" Style="font-weight: bold"
+									         Color="Color.Primary">@item.Code</MudText>
+									<MudText Typo="Typo.h6">@item.Name</MudText>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent Class="d-flex flex-column gap-1">
+								<MudText Typo="Typo.caption">
+									<b>Start datum:</b> @item.StartDate.ToString("dd/MM/yyyy")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Eind datum:</b> @(item.EndDate?.ToString("dd/MM/yyyy") ?? "")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Meetnet:</b> @item.MeasurementNetwork</MudText>
+							</MudCardContent>
+						</MudCard>
+					</MudItem>
+				}
+			}
+		</MudGrid>
+	</MudHidden>
+	@* </MudPaper> *@
+</MudContainer>

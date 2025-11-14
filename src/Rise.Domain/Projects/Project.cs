@@ -3,6 +3,9 @@ using Rise.Domain.Stations;
 
 namespace Rise.Domain.Projects;
 
+/// <summary>
+///     A project is something that owns multiple measuring stations.
+/// </summary>
 public class Project : Entity {
 	
 	// Properties
