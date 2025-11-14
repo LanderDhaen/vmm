@@ -6,15 +6,15 @@ using MudBlazor.Utilities;
 namespace Rise.Client.Layout;
 
 public partial class MainLayout : LayoutComponentBase {
-	private bool _open;
+	private readonly bool _overlayAutoClose = true;
 
-	readonly MudTheme _vmm = new() {
+	private readonly MudTheme _vmm = new() {
 		PaletteLight = new PaletteLight {
 			Primary = new MudColor("#126B8D")
 		}
 	};
 
-	private readonly bool _overlayAutoClose = true;
+	private bool _open;
 
 	private void ToggleDrawer() {
 		_open = !_open;
@@ -23,6 +23,4 @@ public partial class MainLayout : LayoutComponentBase {
 	private void BreadcrumbsChanged() {
 		InvokeAsync(StateHasChanged);
 	}
-
-
 }
