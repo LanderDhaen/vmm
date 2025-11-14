@@ -1,29 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 using AngleSharp.Dom;
 
 using Ardalis.Result;
-
-using Bunit;
-
-using Microsoft.Extensions.DependencyInjection;
 
 using MudBlazor;
 using MudBlazor.Services;
 
 using NSubstitute;
 
+using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
-
-using Xunit;
 
 internal sealed class ClientTestContext : IDisposable {
 	public TestContext Ctx { get; } = new();
@@ -31,6 +20,8 @@ internal sealed class ClientTestContext : IDisposable {
 	public ClientTestContext() {
 		Ctx.JSInterop.Mode = JSRuntimeMode.Loose;
 		Ctx.Services.AddMudServices();
+		Ctx.Services.AddSingleton<BreadcrumbService>();
+		Ctx.Services.AddSingleton<HeaderService>();
 	}
 
 	public void Dispose() => Ctx.Dispose();
