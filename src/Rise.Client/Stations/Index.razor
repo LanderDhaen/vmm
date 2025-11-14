@@ -1,41 +1,30 @@
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
-@using Rise.Shared.Locations
-@using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Stations</PageTitle>
 
-<MudPaper Elevation="0" Class="d-flex flex-column flex-grow-1 gap-4">
+<MudPaper Elevation="0" Class="gap-4 px-8">
   <ToolBar />
-</MudPaper>
-
-<MudPaper Elevation="2">
-  <MudPaper Class="d-flex flex-column flex-grow-1 gap-4">
-    <!-- DESKTOP: data grid (hidden on xs) -->
     <MudHidden Breakpoint="Breakpoint.Xs">
       <MudDataGrid T="MeasurementStationDto.Index"
                    ServerData="GetStationsAsync"
-                   HeaderClass="gridhead"
                    RowsPerPage="10"
-                   Bordered="true"
                    Striped="true"
                    Hover="true"
-                   Dense="false"
-                   Elevation="0"
                    >
         <Columns>
-          <PropertyColumn Property="x => x.Code" Title="#" />
-          <PropertyColumn Property="x => x.Status" Title="Status">
+          <PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+          <PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
             <CellTemplate Context="row">
               <span>@TranslateStatus(row.Item.Status)</span>
             </CellTemplate>
           </PropertyColumn>
-          <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
-          <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
-          <PropertyColumn Property="x => x.Location" Title="Locatie" />
-          <PropertyColumn Property="x => x.City" Title="Gemeente" />
-          <PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
+          <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
+          <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
+          <PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+          <PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
+          <PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" HeaderClass="mud-theme-primary"/>
         </Columns>
 
         <PagerContent>
@@ -47,78 +36,66 @@
     <!-- MOBILE: list with MudCard components (visible on xs and down).
          Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
     <MudHidden Breakpoint="Breakpoint.MdAndUp">
-      <MudGrid>
-        @if (_mobileStations is null)
-        {
-          <MudItem xs="12">
-            <div>
-              <MudProgressCircular Indeterminate="true" />
-            </div>
-          </MudItem>
-        }
-        else if (!_mobileStations.Any())
-        {
-          <MudItem xs="12">
-            <MudText>Geen meetstations</MudText>
-          </MudItem>
-        }
-        else
-        {
-          @foreach (var item in _mobileStations)
-          {
-            <MudItem xs="12">
-              @* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
-              <MudCard
-                       Elevation="2"
-                       Style="border-radius:8px; background:white; cursor:pointer; margin: 0.7rem;"
-                       >
-                <MudText Style="margin-left:0.5rem; margin-top:1rem; margin-bottom:1rem;" Typo="Typo.subtitle2">
-                  Code: @item.Code
-                </MudText>
+	    <MudGrid>
+		    @if (_mobileStations is null)
+		    {
+			    <MudItem xs="12">
+				    <div>
+					    <MudProgressCircular Indeterminate="true" />
+				    </div>
+			    </MudItem>
+		    }
+		    else if (!_mobileStations.Any())
+		    {
+			    <MudItem xs="12">
+				    <MudText>Geen meetstations</MudText>
+			    </MudItem>
+		    }
+		    else
+		    {
+			    @foreach (var item in _mobileStations)
+			    {
+				    <MudItem xs="12">
+					    @* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
+					    <MudCard
+						    Elevation="2"
+						    Style="border-radius:8px; background:white; cursor:pointer; margin: 0.7rem;"
+					    >
+						    <MudText Style="margin-left:0.5rem; margin-top:1rem; margin-bottom:1rem;" Typo="Typo.subtitle2">
+							    Code: @item.Code
+						    </MudText>
 
-                <MudText Style="margin:0.5rem;" Typo="Typo.subtitle2">
-                  Status: @TranslateStatus(item.Status)
-                </MudText>
+						    <MudText Style="margin:0.5rem;" Typo="Typo.subtitle2">
+							    Status: @TranslateStatus(item.Status)
+						    </MudText>
 
-                <MudText Style="margin:0.5rem;" Typo="Typo.caption">
-                  Geïnstalleerd: @item.InstalledAt.ToString("dd/MM/yyyy")
-                </MudText>
+						    <MudText Style="margin:0.5rem;" Typo="Typo.caption">
+							    Geïnstalleerd: @item.InstalledAt.ToString("dd/MM/yyyy")
+						    </MudText>
 
-                <MudText Style="margin:0.5rem;" Typo="Typo.caption">
-                  Verwijderd: @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
-                </MudText>
+						    <MudText Style="margin:0.5rem;" Typo="Typo.caption">
+							    Verwijderd: @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
+						    </MudText>
 
-                <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-                  Locatie: @item.Location
-                </MudText>
+						    <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
+							    Locatie: @item.Location
+						    </MudText>
 
-                <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-                  Gemeente: @item.City
-                </MudText>
+						    <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
+							    Gemeente: @item.City
+						    </MudText>
 
-                <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-                  Projecten: @item.ProjectsCount
-                </MudText>
+						    <MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
+							    Projecten: @item.ProjectsCount
+						    </MudText>
 
-                <MudCardActions>
-                  <MudSpacer />
-                </MudCardActions>
-              </MudCard>
-            </MudItem>
-          }
-        }
-      </MudGrid>
+						    <MudCardActions>
+							    <MudSpacer />
+						    </MudCardActions>
+					    </MudCard>
+				    </MudItem>
+			    }
+		    }
+	    </MudGrid>
     </MudHidden>
-  </MudPaper>
-</MudPaper>
-
-<Style>
-.gridhead, .mud-table thead ,
-.gridhead thead{
-  background-color: #126B8D;
-}
-.gridhead, .mud-table thead th ,
-.gridhead thead th{
-  color: white !important;
-}
-</Style>
+    </MudPaper>
