@@ -53,7 +53,7 @@ public partial class Edit {
 
 		// set header
 		HeaderService.Set(
-			"Detail",
+			"Bewerk",
 			Icons.Material.Filled.ArrowBack,
 			() => {
 				Navigation.NavigateTo("/projects/");
