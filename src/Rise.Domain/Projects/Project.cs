@@ -69,7 +69,7 @@ public class Project : Entity {
 		
 		// Create history object using the old values
 		
-		ValidityRange validityRange = new(UpdatedAt, DateTime.Now);
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
 		_projectHistories.Add(projectHistory);
 

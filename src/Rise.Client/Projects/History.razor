@@ -17,7 +17,9 @@ else {
                OnClick="@(() => displayTable = !displayTable)">
         @(displayTable ? "Tijdslijn" : "Tabel")
     </MudButton>
-
+	
+    @* TODO: Switch to simple table + current values *@
+    
     @if (displayTable)
     {
 	    <MudDataGrid T="ProjectHistoryDto.Index"
