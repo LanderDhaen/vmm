@@ -108,4 +108,12 @@ public partial class Index {
 			_ => raw
 		};
 	}
+
+	private void NavigateToProject(object? id) {
+		if (id is null) {
+			return;
+		}
+
+		NavigationManager.NavigateTo($"/stations/{id}");
+	}
 }
