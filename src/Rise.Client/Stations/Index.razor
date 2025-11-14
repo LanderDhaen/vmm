@@ -4,7 +4,8 @@
 
 <PageTitle>Stations</PageTitle>
 
-<MudPaper Elevation="0" Class="gap-4 px-8">
+<MudContainer>
+	@* <MudPaper Elevation="0" Class="gap-4 px-8"> *@
 	<ToolBar/>
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDataGrid T="MeasurementStationDto.Index"
@@ -60,44 +61,36 @@
 						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
 						<MudCard
 							Elevation="2"
-							Style="border-radius:8px; background:white; cursor:pointer; margin: 0.7rem;"
+							Style="border-radius: 8px"
 							@onclick="() => NavigateToStation(item.Id)">
-							<MudText Style="margin-left:0.5rem; margin-top:1rem; margin-bottom:1rem;"
-							         Typo="Typo.subtitle2">
-								Code: @item.Code
-							</MudText>
-
-							<MudText Style="margin:0.5rem;" Typo="Typo.subtitle2">
-								Status: @TranslateStatus(item.Status)
-							</MudText>
-
-							<MudText Style="margin:0.5rem;" Typo="Typo.caption">
-								Geïnstalleerd: @item.InstalledAt.ToString("dd/MM/yyyy")
-							</MudText>
-
-							<MudText Style="margin:0.5rem;" Typo="Typo.caption">
-								Verwijderd: @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
-							</MudText>
-
-							<MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-								Locatie: @item.Location
-							</MudText>
-
-							<MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-								Gemeente: @item.City
-							</MudText>
-
-							<MudText Style="margin:0.5rem; white-space:normal;" Typo="Typo.caption">
-								Projecten: @item.ProjectsCount
-							</MudText>
-
-							<MudCardActions>
-								<MudSpacer/>
-							</MudCardActions>
+							<MudCardHeader Class="d-flex">
+								<CardHeaderContent>
+									<MudText Typo="Typo.subtitle1" Style="font-weight: bold"
+									         Color="Color.Primary">@item.Code</MudText>
+									<MudText Typo="Typo.h6">@TranslateStatus(item.Status)</MudText>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent Class="d-flex flex-column gap-1">
+								<MudText Typo="Typo.caption">
+									<b>Geïnstaleerd</b> @item.InstalledAt.ToString("dd/MM/yyyy")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Verwijderd</b> @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Locatie:</b> @item.Location
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Gemeente:</b> @item.City
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Projecten:</b>@item.ProjectsCount</MudText>
+							</MudCardContent>
 						</MudCard>
 					</MudItem>
 				}
 			}
 		</MudGrid>
 	</MudHidden>
-</MudPaper>
+	@* </MudPaper> *@
+</MudContainer>
