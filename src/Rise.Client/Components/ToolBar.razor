@@ -1,9 +1,61 @@
-<!-- Implement searching, filtering, sorting & actions in ToolBarContent (all with sidebar from the right & drawer from the bottom on mobile -->
-<!-- Sorting can also be implemented on columnheader when on desktop -->
+@namespace Rise.Client.Layout
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
 
-<MudText Typo="Typo.h6">Zoekbalk</MudText>
-<MudSpacer/>
-<MudButton Href="/projects/create" Variant="Variant.Filled" Color="Color.Primary">Project toevoegen</MudButton>
-<MudText Class="pr-2">Filters</MudText>
-<MudText Class="pr-2">Sorteren</MudText>
-<MudText>Acties</MudText>
+<!--
+  ToolBar.razor
+  -------------
+  Top toolbar UI. On smaller screens it shows icons; on larger screens it shows
+  labeled buttons. The important part for ActionsDrawer is the "Acties" / MoreHoriz
+  button which calls OpenActionsDrawer(). The drawer component is included at the
+  bottom and is bound to the private _actionsDrawerOpen field using @bind-Open.
+-->
+
+<MudPaper Direction="Row" Spacing="2" Style="box-shadow: none; border: none;">
+  <MudHidden Breakpoint="Breakpoint.SmAndDown">
+    <MudStack Direction="Row" Spacing="2">
+      <!-- Left: Search field (keeps same flex sizing as before) -->
+      <MudPaper  Elevation="0" Square="true" Class="d-flex flex-grow-1 gap-4 mt-16 mb-16" Height="30px" Style="background: transparent;">
+        <MudTextField T="string" Label="Zoek" Variant="Variant.Filled"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Inherit"
+                      Style="white-space:nowrap; background: transparent;" Width="3px" Height="30px" Elevation="0"/>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ViewColumn" Color="Color.Primary" Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0" >Kolommen</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0" >Filteren</MudButton>
+        <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0"  />
+
+        @* call the parent callback with the requested anchor *@
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.MoreHoriz"
+                   Color="Color.Primary"
+                   Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0"
+                   OnClick="@OpenActionsDrawer">
+          Acties
+        </MudButton>
+      </MudPaper>
+    </MudStack>
+  </MudHidden>
+
+  <MudHidden Breakpoint="Breakpoint.MdAndUp">
+    <MudStack Direction="Row" Spacing="2">
+      <!-- Left: Search field (mobile sizing) -->
+      <MudPaper Elevation="0" Square="true" Class="d-flex flex-grow-1 gap-4 mt-16 mb-16" Height="30px" Style="background: transparent;">
+        <MudTextField T="string" Label="Zoek" Variant="Variant.Filled"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Inherit"
+                      Style="white-space:nowrap;background: transparent;" Width="3px" Height="30px" Elevation="0" />
+                              <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha" Color="Color.Primary" />
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt" Color="Color.Primary" Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0" />
+        <MudDivider Vertical="true" FlexItem="true" Color="Color.Primary" Style="height:36px; margin:0 0.25rem;" />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
+                       Color="Color.Primary"
+                       OnClick="@OpenActionsDrawer"
+                       Style="white-space:nowrap;" Width="3px" Height="30px" Elevation="0" />
+      </MudPaper>
+    </MudStack>
+  </MudHidden>
+</MudPaper>
+
+@* Use two-way binding (@bind-Open) so the parent (`ToolBar`) and the `ActionsDrawer`
+   are automatically kept in sync without needing a separate OnClose callback. *@
+<Rise.Client.Layout.ActionsDrawer @bind-Open="_actionsDrawerOpen" />

@@ -17,13 +17,15 @@ using Rise.Shared.Locations;
 using Rise.Shared.Networks;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
+
+using Serilog;
 
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 	builder.RootComponents.Add<App>("#app");
 	builder.RootComponents.Add<HeadOutlet>("head::after");
-
 
 	Log.Logger = new LoggerConfiguration()
 		.MinimumLevel.Information()
@@ -38,7 +40,7 @@ try {
 	// set up authorization
 	builder.Services.AddAuthorizationCore();
 
-	// setup mud blazor
+	// setup MudBlazor
 	builder.Services.AddMudServices(config => {
 		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
@@ -60,23 +62,27 @@ try {
 
 	builder.Services.AddHttpClient<IProductService, ProductService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	});
+	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<IProjectService, ProjectService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	});
+	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<ILocationService, LocationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	});
+	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<INetworkService, NetworkService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	});
+	}).AddHttpMessageHandler<CookieHandler>();
+
+	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	});
+	}).AddHttpMessageHandler<CookieHandler>();
 
 	await builder.Build().RunAsync();
 } catch (Exception ex) {
