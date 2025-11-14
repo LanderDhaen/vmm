@@ -5,7 +5,6 @@ using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
-using Rise.Shared.Identity;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 

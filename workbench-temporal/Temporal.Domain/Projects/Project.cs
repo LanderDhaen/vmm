@@ -1,17 +1,10 @@
-using Temporal.Domain.Locations;
-
 namespace Temporal.Domain.Projects;
 
 /// <summary>
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-	public string Name { get; private set; }
-	public string Code { get; private set; }
-	public DateRange DateRange { get; private set; } = default!;
-
 	private readonly List<ProjectHistory> _projectHistories = [];
-	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -25,8 +18,12 @@ public class Project : Entity {
 		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
 	}
 
-	public void EditDateRange(DateRange dateRange) {
+	public string Name { get; private set; }
+	public string Code { get; private set; }
+	public DateRange DateRange { get; private set; } = default!;
+	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
 
+	public void EditDateRange(DateRange dateRange) {
 		// Check if the values are the same as the old values
 		// Also split it up into functions and only track what's really important like changing the enddate or location or status
 
@@ -44,22 +41,22 @@ public class Project : Entity {
 		// Assign the new values
 
 		DateRange = dateRange;
-
 	}
 }
 
 public class ProjectHistory : HistoryEntity {
-	public DateRange DateRange { get; init; }
-
 	/// <summary>
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private ProjectHistory() {
 	}
+
 	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
 		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
 		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
+
+	public DateRange DateRange { get; init; }
 
 	public override string ToString() {
 		return $"Start: {DateRange.StartDate}, Einde: {DateRange.EndDate} " + base.ToString();

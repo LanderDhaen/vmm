@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace Rise.Shared.Stations;
 
 public static partial class MeasurementStationRequest {
