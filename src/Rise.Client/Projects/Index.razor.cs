@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -11,18 +6,20 @@ using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
-using Serilog;
-
 namespace Rise.Client.Projects;
 
 public partial class Index {
+	// Mobile list state (without separate page/pageSize fields)
+	private List<ProjectDto.Index>? _mobileItems;
+	private int _mobileTotal;
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 
-	protected override void OnInitialized() {
-		// set breadcrumbs
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", null, true)
@@ -31,21 +28,12 @@ public partial class Index {
 		HeaderService.Set("Projecten");
 	}
 
-	// Mobile list state (without separate page/pageSize fields)
-	private List<ProjectDto.Index>? _mobileItems;
-	private int _mobileTotal;
-
-	protected override async Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
-		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
-	}
-
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		// Use centralized fetch to avoid duplicating error handling
 		int skip = state.Page * state.PageSize;
 		int take = state.PageSize;
 		// OrderBy can be adapted to use state sorting if available; keep "Id" to match previous behavior
-		var result = await FetchProjectsAsync(skip, take, "Id");
+		Result<ProjectResponse.Index>? result = await FetchProjectsAsync(skip, take, "Id");
 
 		if (result?.Value is not null) {
 			return new GridData<ProjectDto.Index> {
@@ -65,27 +53,29 @@ public partial class Index {
 		NavigationManager.NavigateTo($"/projects/{args.Item.Id}");
 	}
 
-	private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy)
-		=> new() {
+	private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy) {
+		return new QueryRequest.SkipTake {
 			Skip = skip,
 			Take = take,
-			OrderBy = orderBy,
+			OrderBy = orderBy
 		};
+	}
 
 	// --- Centralized fetch used by both grid and mobile -----------------
 
 	/// <summary>
-	/// Centralized fetch that builds the request, calls the service and handles logging/errors.
-	/// Returns null on exception so callers can handle fallback behaviour.
+	///     Centralized fetch that builds the request, calls the service and handles logging/errors.
+	///     Returns null on exception so callers can handle fallback behaviour.
 	/// </summary>
 	private async Task<Result<ProjectResponse.Index>?> FetchProjectsAsync(int skip, int take, string? orderBy = null) {
 		try {
-			var req = BuildRequest(skip, take, orderBy);
-			var result = await ProjectService.GetIndexAsync(req);
+			QueryRequest.SkipTake req = BuildRequest(skip, take, orderBy);
+			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(req);
 			return result;
 		} catch (Exception ex) {
 			// Single place for logging errors for all callers
-			Log.Error(ex, "FetchProjectsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy})", skip, take, orderBy);
+			Log.Error(ex, "FetchProjectsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy})", skip, take,
+				orderBy);
 			return null;
 		}
 	}
@@ -94,7 +84,7 @@ public partial class Index {
 
 	// Default parameter values make fields unnecessary; call without parameters for page 0 / size 10
 	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
-		var response = await FetchProjectsAsync(page * pageSize, pageSize, orderBy);
+		Result<ProjectResponse.Index>? response = await FetchProjectsAsync(page * pageSize, pageSize, orderBy);
 
 		if (response?.Value is not null) {
 			_mobileItems = response.Value.Projects?.ToList() ?? new List<ProjectDto.Index>();
@@ -110,7 +100,10 @@ public partial class Index {
 
 	// NAVIGATION FOR CARDS (click/tap)
 	private void NavigateToProject(object? id) {
-		if (id is null) return;
+		if (id is null) {
+			return;
+		}
+
 		NavigationManager.NavigateTo($"/projects/{id}");
 	}
 }

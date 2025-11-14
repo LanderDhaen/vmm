@@ -1,11 +1,10 @@
-using System.Linq;
-
-using FluentValidation;
+using FluentValidation.Results;
 
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.Projects;
@@ -16,24 +15,26 @@ using Severity = MudBlazor.Severity;
 namespace Rise.Client.Stations;
 
 public partial class Edit {
-	[Parameter] public Guid StationId { get; set; }
-
-	private MeasurementStationRequest.Edit? Model;
+	private readonly string[] _statuses = ["Actief", "Inactief"];
 	private readonly MeasurementStationRequest.Edit.Validator validator = new();
-	private MudForm form = default!;
 
 	private IEnumerable<LocationDto.Index> _locations = Array.Empty<LocationDto.Index>();
 	private IEnumerable<ProjectDto.Index> _projects = Array.Empty<ProjectDto.Index>();
+	private MudForm form = default!;
 
-	private readonly string[] _statuses = ["Actief", "Inactief"];
+	private MeasurementStationRequest.Edit? Model;
+	[Parameter] public Guid StationId { get; set; }
 
 	protected Func<object, string, IEnumerable<string>> FieldValidator =>
 		(model, propertyName) => {
-			if (model is not MeasurementStationRequest.Edit m) return Enumerable.Empty<string>();
-			var result = validator.Validate(m);
+			if (model is not MeasurementStationRequest.Edit m) {
+				return Enumerable.Empty<string>();
+			}
+
+			ValidationResult? result = validator.Validate(m);
 			return result.Errors
-						 .Where(e => e.PropertyName == propertyName)
-						 .Select(e => e.ErrorMessage);
+				.Where(e => e.PropertyName == propertyName)
+				.Select(e => e.ErrorMessage);
 		};
 
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
@@ -41,32 +42,35 @@ public partial class Edit {
 	[Inject] private ILocationService LocationService { get; set; } = default!;
 	[Inject] private IProjectService ProjectService { get; set; } = default!;
 	[Inject] private NavigationManager Nav { get; set; } = default!;
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		var locsResult = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
+		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
 		_locations = locsResult.Value.Locations;
 
-		var projResult = await ProjectService.GetIndexAsync(new QueryRequest.SkipTake { Skip = 0, Take = 1000 });
+		Result<ProjectResponse.Index> projResult =
+			await ProjectService.GetIndexAsync(new QueryRequest.SkipTake { Skip = 0, Take = 1000 });
 		_projects = projResult.Value.Projects;
 
-		var detail = await StationService.GetDetailAsync(StationId);
+		Result<MeasurementStationResponse.Detail> detail = await StationService.GetDetailAsync(StationId);
 
-		var linked = await StationService.GetProjectsAsync(StationId);
-		var preselectedProjectId = linked.IsSuccess && linked.Value.Any()
+		Result<List<ProjectDto.Index>> linked = await StationService.GetProjectsAsync(StationId);
+		Guid preselectedProjectId = linked.IsSuccess && linked.Value.Any()
 			? linked.Value.First().Id
 			: _projects.FirstOrDefault()?.Id ?? Guid.Empty;
 
-		var locationId = _locations
+		Guid locationId = _locations
 			.FirstOrDefault(l =>
 				string.Equals(l.Name, detail.Value.Station.Location, StringComparison.OrdinalIgnoreCase) &&
 				string.Equals(l.Address.City, detail.Value.Station.City, StringComparison.OrdinalIgnoreCase))
 			?.Id ?? _locations.FirstOrDefault()?.Id ?? Guid.Empty;
 
-		var status = detail.Value.Station.Status;
+		string status = detail.Value.Station.Status;
 		if (!_statuses.Contains(status, StringComparer.OrdinalIgnoreCase)) {
 			status = status.Equals("Active", StringComparison.OrdinalIgnoreCase) ? "Actief"
-				   : status.Equals("Inactive", StringComparison.OrdinalIgnoreCase) ? "Inactief"
-				   : "Actief";
+				: status.Equals("Inactive", StringComparison.OrdinalIgnoreCase) ? "Inactief"
+				: "Actief";
 		}
 
 		Model = new MeasurementStationRequest.Edit {
@@ -78,13 +82,30 @@ public partial class Edit {
 			LocationId = locationId,
 			ProjectId = preselectedProjectId
 		};
+
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Bewerk", $"/projects/{StationId}/edit", true)
+		);
+
+		// set header
+		HeaderService.Set(
+			"Detail",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/projects/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task EditStationAsync() {
 		await form.Validate();
 
 		if (form.IsValid && Model is not null) {
-			var result = await StationService.EditAsync(Model, CancellationToken.None);
+			Result result = await StationService.EditAsync(Model, CancellationToken.None);
 			if (result.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangepast!", Severity.Success);
 				await Task.Delay(1200);

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -19,6 +20,8 @@ public partial class Edit {
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Edit Model { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
@@ -41,6 +44,22 @@ public partial class Edit {
 				MeasurementNetworkId = project.Value.Project.MeasurementNetwork.Id
 			};
 		}
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Bewerk", $"/projects/{ProjectId}/edit", true)
+		);
+
+		// set header
+		HeaderService.Set(
+			"Detail",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/projects/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task EditProjectAsync() {

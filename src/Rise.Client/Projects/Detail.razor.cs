@@ -15,8 +15,6 @@ public partial class Detail {
 		"Historiek"
 	};
 
-	//===== Breadcrumbs =====
-	private List<BreadcrumbItem> _items = [];
 	// Drawer
 	private bool _open;
 
@@ -44,12 +42,6 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			_project = result.Value.Project;
-
-			_items = [
-				new BreadcrumbItem("Home", "#"),
-				new BreadcrumbItem("Projecten", "/projects"),
-				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
-			];
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(

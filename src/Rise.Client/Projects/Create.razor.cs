@@ -19,6 +19,7 @@ public partial class Create {
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 
 	private ProjectRequest.Create Model { get; } = new();
 
@@ -31,6 +32,13 @@ public partial class Create {
 
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		networks = result.Value.measurementsNetworks;
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Voeg toe", "/create", true)
+		);
+
 		HeaderService.Set(
 			"Voeg toe",
 			Icons.Material.Filled.ArrowBack,
