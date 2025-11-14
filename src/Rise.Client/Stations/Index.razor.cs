@@ -109,7 +109,7 @@ public partial class Index {
 		};
 	}
 
-	private void NavigateToProject(object? id) {
+	private void NavigateToStation(object? id) {
 		if (id is null) {
 			return;
 		}
