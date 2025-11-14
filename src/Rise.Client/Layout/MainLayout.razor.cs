@@ -10,7 +10,7 @@ public partial class MainLayout {
 			//AppbarBackground = Colors.Red.Default,
 			//TextPrimary = "#000",
 			TextSecondary = "#126B8D"
-		},
+		}
 
 		// LayoutProperties = new LayoutProperties()
 		// {

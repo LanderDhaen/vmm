@@ -6,7 +6,6 @@ namespace Rise.Domain.Projects;
 /// </summary>
 public class DateRange : ValueObject {
 	private DateRange() {
-
 	}
 
 	public DateRange(DateOnly startDate, DateOnly? endDate = null) {
@@ -22,9 +21,9 @@ public class DateRange : ValueObject {
 		EndDate = endDate;
 	}
 
-	public DateOnly StartDate { get; init; } = default!;
+	public DateOnly StartDate { get; init; }
 
-	public DateOnly? EndDate { get; init; } = default!;
+	public DateOnly? EndDate { get; init; }
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return StartDate;

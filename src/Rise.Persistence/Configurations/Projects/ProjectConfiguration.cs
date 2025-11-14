@@ -7,6 +7,7 @@ namespace Rise.Persistence.Configurations.Projects;
 
 /// <summary>
 ///     Specific configuration for <see cref="Project" />.
+///     See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.
 /// </summary>
 internal class ProjectConfiguration : EntityConfiguration<Project> {
 	public override void Configure(EntityTypeBuilder<Project> builder) {
@@ -20,13 +21,12 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 		builder.HasOne(x => x.MeasurementNetwork)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
+		builder.Property(x => x.Status).IsRequired();
 
 		// Constraints
-
 		builder.HasIndex(x => x.Code).IsUnique();
 
 
-		// See /// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.
 		// Other Project configuration here.
 	}
 }
