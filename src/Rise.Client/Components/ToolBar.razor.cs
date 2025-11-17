@@ -1,29 +1,35 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Rise.Client.Layout;
+namespace Rise.Client.Layout {
+	// Partial class for the ToolBar component (code-behind).
+	public partial class ToolBar : ComponentBase {
+		// Backing field for actions drawer only.
+		private bool _actionsDrawerOpen;
 
-// Partial class for the ToolBar component (code-behind).
-public partial class ToolBar : ComponentBase {
-	// Internal boolean bound to ActionsDrawer via @bind-Open.
-	// When this is true, the drawer opens. When false, it closes.
-	private bool _actionsDrawerOpen;
+		// Search and callbacks
+		[Parameter] public string Search { get; set; } = string.Empty;
+		[Parameter] public EventCallback<string> SearchChanged { get; set; }
+		[Parameter] public EventCallback OnColumnsClicked { get; set; }
+		[Parameter] public EventCallback OnFilterClicked { get; set; }
+		[Parameter] public EventCallback OnActionsClicked { get; set; }
 
-	// Search parameter with two-way binding support
-	[Parameter] public string Search { get; set; } = string.Empty;
-	[Parameter] public EventCallback<string> SearchChanged { get; set; }
+		// When toolbar wants to request the parent (page) to open the sort drawer, it invokes this.
+		[Parameter] public EventCallback OnOpenSortRequested { get; set; }
 
-	// These are callbacks the parent of ToolBar could pass in; not used directly by the drawer.
-	[Parameter] public EventCallback OnColumnsClicked { get; set; }
-	[Parameter] public EventCallback OnFilterClicked { get; set; }
-	[Parameter] public EventCallback OnActionsClicked { get; set; }
+		// Callback to inform the parent when the toolbar receives a sort selection (kept for compatibility).
+		[Parameter] public EventCallback<string> OnSortChanged { get; set; }
 
-	// Callback used by the drawer to notify the parent of sort changes (if implemented).
-	[Parameter] public EventCallback<string> OnSortChanged { get; set; }
+		// Open the actions drawer (called by Actions / More icon)
+		private async Task OpenActionsDrawer() {
+			_actionsDrawerOpen = true;
+			if (OnActionsClicked.HasDelegate)
+				await OnActionsClicked.InvokeAsync();
+		}
 
-	// Called from the toolbar UI when the user requests "Acties" / More actions.
-	// Setting this to true causes the bound ActionsDrawer's _open to become true,
-	// which causes the MudDrawer to display.
-	private void OpenActionsDrawer() {
-		_actionsDrawerOpen = true;
+		// Request parent to open the sort drawer (called by Sort icon)
+		private async Task RequestOpenSortDrawer() {
+			if (OnOpenSortRequested.HasDelegate)
+				await OnOpenSortRequested.InvokeAsync();
+		}
 	}
 }

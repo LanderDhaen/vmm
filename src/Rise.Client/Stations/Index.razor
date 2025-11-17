@@ -5,8 +5,8 @@
 <PageTitle>Stations</PageTitle>
 
 <MudContainer>
-	@* <MudPaper Elevation="0" Class="gap-4 px-8"> *@
-	<ToolBar/>
+	<ToolBar OnSortChanged="HandleSortChanged" OnOpenSortRequested="() => Open = true" />
+
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDataGrid T="MeasurementStationDto.Index"
 		             ServerData="GetStationsAsync"
@@ -14,19 +14,19 @@
 		             Striped="true"
 		             Hover="true"
 		             RowClick="OnRowClick"
-		>
+		             @ref="_grid">
 			<Columns>
-				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
+				<PropertyColumn Property="x => x.Code" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Code))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Status" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Status))" HeaderClass="mud-theme-primary">
 					<CellTemplate Context="row">
 						<span>@TranslateStatus(row.Item.Status)</span>
 					</CellTemplate>
 				</PropertyColumn>
-				<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.InstalledAt" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.InstalledAt))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.RemovedAt" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.RemovedAt))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Location" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Location))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.City" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.City))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.ProjectsCount" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.ProjectsCount))" HeaderClass="mud-theme-primary"/>
 			</Columns>
 
 			<PagerContent>
@@ -35,10 +35,52 @@
 		</MudDataGrid>
 	</MudHidden>
 
-	<!-- MOBILE: list with MudCard components (visible on xs and down).
-		 Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
+	<!-- MOBILE: list with MudCard components (visible on xs and down). Drawer lives here -->
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudGrid>
+    @if (Open)
+    {
+        <MudDrawer Variant="DrawerVariant.Temporary"
+                   Anchor="Anchor.Bottom"
+                   Elevation="8"
+                   Class="p-4"
+                   @bind-Open="Open"
+                   OverlayAutoClose="true">
+            <MudText Typo="Typo.h6" Class="mb-2">Sorteer-opties</MudText>
+
+            <MudDivider Class="mb-3"/>
+
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Selecteer kolom en richting</MudText>
+
+            @foreach (var col in Columns ?? Enumerable.Empty<(string Value, string Label)>())
+            {
+                <MudPaper Class="d-flex align-center justify-space-between px-3 py-2 mb-2" Elevation="0" Square="true">
+                    <MudText Class="d-flex align-center">@col.Label</MudText>
+
+                    <MudPaper Elevation="0" Square="true" Class="d-flex gap-2">
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="@GetButtonColor(col.Value, "asc")"
+                                   Size="Size.Small"
+                                   OnClick="@(async () => await ApplySortAndClose(col.Value, "asc"))">
+                            Oplopend
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="@GetButtonColor(col.Value, "desc")"
+                                   Size="Size.Small"
+                                   OnClick="@(async () => await ApplySortAndClose(col.Value, "desc"))">
+                            Aflopend
+                        </MudButton>
+                    </MudPaper>
+                </MudPaper>
+            }
+
+            <MudPaper Elevation="0" Square="true" Class="d-flex">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(async () => await ApplySortAndClose(string.Empty, string.Empty))">Reset</MudButton>
+            </MudPaper>
+        </MudDrawer>
+    }
+
+		<MudGrid Spacing="4">
 			@if (_mobileStations is null)
 			{
 				<MudItem xs="12">
@@ -58,33 +100,32 @@
 				@foreach (var item in _mobileStations)
 				{
 					<MudItem xs="12">
-						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
 						<MudCard
 							Elevation="2"
 							Style="border-radius: 8px"
 							@onclick="() => NavigateToStation(item.Id)">
 							<MudCardHeader Class="d-flex">
 								<CardHeaderContent>
-									<MudText Typo="Typo.subtitle1" Style="font-weight: bold"
-									         Color="Color.Primary">@item.Code</MudText>
+									<MudText Typo="Typo.subtitle1" Style="font-weight: bold" Color="Color.Primary">@item.Code</MudText>
 									<MudText Typo="Typo.h6">@TranslateStatus(item.Status)</MudText>
 								</CardHeaderContent>
 							</MudCardHeader>
 							<MudCardContent Class="d-flex flex-column gap-1">
 								<MudText Typo="Typo.caption">
-									<b>Geïnstaleerd</b> @item.InstalledAt.ToString("dd/MM/yyyy")
+									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.InstalledAt)):</b> @item.InstalledAt.ToString("dd/MM/yyyy")
 								</MudText>
 								<MudText Typo="Typo.caption">
-									<b>Verwijderd</b> @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
+									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.RemovedAt)):</b> @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
 								</MudText>
 								<MudText Typo="Typo.caption">
-									<b>Locatie:</b> @item.Location
+									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.Location)):</b> @item.Location
 								</MudText>
 								<MudText Typo="Typo.caption">
-									<b>Gemeente:</b> @item.City
+									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.City)):</b> @item.City
 								</MudText>
 								<MudText Typo="Typo.caption">
-									<b>Projecten:</b>@item.ProjectsCount</MudText>
+									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.ProjectsCount)):</b> @item.ProjectsCount
+								</MudText>
 							</MudCardContent>
 						</MudCard>
 					</MudItem>
@@ -92,5 +133,4 @@
 			}
 		</MudGrid>
 	</MudHidden>
-	@* </MudPaper> *@
 </MudContainer>
