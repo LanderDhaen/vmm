@@ -86,7 +86,7 @@ public partial class Edit {
 
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
-			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Meetstations", "/stations"),
 			new BreadcrumbItem("Bewerk", $"/stations/edit/{StationId}", true)
 		);
 
@@ -95,7 +95,7 @@ public partial class Edit {
 			"Bewerk",
 			Icons.Material.Filled.ArrowBack,
 			() => {
-				Navigation.NavigateTo("/projects/");
+				Navigation.NavigateTo("/stations/");
 				return Task.CompletedTask;
 			}
 		);
