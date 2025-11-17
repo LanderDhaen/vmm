@@ -1,14 +1,36 @@
-﻿<CascadingAuthenticationState>
-	<Router AppAssembly="typeof(App).Assembly">
+﻿@inject NavigationManager Navigation
+
+<CascadingAuthenticationState>
+	<Router AppAssembly="@typeof(App).Assembly">
 		<Found Context="routeData">
-			<AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)"/>
-			<FocusOnNavigate RouteData="routeData" Selector="h1"/>
+			<AuthorizeRouteView RouteData="@routeData"
+			                    DefaultLayout="@typeof(MainLayout)"
+			                    NotAuthorized="@(_ => RedirectToLogin())" />
+			<FocusOnNavigate RouteData="@routeData" Selector="h1" />
 		</Found>
+
 		<NotFound>
-			<PageTitle>Not found</PageTitle>
-			<LayoutView Layout="typeof(MainLayout)">
-				<p role="alert">Sorry, there's nothing at this address.</p>
+			<PageTitle>Not Found</PageTitle>
+			<LayoutView Layout="@typeof(MainLayout)">
+				<MudContainer MaxWidth="MaxWidth.Small" Class="mt-6">
+					<MudPaper Elevation="4" Class="pa-6">
+						<MudText Typo="Typo.h4">Pagina niet gevonden</MudText>
+						<MudText Typo="Typo.body1" Class="mb-4">
+							Sorry, er is niets op dit adres.
+						</MudText>
+						<MudButton Variant="Variant.Filled"
+						           Color="Color.Primary"
+						           OnClick="@(() => Navigation.NavigateTo("/"))">
+							Terug naar startpagina
+						</MudButton>
+					</MudPaper>
+				</MudContainer>
 			</LayoutView>
 		</NotFound>
 	</Router>
 </CascadingAuthenticationState>
+
+@code {
+	private RenderFragment RedirectToLogin()
+		=> builder => Navigation.NavigateTo("/login", true);
+}
