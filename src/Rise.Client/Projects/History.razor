@@ -22,23 +22,22 @@ else {
     
     @if (displayTable)
     {
-	    <MudDataGrid T="ProjectHistoryDto.Index"
-	                 Items="_project.ProjectHistories"
-	                 RowsPerPage="10"
-	                 Striped="true"
-	                 SortMode="SortMode.None">
-
-		    <Columns>
-			    <PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
-			    <PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
-			    <PropertyColumn Property="x => x.ValidTo" Title="Geldig van" HeaderClass="mud-theme-primary"/>
-			    <PropertyColumn Property="x => x.ValidFrom" Title="Geldig tot" HeaderClass="mud-theme-primary"/>
-		    </Columns>
-
-		    <PagerContent>
-			    <Pagination T="ProjectHistoryDto.Index"/>
-		    </PagerContent>
-	    </MudDataGrid>
+	    <MudTable T="ProjectHistoryDto.Index" Items="_project.ProjectHistories" CustomHeader="true">
+		    <HeaderContent>
+			    <MudTHeadRow>
+				    <MudTh Class="mud-theme-primary">Geldig van</MudTh>
+				    <MudTh Class="mud-theme-primary">Geldig tot</MudTh>
+				    <MudTh Class="mud-theme-primary">Startdatum</MudTh>
+				    <MudTh Class="mud-theme-primary">Einddatum</MudTh>
+			    </MudTHeadRow>
+		    </HeaderContent>
+		    <RowTemplate>
+			    <MudTd DataLabel="Geldig van">@context.ValidFrom</MudTd>
+			    <MudTd DataLabel="Geldig tot">@context.ValidTo</MudTd>
+			    <MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
+			    <MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
+		    </RowTemplate>
+	    </MudTable>
     } else {
 	    <MudTimeline>
 		    <MudTimelineItem Color="Color.Primary">
