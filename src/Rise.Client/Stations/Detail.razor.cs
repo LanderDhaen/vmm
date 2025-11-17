@@ -51,7 +51,7 @@ public partial class Detail {
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
-			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Meetstations", "/stations"),
 			new BreadcrumbItem($"{_station.Code}", null, true)
 		);
 
@@ -64,10 +64,6 @@ public partial class Detail {
 				return Task.CompletedTask;
 			}
 		);
-	}
-
-	private void NavigateToStations() {
-		Navigation.NavigateTo("/stations/");
 	}
 
 	private Task<GridData<ProjectDto.Index>> GetProjectsGridAsync(GridState<ProjectDto.Index> state) {
