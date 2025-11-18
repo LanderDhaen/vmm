@@ -29,7 +29,7 @@ public partial class Detail {
 
 	[Parameter] public Guid StationId { get; set; }
 
-	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required IMeasurementStationService StationService { get; set; }
 
 	private async Task SetTabAsync(int index) {
 		_selectedTab = index;

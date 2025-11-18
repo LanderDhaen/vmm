@@ -16,6 +16,7 @@ using Rise.Shared.Locations;
 using Rise.Shared.Networks;
 using Rise.Shared.Products;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
 
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -69,7 +70,7 @@ try {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
 
-	builder.Services.AddHttpClient<StationService>(client => {
+	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	});
 

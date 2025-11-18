@@ -8,7 +8,7 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Index {
-	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(

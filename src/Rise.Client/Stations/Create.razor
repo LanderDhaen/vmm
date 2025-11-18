@@ -1,0 +1,120 @@
+@page "/stations/create"
+
+<MudText Typo="Typo.h3">Meetstation toevoegen</MudText>
+<MudCard>
+	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
+		<MudCardContent>
+			<MudGrid>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
+					<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Installatie datum <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
+					               DateFormat="dd/MM/yyyy"
+					               Variant="Variant.Outlined"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					@if (_locations != null)
+					{
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudAutocomplete T="Guid?" SearchFunc="Search"
+						                 ToStringFunc="id => _locations.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
+						                 @bind-Value="Model.LocationId"
+						                 @bind-Value:after="OnLocationSelected"
+						                 @bind-Text="_searchText"
+						                 For="@(() => Model.LocationId)"
+						                 Placeholder="Selecteer een locatie: " Clearable="true"
+						                 Variant="Variant.Outlined">
+							<NoItemsTemplate>
+								<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddNewLocation">Nieuwe locatie toevoegen</MudButton>
+							</NoItemsTemplate>
+						</MudAutocomplete>
+					}
+				</MudItem>
+
+				@*Location*@
+				<MudItem xs="12">
+					<MudExpansionPanels>
+						<MudExpansionPanel Text="Locatie details" Expanded="@(Model.IsNewLocation || Model.LocationId.HasValue)">
+							<MudGrid>
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Naam</MudText>
+									<MudTextField @bind-Value="Model.Location!.Name" For="@(() => Model.Location!.Name)"
+									              Counter="50" MaxLength="50" Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Adres 1 <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+									<MudTextField @bind-Value="Model.Location!.Addressline1"
+									              For="@(() => Model.Location!.Addressline1)" Counter="250"
+									              MaxLength="250" Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Adres 1"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Adres 2 <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+									<MudTextField @bind-Value="Model.Location!.Addressline2"
+									              For="@(() => Model.Location!.Addressline2)" Counter="250"
+									              MaxLength="250" Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Adres 2"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Stad</MudText>
+									<MudTextField @bind-Value="Model.Location!.City" For="@(() => Model.Location!.City)"
+									              Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Stad"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Postcode</MudText>
+									<MudTextField @bind-Value="Model.Location!.PostalCode"
+									              For="@(() => Model.Location!.PostalCode)"
+									              Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Postcode"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">Landcode</MudText>
+									<MudTextField @bind-Value="Model.Location!.CountryIso"
+									              For="@(() => Model.Location!.CountryIso)" MaxLength="2"
+									              Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined" Placeholder="Landcode"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">X-coordinaat</MudText>
+									<MudTextField @bind-Value="Model.Location!.X" For="@(() => Model.Location!.X)"
+									              Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined"
+									              Placeholder="X-coordinaat"/>
+								</MudItem>
+
+								<MudItem xs="12" sm="6">
+									<MudText Typo="Typo.subtitle2">X-coordinaat</MudText>
+									<MudTextField @bind-Value="Model.Location!.Y" For="@(() => Model.Location!.Y)"
+									              Disabled="!Model.IsNewLocation"
+									              Immediate="true" Variant="Variant.Outlined"
+									              Placeholder="Y-coordinaat"/>
+								</MudItem>
+							</MudGrid>
+						</MudExpansionPanel>
+					</MudExpansionPanels>
+				</MudItem>
+
+			</MudGrid>
+		</MudCardContent>
+	</MudForm>
+	<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateProjectAsync">Opslaan
+		</MudButton>
+		<MudButton Href="/stations" Variant="Variant.Outlined" Color="Color.Primary">Annuleren
+		</MudButton>
+	</MudCardActions>
+</MudCard>

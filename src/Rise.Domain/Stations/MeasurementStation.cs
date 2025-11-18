@@ -1,50 +1,43 @@
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
-using Rise.Domain.Stations.ValueObjects;
 
 namespace Rise.Domain.Stations;
 
 public class MeasurementStation : Entity {
+	private string _code = String.Empty;
+	private Location _location = default!;
+	private Installation _installation = default!;
+	
 	private MeasurementStation() { }
 
-	public MeasurementStation(
-		string code,
-		//string status, 
-		Location location,
-		Installation installation,
-		IEnumerable<Project> projects
-	) {
+	public MeasurementStation(string code, Location location, Installation installation) {
 		Code = code;
-		//Status = status;
-
-		Location = location ?? throw new ArgumentNullException(nameof(location));
-		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
-		if (projects is null) {
-			throw new ArgumentNullException(nameof(projects));
-		}
-
-		foreach (Project p in projects) {
-			Projects.Add(p);
-		}
+		Location = location;
+		Installation = installation;
 	}
 
-	public string Code { get; private set; } = default!;
-	//public string Status { get; private set; } = default!;
+	public string Code {
+		get => _code; 
+		private set => _code = Guard.Against.NullOrEmpty(value);
+	}
 
-	public Location Location { get; private set; } = default!;
+	public Location Location {
+		get => _location; 
+		private set => _location = Guard.Against.Null(value);
+	}
 
+	public Installation Installation {
+		get => _installation; 
+		private set => _installation = Guard.Against.Null(value);
+	}
+	
 	public ICollection<Project> Projects { get; } = new List<Project>();
-	public Installation Installation { get; private set; } = default!;
-
-	/*public void UpdateStatus(string status) {
-		Status = status;
-	}*/
 
 	public void MoveTo(Location newLocation) {
-		Location = newLocation ?? throw new ArgumentNullException(nameof(newLocation));
+		Location = newLocation;
 	}
 
 	public void UpdateInstallation(Installation installation) {
-		Installation = installation ?? throw new ArgumentNullException(nameof(installation));
+		Installation = installation;
 	}
 }

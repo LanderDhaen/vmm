@@ -1,11 +1,8 @@
-using System.Linq;
-
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
@@ -107,24 +104,32 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	}
 
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ct = default) {
-		var location = await dbContext.Set<Location>()
-			.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
-		if (location is null)
-			return Result.NotFound();
-
-		var project = await dbContext.Set<Project>()
-			.SingleOrDefaultAsync(p => p.Id == request.ProjectId, ct);
-		if (project is null)
-			return Result.NotFound();
+		Location location;
+		if (request.IsNewLocation) {
+			location = new Location(
+				request.Location!.Name,
+				new Address(
+					request.Location.Addressline1,
+					request.Location.Addressline2,
+					request.Location.City,
+					request.Location.PostalCode,
+					request.Location.CountryIso
+				),
+				new Coordinate(request.Location.X, request.Location.Y)
+			);
+		} else {
+			location = await dbContext.Set<Location>()
+				.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
+			if (location is null)
+				return Result.NotFound("Locatie niet gevonden.");
+		}
 
 		var installedAt = request.InstalledAt ?? DateTime.UtcNow;
 
 		var station = new MeasurementStation(
-			code: request.Code,
-			//status: request.Status,
-			location: location,
-			installation: new Installation(installedAt),
-			projects: new[] { project }
+			request.Code,
+			location,
+			new Installation(installedAt)
 		);
 
 		dbContext.MeasurementStations.Add(station);

@@ -6,7 +6,6 @@ using Rise.Domain.Networks;
 using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 
 namespace Rise.Persistence;
 
@@ -165,7 +164,8 @@ public class DbSeeder(
 			new Address("", "", "Antwerpen", "2000"),
 			new Address("Veldstraat 78", null, "Gent", "9000"),
 			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
-			new Address(null, null, "Breda", "4811", "NL")
+			new Address(null, null, "Breda", "4811", "NL"),
+			new Address("Kustlaan 45", null, "Oostende", "8400")
 		};
 
 		List<Coordinate> coordinates = new() {
@@ -183,7 +183,7 @@ public class DbSeeder(
 			new Location("Watersportbaan", addresses[2], coordinates[2]),
 			new Location("Paleisvijver", addresses[3], coordinates[3]),
 			new Location("Stadsgracht", addresses[4], coordinates[4]),
-			new Location("Zee", null, coordinates[5])
+			new Location("Zee", addresses[5], coordinates[5])
 		};
 
 		dbContext.Locations.AddRange(locations);
@@ -246,8 +246,8 @@ public class DbSeeder(
 			code: "STN-001",
 			//status: "Active",
 			location: locations[l0],
-			installation: new Installation(DateTime.UtcNow.AddMonths(-6)),
-			projects: new[] { projects[p0] }
+			installation: new Installation(DateTime.UtcNow.AddMonths(-6))
+			//projects: new[] { projects[p0] }
 		);
 
 		var station2 = new MeasurementStation(
@@ -257,8 +257,8 @@ public class DbSeeder(
 			installation: new Installation(
 				installedAt: DateTime.UtcNow.AddYears(-1),
 				removedAt: DateTime.UtcNow.AddDays(-30)
-			),
-			projects: new[] { projects[p1], projects[p0] }
+			)
+			//projects: new[] { projects[p1], projects[p0] }
 		);
 
 		dbContext.MeasurementStations.AddRange(station1, station2);

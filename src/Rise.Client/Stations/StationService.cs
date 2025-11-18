@@ -6,7 +6,7 @@ using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
-public class StationService(HttpClient httpClient) {
+public class StationService(HttpClient httpClient) : IMeasurementStationService{
 	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request, CancellationToken ctx = default)
 		=> (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.Index>>($"/api/stations?{request.AsQuery()}", ctx))!;
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(Guid stationId, CancellationToken ctx = default)
@@ -17,4 +17,12 @@ public class StationService(HttpClient httpClient) {
 		CancellationToken ctx = default)
 		=> (await httpClient.GetFromJsonAsync<Result<List<ProjectDto.Index>>>(
 			$"/api/stations/{stationId}/projects", ctx))!;
+	
+	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/stations", request, ctx);
+		Result<MeasurementStationResponse.Create>? result =
+			await response.Content.ReadFromJsonAsync<Result<MeasurementStationResponse.Create>>(ctx);
+		return result!;
+	}
 }
