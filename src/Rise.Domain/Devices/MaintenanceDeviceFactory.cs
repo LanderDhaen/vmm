@@ -1,31 +1,26 @@
 namespace Rise.Domain.Devices;
 
+using System;
+using System.Collections.Generic;
+
 public class MaintenanceDeviceFactory : IMaintenanceDeviceFactory {
-	private readonly Dictionary<MaintenanceDeviceType, Func<DeviceSpecification, IMaintenanceDevice>> _creators = new();
-
 	public MaintenanceDeviceFactory() {
-		// register known types
-		Register(MaintenanceDeviceType.Logger, spec => new Logger(spec));
-		Register(MaintenanceDeviceType.Probe, spec => new Probe(spec));
-		Register(MaintenanceDeviceType.Sim, spec => new Sim(spec, "", ""));
-		Register(MaintenanceDeviceType.PowerSupply,
-			spec => new PowerSupply(spec, 0m, 0m));
-		// other types can be registered by calling Register
+		// nothing to register anymore; constructors are explicit
 	}
 
-	public IMaintenanceDevice Create(DeviceSpecification spec) {
-		if (spec is null) {
-			throw new ArgumentNullException(nameof(spec));
-		}
-
-		if (!_creators.TryGetValue(spec.DeviceType, out Func<DeviceSpecification, IMaintenanceDevice>? creator)) {
-			throw new ArgumentException($"No creator registered for device type {spec.DeviceType}", nameof(spec));
-		}
-
-		return creator(spec);
+	public IMaintenanceDevice CreateLogger(Guid measurementStationId, string name, string? serialNumber = null) {
+		return new Logger(measurementStationId, name, serialNumber);
 	}
 
-	public void Register(MaintenanceDeviceType type, Func<DeviceSpecification, IMaintenanceDevice> creator) {
-		_creators[type] = creator ?? throw new ArgumentNullException(nameof(creator));
+	public IMaintenanceDevice CreateProbe(Guid measurementStationId, string name, IEnumerable<string>? measurementTypes = null, string? serialNumber = null) {
+		return new Probe(measurementStationId, name, measurementTypes, serialNumber);
+	}
+
+	public IMaintenanceDevice CreateSim(Guid measurementStationId, string name, string imsi, string iccid, string? operatorName = null, int signalStrength = 0, string? serialNumber = null) {
+		return new Sim(measurementStationId, name, imsi, iccid, operatorName, signalStrength, serialNumber);
+	}
+
+	public IMaintenanceDevice CreatePowerSupply(Guid measurementStationId, string name, decimal nominalVoltage, decimal maxCurrent, bool hasBattery = false, string? serialNumber = null) {
+		return new PowerSupply(measurementStationId, name, nominalVoltage, maxCurrent, hasBattery, serialNumber);
 	}
 }

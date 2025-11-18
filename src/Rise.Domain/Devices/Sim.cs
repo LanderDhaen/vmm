@@ -3,9 +3,15 @@ namespace Rise.Domain.Devices;
 public class Sim : MaintenanceDevice, IMaintenanceDevice {
 	private Sim() : base(Guid.Empty, "", MaintenanceDeviceType.Sim) { }
 
-	public Sim(DeviceSpecification spec, string imsi, string iccid, string? operatorName = null,
-		int signalStrength = 0) : base(spec.MeasurementStationId, spec.Name, MaintenanceDeviceType.Sim,
-		spec.SerialNumber) {
+	public Sim(
+		Guid measurementStationId,
+		string name,
+		string imsi,
+		string iccid,
+		string? operatorName = null,
+		int signalStrength = 0,
+		string? serialNumber = null
+	) : base(measurementStationId, name, MaintenanceDeviceType.Sim, serialNumber) {
 		Imsi = imsi ?? throw new ArgumentNullException(nameof(imsi));
 		Iccid = iccid ?? throw new ArgumentNullException(nameof(iccid));
 		OperatorName = operatorName;

@@ -3,8 +3,8 @@ namespace Rise.Domain.Devices;
 public class Probe : MaintenanceDevice, IMaintenanceDevice {
 	private Probe() : base(Guid.Empty, "", MaintenanceDeviceType.Probe) { }
 
-	public Probe(DeviceSpecification spec, IEnumerable<string>? measurementTypes = null) : base(
-		spec.MeasurementStationId, spec.Name, MaintenanceDeviceType.Probe, spec.SerialNumber) {
+	public Probe(Guid measurementStationId, string name, IEnumerable<string>? measurementTypes = null, string? serialNumber = null) : base(
+		measurementStationId, name, MaintenanceDeviceType.Probe, serialNumber) {
 		MeasurementTypes = measurementTypes is null ? new List<string>() : new List<string>(measurementTypes);
 	}
 

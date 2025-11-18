@@ -5,9 +5,9 @@ using System;
 public class PowerSupply : MaintenanceDevice, IMaintenanceDevice {
 	private PowerSupply() : base(Guid.Empty, "", MaintenanceDeviceType.PowerSupply) { }
 
-	public PowerSupply(DeviceSpecification spec, decimal nominalVoltage, decimal maxCurrent,
-		bool hasBattery = false) : base(spec.MeasurementStationId, spec.Name, MaintenanceDeviceType.PowerSupply,
-		spec.SerialNumber) {
+	public PowerSupply(Guid measurementStationId, string name, decimal nominalVoltage, decimal maxCurrent,
+		bool hasBattery = false, string? serialNumber = null) : base(measurementStationId, name,
+		MaintenanceDeviceType.PowerSupply, serialNumber) {
 		NominalVoltage = nominalVoltage;
 		MaxCurrent = maxCurrent;
 		HasBattery = hasBattery;

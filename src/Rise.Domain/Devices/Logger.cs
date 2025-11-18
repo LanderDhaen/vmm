@@ -3,8 +3,9 @@ namespace Rise.Domain.Devices;
 public class Logger : MaintenanceDevice, IMaintenanceDevice {
 	private Logger() : base(Guid.Empty, "", MaintenanceDeviceType.Logger) { }
 
-	public Logger(DeviceSpecification spec) : base(spec.MeasurementStationId, spec.Name,
-		MaintenanceDeviceType.Logger, spec.SerialNumber) {
+	// Use long constructor parameters instead of DeviceSpecification
+	public Logger(Guid measurementStationId, string name, string? serialNumber = null) : base(
+		measurementStationId, name, MaintenanceDeviceType.Logger, serialNumber) {
 		// Initialize logger-specific defaults here
 	}
 
