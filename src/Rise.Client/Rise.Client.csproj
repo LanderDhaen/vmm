@@ -26,12 +26,4 @@
 		<ProjectReference Include="..\Rise.Shared\Rise.Shared.csproj"/>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="Pages\Counter.razor" />
-	  <_ContentIncludedByDefault Remove="Pages\PrivateAdministratorPage.razor" />
-	  <_ContentIncludedByDefault Remove="Pages\PrivatePage.razor" />
-	  <_ContentIncludedByDefault Remove="Products\Create.razor" />
-	  <_ContentIncludedByDefault Remove="Products\Index.razor" />
-	</ItemGroup>
-
 </Project>

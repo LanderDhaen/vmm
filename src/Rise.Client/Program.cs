@@ -9,13 +9,11 @@ using Rise.Client;
 using Rise.Client.Identity;
 using Rise.Client.Locations;
 using Rise.Client.Networks;
-using Rise.Client.Products;
 using Rise.Client.Projects;
 using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Locations;
 using Rise.Shared.Networks;
-using Rise.Shared.Products;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -57,11 +55,7 @@ try {
 	builder.Services.AddHttpClient("SecureApi",
 			opt => opt.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001"))
 		.AddHttpMessageHandler<CookieHandler>();
-
-	builder.Services.AddHttpClient<IProductService, ProductService>(client => {
-		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	}).AddHttpMessageHandler<CookieHandler>();
-
+	
 	builder.Services.AddHttpClient<IProjectService, ProjectService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
