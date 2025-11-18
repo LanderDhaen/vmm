@@ -1,7 +1,5 @@
 namespace Rise.Domain.Devices;
 
-using System;
-
 public class PowerSupply : MaintenanceDevice, IMaintenanceDevice {
 	private PowerSupply() : base(Guid.Empty, "", MaintenanceDeviceType.PowerSupply) { }
 

@@ -1,7 +1,7 @@
+using Rise.Domain.Devices;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations.ValueObjects;
-using Rise.Domain.Devices;
 
 namespace Rise.Domain.Stations;
 
@@ -38,7 +38,7 @@ public class MeasurementStation : Entity {
 	public Installation Installation { get; private set; } = default!;
 
 	/// <summary>
-	/// Navigation collection of maintenance devices belonging to this station.
+	///     Navigation collection of maintenance devices belonging to this station.
 	/// </summary>
 	public ICollection<MaintenanceDevice> MaintenanceDevices { get; } = new List<MaintenanceDevice>();
 
