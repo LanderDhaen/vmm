@@ -25,9 +25,9 @@ public class MaintenanceDevice : Entity {
 	/// <summary>
 	///     Navigation property to the owning MeasurementStation.
 	/// </summary>
-	public MeasurementStation MeasurementStation { get; private set; } = default!;
+	public MeasurementStation MeasurementStation { get; private set; } = null!;
 
-	public string Name { get; private set; } = default!;
+	public string Name { get; private set; } = null!;
 
 	public MaintenanceDeviceType DeviceType { get; }
 

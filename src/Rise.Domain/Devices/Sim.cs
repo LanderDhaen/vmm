@@ -12,8 +12,8 @@ public class Sim : MaintenanceDevice, IMaintenanceDevice {
 		SignalStrength = signalStrength;
 	}
 
-	public string Imsi { get; private set; } = default!;
-	public string Iccid { get; private set; } = default!;
+	public string Imsi { get; private set; } = null!;
+	public string Iccid { get; private set; } = null!;
 	public string? OperatorName { get; private set; }
 	public int SignalStrength { get; private set; }
 
