@@ -44,7 +44,7 @@ public partial class Index {
 		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetProjectsMobileAsync();
+			await GetProjectsMobileAsync(MobileProjectSortColumn.Name, false);
 		}
 	}
 
@@ -64,11 +64,12 @@ public partial class Index {
 		};
 	}
 	
-	private async Task GetProjectsMobileAsync() {
+	private async Task GetProjectsMobileAsync(MobileProjectSortColumn orderBy, bool orderDescending) {
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = "Id"
+			OrderBy = orderBy.ToString(),
+			OrderDescending = orderDescending
 		};
 
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
@@ -84,7 +85,7 @@ public partial class Index {
 	}
 
 	private async Task SortMobileAsync(MobileProjectSortColumn column, bool descending) {
-		await GetProjectsMobileAsync();
+		await GetProjectsMobileAsync(column,  descending);
 		_mobileSortOptionsOpen = false;
 	}
 	
