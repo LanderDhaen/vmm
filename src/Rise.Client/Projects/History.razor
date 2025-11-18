@@ -16,7 +16,7 @@ else {
 		           StartIcon="@(Icons.Material.Filled.Timeline)"
 		           Color="Color.Primary"
 		           OnClick="@(() => DisplayTable = false)"
-		           Disabled="!@DisplayTable">
+		           Disabled="@(!DisplayTable)">
 			Tijdslijn
 		</MudButton>
 		<MudButton Variant="Variant.Filled"
