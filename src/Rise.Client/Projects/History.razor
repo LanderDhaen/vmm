@@ -1,5 +1,4 @@
-@using Rise.Shared.Projects
-@using Rise.Client.Components
+@using Rise.Client.Components.Projects
 
 <PageTitle>Project Details</PageTitle>
 
@@ -23,70 +22,8 @@ else {
     @if (DisplayTable)
     {
 	    
-	    <MudHidden Breakpoint="Breakpoint.Xs">
-		    <MudTable T="ProjectHistoryDto.Index" Items="_project.ProjectHistories" CustomHeader="true">
-			    <HeaderContent>
-				    <MudTHeadRow>
-					    <MudTh Class="mud-theme-primary">Geldig van</MudTh>
-					    <MudTh Class="mud-theme-primary">Geldig tot</MudTh>
-					    <MudTh Class="mud-theme-primary">Startdatum</MudTh>
-					    <MudTh Class="mud-theme-primary">Einddatum</MudTh>
-				    </MudTHeadRow>
-				    <MudTHeadRow>
-					    <MudTh Class="text-center">Huidig project</MudTh>
-					    <MudTh>-</MudTh>
-					    <MudTh>@_project.StartDate</MudTh>
-					    <MudTh>@_project.EndDate</MudTh>
-				    </MudTHeadRow>
-			    </HeaderContent>
-			    <RowTemplate>
-				    <MudTd DataLabel="Geldig van">@context.ValidFrom</MudTd>
-				    <MudTd DataLabel="Geldig tot">@context.ValidTo</MudTd>
-				    <MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
-				    <MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
-			    </RowTemplate>
-		    </MudTable>
-	    </MudHidden>
-	    
-	    <MudHidden Breakpoint="Breakpoint.SmAndUp">
-		    <MudGrid Spacing="6">
-			    <MudItem xs="12">
-				    <MudText Class="mb-2" Typo="Typo.subtitle2">Huidig project</MudText>
-				    <MudCard
-					    Elevation="2">
-					    <MudCardHeader Class="d-flex">
-						    <CardHeaderContent>
-							    <MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@_project.Code</b></MudText>
-							    <MudText Typo="Typo.h6">@_project.Name</MudText>
-						    </CardHeaderContent>
-					    </MudCardHeader>
-					    <MudCardContent Class="d-flex flex-column gap-1">
-						    <MudText Typo="Typo.caption"><b>Start datum:</b> @_project.StartDate</MudText>
-						    <MudText Typo="Typo.caption"><b>Eind datum:</b> @_project.EndDate</MudText>
-					    </MudCardContent>
-				    </MudCard>
-			    </MudItem>
-			    @foreach (var h in _project.ProjectHistories)
-			    {
-				    <MudItem xs="12">
-					    <MudText Class="mb-2" Typo="Typo.subtitle2">@h.ValidFrom - @h.ValidTo</MudText>
-					    <MudCard Elevation="2">
-						    <MudCardHeader Class="d-flex">
-							    <CardHeaderContent>
-								    <MudText Typo="Typo.subtitle1"Color="Color.Primary"><b>@_project.Code</b></MudText>
-								    <MudText Typo="Typo.h6">@_project.Name</MudText>
-							    </CardHeaderContent>
-						    </MudCardHeader>
-						    <MudCardContent Class="d-flex flex-column gap-1">
-							    <MudText Typo="Typo.caption"><b>Start datum:</b> @h.StartDate</MudText>
-							    <MudText Typo="Typo.caption"><b>Eind datum:</b> @h.EndDate</MudText>
-						    </MudCardContent>
-					    </MudCard>
-				    </MudItem>
-			    }
-		    </MudGrid>
-	    </MudHidden>
+	    <ProjectHistoryTable Project="_project" />
     } else {
-	    <ProjectTimeline Project="_project" />
+	    <ProjectHistoryTimeline Project="_project" />
     }
 }
