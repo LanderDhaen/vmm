@@ -20,6 +20,7 @@ public partial class Create {
 	private MeasurementStationRequest.Create Model { get; } = new() {
 		IsNewLocation = false
 	};
+
 	private readonly MeasurementStationRequest.Create.Validator _validator = new();
 	MudForm form;
 
@@ -52,17 +53,14 @@ public partial class Create {
 			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
 			.Select(x => (Guid?)x.Id);
 	}
-	
-	private void OnLocationSelected()
-	{
-		if (Model.LocationId.HasValue)
-		{
+
+	private void OnLocationSelected() {
+		if (Model.LocationId.HasValue) {
 			LocationDto.Index selected = _locations.FirstOrDefault(x => x.Id == Model.LocationId.Value);
 
 			if (selected == null) return;
-			
-			Model.Location = new LocationRequest.Create
-			{
+
+			Model.Location = new LocationRequest.Create {
 				Name = selected.Name,
 				Addressline1 = selected.Address.AddressLine1,
 				Addressline2 = selected.Address.AddressLine2,
@@ -72,9 +70,7 @@ public partial class Create {
 				X = selected.Coordinate.X,
 				Y = selected.Coordinate.Y
 			};
-		}
-		else
-		{
+		} else {
 			Model.Location = new LocationRequest.Create();
 		}
 

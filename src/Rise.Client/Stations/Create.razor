@@ -12,7 +12,9 @@
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Installatie datum <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+					<MudText Typo="Typo.subtitle2">Installatie datum
+						<MudText Typo="Typo.caption">(optioneel)</MudText>
+					</MudText>
 					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
 					               DateFormat="dd/MM/yyyy"
 					               Variant="Variant.Outlined"/>
@@ -31,7 +33,9 @@
 						                 Placeholder="Selecteer een locatie: " Clearable="true"
 						                 Variant="Variant.Outlined">
 							<NoItemsTemplate>
-								<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddNewLocation">Nieuwe locatie toevoegen</MudButton>
+								<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddNewLocation">
+									Nieuwe locatie toevoegen
+								</MudButton>
 							</NoItemsTemplate>
 						</MudAutocomplete>
 					}
@@ -40,7 +44,8 @@
 				@*Location*@
 				<MudItem xs="12">
 					<MudExpansionPanels>
-						<MudExpansionPanel Text="Locatie details" Expanded="@(Model.IsNewLocation || Model.LocationId.HasValue)">
+						<MudExpansionPanel Text="Locatie details"
+						                   Expanded="@(Model.IsNewLocation || Model.LocationId.HasValue)">
 							<MudGrid>
 								<MudItem xs="12" sm="6">
 									<MudText Typo="Typo.subtitle2">Naam</MudText>
@@ -50,7 +55,9 @@
 								</MudItem>
 
 								<MudItem xs="12" sm="6">
-									<MudText Typo="Typo.subtitle2">Adres 1 <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+									<MudText Typo="Typo.subtitle2">Adres 1
+										<MudText Typo="Typo.caption">(optioneel)</MudText>
+									</MudText>
 									<MudTextField @bind-Value="Model.Location!.Addressline1"
 									              For="@(() => Model.Location!.Addressline1)" Counter="250"
 									              MaxLength="250" Disabled="!Model.IsNewLocation"
@@ -58,7 +65,9 @@
 								</MudItem>
 
 								<MudItem xs="12" sm="6">
-									<MudText Typo="Typo.subtitle2">Adres 2 <MudText Typo="Typo.caption">(optioneel)</MudText></MudText>
+									<MudText Typo="Typo.subtitle2">Adres 2
+										<MudText Typo="Typo.caption">(optioneel)</MudText>
+									</MudText>
 									<MudTextField @bind-Value="Model.Location!.Addressline2"
 									              For="@(() => Model.Location!.Addressline2)" Counter="250"
 									              MaxLength="250" Disabled="!Model.IsNewLocation"

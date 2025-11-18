@@ -7,19 +7,19 @@ public static partial class MeasurementStationRequest {
 		public string Code { get; set; } = default!;
 		public Guid? LocationId { get; set; }
 		public bool IsNewLocation { get; set; }
-		
+
 		// In case of a new Location
 		public LocationRequest.Create? Location { get; set; } = new();
-		
+
 		// Installation
 		public DateTime? InstalledAt { get; set; }
-		
+
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
 				RuleFor(x => x.Code)
 					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
 					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
-				RuleFor(x => x) 
+				RuleFor(x => x)
 					.Must(x => x.LocationId.HasValue || x.IsNewLocation)
 					.WithMessage("Je moet een bestaande locatie selecteren of een nieuwe locatie invullen.")
 					.OverridePropertyName("LocationId");

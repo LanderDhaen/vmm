@@ -11,7 +11,7 @@ public static partial class LocationRequest {
 		public double X { get; set; }
 		public double Y { get; set; }
 	}
-	
+
 	public class Validator : AbstractValidator<Create> {
 		public Validator() {
 			RuleFor(x => x.Name)
