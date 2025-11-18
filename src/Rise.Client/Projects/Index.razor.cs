@@ -26,8 +26,8 @@ public partial class Index {
 		("Status", "Status")
 	];
 
-	private string _activeSorting { get; set; }
-	private bool _activeSortingDesc  { get; set; }
+	private string _activeSorting = "Name";
+	private bool _activeSortingDesc;
 
 
 	[Inject] public required IProjectService ProjectService { get; init; }
@@ -49,12 +49,12 @@ public partial class Index {
 		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetProjectsMobileAsync("Name", false);
-			_activeSorting = "Name";
-			_activeSortingDesc = false;
+			await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
 		}
 	}
-
+	
+	// Desktop
+	
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 
 		QueryRequest.SkipTake request = new() {
@@ -71,6 +71,8 @@ public partial class Index {
 		};
 	}
 	
+	// Mobile
+	
 	private async Task GetProjectsMobileAsync(string orderBy, bool orderDescending) {
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
@@ -83,22 +85,29 @@ public partial class Index {
 
 		_mobileItems = result.Value.Projects;
 	}
+	
+	// Mobile Sorting
 
-
-	public Task OpenSortOptionsAsync() {
-		_mobileSortOptionsOpen = true;
-		StateHasChanged();
-		return Task.CompletedTask;
+	private void ToggleSortingDrawer() {
+		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
 	}
 
 	private async Task SortMobileAsync(string orderBy, bool descending) {
 		await GetProjectsMobileAsync(orderBy, descending);
-		_mobileSortOptionsOpen = false;
+		ToggleSortingDrawer();
 		_activeSorting = orderBy;
 		_activeSortingDesc = descending;
 	}
 	
+	// TODO: Implement filtering (updating the state for desktop or calling SortMobileAsync for mobile)
+	
+	// Navigation
+	
 	private void NavigateToProject(Guid projectId) {
 		NavigationManager.NavigateTo($"/projects/{projectId}");
+	}
+
+	private void NavigateToCreate() {
+		NavigationManager.NavigateTo($"/projects/create");
 	}
 }
