@@ -81,11 +81,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
 		int totalCount = await query.CountAsync(ctx);
-		
+
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
-			
+
 			case nameof(DateRange.StartDate):
 				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
 				break;
@@ -99,10 +99,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
 				break;
 			default:
-					query = desc
-						? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
-						: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
-					break;
+				query = desc
+					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
+					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+				break;
 			}
 		} else {
 			query = query.OrderBy(p => p.Id);

@@ -14,7 +14,7 @@ public partial class Index {
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-	
+
 	private static readonly (string Value, string Label)[] SortColumns =
 	[
 		("Code", "Code"),
@@ -52,9 +52,9 @@ public partial class Index {
 			await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
 		}
 	}
-	
+
 	// Desktop
-	
+
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 
 		QueryRequest.SkipTake request = new() {
@@ -70,9 +70,9 @@ public partial class Index {
 			Items = result.Value.Projects,
 		};
 	}
-	
+
 	// Mobile
-	
+
 	private async Task GetProjectsMobileAsync(string orderBy, bool orderDescending) {
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
@@ -85,7 +85,7 @@ public partial class Index {
 
 		_mobileItems = result.Value.Projects;
 	}
-	
+
 	// Mobile Sorting
 
 	private void ToggleSortingDrawer() {
@@ -98,11 +98,11 @@ public partial class Index {
 		_activeSorting = orderBy;
 		_activeSortingDesc = descending;
 	}
-	
+
 	// TODO: Implement filtering (updating the state for desktop or calling SortMobileAsync for mobile)
-	
+
 	// Navigation
-	
+
 	private void NavigateToProject(Guid projectId) {
 		NavigationManager.NavigateTo($"/projects/{projectId}");
 	}
