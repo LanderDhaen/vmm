@@ -14,16 +14,21 @@ public partial class Index {
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
+	
+	private static readonly (string Value, string Label)[] SortColumns =
+	[
+		("Code", "Code"),
+		("Name", "Naam"),
+		("StartDate", "Startdatum"),
+		("EndDate", "Einddatum"),
+		("MeasurementNetwork", "Meetnet"),
+		("Zone", "Zone"),
+		("Status", "Status")
+	];
 
-	private enum MobileProjectSortColumn {
-		Code,
-		Name,
-		StartDate,
-		EndDate,
-		MeasurementNetwork,
-		Zone,
-		Status
-	}
+	private string _activeSorting { get; set; }
+	private bool _activeSortingDesc  { get; set; }
+
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -44,7 +49,9 @@ public partial class Index {
 		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetProjectsMobileAsync(MobileProjectSortColumn.Name, false);
+			await GetProjectsMobileAsync("Name", false);
+			_activeSorting = "Name";
+			_activeSortingDesc = false;
 		}
 	}
 
@@ -64,11 +71,11 @@ public partial class Index {
 		};
 	}
 	
-	private async Task GetProjectsMobileAsync(MobileProjectSortColumn orderBy, bool orderDescending) {
+	private async Task GetProjectsMobileAsync(string orderBy, bool orderDescending) {
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = orderBy.ToString(),
+			OrderBy = orderBy,
 			OrderDescending = orderDescending
 		};
 
@@ -84,9 +91,11 @@ public partial class Index {
 		return Task.CompletedTask;
 	}
 
-	private async Task SortMobileAsync(MobileProjectSortColumn column, bool descending) {
-		await GetProjectsMobileAsync(column,  descending);
+	private async Task SortMobileAsync(string orderBy, bool descending) {
+		await GetProjectsMobileAsync(orderBy, descending);
 		_mobileSortOptionsOpen = false;
+		_activeSorting = orderBy;
+		_activeSortingDesc = descending;
 	}
 	
 	private void NavigateToProject(Guid projectId) {

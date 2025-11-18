@@ -66,103 +66,40 @@
 				}
 			}
 		</MudGrid>
+		
+		@* Drawer for sorting on mobile *@
+		
 		<MudDrawer Anchor="Anchor.Bottom"
 		           Variant="DrawerVariant.Temporary"
 		           Elevation="8"
 		           @bind-Open="_mobileSortOptionsOpen"
-		           Class="p-4"
-		           Style="max-height:70vh; overflow-y:auto; border-radius:16px 16px 0 0;">
-			<MudStack Spacing="2">
-				<MudText Typo="Typo.h6">Sorteren</MudText>
+		           Class="p-4 rounded-lg">
+			<MudText Typo="Typo.h6">Sorteren</MudText>
+    
+			<MudStack Spacing="4">
 				<MudDivider />
 
-				<MudText Typo="Typo.subtitle2">Projectcode</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Code, false))">
-						A → Z
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Code, true))">
-						Z → A
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Projectnaam</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Name, false))">
-						A → Z
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Name, true))">
-						Z → A
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Startdatum</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.StartDate, false))">
-						Oud → Nieuw
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.StartDate, true))">
-						Nieuw → Oud
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Einddatum</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.EndDate, false))">
-						Oud → Nieuw
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.EndDate, true))">
-						Nieuw → Oud
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.MeasurementNetwork, false))">
-						A → Z
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.MeasurementNetwork, true))">
-						Z → A
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Zone</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Zone, false))">
-						A → Z
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Zone, true))">
-						Z → A
-					</MudButton>
-				</MudStack>
-
-				<MudText Typo="Typo.subtitle2">Status</MudText>
-				<MudStack Row="true" Spacing="1">
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Status, false))">
-						A → Z
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Status, true))">
-						Z → A
-					</MudButton>
-				</MudStack>
-
-				<MudDivider Class="mt-4" />
+				@foreach (var column in SortColumns) {
+					<MudStack Row="true" AlignItems="AlignItems.Center">
+						<MudText>@column.Label</MudText>
+						<MudSpacer />
+						<MudButton Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						           Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						           Size="Size.Small"
+						           OnClick="@(() => SortMobileAsync(column.Value, false))">
+							Oplopend
+						</MudButton>
+						<MudButton Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						           Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						           Size="Size.Small"
+						           OnClick="@(() => SortMobileAsync(column.Value, true))">
+							Aflopend
+						</MudButton>
+					</MudStack>
+				}
+				<MudDivider />
 				<MudButton Variant="Variant.Text"
-				           Color="Color.Secondary"
+				           Color="Color.Primary"
 				           OnClick="@(() => _mobileSortOptionsOpen = false)">
 					Sluiten
 				</MudButton>
