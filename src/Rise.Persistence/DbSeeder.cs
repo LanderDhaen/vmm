@@ -199,7 +199,7 @@ public class DbSeeder(
 		if (!networks.Any()) {
 			return;
 		}
-		
+
 		// Initialise as projects without endDate to allow easier history seeding
 
 		List<DateRange> dateRanges = new() {
@@ -223,7 +223,7 @@ public class DbSeeder(
 		dbContext.Projects.AddRange(projects);
 		await dbContext.SaveChangesAsync();
 	}
-	
+
 	private async Task ProjectHistoriesAsync() {
 		if (!dbContext.Projects.Any()) {
 			return;
@@ -239,28 +239,28 @@ public class DbSeeder(
 			new DateOnly(2025, 12, 31),
 			null,
 		};
-		
+
 		int i = 0;
-		
+
 		foreach (Project project in projects) {
 
 			DateRange dateRange = project.DateRange;
-			
+
 			// Move the start date
-			
+
 			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate), project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
-			
+
 			// Revert change
-            
+
 			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
-			
+
 			// Move the end date
-			
+
 			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]), project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
-			
+
 			// Update the counter
 
 			i++;

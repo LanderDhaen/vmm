@@ -5,10 +5,10 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class History {
-	
+
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
-	
+
 	private ProjectDto.History? _project;
 	private bool DisplayTable { get; set; }
 
@@ -17,7 +17,7 @@ public partial class History {
 		Result<ProjectResponse.History> result = await ProjectService.GetHistoryAsync(ProjectId);
 
 		if (result.IsSuccess) {
-			
+
 			_project = result.Value.Project;
 		}
 	}

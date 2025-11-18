@@ -144,9 +144,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	}
 
 	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-		
+
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
-		
+
 		ProjectDto.History? project = await query
 			.Where(p => p.Id == projectId)
 			.Select(p => new ProjectDto.History {

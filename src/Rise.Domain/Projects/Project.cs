@@ -7,32 +7,32 @@ namespace Rise.Domain.Projects;
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-	
+
 	// Properties
 
 	public string Name { get; private set; }
 	public string Code { get; private set; }
 	public DateRange DateRange { get; private set; } = default!;
 	public Status Status { get; private set; } = Status.Actief;
-	
+
 	// Relations
-	
+
 	public MeasurementNetwork MeasurementNetwork { get; private set; }
 	public ICollection<MeasurementStation> Stations { get; private set; } =
 		new List<MeasurementStation>();
-	
+
 	// History
 
 	private readonly List<ProjectHistory> _projectHistories = [];
 	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
-	
+
 	// Constructors
-	
+
 	/// <summary>
 	/// Entity Framework Core Constructor
 	/// </summary>
 	private Project() { }
-	
+
 	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
 		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
@@ -40,12 +40,12 @@ public class Project : Entity {
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 		UpdateStatusBasedOnEndDate();
 	}
-	
+
 	// Functions
 
 	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
-		
-		
+
+
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
 		}
@@ -53,20 +53,20 @@ public class Project : Entity {
 		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
 		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
-		
+
 		UpdateDateRange(dateRange);
 	}
 
 	private void UpdateDateRange(DateRange dateRange) {
-		
+
 		// Check if the values are the same as the old values
 
 		if (dateRange.Equals(DateRange)) {
 			return;
 		}
-		
+
 		// Create history object using the old values
-		
+
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
 		_projectHistories.Add(projectHistory);

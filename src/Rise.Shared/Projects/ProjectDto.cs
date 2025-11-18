@@ -30,7 +30,7 @@ public static class ProjectDto {
 		public required string Zone { get; set; }
 		public required Status Status { get; set; }
 	}
-	
+
 	public class History {
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
