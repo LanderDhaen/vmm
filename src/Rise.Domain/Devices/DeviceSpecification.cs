@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Rise.Domain.Devices;
 
 public record DeviceSpecification(
@@ -8,5 +5,5 @@ public record DeviceSpecification(
 	string Name,
 	MaintenanceDeviceType DeviceType,
 	string? SerialNumber = null,
-	IReadOnlyDictionary<string,string>? Metadata = null
+	IReadOnlyDictionary<string, string>? Metadata = null
 );

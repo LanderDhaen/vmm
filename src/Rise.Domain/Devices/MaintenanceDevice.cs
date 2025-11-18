@@ -1,6 +1,7 @@
 namespace Rise.Domain.Devices;
 
 using System;
+
 using Rise.Domain.Stations;
 
 public class MaintenanceDevice : Entity {
