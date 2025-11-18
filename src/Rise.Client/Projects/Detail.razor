@@ -1,6 +1,8 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Shared.Projects
 @inject NavigationManager Navigation
+@attribute [Authorize]
+
 <PageTitle>Project Details</PageTitle>
 
 @if (_project is null)

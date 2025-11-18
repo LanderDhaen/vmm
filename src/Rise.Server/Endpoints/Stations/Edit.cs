@@ -7,7 +7,7 @@ public sealed class Edit(IMeasurementStationService stationService)
 	: Endpoint<MeasurementStationRequest.Edit, Result> {
 	public override void Configure() {
 		Put("/api/stations");
-		Roles(AppRoles.Technician, AppRoles.Administrator);
+		Roles(AppRoles.Administrator);
 	}
 
 	public override Task<Result> ExecuteAsync(MeasurementStationRequest.Edit req, CancellationToken ct) {

@@ -1,3 +1,5 @@
+using Rise.Domain.Projects;
+using Rise.Shared.Identity;
 using Rise.Shared.Projects;
 
 namespace Rise.Server.Endpoints.Projects;
@@ -10,10 +12,7 @@ namespace Rise.Server.Endpoints.Projects;
 public class Create(IProjectService projectService) : Endpoint<ProjectRequest.Create, Result<ProjectResponse.Create>> {
 	public override void Configure() {
 		Post("/api/projects");
-		// Allow for now until Auth is correctly implemented in frontend
-
-		AllowAnonymous();
-		//Roles(AppRoles.Administrator); // Only Administrators can create projects.
+		Roles(AppRoles.Administrator);
 	}
 
 	public override Task<Result<ProjectResponse.Create>>

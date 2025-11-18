@@ -2,6 +2,7 @@
 @using Rise.Client.Components
 @using Rise.Shared.Projects
 @inject NavigationManager Navigation
+@attribute [Authorize]
 
 <PageTitle>Station Details</PageTitle>
 
@@ -13,7 +14,14 @@
 }
 else
 {
-	<div class="d-flex justify-space-between m-4 align-center" role="tablist" aria-label="Station tabs">
+	<!-- ===== Desktop ===== -->
+
+	<!-- ===== Mobile ===== -->
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<ArrowHeader Title="Meetstation" OnBack="NavigateToStations"/>
+	</MudHidden>
+
+	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="async () => await SetTabAsync(0)">
 			@_tabs[0]

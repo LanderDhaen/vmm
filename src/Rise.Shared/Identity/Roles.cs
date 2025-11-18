@@ -7,6 +7,5 @@ namespace Rise.Shared.Identity;
 /// </summary>
 public static class AppRoles {
 	public const string Administrator = "Administrator";
-	public const string Secretary = "Secretary";
 	public const string Technician = "Technician";
 }

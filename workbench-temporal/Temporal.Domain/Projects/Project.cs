@@ -13,9 +13,9 @@ public class Project : Entity {
 	}
 
 	public Project(string name, string code, DateRange dateRange) {
-		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
-		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
+		Name = Guard.Against.NullOrWhiteSpace(name);
+		Code = Guard.Against.NullOrWhiteSpace(code);
+		DateRange = Guard.Against.Null(dateRange);
 	}
 
 	public string Name { get; private set; }
@@ -52,8 +52,8 @@ public class ProjectHistory : HistoryEntity {
 	}
 
 	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
-		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
-		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
+		DateRange = Guard.Against.Null(dateRange);
+		ValidityRange = Guard.Against.Null(validityRange);
 	}
 
 	public DateRange DateRange { get; init; }

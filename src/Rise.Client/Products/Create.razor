@@ -1,5 +1,6 @@
 @page "/products/create"
-@* @attribute [Authorize(Roles = AppRoles.Administrator)] *@
+@using Rise.Shared.Identity
+@attribute [Authorize(Roles = AppRoles.Administrator)]
 
 <h3 class="title">Create a new product</h3>
 
