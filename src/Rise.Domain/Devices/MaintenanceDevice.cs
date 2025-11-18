@@ -1,11 +1,8 @@
-namespace Rise.Domain.Devices;
-
-using System;
-
 using Rise.Domain.Stations;
 
+namespace Rise.Domain.Devices;
+
 public class MaintenanceDevice : Entity {
-	// Parameterless ctor for EF / serializers
 	private MaintenanceDevice() { }
 
 	public MaintenanceDevice(
@@ -21,18 +18,18 @@ public class MaintenanceDevice : Entity {
 	}
 
 	/// <summary>
-	/// The MeasurementStation this device belongs to (FK).
+	///     The MeasurementStation this device belongs to (FK).
 	/// </summary>
-	public Guid MeasurementStationId { get; private set; }
+	public Guid MeasurementStationId { get; }
 
 	/// <summary>
-	/// Navigation property to the owning MeasurementStation.
+	///     Navigation property to the owning MeasurementStation.
 	/// </summary>
 	public MeasurementStation MeasurementStation { get; private set; } = default!;
 
 	public string Name { get; private set; } = default!;
 
-	public MaintenanceDeviceType DeviceType { get; private set; }
+	public MaintenanceDeviceType DeviceType { get; }
 
 	public string? SerialNumber { get; private set; }
 

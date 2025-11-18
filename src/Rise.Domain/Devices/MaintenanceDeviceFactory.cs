@@ -5,7 +5,7 @@ public class MaintenanceDeviceFactory : IMaintenanceDeviceFactory {
 
 	public MaintenanceDeviceFactory() {
 		// register known types
-		Register(MaintenanceDeviceType.Logger, spec => new LoggerDevice(spec));
+		Register(MaintenanceDeviceType.Logger, spec => new Logger(spec));
 		Register(MaintenanceDeviceType.Probe, spec => new ProbeDevice(spec));
 		Register(MaintenanceDeviceType.Sim, spec => new SimDevice(spec, "", ""));
 		Register(MaintenanceDeviceType.PowerSupply,

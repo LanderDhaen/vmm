@@ -1,9 +1,9 @@
 namespace Rise.Domain.Devices;
 
-public class LoggerDevice : MaintenanceDevice, IMaintenanceDevice {
-	private LoggerDevice() : base(Guid.Empty, "", MaintenanceDeviceType.Logger) { }
+public class Logger : MaintenanceDevice, IMaintenanceDevice {
+	private Logger() : base(Guid.Empty, "", MaintenanceDeviceType.Logger) { }
 
-	public LoggerDevice(DeviceSpecification spec) : base(spec.MeasurementStationId, spec.Name,
+	public Logger(DeviceSpecification spec) : base(spec.MeasurementStationId, spec.Name,
 		MaintenanceDeviceType.Logger, spec.SerialNumber) {
 		// Initialize logger-specific defaults here
 	}
