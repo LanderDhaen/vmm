@@ -12,13 +12,13 @@ else {
 
     <MudButton Variant="Variant.Filled"
                Size="Size.Small"
-               StartIcon="@(displayTable ? Icons.Material.Filled.Timeline : Icons.Material.Filled.TableRows)"
+               StartIcon="@(DisplayTable ? Icons.Material.Filled.Timeline : Icons.Material.Filled.TableRows)"
                Color="Color.Primary"
-               OnClick="@(() => displayTable = !displayTable)">
-        @(displayTable ? "Tijdslijn" : "Tabel")
+               OnClick="@(() => DisplayTable = !DisplayTable)">
+        @(DisplayTable ? "Tijdslijn" : "Tabel")
     </MudButton>
     
-    @if (displayTable)
+    @if (DisplayTable)
     {
 	    
 	    <MudHidden Breakpoint="Breakpoint.Xs">
