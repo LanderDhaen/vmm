@@ -4,9 +4,8 @@
 @attribute [Authorize]
 <PageTitle>Projecten</PageTitle>
 
-@* <MudPaper Elevation="0" Class="p-4"> *@
 <MudContainer>
-	<ToolBar/>
+	<ToolBar OnSortClicked="OpenSortOptionsAsync" />
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDataGrid T="ProjectDto.Index"
 		             ServerData="GetProjectsAsync"
@@ -16,29 +15,22 @@
 		             RowClick="OnRowClick">
 
 			<Columns>
-				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary" />
+				<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary" />
+				<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary" />
+				<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary" />
+				<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary" />
+				<PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary" />
 			</Columns>
-
-			<PagerContent>
-				<Pagination T="ProjectDto.Index"/>
-			</PagerContent>
 		</MudDataGrid>
 	</MudHidden>
-
-	<!-- MOBILE: list with MudCard components (visible on xs and down).
-		 Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
 		<MudGrid Spacing="4">
 			@if (_mobileItems is null)
 			{
 				<MudItem xs="12">
 					<div>
-						<MudProgressCircular Indeterminate="true"/>
+						<MudProgressCircular Indeterminate="true" />
 					</div>
 				</MudItem>
 			}
@@ -53,33 +45,130 @@
 				@foreach (var item in _mobileItems)
 				{
 					<MudItem xs="12">
-						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
-						<MudCard 
-							Elevation="2" 
+						<MudCard
+							Elevation="2"
 							Class="rounded-lg"
 							@onclick="() => NavigateToProject(item.Id)">
-							<MudCardHeader Class="d-flex">
-								<CardHeaderContent>
-									<MudText Typo="Typo.subtitle1" Style="font-weight: bold"
-									         Color="Color.Primary">@item.Code</MudText>
-									<MudText Typo="Typo.h6">@item.Name</MudText>
-								</CardHeaderContent>
-							</MudCardHeader>
-							<MudCardContent Class="d-flex flex-column gap-1">
+							<MudCardContent>
+								<MudText Typo="Typo.h6">@item.Name</MudText>
+
 								<MudText Typo="Typo.caption">
-									<b>Start datum:</b> @item.StartDate.ToString("dd/MM/yyyy")
+									<b>Code:</b> @item.Code<br />
+									<b>Zone:</b> @item.Zone<br />
+									<b>Status:</b> @item.Status<br />
+									<b>Start datum:</b> @(item.StartDate.ToString("dd/MM/yyyy"))<br />
+									<b>Eind datum:</b> @(item.StartDate.ToString("dd/MM/yyyy"))<br />
+									<b>Meetnet:</b> @item.MeasurementNetwork
 								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>Eind datum:</b> @(item.EndDate?.ToString("dd/MM/yyyy") ?? "")
-								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>Meetnet:</b> @item.MeasurementNetwork</MudText>
 							</MudCardContent>
 						</MudCard>
 					</MudItem>
 				}
 			}
 		</MudGrid>
+		<MudDrawer Anchor="Anchor.Bottom"
+		           Variant="DrawerVariant.Temporary"
+		           Elevation="8"
+		           @bind-Open="_mobileSortOptionsOpen"
+		           DisableOverlay="false"
+		           Class="p-4"
+		           Style="max-height:70vh; overflow-y:auto; border-radius:16px 16px 0 0;">
+			<MudStack Spacing="2">
+				<MudText Typo="Typo.h6">Sorteren</MudText>
+				<MudDivider />
+
+				<MudText Typo="Typo.subtitle2">Projectcode</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Code, false))">
+						A → Z
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Code, true))">
+						Z → A
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Projectnaam</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Name, false))">
+						A → Z
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Name, true))">
+						Z → A
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Startdatum</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.StartDate, false))">
+						Oud → Nieuw
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.StartDate, true))">
+						Nieuw → Oud
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Einddatum</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.EndDate, false))">
+						Oud → Nieuw
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.EndDate, true))">
+						Nieuw → Oud
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.MeasurementNetwork, false))">
+						A → Z
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.MeasurementNetwork, true))">
+						Z → A
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Zone</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Zone, false))">
+						A → Z
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Zone, true))">
+						Z → A
+					</MudButton>
+				</MudStack>
+
+				<MudText Typo="Typo.subtitle2">Status</MudText>
+				<MudStack Row="true" Spacing="1">
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Status, false))">
+						A → Z
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+					           OnClick="@(() => SortMobileAsync(MobileProjectSortColumn.Status, true))">
+						Z → A
+					</MudButton>
+				</MudStack>
+
+				<MudDivider Class="mt-4" />
+				<MudButton Variant="Variant.Text"
+				           Color="Color.Secondary"
+				           OnClick="@(() => _mobileSortOptionsOpen = false)">
+					Sluiten
+				</MudButton>
+			</MudStack>
+		</MudDrawer>
 	</MudHidden>
 	@* </MudPaper> *@
 </MudContainer>

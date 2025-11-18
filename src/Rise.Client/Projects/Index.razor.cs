@@ -1,3 +1,5 @@
+using System.Linq;
+
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -6,12 +8,29 @@ using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
+using Serilog;
+
 namespace Rise.Client.Projects;
 
 public partial class Index {
 	// Mobile list state (without separate page/pageSize fields)
 	private List<ProjectDto.Index>? _mobileItems;
 	private int _mobileTotal;
+
+	// 🔹 Controls visibility of the bottom sort sheet on mobile
+	private bool _mobileSortOptionsOpen;
+
+	// 🔹 Which column we want to sort by in the mobile view
+	private enum MobileProjectSortColumn {
+		Code,
+		Name,
+		StartDate,
+		EndDate,
+		MeasurementNetwork,
+		Zone,
+		Status
+	}
+
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
@@ -105,5 +124,59 @@ public partial class Index {
 		}
 
 		NavigationManager.NavigateTo($"/projects/{id}");
+	}
+
+	public Task OpenSortOptionsAsync() {
+		_mobileSortOptionsOpen = true;
+		StateHasChanged();
+		return Task.CompletedTask;
+	}
+
+	private async Task SortMobileAsync(MobileProjectSortColumn column, bool descending) {
+		if (_mobileItems is null || _mobileItems.Count == 0) {
+			_mobileSortOptionsOpen = false;
+			StateHasChanged();
+			return;
+		}
+
+		IEnumerable<ProjectDto.Index> ordered = column switch {
+			MobileProjectSortColumn.Code => descending
+				? _mobileItems.OrderByDescending(p => p.Code)
+				: _mobileItems.OrderBy(p => p.Code),
+
+			MobileProjectSortColumn.Name => descending
+				? _mobileItems.OrderByDescending(p => p.Name)
+				: _mobileItems.OrderBy(p => p.Name),
+
+			MobileProjectSortColumn.StartDate => descending
+				? _mobileItems.OrderByDescending(p => p.StartDate)
+				: _mobileItems.OrderBy(p => p.StartDate),
+
+			MobileProjectSortColumn.EndDate => descending
+				? _mobileItems.OrderByDescending(p => p.EndDate)
+				: _mobileItems.OrderBy(p => p.EndDate),
+
+			MobileProjectSortColumn.MeasurementNetwork => descending
+				? _mobileItems.OrderByDescending(p => p.MeasurementNetwork)
+				: _mobileItems.OrderBy(p => p.MeasurementNetwork),
+
+			MobileProjectSortColumn.Zone => descending
+				? _mobileItems.OrderByDescending(p => p.Zone)
+				: _mobileItems.OrderBy(p => p.Zone),
+
+			MobileProjectSortColumn.Status => descending
+				? _mobileItems.OrderByDescending(p => p.Status)
+				: _mobileItems.OrderBy(p => p.Status),
+
+			_ => descending
+				? _mobileItems.OrderByDescending(p => p.Name)
+				: _mobileItems.OrderBy(p => p.Name)
+		};
+
+		_mobileItems = ordered.ToList();
+
+		_mobileSortOptionsOpen = false;
+
+		await InvokeAsync(StateHasChanged);
 	}
 }
