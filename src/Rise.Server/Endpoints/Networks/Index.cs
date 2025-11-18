@@ -1,4 +1,5 @@
 using Rise.Shared.Common;
+using Rise.Shared.Identity;
 using Rise.Shared.Networks;
 
 namespace Rise.Server.Endpoints.Networks;
@@ -11,7 +12,7 @@ namespace Rise.Server.Endpoints.Networks;
 public class Index(INetworkService networkService) : Endpoint<QueryRequest.SkipTake, Result<NetworkResponse.Index>> {
 	public override void Configure() {
 		Get("/api/measurementnetworks");
-		AllowAnonymous();
+		Roles(AppRoles.Administrator);
 	}
 
 	public override Task<Result<NetworkResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct) {

@@ -15,7 +15,7 @@ public class Location : Entity {
 	public Location(string name, Address? address, Coordinate coordinate) {
 		Name = name;
 		Address = address;
-		Coordinate = Guard.Against.Null(coordinate, nameof(coordinate));
+		Coordinate = Guard.Against.Null(coordinate);
 	}
 
 	public string Name {
