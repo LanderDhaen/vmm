@@ -8,12 +8,15 @@
 			<MudTHeadRow>
 				<MudTh Class="mud-theme-primary">Geldig van</MudTh>
 				<MudTh Class="mud-theme-primary">Geldig tot</MudTh>
+				<MudTh Class="mud-theme-primary">#</MudTh>
+				<MudTh Class="mud-theme-primary">Naam</MudTh>
 				<MudTh Class="mud-theme-primary">Startdatum</MudTh>
 				<MudTh Class="mud-theme-primary">Einddatum</MudTh>
 			</MudTHeadRow>
 			<MudTHeadRow>
-				<MudTh Class="text-center">Huidig project</MudTh>
-				<MudTh>-</MudTh>
+				<MudTh colspan="2">Huidig project</MudTh>
+				<MudTh>@Project.Code</MudTh>
+				<MudTh>@Project.Name</MudTh>
 				<MudTh>@Project.StartDate</MudTh>
 				<MudTh>@Project.EndDate</MudTh>
 			</MudTHeadRow>
@@ -21,6 +24,8 @@
 		<RowTemplate>
 			<MudTd DataLabel="Geldig van">@context.ValidFrom</MudTd>
 			<MudTd DataLabel="Geldig tot">@context.ValidTo</MudTd>
+			<MudTd DataLabel="#">@Project.Code</MudTd>
+			<MudTd DataLabel="Naam">@Project.Name</MudTd>
 			<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
 			<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
 		</RowTemplate>
