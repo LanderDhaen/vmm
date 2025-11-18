@@ -11,9 +11,9 @@ public class MeasurementStation : Entity {
 	private MeasurementStation() { }
 
 	public MeasurementStation(string code, Location location, Installation installation) {
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
-		Location = Guard.Against.Null(location, nameof(location));
-		Installation = Guard.Against.Null(installation, nameof(installation));
+		Code = Guard.Against.NullOrWhiteSpace(code);
+		Location = Guard.Against.Null(location);
+		Installation = Guard.Against.Null(installation);
 	}
 
 	public string Code { get; private set; } = default!;
@@ -26,7 +26,7 @@ public class MeasurementStation : Entity {
 	public void Edit(string code) {
 		// Validate the input before creating the history & assigning the values
 
-		Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		Guard.Against.NullOrWhiteSpace(code);
 
 		// Create history object using the old values
 
@@ -50,10 +50,10 @@ public class MeasurementStationHistory : HistoryEntity {
 
 	public MeasurementStationHistory(string code, Location location, Installation installation,
 		ValidityRange validityRange) {
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
-		Location = Guard.Against.Null(location, nameof(location));
-		Installation = Guard.Against.Null(installation, nameof(installation));
-		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
+		Code = Guard.Against.NullOrWhiteSpace(code);
+		Location = Guard.Against.Null(location);
+		Installation = Guard.Against.Null(installation);
+		ValidityRange = Guard.Against.Null(validityRange);
 	}
 
 	public string Code { get; }

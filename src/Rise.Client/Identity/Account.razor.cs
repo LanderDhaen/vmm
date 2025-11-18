@@ -10,6 +10,11 @@ using Rise.Client.Services;
 namespace Rise.Client.Identity;
 
 public partial class Account {
+	private string? _email;
+	private string _initials = "?";
+	private bool _isAuthenticated;
+	private bool _isLoading = true;
+	private List<string> _roles = [];
 	[Inject] public required IAccountManager AccountManager { get; set; }
 	[Inject] public required AuthenticationStateProvider AuthProvider { get; set; }
 	[Inject] public required NavigationManager Navigation { get; set; }
@@ -17,17 +22,11 @@ public partial class Account {
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 
-	private string? _email;
-	private string _initials = "?";
-	private List<string> _roles = [];
-	private bool _isAuthenticated;
-	private bool _isLoading = true;
-
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-		var authState = await AuthProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
+		AuthenticationState authState = await AuthProvider.GetAuthenticationStateAsync();
+		ClaimsPrincipal user = authState.User;
 
 		_isAuthenticated = user.Identity?.IsAuthenticated ?? false;
 
@@ -36,8 +35,8 @@ public partial class Account {
 					 ?? user.Identity?.Name;
 
 			_roles = user.FindAll(ClaimTypes.Role)
-						 .Select(r => r.Value)
-						 .ToList();
+				.Select(r => r.Value)
+				.ToList();
 
 			_initials = GetInitialsFromEmail(_email);
 		}
@@ -53,21 +52,23 @@ public partial class Account {
 	}
 
 	private static string GetInitialsFromEmail(string? email) {
-		if (string.IsNullOrWhiteSpace(email))
+		if (string.IsNullOrWhiteSpace(email)) {
 			return "?";
+		}
 
-		var namePart = email.Split('@')[0];
+		string namePart = email.Split('@')[0];
 
-		var parts = namePart
+		string[] parts = namePart
 			.Split('.', '-', '_')
 			.Where(p => !string.IsNullOrWhiteSpace(p))
 			.Take(2)
 			.ToArray();
 
-		if (parts.Length == 0)
+		if (parts.Length == 0) {
 			return char.ToUpperInvariant(email[0]).ToString();
+		}
 
-		var letters = parts
+		char[] letters = parts
 			.Select(p => char.ToUpperInvariant(p[0]))
 			.ToArray();
 
@@ -76,6 +77,6 @@ public partial class Account {
 
 	private async Task Logout() {
 		await AccountManager.LogoutAsync();
-		Navigation.NavigateTo("/login", forceLoad: true);
+		Navigation.NavigateTo("/login", true);
 	}
 }
