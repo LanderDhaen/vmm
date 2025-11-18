@@ -10,13 +10,15 @@
 } 
 else {
 
-    <MudButton Variant="Variant.Filled"
-               Size="Size.Small"
-               StartIcon="@(DisplayTable ? Icons.Material.Filled.Timeline : Icons.Material.Filled.TableRows)"
-               Color="Color.Primary"
-               OnClick="@(() => DisplayTable = !DisplayTable)">
-        @(DisplayTable ? "Tijdslijn" : "Tabel")
-    </MudButton>
+	<MudToolBar Class="justify-end" Gutters="false">
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@(DisplayTable ? Icons.Material.Filled.Timeline : Icons.Material.Filled.TableRows)"
+		           Color="Color.Primary"
+		           OnClick="@(() => DisplayTable = !DisplayTable)">
+			@(DisplayTable ? "Tijdslijn" : "Tabel")
+		</MudButton>
+	</MudToolBar>
     
     @if (DisplayTable)
     {
