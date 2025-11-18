@@ -18,7 +18,7 @@ public class Detail(IProjectService projectService) : Endpoint<EmptyRequest, Res
 public class History(IProjectService projectService) : Endpoint<EmptyRequest, Result<ProjectResponse.History>> {
 	public override void Configure() {
 		Get("/api/projects/{projectId}/history");
-		AllowAnonymous();
+		Roles(AppRoles.Administrator);
 	}
 
 	public override async Task<Result<ProjectResponse.History>> ExecuteAsync(EmptyRequest req, CancellationToken ct) {

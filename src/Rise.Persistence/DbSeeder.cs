@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
-using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.Stations.ValueObjects;
@@ -22,7 +21,6 @@ public class DbSeeder(
 	public async Task SeedAsync() {
 		await RolesAsync();
 		await UsersAsync();
-		await ProductsAsync();
 		await ZonesAsync();
 		await MeasurementNetworksAsync();
 		await LocationAsync();
@@ -91,27 +89,6 @@ public class DbSeeder(
 		dbContext.Technicians.AddRange(
 			new Technician("Tech 1", "Awesome", technicianAccount1.Id),
 			new Technician("Tech 2", "Less Awesome", technicianAccount2.Id));
-
-		await dbContext.SaveChangesAsync();
-	}
-
-	private async Task ProductsAsync() {
-		if (dbContext.Products.Any()) {
-			return;
-		}
-
-		dbContext.Products.AddRange(
-			new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
-			new Product { Name = "Smartphone", Description = "6.5-inch screen, 128GB storage" },
-			new Product { Name = "Headphones", Description = "Wireless noise-cancelling" },
-			new Product { Name = "Keyboard", Description = "Mechanical RGB backlit" },
-			new Product { Name = "Mouse", Description = "Ergonomic wireless mouse" },
-			new Product { Name = "Monitor", Description = "27-inch 4K UHD display" },
-			new Product { Name = "Printer", Description = "All-in-one inkjet printer" },
-			new Product { Name = "Camera", Description = "Mirrorless 24MP with 4K video" },
-			new Product { Name = "Smartwatch", Description = "Heart rate monitor, GPS" },
-			new Product { Name = "Speaker", Description = "Bluetooth portable speaker" }
-		);
 
 		await dbContext.SaveChangesAsync();
 	}
