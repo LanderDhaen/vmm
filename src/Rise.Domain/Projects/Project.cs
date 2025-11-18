@@ -53,13 +53,11 @@ public class Project : Entity {
 		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
 		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
-		UpdateStatusBasedOnEndDate();
 		
-		CreateProjectHistory(dateRange);
-		
+		UpdateDateRange(dateRange);
 	}
 
-	private void CreateProjectHistory(DateRange dateRange) {
+	private void UpdateDateRange(DateRange dateRange) {
 		
 		// Check if the values are the same as the old values
 
@@ -76,6 +74,7 @@ public class Project : Entity {
 		// Assign the new values
 
 		DateRange = dateRange;
+		UpdateStatusBasedOnEndDate();
 	}
 
 	public void UpdateStatus(Status newStatus) {
