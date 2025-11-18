@@ -1,63 +1,80 @@
+@page "/"
 @page "/login"
+@layout LoginLayout
 
 <PageTitle>Login</PageTitle>
 
 <AuthorizeView>
-	<Authorized Context="authContext">
-		<div class="notification">You're logged in as @authContext.User.Identity?.Name.</div>
-		<div><strong>With the following claims:</strong>
-			<div class="fixed-grid has-2-cols">
-				<div class="grid is-gap-1">
-					<div class="cel"><strong>Type</strong></div>
-					<div class="cel"><strong>Value</strong></div>
-					@foreach (var claim in authContext.User.Claims)
-					{
-						<div class="cel">@claim.Type</div>
-						<div class="cel">@claim.Value</div>
-					}
-				</div>
-			</div>
-		</div>
-	</Authorized>
-	<NotAuthorized>
-		<div class="container">
-			@foreach (var error in _result.Errors)
-			{
-				<div class="notification is-danger">@error</div>
-			}
-			<div class="columns is-centered">
-				<section class="column is-one-third">
-					<EditForm Model="Model" OnValidSubmit="LoginUser" Context="formContext">
-						<FluentValidationValidator/>
-						<div class="field">
-							<p class="control has-icons-left has-icons-right">
-								<InputText @bind-Value="Model.Email" type="email" autocomplete="username" class="input"
-								           placeholder="Email"/>
-								<span class="icon is-small is-left">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-							</p>
-							<ValidationMessage For="() => Model.Email" class="has-text-danger"/>
-						</div>
-						<div class="field">
-							<p class="control has-icons-left">
-								<InputText @bind-Value="Model.Password" class="input" type="password"
-								           placeholder="Password"/>
-								<span class="icon is-small is-left">
-                                <i class="fas fa-lock"></i>
-                            </span>
-							</p>
-							<ValidationMessage For="() => Model.Password" class="has-text-danger"/>
-						</div>
-						<div class="field is-grouped is-grouped-right">
-							<p class="control">
-								<button class="button is-light">Login</button>
-							</p>
-						</div>
-					</EditForm>
-				</section>
-			</div>
-		</div>
+    <Authorized Context="authContext">
+    </Authorized>
 
-	</NotAuthorized>
+    <NotAuthorized Context="notAuth">
+        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-12">
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudStack Spacing="1" Class="mb-4">
+                        <MudAvatar Size="Size.Large" Color="Color.Primary">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.h5">VMM App - Expert</MudText>
+                        <MudText Typo="Typo.subtitle2">
+                            Meld je aan om verder te gaan.
+                        </MudText>
+                    </MudStack>
+                </MudItem>
+
+                <MudItem xs="12">
+                    @if (_result.Errors != null && _result.Errors.Any())
+                    {
+                        <MudAlert Severity="Severity.Error"
+                                  Elevation="1"
+                                  Variant="Variant.Filled"
+                                  Class="mb-4">
+                            <MudText Typo="Typo.subtitle2">
+                                Het e-mailadres of wachtwoord is onjuist.
+                            </MudText>
+                        </MudAlert>
+                    }
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudPaper Elevation="3" Class="pa-6">
+                        <EditForm Model="Model" OnValidSubmit="LoginUser">
+                            <FluentValidationValidator />
+
+                            <MudStack Spacing="3">
+                                <MudTextField @bind-Value="Model.Email"
+                                              Label="E-mail"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              For="() => Model.Email"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Email"
+                                              InputType="InputType.Email"
+                                              Autocomplete="username" />
+
+                                <MudTextField @bind-Value="Model.Password"
+                                              Label="Wachtwoord"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              For="() => Model.Password"
+                                              Adornment="Adornment.Start"
+                                              AdornmentIcon="@Icons.Material.Filled.Lock"
+                                              InputType="InputType.Password"
+                                              Autocomplete="current-password" />
+
+                                <MudButton ButtonType="ButtonType.Submit"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           FullWidth="true">
+                                    Inloggen
+                                </MudButton>
+                                
+                            </MudStack>
+                        </EditForm>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </NotAuthorized>
 </AuthorizeView>

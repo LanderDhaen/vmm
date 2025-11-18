@@ -7,6 +7,7 @@ using MudBlazor.Services;
 
 using NSubstitute;
 
+using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
@@ -17,6 +18,8 @@ internal sealed class ClientTestContext : IDisposable {
 	public ClientTestContext() {
 		Ctx.JSInterop.Mode = JSRuntimeMode.Loose;
 		Ctx.Services.AddMudServices();
+		Ctx.Services.AddSingleton<BreadcrumbService>();
+		Ctx.Services.AddSingleton<HeaderService>();
 	}
 
 	public TestContext Ctx { get; } = new();

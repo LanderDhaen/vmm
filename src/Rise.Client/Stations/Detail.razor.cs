@@ -2,15 +2,13 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
 public partial class Detail {
-	// ===== Breadcrumbs =====
-	private readonly List<BreadcrumbItem> _items = new();
-
 	// ===== Tabs =====
 	private readonly List<string> _tabs = new() {
 		"Info",
@@ -25,10 +23,10 @@ public partial class Detail {
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
-
 	[Parameter] public Guid StationId { get; set; }
-
 	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	private async Task SetTabAsync(int index) {
 		_selectedTab = index;
@@ -47,17 +45,25 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			_station = result.Value.Station;
 
-			_items.Clear();
-			_items.Add(new BreadcrumbItem("", "/", icon: Icons.Material.Filled.Home));
-			_items.Add(new BreadcrumbItem("Meetstations", "/stations"));
-			_items.Add(new BreadcrumbItem(_station.Code, null, true));
-
 			_tabs[2] = $"Projecten ({_station.ProjectsCount})";
 		}
-	}
 
-	private void NavigateToStations() {
-		Navigation.NavigateTo("/stations/");
+		// set breadcrumbs
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Meetstations", "/stations"),
+			new BreadcrumbItem($"{_station.Code}", null, true)
+		);
+
+		// set header
+		HeaderService.Set(
+			"Detail",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/stations/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private Task<GridData<ProjectDto.Index>> GetProjectsGridAsync(GridState<ProjectDto.Index> state) {

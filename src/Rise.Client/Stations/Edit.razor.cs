@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.Projects;
@@ -41,6 +42,8 @@ public partial class Edit {
 	[Inject] private ILocationService LocationService { get; set; } = default!;
 	[Inject] private IProjectService ProjectService { get; set; } = default!;
 	[Inject] private NavigationManager Nav { get; set; } = default!;
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
 		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
@@ -79,6 +82,23 @@ public partial class Edit {
 			LocationId = locationId,
 			ProjectId = preselectedProjectId
 		};
+
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Meetstations", "/stations"),
+			new BreadcrumbItem("Bewerk", $"/stations/edit/{StationId}", true)
+		);
+
+		// set header
+		HeaderService.Set(
+			"Bewerk",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/stations/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task EditStationAsync() {
