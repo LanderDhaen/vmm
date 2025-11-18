@@ -1,9 +1,9 @@
 namespace Rise.Domain.Devices;
 
-public class SimDevice : MaintenanceDevice, IMaintenanceDevice {
-	private SimDevice() : base(Guid.Empty, "", MaintenanceDeviceType.Sim) { }
+public class Sim : MaintenanceDevice, IMaintenanceDevice {
+	private Sim() : base(Guid.Empty, "", MaintenanceDeviceType.Sim) { }
 
-	public SimDevice(DeviceSpecification spec, string imsi, string iccid, string? operatorName = null,
+	public Sim(DeviceSpecification spec, string imsi, string iccid, string? operatorName = null,
 		int signalStrength = 0) : base(spec.MeasurementStationId, spec.Name, MaintenanceDeviceType.Sim,
 		spec.SerialNumber) {
 		Imsi = imsi ?? throw new ArgumentNullException(nameof(imsi));
