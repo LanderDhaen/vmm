@@ -4,7 +4,7 @@
 @attribute [Authorize]
 <PageTitle>Projecten</PageTitle>
 
-<MudContainer>
+
 	<ToolBar OnSortClicked="OpenSortOptionsAsync" />
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDataGrid T="ProjectDto.Index"
@@ -12,7 +12,7 @@
 		             RowsPerPage="10"
 		             Striped="true"
 		             Hover="true"
-		             RowClick="OnRowClick">
+		             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 			<Columns>
 				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary" />
@@ -48,7 +48,7 @@
 						<MudCard
 							Elevation="2"
 							Class="rounded-lg"
-							@onclick="() => NavigateToProject(item.Id)">
+							onclick="() => NavigateToProject(item.Id)">
 							<MudCardContent>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 
@@ -70,7 +70,6 @@
 		           Variant="DrawerVariant.Temporary"
 		           Elevation="8"
 		           @bind-Open="_mobileSortOptionsOpen"
-		           DisableOverlay="false"
 		           Class="p-4"
 		           Style="max-height:70vh; overflow-y:auto; border-radius:16px 16px 0 0;">
 			<MudStack Spacing="2">
@@ -170,5 +169,4 @@
 			</MudStack>
 		</MudDrawer>
 	</MudHidden>
-	@* </MudPaper> *@
-</MudContainer>
+
