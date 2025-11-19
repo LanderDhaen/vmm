@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.Stations;
@@ -16,6 +17,8 @@ public partial class Create {
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
 
 	private MeasurementStationRequest.Create Model { get; } = new() {
 		IsNewLocation = false
@@ -27,6 +30,23 @@ public partial class Create {
 	protected override async Task OnInitializedAsync() {
 		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
 		_locations = result.Value.Locations;
+		
+		// set breadcrumbs
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Meetstations", "/stations"),
+			new BreadcrumbItem("Voeg toe", $"/stations/create", true)
+		);
+
+		// set header
+		HeaderService.Set(
+			"Voeg toe",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				NavigationManager.NavigateTo("/stations/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task CreateProjectAsync() {

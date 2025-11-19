@@ -15,7 +15,6 @@ using Severity = MudBlazor.Severity;
 namespace Rise.Client.Stations;
 
 public partial class Edit {
-	private readonly string[] _statuses = ["Actief", "Inactief"];
 	private readonly MeasurementStationRequest.Edit.Validator validator = new();
 
 	private IEnumerable<LocationDto.Index> _locations = Array.Empty<LocationDto.Index>();
