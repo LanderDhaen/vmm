@@ -7,6 +7,7 @@ using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
 
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
@@ -192,11 +193,40 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		// 	return Result.Unauthorized("You are not authorized to edit this project.");
 		// }
 
-
 		project.UpdateStatus((Status)req.NewStatus);
 
 		await dbContext.SaveChangesAsync(ctx);
 
 		return Result.Success();
+	}
+
+	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+		Guid projectId,
+		CancellationToken ctx = default) {
+
+		bool exists = await dbContext.Projects
+			.AsNoTracking()
+			.AnyAsync(p => p.Id == projectId, ctx);
+
+		if (!exists) {
+			return Result.NotFound($"Project met Id '{projectId}' was niet gevonden.");
+		}
+
+		List<MeasurementStationDto.Index> stations = await dbContext.MeasurementStations
+			.AsNoTracking()
+			.Where(s => s.Projects.Any(p => p.Id == projectId))
+			.Select(s => new MeasurementStationDto.Index {
+				Id = s.Id,
+				Code = s.Code,
+				Status = s.Status,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				Location = s.Location.Name,
+				City = s.Location.Address.City,
+				ProjectsCount = s.Projects.Count()
+			})
+			.ToListAsync(ctx);
+
+		return Result.Success(stations);
 	}
 }
