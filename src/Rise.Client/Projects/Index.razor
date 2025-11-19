@@ -102,7 +102,7 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg gap-1">
+					<MudCard Elevation="2" Class="rounded-lg gap-1" @onclick="<@NavigateToProject(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Spacing="1">
