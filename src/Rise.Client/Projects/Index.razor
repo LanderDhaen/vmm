@@ -1,8 +1,8 @@
 @page "/projects"
+@using Rise.Client.Components
 @using Rise.Shared.Projects
 @attribute [Authorize]
 <PageTitle>Projecten</PageTitle>
-
 
 @* Desktop view *@
 
@@ -48,6 +48,11 @@
 			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary"/>
 		</Columns>
+		
+		<PagerContent>
+			<Pagination T="ProjectDto.Index" />
+		</PagerContent>
+		
 	</MudDataGrid>
 </MudHidden>
 

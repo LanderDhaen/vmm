@@ -56,11 +56,14 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
+		
+		var sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = "Id"
+			OrderBy = sorting?.SortBy ?? "Name",
+			OrderDescending = sorting?.Descending ?? false,
 		};
 
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
@@ -99,7 +102,7 @@ public partial class Index {
 		_activeSortingDesc = descending;
 	}
 
-	// TODO: Implement filtering (updating the state for desktop or calling SortMobileAsync for mobile)
+	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
 
 	// Navigation
 
