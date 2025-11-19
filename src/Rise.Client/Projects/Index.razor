@@ -102,21 +102,23 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<MudCard
-						Elevation="2"
-						Class="rounded-lg"
-						@onclick="() => NavigateToProject(item.Id)">
-						<MudCardContent>
-							<MudText Typo="Typo.h6">@item.Name</MudText>
-
-							<MudText Typo="Typo.caption">
-								<b>Code:</b> @item.Code<br/>
-								<b>Zone:</b> @item.Zone<br/>
-								<b>Status:</b> @item.Status<br/>
-								<b>Start datum:</b> @(item.StartDate.ToString("dd/MM/yyyy"))<br/>
-								<b>Eind datum:</b> @(item.StartDate.ToString("dd/MM/yyyy"))<br/>
-								<b>Meetnet:</b> @item.MeasurementNetwork
-							</MudText>
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+									<MudStack Spacing="0">
+										<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
+										<MudText Typo="Typo.h6">@item.Name</MudText>
+									</MudStack>
+									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@item.Status</MudChip>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="d-flex flex-column gap-1">
+							<MudText Typo="Typo.caption"><b>Start datum:</b> @item.StartDate</MudText>
+							<MudText Typo="Typo.caption"><b>Eind datum:</b> @item.EndDate</MudText>
+							<MudText Typo="Typo.caption"><b>Meetnet:</b> @item.MeasurementNetwork</MudText>
+							<MudText Typo="Typo.caption"><b>Zone:</b> @item.Zone</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
