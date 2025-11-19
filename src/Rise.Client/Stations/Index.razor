@@ -3,11 +3,35 @@
 @using Rise.Shared.Stations
 
 <PageTitle>Stations</PageTitle>
+<MudHidden Breakpoint="Breakpoint.Xs">
 
-<MudContainer>
-	<ToolBar OnSortChanged="HandleSortChanged" OnOpenSortRequested="() => Open = true" />
+	<MudToolBar Gutters="false" Class="gap-3">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              FullWidth="true"
+		              Margin="Margin.Dense" />
 
-	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudSpacer />
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@Icons.Material.Filled.FilterAlt"
+		           Color="Color.Primary"
+		           Class="px-4">
+			Filteren
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
+			Project
+		</MudButton>
+	</MudToolBar>
+	
 		<MudDataGrid T="MeasurementStationDto.Index"
 		             ServerData="GetStationsAsync"
 		             RowsPerPage="10"
@@ -37,6 +61,29 @@
 
 	<!-- MOBILE: list with MudCard components (visible on xs and down). Drawer lives here -->
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudToolBar Gutters="false" Class="gap-3">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              FullWidth="true"
+		              Margin="Margin.Dense" />
+
+		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@ToggleSortingDrawer" />
+
+		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+		               Color="Color.Primary"
+		               Size="Size.Small" />
+		
+		<MudIconButton Icon="@Icons.Material.Filled.Add"
+		               Color="Color.Primary"
+		               Size="Size.Small" 
+		               OnClick="@NavigateToCreate"/>
+	</MudToolBar>
     @if (Open)
     {
         <MudDrawer Variant="DrawerVariant.Temporary"
@@ -133,4 +180,3 @@
 			}
 		</MudGrid>
 	</MudHidden>
-</MudContainer>
