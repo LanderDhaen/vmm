@@ -1,6 +1,6 @@
 namespace Rise.Shared.Locations;
 
-public static partial class LocationRequest {
+public static class LocationRequest {
 	public class Create {
 		public string Name { get; set; }
 		public string? Addressline1 { get; set; }

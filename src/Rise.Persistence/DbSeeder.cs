@@ -167,6 +167,7 @@ public class DbSeeder(
 		dbContext.Locations.AddRange(locations);
 		await dbContext.SaveChangesAsync();
 	}
+
 	private async Task ProjectsAsync() {
 		if (dbContext.Projects.Any()) {
 			return;
@@ -206,7 +207,8 @@ public class DbSeeder(
 			return;
 		}
 
-		List<Project> projects = await dbContext.Projects.Include(p => p.DateRange).Include(p => p.MeasurementNetwork).ToListAsync();
+		List<Project> projects = await dbContext.Projects.Include(p => p.DateRange).Include(p => p.MeasurementNetwork)
+			.ToListAsync();
 
 		List<DateOnly?> endDates = new() {
 			new DateOnly(2025, 6, 30),
@@ -214,18 +216,18 @@ public class DbSeeder(
 			new DateOnly(2025, 9, 25),
 			null,
 			new DateOnly(2025, 12, 31),
-			null,
+			null
 		};
 
 		int i = 0;
 
 		foreach (Project project in projects) {
-
 			DateRange dateRange = project.DateRange;
 
 			// Move the start date
 
-			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate), project.MeasurementNetwork);
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate),
+				project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
 
 			// Revert change
@@ -235,7 +237,8 @@ public class DbSeeder(
 
 			// Move the end date
 
-			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]), project.MeasurementNetwork);
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]),
+				project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
 
 			// Update the counter
