@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
-using Rise.Shared.Products;
 
 namespace Rise.Client.Networks;
 

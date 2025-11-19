@@ -76,13 +76,3 @@ jobs:
                 labels,
               });
             }
-
-            // Comment on XL PRs
-            if (totalChanges >= 1000) {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pr_number,
-                body: `## ⚠️ Large Pull Request\n\nThis PR has **${totalChanges} lines changed**. Consider breaking it into smaller PRs for easier review.\n\n**Tip**: Smaller PRs (< 500 lines) are:\n- Easier to review\n- Faster to merge\n- Less likely to have bugs\n- Easier to revert if needed`
-              });
-            }

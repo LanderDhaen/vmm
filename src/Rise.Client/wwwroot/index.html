@@ -27,8 +27,10 @@
 	<a class="reload" href="">Reload</a>
 	<a class="dismiss">🗙</a>
 </div>
+<!-- ensure helper is loaded before Blazor starts -->
+<script src="/js/rise.window.js"></script>
 <script src="_framework/blazor.webassembly.js"></script>
-<!-- Important: Increment the version parameter whenever you update MudBlazor to prevent caching issues -->
+<!-- MudBlazor and other libs can follow -->
 <script src="_content/MudBlazor/MudBlazor.min.js?v=1"></script>
 </body>
 </html>

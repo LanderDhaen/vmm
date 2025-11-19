@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -9,15 +10,18 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Create {
+	private readonly ProjectRequest.Create.Validator validator = new();
 	private Result<ProjectResponse.Create>? _result;
+	private MudForm form;
 	private IEnumerable<MeasurementNetworkDto.Index>? networks;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
+	[Inject] public required HeaderService HeaderService { get; set; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+
 	private ProjectRequest.Create Model { get; } = new();
-	private readonly ProjectRequest.Create.Validator validator = new();
-	MudForm form;
 
 	protected override async Task OnInitializedAsync() {
 		QueryRequest.SkipTake request = new() {
@@ -28,6 +32,21 @@ public partial class Create {
 
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		networks = result.Value.measurementsNetworks;
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Voeg toe", "/create", true)
+		);
+
+		HeaderService.Set(
+			"Voeg toe",
+			Icons.Material.Filled.ArrowBack,
+			() => {
+				Navigation.NavigateTo("/projects/");
+				return Task.CompletedTask;
+			}
+		);
 	}
 
 	private async Task CreateProjectAsync() {

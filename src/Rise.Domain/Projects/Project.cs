@@ -1,47 +1,114 @@
-using Rise.Domain.Locations;
+using Rise.Domain.Networks;
+using Rise.Domain.Stations;
 
 namespace Rise.Domain.Projects;
-
-using Networks;
 
 /// <summary>
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-	private string _code = string.Empty;
 
-	private string _name = string.Empty;
+	// Properties
+
+	public string Name { get; private set; }
+	public string Code { get; private set; }
+	public DateRange DateRange { get; private set; } = default!;
+	public Status Status { get; private set; } = Status.Actief;
+
+	// Relations
+
+	public MeasurementNetwork MeasurementNetwork { get; private set; }
+	public ICollection<MeasurementStation> Stations { get; private set; } =
+		new List<MeasurementStation>();
+
+	// History
+
+	private readonly List<ProjectHistory> _projectHistories = [];
+	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
+
+	// Constructors
+
+	/// <summary>
+	/// Entity Framework Core Constructor
+	/// </summary>
+	private Project() { }
+
+	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		DateRange = Guard.Against.Null(dateRange);
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
+		UpdateStatusBasedOnEndDate();
+	}
+
+	// Functions
+
+	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+
+
+		if (Status == Status.Afgesloten) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
+		}
+
+		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
+		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
+
+		UpdateDateRange(dateRange);
+	}
+
+	private void UpdateDateRange(DateRange dateRange) {
+
+		// Check if the values are the same as the old values
+
+		if (dateRange.Equals(DateRange)) {
+			return;
+		}
+
+		// Create history object using the old values
+
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
+		_projectHistories.Add(projectHistory);
+
+		// Assign the new values
+
+		DateRange = dateRange;
+		UpdateStatusBasedOnEndDate();
+	}
+
+	public void UpdateStatus(Status newStatus) {
+		if (Status == newStatus) {
+			return;
+		}
+
+		DateRange = newStatus switch {
+			Status.Actief => new DateRange(DateRange.StartDate),
+			Status.Afgesloten when !DateRange.EndDate.HasValue => new DateRange(DateRange.StartDate,
+				DateOnly.FromDateTime(DateTime.UtcNow)),
+			_ => DateRange
+		};
+
+		Status = newStatus;
+	}
+
+	private void UpdateStatusBasedOnEndDate() {
+		Status = DateRange.EndDate.HasValue
+			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
+			: Status.Actief;
+	}
+}
+
+public class ProjectHistory : HistoryEntity {
+	public DateRange DateRange { get; init; }
 
 	/// <summary>
 	///     Entity Framework Core Constructor
 	/// </summary>
-	private Project() {
+	private ProjectHistory() {
 	}
-
-	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
-		Name = name;
-		Code = code;
-		DateRange = Guard.Against.Null(dateRange);
-		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
-	}
-
-	public string Name {
-		get => _name;
-		set => _name = Guard.Against.NullOrWhiteSpace(value);
-	}
-
-	public string Code {
-		get => _code;
-		set => _code = Guard.Against.NullOrWhiteSpace(value);
-	}
-
-	public DateRange DateRange { get; init; } = default!;
-
-	public ICollection<Stations.MeasurementStation> Stations { get; private set; } = new List<Stations.MeasurementStation>();
-
-	public MeasurementNetwork MeasurementNetwork { get; init; } = default!;
-
-	public void Edit(string name) {
-		Name = Guard.Against.NullOrEmpty(name);
+	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
+		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
+		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
 	}
 }

@@ -11,6 +11,7 @@ public static class MeasurementStationDto {
 		public string? City { get; set; }
 		public int ProjectsCount { get; set; }
 	}
+
 	public sealed class Detail {
 		public Guid Id { get; set; }
 		public string Code { get; set; } = default!;

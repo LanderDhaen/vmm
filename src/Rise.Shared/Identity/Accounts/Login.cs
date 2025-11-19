@@ -2,7 +2,7 @@
 
 namespace Rise.Shared.Identity.Accounts;
 
-public static partial class AccountRequest {
+public static class AccountRequest {
 	public class Login {
 		/// <summary>
 		///     The user's email address which acts as a user name.
@@ -35,8 +35,12 @@ public static partial class AccountRequest {
 		/// </summary>
 		public class Validator : AbstractValidator<Login> {
 			public Validator() {
-				RuleFor(x => x.Email).NotEmpty().EmailAddress();
-				RuleFor(x => x.Password).NotEmpty();
+				RuleFor(x => x.Email)
+					.NotEmpty().WithMessage("E-mail mag niet leeg zijn.")
+					.EmailAddress().WithMessage("Voer een geldig e-mailadres in.");
+
+				RuleFor(x => x.Password)
+					.NotEmpty().WithMessage("Wachtwoord mag niet leeg zijn.");
 			}
 		}
 	}

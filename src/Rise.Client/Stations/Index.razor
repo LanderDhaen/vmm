@@ -1,54 +1,91 @@
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
-@using Rise.Shared.Locations
+@attribute [Authorize]
 
 <PageTitle>Stations</PageTitle>
 
-<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-	<MudDataGrid T="MeasurementStationDto.Index"
-	             ServerData="GetStationsAsync"
-	             RowsPerPage="10"
-	             Bordered="true"
-	             Striped="true"
-	             Hover="true"
-	             Dense="false"
-	             Elevation="0"
-	             RowClick="OnRowClick">
+<MudContainer>
+	@* <MudPaper Elevation="0" Class="gap-4 px-8"> *@
+	<ToolBar/>
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudDataGrid T="MeasurementStationDto.Index"
+		             ServerData="GetStationsAsync"
+		             RowsPerPage="10"
+		             Striped="true"
+		             Hover="true"
+		             RowClick="OnRowClick"
+		>
+			<Columns>
+				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" HeaderClass="mud-theme-primary"/>
+			</Columns>
 
-		<ToolBarContent>
-			<ToolBar/>
-		</ToolBarContent>
+			<PagerContent>
+				<Pagination T="MeasurementStationDto.Index"/>
+			</PagerContent>
+		</MudDataGrid>
+	</MudHidden>
 
-		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" />
-
-			@*<PropertyColumn Property="x => x.Status" Title="Status">
-				<CellTemplate Context="row">
-					@{
-						var raw = row.Item.Status ?? string.Empty;
-						var nl = raw switch
-						{
-							"Active" or "Actief"     => "Actief",
-							"Inactive" or "Inactief" => "Inactief",
-							_                        => raw
-						};
-					}
-					<span>@nl</span>
-				</CellTemplate>
-			</PropertyColumn>*@
-
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" />
-			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" />
-
-			<PropertyColumn Property="x => x.Location" Title="Locatie" />
-			<PropertyColumn Property="x => x.City" Title="Gemeente" />
-
-			<PropertyColumn Property="x => x.ProjectsCount" Title="# Projecten" />
-		</Columns>
-
-		<PagerContent>
-			<Pagination T="MeasurementStationDto.Index" />
-		</PagerContent>
-	</MudDataGrid>
-</MudPaper>
+	<!-- MOBILE: list with MudCard components (visible on xs and down).
+		 Using MudGrid + MudCard makes layout consistent with MudBlazor styling. -->
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudGrid>
+			@if (_mobileStations is null)
+			{
+				<MudItem xs="12">
+					<div>
+						<MudProgressCircular Indeterminate="true"/>
+					</div>
+				</MudItem>
+			}
+			else if (!_mobileStations.Any())
+			{
+				<MudItem xs="12">
+					<MudText>Geen meetstations</MudText>
+				</MudItem>
+			}
+			else
+			{
+				@foreach (var item in _mobileStations)
+				{
+					<MudItem xs="12">
+						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
+						<MudCard
+							Elevation="2"
+							Class="rounded-lg"
+							@onclick="() => NavigateToStation(item.Id)">
+							<MudCardHeader Class="d-flex">
+								<CardHeaderContent>
+									<MudText Typo="Typo.subtitle1" Style="font-weight: bold"
+									         Color="Color.Primary">@item.Code</MudText>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent Class="d-flex flex-column gap-1">
+								<MudText Typo="Typo.caption">
+									<b>Geïnstaleerd</b> @item.InstalledAt.ToString("dd/MM/yyyy")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Verwijderd</b> @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Locatie:</b> @item.Location
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Gemeente:</b> @item.City
+								</MudText>
+								<MudText Typo="Typo.caption">
+									<b>Projecten:</b>@item.ProjectsCount</MudText>
+							</MudCardContent>
+						</MudCard>
+					</MudItem>
+				}
+			}
+		</MudGrid>
+	</MudHidden>
+	@* </MudPaper> *@
+</MudContainer>

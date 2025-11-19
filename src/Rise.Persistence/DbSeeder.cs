@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
-using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
@@ -21,11 +20,11 @@ public class DbSeeder(
 	public async Task SeedAsync() {
 		await RolesAsync();
 		await UsersAsync();
-		await ProductsAsync();
 		await ZonesAsync();
 		await MeasurementNetworksAsync();
 		await LocationAsync();
 		await ProjectsAsync();
+		await ProjectHistoriesAsync();
 		await StationsAsync();
 	}
 
@@ -89,27 +88,6 @@ public class DbSeeder(
 		dbContext.Technicians.AddRange(
 			new Technician("Tech 1", "Awesome", technicianAccount1.Id),
 			new Technician("Tech 2", "Less Awesome", technicianAccount2.Id));
-
-		await dbContext.SaveChangesAsync();
-	}
-
-	private async Task ProductsAsync() {
-		if (dbContext.Products.Any()) {
-			return;
-		}
-
-		dbContext.Products.AddRange(
-			new Product { Name = "Laptop", Description = "15-inch display, 16GB RAM" },
-			new Product { Name = "Smartphone", Description = "6.5-inch screen, 128GB storage" },
-			new Product { Name = "Headphones", Description = "Wireless noise-cancelling" },
-			new Product { Name = "Keyboard", Description = "Mechanical RGB backlit" },
-			new Product { Name = "Mouse", Description = "Ergonomic wireless mouse" },
-			new Product { Name = "Monitor", Description = "27-inch 4K UHD display" },
-			new Product { Name = "Printer", Description = "All-in-one inkjet printer" },
-			new Product { Name = "Camera", Description = "Mirrorless 24MP with 4K video" },
-			new Product { Name = "Smartwatch", Description = "Heart rate monitor, GPS" },
-			new Product { Name = "Speaker", Description = "Bluetooth portable speaker" }
-		);
 
 		await dbContext.SaveChangesAsync();
 	}
@@ -189,7 +167,6 @@ public class DbSeeder(
 		dbContext.Locations.AddRange(locations);
 		await dbContext.SaveChangesAsync();
 	}
-
 	private async Task ProjectsAsync() {
 		if (dbContext.Projects.Any()) {
 			return;
@@ -200,13 +177,15 @@ public class DbSeeder(
 			return;
 		}
 
+		// Initialise as projects without endDate to allow easier history seeding
+
 		List<DateRange> dateRanges = new() {
-			new DateRange(new DateOnly(2025, 1, 15), new DateOnly(2025, 6, 30)),
-			new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 8, 15)),
-			new DateRange(new DateOnly(2025, 3, 10), new DateOnly(2025, 9, 25)),
-			new DateRange(new DateOnly(2025, 4, 5), null),
-			new DateRange(new DateOnly(2025, 5, 12), new DateOnly(2025, 12, 31)),
-			new DateRange(new DateOnly(2025, 5, 12), null)
+			new DateRange(new DateOnly(2025, 1, 15)),
+			new DateRange(new DateOnly(2025, 2, 1)),
+			new DateRange(new DateOnly(2025, 3, 10)),
+			new DateRange(new DateOnly(2025, 4, 5)),
+			new DateRange(new DateOnly(2025, 5, 12)),
+			new DateRange(new DateOnly(2025, 5, 12))
 		};
 
 		List<Project> projects = new() {
@@ -222,43 +201,84 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private async Task StationsAsync() {
-		if (dbContext.MeasurementStations.Any())
+	private async Task ProjectHistoriesAsync() {
+		if (!dbContext.Projects.Any()) {
 			return;
+		}
 
-		var locations = dbContext.Locations.Local.Any()
+		List<Project> projects = await dbContext.Projects.Include(p => p.DateRange).Include(p => p.MeasurementNetwork).ToListAsync();
+
+		List<DateOnly?> endDates = new() {
+			new DateOnly(2025, 6, 30),
+			new DateOnly(2025, 8, 15),
+			new DateOnly(2025, 9, 25),
+			null,
+			new DateOnly(2025, 12, 31),
+			null,
+		};
+
+		int i = 0;
+
+		foreach (Project project in projects) {
+
+			DateRange dateRange = project.DateRange;
+
+			// Move the start date
+
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate), project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+
+			// Revert change
+
+			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+
+			// Move the end date
+
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]), project.MeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+
+			// Update the counter
+
+			i++;
+		}
+	}
+
+	private async Task StationsAsync() {
+		if (dbContext.MeasurementStations.Any()) {
+			return;
+		}
+
+		List<Location> locations = dbContext.Locations.Local.Any()
 			? dbContext.Locations.Local.ToList()
 			: await dbContext.Locations.ToListAsync();
 
-		var projects = dbContext.Projects.Local.Any()
+		List<Project> projects = dbContext.Projects.Local.Any()
 			? dbContext.Projects.Local.ToList()
 			: await dbContext.Projects.ToListAsync();
 
-		if (!locations.Any() || !projects.Any())
+		if (!locations.Any() || !projects.Any()) {
 			return;
+		}
 
 		int l0 = 0;
 		int l1 = Math.Min(1, locations.Count - 1);
 		int p0 = 0;
 		int p1 = Math.Min(1, projects.Count - 1);
 
-		var station1 = new MeasurementStation(
-			code: "STN-001",
-			//status: "Active",
-			location: locations[l0],
-			installation: new Installation(DateTime.UtcNow.AddMonths(-6))
-			//projects: new[] { projects[p0] }
+		MeasurementStation station1 = new(
+			"STN-001",
+			locations[l0],
+			new Installation(DateTime.UtcNow.AddMonths(-6))
 		);
 
-		var station2 = new MeasurementStation(
-			code: "STN-002",
-			//status: "Inactive",
-			location: locations[l1],
-			installation: new Installation(
-				installedAt: DateTime.UtcNow.AddYears(-1),
-				removedAt: DateTime.UtcNow.AddDays(-30)
+		MeasurementStation station2 = new(
+			"STN-002",
+			locations[l1],
+			new Installation(
+				DateTime.UtcNow.AddYears(-1),
+				DateTime.UtcNow.AddDays(-30)
 			)
-			//projects: new[] { projects[p1], projects[p0] }
 		);
 
 		dbContext.MeasurementStations.AddRange(station1, station2);

@@ -8,6 +8,7 @@ public static partial class MeasurementStationResponse {
 		public IEnumerable<MeasurementStationDto.Index> Stations { get; set; } = [];
 		public int TotalCount { get; set; }
 	}
+
 	public class Detail {
 		public required MeasurementStationDto.Detail Station { get; set; }
 	}

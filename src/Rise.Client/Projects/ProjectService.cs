@@ -7,7 +7,8 @@ namespace Rise.Client.Projects;
 
 public class ProjectService(HttpClient httpClient) : IProjectService {
 	public async Task<Result> EditAsync(ProjectRequest.Edit request, CancellationToken ctx = default) {
-		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/projects", request, ctx);
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{request.ProjectId}", request, ctx);
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
@@ -20,16 +21,29 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
+	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		Result<ProjectResponse.Index>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{request.AsQuery()}", ctx);
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
 		return result!;
 	}
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Result<ProjectResponse.Detail>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Detail>>($"/api/projects/{projectId}", ctx);
+		return result!;
+	}
+
+	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		Result<ProjectResponse.History>? result = await httpClient.GetFromJsonAsync<Result<ProjectResponse.History>>($"/api/projects/{projectId}/history", ctx);
+		return result!;
+	}
+
+	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/status", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
 }
