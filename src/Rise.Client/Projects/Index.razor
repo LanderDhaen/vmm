@@ -7,16 +7,15 @@
 @* Desktop view *@
 
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudToolBar Gutters="false" Class="gap-3">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
+		              Class="m-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
 		              FullWidth="true"
 		              Margin="Margin.Dense" />
-
-		<MudSpacer />
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
 		           StartIcon="@Icons.Material.Filled.FilterAlt"
@@ -32,7 +31,7 @@
 		           OnClick="@NavigateToCreate">
 			Project
 		</MudButton>
-	</MudToolBar>
+	</MudStack>
 	<MudDataGrid T="ProjectDto.Index"
 	             ServerData="GetProjectsAsync"
 	             RowsPerPage="10"
@@ -59,9 +58,10 @@
 @* Mobile view *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudToolBar Gutters="false" Class="gap-3">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
+		              Class="m-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -81,7 +81,7 @@
 		               Color="Color.Primary"
 		               Size="Size.Small" 
 		               OnClick="@NavigateToCreate"/>
-	</MudToolBar>
+	</MudStack>
 	<MudGrid Spacing="4">
 		@if (_mobileItems is null)
 		{
