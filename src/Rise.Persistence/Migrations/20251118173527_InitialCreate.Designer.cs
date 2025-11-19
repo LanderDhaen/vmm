@@ -12,11 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:src/Rise.Persistence/Migrations/20251118201459_InitialCreate.Designer.cs
-    [Migration("20251118201459_InitialCreate")]
-========
     [Migration("20251118173527_InitialCreate")]
->>>>>>>> main:src/Rise.Persistence/Migrations/20251118173527_InitialCreate.Designer.cs
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -371,7 +367,6 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("Zone", (string)null);
                 });
 
-<<<<<<<< HEAD:src/Rise.Persistence/Migrations/20251118201459_InitialCreate.Designer.cs
             modelBuilder.Entity("Rise.Domain.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -407,9 +402,7 @@ namespace Rise.Persistence.Migrations
 
                     b.ToTable("Product", (string)null);
                 });
-
-========
->>>>>>>> main:src/Rise.Persistence/Migrations/20251118173527_InitialCreate.Designer.cs
+            
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")

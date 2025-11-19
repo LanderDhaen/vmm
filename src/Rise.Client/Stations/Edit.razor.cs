@@ -66,17 +66,9 @@ public partial class Edit {
 				string.Equals(l.Address.City, detail.Value.Station.City, StringComparison.OrdinalIgnoreCase))
 			?.Id ?? _locations.FirstOrDefault()?.Id ?? Guid.Empty;
 
-		string status = detail.Value.Station.Status;
-		if (!_statuses.Contains(status, StringComparer.OrdinalIgnoreCase)) {
-			status = status.Equals("Active", StringComparison.OrdinalIgnoreCase) ? "Actief"
-				: status.Equals("Inactive", StringComparison.OrdinalIgnoreCase) ? "Inactief"
-				: "Actief";
-		}
-
 		Model = new MeasurementStationRequest.Edit {
 			StationId = StationId,
 			Code = detail.Value.Station.Code,
-			Status = status,
 			InstalledAt = detail.Value.Station.InstalledAt,
 			RemovedAt = detail.Value.Station.RemovedAt,
 			LocationId = locationId,
