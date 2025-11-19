@@ -58,7 +58,7 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state) {
-		
+
 		var sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
@@ -75,17 +75,17 @@ public partial class Index {
 			Items = result.Value.Stations,
 		};
 	}
-		private static string TranslateStatus(string raw) {
-			if (string.IsNullOrWhiteSpace(raw)) {
-				return string.Empty;
-			}
-
-			return raw switch {
-				"Active" or "Actief" => "Actief",
-				"Inactive" or "Inactief" => "Inactief",
-				_ => raw
-			};
+	private static string TranslateStatus(string raw) {
+		if (string.IsNullOrWhiteSpace(raw)) {
+			return string.Empty;
 		}
+
+		return raw switch {
+			"Active" or "Actief" => "Actief",
+			"Inactive" or "Inactief" => "Inactief",
+			_ => raw
+		};
+	}
 	// Mobile
 
 	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {
@@ -122,7 +122,7 @@ public partial class Index {
 		NavigationManager.NavigateTo($"/stations/{stationId}/projects");
 	}
 
-	
+
 	// Other
 
 	private Color DefineColor(string statusRaw) {
