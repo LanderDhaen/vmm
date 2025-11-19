@@ -40,17 +40,17 @@
 		             RowClick="OnRowClick"
 		             @ref="_grid">
 			<Columns>
-				<PropertyColumn Property="x => x.Code" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Code))" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Status" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Status))" HeaderClass="mud-theme-primary">
+				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 					<CellTemplate Context="row">
 						<span>@TranslateStatus(row.Item.Status)</span>
 					</CellTemplate>
 				</PropertyColumn>
-				<PropertyColumn Property="x => x.InstalledAt" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.InstalledAt))" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.RemovedAt" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.RemovedAt))" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Location" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.Location))" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.City" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.City))" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.ProjectsCount" Title="@GetDisplayName(nameof(MeasurementStationDto.Index.ProjectsCount))" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
+				<PropertyColumn Property="x => x.ProjectsCount" Title="Projecten" HeaderClass="mud-theme-primary"/>
 			</Columns>
 
 			<PagerContent>
@@ -84,99 +84,48 @@
 		               Size="Size.Small" 
 		               OnClick="@NavigateToCreate"/>
 	</MudToolBar>
-    @if (Open)
-    {
-        <MudDrawer Variant="DrawerVariant.Temporary"
-                   Anchor="Anchor.Bottom"
-                   Elevation="8"
-                   Class="p-4"
-                   @bind-Open="Open"
-                   OverlayAutoClose="true">
-            <MudText Typo="Typo.h6" Class="mb-2">Sorteer-opties</MudText>
-
-            <MudDivider Class="mb-3"/>
-
-            <MudText Typo="Typo.subtitle2" Class="mb-2">Selecteer kolom en richting</MudText>
-
-            @foreach (var col in Columns ?? Enumerable.Empty<(string Value, string Label)>())
-            {
-                <MudPaper Class="d-flex align-center justify-space-between px-3 py-2 mb-2" Elevation="0" Square="true">
-                    <MudText Class="d-flex align-center">@col.Label</MudText>
-
-                    <MudPaper Elevation="0" Square="true" Class="d-flex gap-2">
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="@GetButtonColor(col.Value, "asc")"
-                                   Size="Size.Small"
-                                   OnClick="@(async () => await ApplySortAndClose(col.Value, "asc"))">
-                            Oplopend
-                        </MudButton>
-
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="@GetButtonColor(col.Value, "desc")"
-                                   Size="Size.Small"
-                                   OnClick="@(async () => await ApplySortAndClose(col.Value, "desc"))">
-                            Aflopend
-                        </MudButton>
-                    </MudPaper>
-                </MudPaper>
-            }
-
-            <MudPaper Elevation="0" Square="true" Class="d-flex">
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(async () => await ApplySortAndClose(string.Empty, string.Empty))">Reset</MudButton>
-            </MudPaper>
-        </MudDrawer>
-    }
-
-		<MudGrid Spacing="4">
-			@if (_mobileStations is null)
+	<MudGrid Spacing="4">
+		@if (_mobileItems is null)
+		{
+			<MudItem xs="12">
+				<div>
+					<MudProgressCircular Indeterminate="true"/>
+				</div>
+			</MudItem>
+		}
+		else if (!_mobileItems.Any())
+		{
+			<MudItem xs="12">
+				<MudText>Geen projecten</MudText>
+			</MudItem>
+		}
+		else
+		{
+			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<div>
-						<MudProgressCircular Indeterminate="true"/>
-					</div>
+					<MudCard Elevation="2" Class="rounded-lg gap-1" @onclick="() => @NavigateToStation(item.Id)">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Spacing="1">
+									<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+										<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
+										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+									</MudStack>
+									<MudText Typo="Typo.h6">@item.Status</MudText>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="d-flex flex-column pt-0">
+							<MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @item.InstalledAt</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @item.RemovedAt</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Locatie:</b> @item.Location</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Gemeente:</b> @item.City</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Projecten:</b> @item.ProjectsCount</MudText>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
 			}
-			else if (!_mobileStations.Any())
-			{
-				<MudItem xs="12">
-					<MudText>Geen meetstations</MudText>
-				</MudItem>
-			}
-			else
-			{
-				@foreach (var item in _mobileStations)
-				{
-					<MudItem xs="12">
-						<MudCard
-							Elevation="2"
-							Style="border-radius: 8px"
-							@onclick="() => NavigateToStation(item.Id)">
-							<MudCardHeader Class="d-flex">
-								<CardHeaderContent>
-									<MudText Typo="Typo.subtitle1" Style="font-weight: bold" Color="Color.Primary">@item.Code</MudText>
-									<MudText Typo="Typo.h6">@TranslateStatus(item.Status)</MudText>
-								</CardHeaderContent>
-							</MudCardHeader>
-							<MudCardContent Class="d-flex flex-column gap-1">
-								<MudText Typo="Typo.caption">
-									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.InstalledAt)):</b> @item.InstalledAt.ToString("dd/MM/yyyy")
-								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.RemovedAt)):</b> @(item.RemovedAt?.ToString("dd/MM/yyyy") ?? "")
-								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.Location)):</b> @item.Location
-								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.City)):</b> @item.City
-								</MudText>
-								<MudText Typo="Typo.caption">
-									<b>@GetDisplayName(nameof(MeasurementStationDto.Index.ProjectsCount)):</b> @item.ProjectsCount
-								</MudText>
-							</MudCardContent>
-						</MudCard>
-					</MudItem>
-				}
-			}
+		}
 		</MudGrid>
 	</MudHidden>
