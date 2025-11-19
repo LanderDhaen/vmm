@@ -27,8 +27,8 @@
 		           Size="Size.Small"
 		           Color="Color.Primary"
 		           Class="px-4"
-		           OnClick="@NavigateToCreate">
-			Project
+		           >
+			Meetpunt
 		</MudButton>
 	</MudToolBar>
 	
@@ -37,8 +37,7 @@
 		             RowsPerPage="10"
 		             Striped="true"
 		             Hover="true"
-		             RowClick="OnRowClick"
-		             @ref="_grid">
+		             RowClick="@(args => NavigateToStation(args.Item.Id))">
 			<Columns>
 				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
 				<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
@@ -96,7 +95,7 @@
 		else if (!_mobileItems.Any())
 		{
 			<MudItem xs="12">
-				<MudText>Geen projecten</MudText>
+				<MudText>Geen Meetpunten</MudText>
 			</MudItem>
 		}
 		else
@@ -129,3 +128,41 @@
 		}
 		</MudGrid>
 	</MudHidden>
+	@* Drawer for sorting on mobile *@
+		
+<MudDrawer Anchor="Anchor.Bottom"
+           Variant="DrawerVariant.Temporary"
+           Elevation="8"
+           Open="_mobileSortOptionsOpen"
+           Class="p-4 rounded-lg">
+	<MudText Typo="Typo.h6">Sorteren</MudText>
+	<MudStack Spacing="4">
+		<MudDivider/>
+		@foreach (var column in SortColumns) {
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudText>@column.Label</MudText>
+				<MudSpacer/>
+				<MudButton Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+				           Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+				           Size="Size.Small"
+				           OnClick="@(() => SortMobileAsync(column.Value, false))">
+					Oplopend
+				</MudButton>
+				<MudButton Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+				           Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+				           Size="Size.Small"
+				           OnClick="@(() => SortMobileAsync(column.Value, true))">
+					Aflopend
+				</MudButton>
+			</MudStack>
+		}
+		<MudDivider/>
+		<MudButton Variant="Variant.Text"
+		           Color="Color.Primary"
+		           OnClick="@ToggleSortingDrawer">
+			Sluiten
+		</MudButton>
+	</MudStack>
+</MudDrawer>
+
+@* TODO: Implement drawer for filtering *@
