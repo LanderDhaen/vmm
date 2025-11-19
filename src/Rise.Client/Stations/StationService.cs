@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;

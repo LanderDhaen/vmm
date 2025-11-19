@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -14,150 +6,75 @@ using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
 
-namespace Rise.Client.Stations {
-	public partial class Index {
-		// ----- refs & services ------------------------------------------------
-		private MudDataGrid<MeasurementStationDto.Index>? _grid;
+namespace Rise.Client.Stations;
 
-		[Inject] public StationService StationService { get; set; } = null!;
-		[Inject] public NavigationManager NavigationManager { get; set; } = null!;
-		[Inject] public BreadcrumbService BreadcrumbService { get; set; } = null!;
-		[Inject] public HeaderService HeaderService { get; set; } = null!;
+public partial class Index {
 
-		// ----- mobile list state ---------------------------------------------
-		private List<MeasurementStationDto.Index>? _mobileStations;
-		private int _mobileTotal;
-		private const int MobilePage = 0;
-		private const int MobilePageSize = 10;
+	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
-		// ----- mobile sort override ------------------------------------------
-		private string? _mobileSortBy;
-		private bool _mobileSortDescending;
-		public bool Open { get; set; }
-		public List<(string Value, string Label)> Columns { get; set; } = new();
+	private bool _mobileSortOptionsOpen;
 
-		// ----- lifecycle -----------------------------------------------------
-		protected override async Task OnInitializedAsync() {
-			await base.OnInitializedAsync();
+	// Id is intentionally NOT included here so it won't be visible in the drawer,
+	// but _activeSorting remains "Id" as default.
+	private static readonly (string Value, string Label)[] SortColumns =
+	[
+		("Code", "Code"),
+		("Status", "Status"),
+		("InstalledAt", "Geïnstalleerd"),
+		("RemovedAt", "Verwijderd"),
+		("Location", "Locatie"),
+		("City", "Gemeente"),
+		("ProjectsCount", "Projecten")
+	];
 
-			BreadcrumbService.SetBreadcrumbs(
-				new BreadcrumbItem("Home", "/"),
-				new BreadcrumbItem("Meetstations", null, true)
-			);
-			HeaderService.Set("Meetstations");
+	// Default sorting set to Id (used for initial load), but Id is hidden in the drawer.
+	private string _activeSorting = "Id";
+	private bool _activeSortingDesc;
 
-			InitColumnsFromDto();
-			await FetchMobileItemsAsync(); // load first mobile page (respects mobile sort)
+
+	[Inject] public required StationService StationService { get; init; } // <- changed from IProjectService
+	[Inject] public required NavigationManager NavigationManager { get; init; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
+	[Inject] public required HeaderService HeaderService { get; init; }
+	[Inject] public required IBrowserViewportService ViewportService { get; init; }
+
+
+	protected override async Task OnInitializedAsync() {
+
+		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
+			new BreadcrumbItem("Meetstations", null, true)
+		);
+
+		HeaderService.Set("Meetstations");
+
+		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+
+		if (breakpoint == Breakpoint.Xs) {
+			await GetStationsMobileAsync(_activeSorting, _activeSortingDesc);
 		}
+	}
 
-		// ----- grid server data provider ------------------------------------
-		private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state) {
-			var skip = state.Page * state.PageSize;
-			var take = state.PageSize;
-			var (orderBy, orderDesc) = ResolveOrder(state);
+	// Desktop
 
-			var result = await StationService.GetIndexAsync(BuildRequest(skip, take, orderBy, orderDesc));
+	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state) {
+		
+		var sorting = state.SortDefinitions.FirstOrDefault();
 
-			if (result?.Value is not null) {
-				return new GridData<MeasurementStationDto.Index> {
-					TotalItems = result.Value.TotalCount,
-					Items = result.Value.Stations ?? Array.Empty<MeasurementStationDto.Index>()
-				};
-			}
+		QueryRequest.SkipTake request = new() {
+			Skip = state.Page * state.PageSize,
+			Take = state.PageSize,
+			OrderBy = sorting?.SortBy ?? "Id",
+			OrderDescending = sorting?.Descending ?? false,
+		};
 
-			return new GridData<MeasurementStationDto.Index> {
-				TotalItems = 0,
-				Items = Array.Empty<MeasurementStationDto.Index>()
-			};
-		}
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
-		private void OnRowClick(DataGridRowClickEventArgs<MeasurementStationDto.Index> args) =>
-			NavigationManager.NavigateTo($"/stations/{args.Item.Id}");
-
-		// ----- helpers -------------------------------------------------------
-		private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy, bool orderDescending = false) =>
-			new() { Skip = skip, Take = take, OrderBy = orderBy, OrderDescending = orderDescending };
-
-		private (string? orderBy, bool orderDesc) ResolveOrder(GridState<MeasurementStationDto.Index> state) {
-			if (!string.IsNullOrEmpty(_mobileSortBy)) return (_mobileSortBy, _mobileSortDescending);
-
-			var s = state.SortDefinitions.FirstOrDefault();
-			return (s?.SortBy, s?.Descending ?? false);
-		}
-
-		// ----- sorting integration -------------------------------------------
-		private void ApplySortSelection(string selection) {
-			if (string.IsNullOrWhiteSpace(selection)) {
-				_mobileSortBy = null;
-				_mobileSortDescending = false;
-			} else {
-				var parts = selection.Split(new[] { ':', '|' }, StringSplitOptions.RemoveEmptyEntries)
-									  .Select(p => p.Trim()).ToArray();
-				_mobileSortBy = parts.ElementAtOrDefault(0);
-				_mobileSortDescending = string.Equals(parts.ElementAtOrDefault(1), "desc", StringComparison.OrdinalIgnoreCase);
-			}
-
-			Open = false;
-		}
-
-		private async Task ApplySortAndClose(string column, string direction) {
-			var selection = string.IsNullOrEmpty(column) ? string.Empty : $"{column}:{direction}";
-			ApplySortSelection(selection);
-
-			await FetchMobileItemsAsync();
-			if (_grid is not null) await _grid.ReloadServerData();
-
-			await InvokeAsync(StateHasChanged);
-		}
-
-		private async Task HandleSortChanged(string selection) {
-			ApplySortSelection(selection);
-			await FetchMobileItemsAsync();
-			if (_grid is not null) await _grid.ReloadServerData();
-			await InvokeAsync(StateHasChanged);
-		}
-
-		private Color GetButtonColor(string column, string direction) {
-			if (string.IsNullOrEmpty(_mobileSortBy)) return Color.Default;
-
-			return (_mobileSortBy == column && ((direction == "desc") == _mobileSortDescending))
-				? Color.Primary
-				: Color.Default;
-		}
-
-		// ----- centralized fetch used by both grid and mobile -----------------
-
-		private async Task<Result<MeasurementStationResponse.Index>?> FetchStationsAsync(int skip, int take, string? orderBy = null, bool orderDesc = false) {
-			try {
-				var req = BuildRequest(skip, take, orderBy, orderDesc);
-				var result = await StationService.GetIndexAsync(req);
-				return result;
-			} catch (Exception ex) {
-				Log.Error(ex, "FetchStationsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy}, orderDesc={OrderDesc})", skip, take, orderBy, orderDesc);
-				return null;
-			}
-		}
-
-		// ----- Mobile data (cards) --------------------------------------------
-
-		private async Task FetchMobileItemsAsync(int page = MobilePage, int pageSize = MobilePageSize) {
-			var reqOrderBy = _mobileSortBy;
-			var reqOrderDesc = _mobileSortDescending;
-
-			var response = await FetchStationsAsync(page * pageSize, pageSize, reqOrderBy, reqOrderDesc);
-
-			if (response?.Value is not null) {
-				_mobileStations = response.Value.Stations?.ToList() ?? new List<MeasurementStationDto.Index>();
-				_mobileTotal = response.Value.TotalCount;
-			} else {
-				Log.Warning("FetchMobileItemsAsync: service returned null or empty result");
-				_mobileStations = new List<MeasurementStationDto.Index>();
-				_mobileTotal = 0;
-			}
-
-			await InvokeAsync(StateHasChanged);
-		}
-
+		return new GridData<MeasurementStationDto.Index>() {
+			TotalItems = result.Value.TotalCount,
+			Items = result.Value.Stations,
+		};
+	}
 		private static string TranslateStatus(string raw) {
 			if (string.IsNullOrWhiteSpace(raw)) {
 				return string.Empty;
@@ -169,52 +86,53 @@ namespace Rise.Client.Stations {
 				_ => raw
 			};
 		}
+	// Mobile
 
-		private void NavigateToStation(object? id) {
-			if (id is null) return;
-			NavigationManager.NavigateTo($"/stations/{id}");
-		}
+	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 10,
+			OrderBy = orderBy,
+			OrderDescending = orderDescending
+		};
 
-		// ----- column label helpers -----------------------------------------
-		private void InitColumnsFromDto() {
-			if (Columns != null && Columns.Any()) return;
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
-			var desiredOrder = new[] { "Code", "Status", "InstalledAt", "RemovedAt", "Location", "City", "ProjectsCount" };
-
-			var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Id" };
-
-			var props = typeof(MeasurementStationDto.Index)
-				.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-				.Where(p => !excluded.Contains(p.Name))
-				.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
-
-			var list = new List<(string Value, string Label)>(desiredOrder.Length);
-
-			foreach (var name in desiredOrder) {
-				if (props.TryGetValue(name, out var prop)) {
-					list.Add((Value: prop.Name, Label: GetDisplayName(prop.Name)));
-				}
-			}
-
-			foreach (var prop in props.Values.OrderBy(p => p.Name)) {
-				if (!list.Any(x => string.Equals(x.Value, prop.Name, StringComparison.OrdinalIgnoreCase))) {
-					list.Add((Value: prop.Name, Label: GetDisplayName(prop.Name)));
-				}
-			}
-
-			Columns = list;
-		}
-
-		private static string GetDisplayName(string propertyName) {
-			var prop = typeof(MeasurementStationDto.Index).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-			if (prop is null) return propertyName;
-
-			var disp = Attribute.GetCustomAttribute(prop, typeof(DisplayAttribute)) as DisplayAttribute;
-			return disp?.GetName() ?? propertyName;
-		}
+		_mobileItems = result.Value.Stations;
 	}
 
-	internal static class _StringExtensions {
-		public static bool HasValue(this string? s) => !string.IsNullOrWhiteSpace(s);
+	// Mobile Sorting
+
+	private void ToggleSortingDrawer() {
+		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+	}
+
+	private async Task SortMobileAsync(string orderBy, bool descending) {
+		await GetStationsMobileAsync(orderBy, descending);
+		ToggleSortingDrawer();
+		_activeSorting = orderBy;
+		_activeSortingDesc = descending;
+	}
+
+	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
+
+	// Navigation
+
+	private void NavigateToStation(Guid stationId) {
+		NavigationManager.NavigateTo($"/stations/{stationId}/projects");
+	}
+
+	
+	// Other
+
+	private Color DefineColor(string statusRaw) {
+		if (string.IsNullOrWhiteSpace(statusRaw))
+			return Color.Default;
+
+		return statusRaw switch {
+			"Active" or "Actief" => Color.Success,
+			"Inactive" or "Inactief" => Color.Default,
+			_ => Color.Default
+		};
 	}
 }

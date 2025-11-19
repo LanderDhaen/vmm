@@ -1,20 +1,26 @@
-@page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
+@using Microsoft.AspNetCore.Components
+@using MudBlazor
+@using Rise.Client.Services
+@using Rise.Client.Stations
+@using Rise.Shared.Common
+@using Rise.Shared.Projects
+
+@page "/stations"
 
 <PageTitle>Stations</PageTitle>
 <MudHidden Breakpoint="Breakpoint.Xs">
 
-	<MudToolBar Gutters="false" Class="gap-3">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
+		              Class="m-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
 		              FullWidth="true"
 		              Margin="Margin.Dense" />
-
-		<MudSpacer />
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
 		           StartIcon="@Icons.Material.Filled.FilterAlt"
@@ -26,43 +32,43 @@
 		           StartIcon="@Icons.Material.Filled.Add"
 		           Size="Size.Small"
 		           Color="Color.Primary"
-		           Class="px-4"
-		           >
+		           Class="px-4">
 			Meetpunt
 		</MudButton>
-	</MudToolBar>
+	</MudStack>
 	
-		<MudDataGrid T="MeasurementStationDto.Index"
-		             ServerData="GetStationsAsync"
-		             RowsPerPage="10"
-		             Striped="true"
-		             Hover="true"
-		             RowClick="@(args => NavigateToStation(args.Item.Id))">
-			<Columns>
-				<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
-					<CellTemplate Context="row">
-						<span>@TranslateStatus(row.Item.Status)</span>
-					</CellTemplate>
-				</PropertyColumn>
-				<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
-				<PropertyColumn Property="x => x.ProjectsCount" Title="Projecten" HeaderClass="mud-theme-primary"/>
-			</Columns>
+	<MudDataGrid T="MeasurementStationDto.Index"
+	             ServerData="GetStationsAsync"
+	             RowsPerPage="10"
+	             Striped="true"
+	             Hover="true"
+	             RowClick="@(args => NavigateToStation(args.Item.Id))">
+		<Columns>
+			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="row">
+					<span>@TranslateStatus(row.Item.Status)</span>
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.ProjectsCount" Title="Projecten" HeaderClass="mud-theme-primary"/>
+		</Columns>
 
-			<PagerContent>
-				<Pagination T="MeasurementStationDto.Index"/>
-			</PagerContent>
-		</MudDataGrid>
-	</MudHidden>
+		<PagerContent>
+			<Pagination T="MeasurementStationDto.Index"/>
+		</PagerContent>
+	</MudDataGrid>
+</MudHidden>
 
-	<!-- MOBILE: list with MudCard components (visible on xs and down). Drawer lives here -->
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudToolBar Gutters="false" Class="gap-3">
+<!-- MOBILE: list with MudCard components (visible on xs and down). Drawer lives here -->
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
+									Class="m-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -80,9 +86,8 @@
 		
 		<MudIconButton Icon="@Icons.Material.Filled.Add"
 		               Color="Color.Primary"
-		               Size="Size.Small" 
-		               OnClick="@NavigateToCreate"/>
-	</MudToolBar>
+		               Size="Size.Small" />
+	</MudStack>
 	<MudGrid Spacing="4">
 		@if (_mobileItems is null)
 		{
@@ -103,19 +108,18 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg gap-1" @onclick="() => @NavigateToStation(item.Id)">
+					<MudCard Elevation="2" Class="rounded-lg" @onclick="() => NavigateToStation(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Spacing="1">
 									<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 										<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(item.Status))">@TranslateStatus(item.Status)</MudChip>
 									</MudStack>
-									<MudText Typo="Typo.h6">@item.Status</MudText>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
-						<MudCardContent Class="d-flex flex-column pt-0">
+						<MudCardContent Class="pt-0">
 							<MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @item.InstalledAt</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @item.RemovedAt</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Locatie:</b> @item.Location</MudText>
@@ -126,43 +130,44 @@
 				</MudItem>
 			}
 		}
-		</MudGrid>
-	</MudHidden>
-	@* Drawer for sorting on mobile *@
-		
-<MudDrawer Anchor="Anchor.Bottom"
-           Variant="DrawerVariant.Temporary"
-           Elevation="8"
-           Open="_mobileSortOptionsOpen"
-           Class="p-4 rounded-lg">
-	<MudText Typo="Typo.h6">Sorteren</MudText>
-	<MudStack Spacing="4">
-		<MudDivider/>
-		@foreach (var column in SortColumns) {
-			<MudStack Row="true" AlignItems="AlignItems.Center">
-				<MudText>@column.Label</MudText>
-				<MudSpacer/>
-				<MudButton Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-				           Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
-				           Size="Size.Small"
-				           OnClick="@(() => SortMobileAsync(column.Value, false))">
-					Oplopend
-				</MudButton>
-				<MudButton Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-				           Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
-				           Size="Size.Small"
-				           OnClick="@(() => SortMobileAsync(column.Value, true))">
-					Aflopend
-				</MudButton>
-			</MudStack>
-		}
-		<MudDivider/>
-		<MudButton Variant="Variant.Text"
-		           Color="Color.Primary"
-		           OnClick="@ToggleSortingDrawer">
-			Sluiten
-		</MudButton>
-	</MudStack>
-</MudDrawer>
+	</MudGrid>
+</MudHidden>
 
-@* TODO: Implement drawer for filtering *@
+@* Drawer for sorting on mobile. Render only when open to avoid display conflicts with MudBlazor *@
+@if (_mobileSortOptionsOpen)
+{
+    <MudDrawer Anchor="Anchor.Bottom"
+               Variant="DrawerVariant.Temporary"
+               Elevation="8"
+               @bind-Open="_mobileSortOptionsOpen"
+               Class="p-4 rounded-lg mud-drawer-mobile">
+        <MudText Typo="Typo.h6">Sorteren</MudText>
+        <MudStack Spacing="4">
+            <MudDivider/>
+            @foreach (var column in SortColumns) {
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudText>@column.Label</MudText>
+                    <MudSpacer/>
+                    <MudButton Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+                               Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+                               Size="Size.Small"
+                               OnClick="@(() => SortMobileAsync(column.Value, false))">
+                        Oplopend
+                    </MudButton>
+                    <MudButton Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+                               Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+                               Size="Size.Small"
+                               OnClick="@(() => SortMobileAsync(column.Value, true))">
+                        Aflopend
+                    </MudButton>
+                </MudStack>
+            }
+            <MudDivider/>
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Primary"
+                       OnClick="@ToggleSortingDrawer">
+                Sluiten
+            </MudButton>
+        </MudStack>
+    </MudDrawer>
+}
