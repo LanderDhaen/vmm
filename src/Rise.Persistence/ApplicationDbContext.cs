@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
-using Rise.Domain.Products;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
@@ -21,7 +20,6 @@ namespace Rise.Persistence;
 /// </summary>
 /// <param name="opts"></param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : IdentityDbContext<IdentityUser>(opts) {
-	public DbSet<Product> Products => Set<Product>();
 	public DbSet<Location> Locations => Set<Location>();
 	public DbSet<Zone> Zones => Set<Zone>();
 	public DbSet<MeasurementNetwork> MeasurementNetworks => Set<MeasurementNetwork>();

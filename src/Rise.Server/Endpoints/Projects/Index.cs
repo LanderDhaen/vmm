@@ -12,9 +12,6 @@ namespace Rise.Server.Endpoints.Projects;
 public class Index(IProjectService projectService) : Endpoint<QueryRequest.SkipTake, Result<ProjectResponse.Index>> {
 	public override void Configure() {
 		Get("/api/projects");
-
-		// Allow for now until Auth is correctly implemented in frontend
-
 		Roles(AppRoles.Administrator);
 	}
 

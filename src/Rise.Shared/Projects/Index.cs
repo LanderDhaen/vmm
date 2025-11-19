@@ -12,4 +12,8 @@ public static partial class ProjectResponse {
 	public class Detail {
 		public required ProjectDto.Detail Project { get; set; }
 	}
+
+	public class History {
+		public required ProjectDto.History Project { get; set; }
+	}
 }

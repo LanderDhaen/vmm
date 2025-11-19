@@ -11,6 +11,9 @@ namespace Rise.Persistence.Configurations.Projects;
 /// </summary>
 internal class ProjectConfiguration : EntityConfiguration<Project> {
 	public override void Configure(EntityTypeBuilder<Project> builder) {
+
+		// Properties
+
 		base.Configure(builder);
 		builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
 		builder.Property(x => x.Code).IsRequired().HasMaxLength(50);
@@ -18,15 +21,30 @@ internal class ProjectConfiguration : EntityConfiguration<Project> {
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange).IsRequired();
+		builder.Property(x => x.Status).IsRequired();
+
+		// Relations
+
 		builder.HasOne(x => x.MeasurementNetwork)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
-		builder.Property(x => x.Status).IsRequired();
 
 		// Constraints
+
 		builder.HasIndex(x => x.Code).IsUnique();
 
+		// History
 
-		// Other Project configuration here.
+		builder.HasMany(x => x.ProjectHistories);
+	}
+}
+
+internal class ProjectHistoryConfiguration : HistoryEntityConfiguration<ProjectHistory> {
+	public override void Configure(EntityTypeBuilder<ProjectHistory> builder) {
+		base.Configure(builder);
+		builder.OwnsOne(x => x.DateRange, d => {
+			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
+			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
+		}).Navigation(x => x.DateRange).IsRequired();
 	}
 }

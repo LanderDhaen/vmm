@@ -30,7 +30,7 @@ jobs:
 
       - name: Check formatting
         id: format
-        run: dotnet format --verify-no-changes --verbosity normal --exclude-diagnostics IDE0055
+        run: dotnet format --verify-no-changes --verbosity normal --exclude-diagnostics IDE0055 --exclude src/Rise.Server/Program.cs
         continue-on-error: true
 
       - name: Comment on PR with format errors

@@ -17,8 +17,6 @@ public class Index(IMeasurementStationService stationService)
 	: Endpoint<QueryRequest.SkipTake, Result<MeasurementStationResponse.Index>> {
 	public override void Configure() {
 		Get("/api/stations");
-
-		// Allow for now until Auth is correctly implemented in frontend
 		Roles(AppRoles.Administrator);
 	}
 

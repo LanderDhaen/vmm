@@ -12,8 +12,8 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251109161742_AddProjectStatus")]
-    partial class AddProjectStatus
+    [Migration("20251118173527_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -367,42 +367,6 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("Zone", (string)null);
                 });
 
-            modelBuilder.Entity("Rise.Domain.Products.Product", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Product", (string)null);
-                });
-
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -448,6 +412,22 @@ namespace Rise.Persistence.Migrations
                     b.HasIndex("MeasurementNetworkId");
 
                     b.ToTable("Project", (string)null);
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.ProjectHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectHistory", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.Projects.Technician", b =>
@@ -711,6 +691,61 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("MeasurementNetwork");
                 });
 
+            modelBuilder.Entity("Rise.Domain.Projects.ProjectHistory", b =>
+                {
+                    b.HasOne("Rise.Domain.Projects.Project", null)
+                        .WithMany("ProjectHistories")
+                        .HasForeignKey("ProjectId");
+
+                    b.OwnsOne("Rise.Domain.Common.ValidityRange", "ValidityRange", b1 =>
+                        {
+                            b1.Property<Guid>("ProjectHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("ValidFrom")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidFrom");
+
+                            b1.Property<DateTime>("ValidTo")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidTo");
+
+                            b1.HasKey("ProjectHistoryId");
+
+                            b1.ToTable("ProjectHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectHistoryId");
+                        });
+
+                    b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
+                        {
+                            b1.Property<Guid>("ProjectHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateOnly?>("EndDate")
+                                .HasColumnType("date")
+                                .HasColumnName("EndDate");
+
+                            b1.Property<DateOnly>("StartDate")
+                                .HasColumnType("date")
+                                .HasColumnName("StartDate");
+
+                            b1.HasKey("ProjectHistoryId");
+
+                            b1.ToTable("ProjectHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectHistoryId");
+                        });
+
+                    b.Navigation("DateRange")
+                        .IsRequired();
+
+                    b.Navigation("ValidityRange")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
                 {
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
@@ -744,6 +779,11 @@ namespace Rise.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
+                {
+                    b.Navigation("ProjectHistories");
                 });
 #pragma warning restore 612, 618
         }

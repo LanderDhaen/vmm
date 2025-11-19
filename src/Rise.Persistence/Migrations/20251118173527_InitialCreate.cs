@@ -30,20 +30,6 @@ namespace Rise.Persistence.Migrations {
 				});
 
 			migrationBuilder.CreateTable(
-				name: "Product",
-				columns: table => new {
-					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-					Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-					CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-					UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-					IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
-				},
-				constraints: table => {
-					table.PrimaryKey("PK_Product", x => x.Id);
-				});
-
-			migrationBuilder.CreateTable(
 				name: "Roles",
 				columns: table => new {
 					Id = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
@@ -254,6 +240,7 @@ namespace Rise.Persistence.Migrations {
 					Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
 					StartDate = table.Column<DateOnly>(type: "date", nullable: false),
 					EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+					Status = table.Column<int>(type: "int", nullable: false),
 					MeasurementNetworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
 					UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -291,6 +278,25 @@ namespace Rise.Persistence.Migrations {
 						onDelete: ReferentialAction.Cascade);
 				});
 
+			migrationBuilder.CreateTable(
+				name: "ProjectHistory",
+				columns: table => new {
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+					EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+					ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+					ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+					ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
+				},
+				constraints: table => {
+					table.PrimaryKey("PK_ProjectHistory", x => x.Id);
+					table.ForeignKey(
+						name: "FK_ProjectHistory_Project_ProjectId",
+						column: x => x.ProjectId,
+						principalTable: "Project",
+						principalColumn: "Id");
+				});
+
 			migrationBuilder.CreateIndex(
 				name: "IX_MeasurementNetwork_ZoneId",
 				table: "MeasurementNetwork",
@@ -316,6 +322,11 @@ namespace Rise.Persistence.Migrations {
 				name: "IX_Project_MeasurementNetworkId",
 				table: "Project",
 				column: "MeasurementNetworkId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_ProjectHistory_ProjectId",
+				table: "ProjectHistory",
+				column: "ProjectId");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_RoleClaims_RoleId",
@@ -375,7 +386,7 @@ namespace Rise.Persistence.Migrations {
 				name: "MeasurementStationProject");
 
 			migrationBuilder.DropTable(
-				name: "Product");
+				name: "ProjectHistory");
 
 			migrationBuilder.DropTable(
 				name: "RoleClaims");

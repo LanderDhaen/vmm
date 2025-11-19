@@ -1,7 +1,6 @@
 @page "/projects"
 @using Rise.Client.Components
 @using Rise.Shared.Projects
-@attribute [Authorize]
 <PageTitle>Projecten</PageTitle>
 
 @* <MudPaper Elevation="0" Class="p-4"> *@
@@ -54,9 +53,9 @@
 				{
 					<MudItem xs="12">
 						@* Clickable by mouse/touch; NO tabindex (no keyboard focus) *@
-						<MudCard
-							Elevation="2"
-							Style="border-radius: 8px"
+						<MudCard 
+							Elevation="2" 
+							Class="rounded-lg"
 							@onclick="() => NavigateToProject(item.Id)">
 							<MudCardHeader Class="d-flex">
 								<CardHeaderContent>
