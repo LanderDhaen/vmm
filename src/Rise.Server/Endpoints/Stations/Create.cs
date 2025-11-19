@@ -1,4 +1,5 @@
 using Rise.Shared.Stations;
+using Rise.Shared.Identity;
 
 namespace Rise.Server.Endpoints.Stations;
 
@@ -7,12 +8,11 @@ namespace Rise.Server.Endpoints.Stations;
 ///     See https://fast-endpoints.com/
 /// </summary>
 /// <param name="stationService"></param>
-public class Create(IMeasurementStationService stationService) : Endpoint<MeasurementStationRequest.Create, Result<MeasurementStationResponse.Create>> {
+public class Create(IMeasurementStationService stationService)
+	: Endpoint<MeasurementStationRequest.Create, Result<MeasurementStationResponse.Create>> {
 	public override void Configure() {
 		Post("/api/stations");
-
-		AllowAnonymous();
-		//Roles(AppRoles.Administrator); // Only Administrators can create projects.
+		Roles(AppRoles.Administrator);
 	}
 
 	public override Task<Result<MeasurementStationResponse.Create>>

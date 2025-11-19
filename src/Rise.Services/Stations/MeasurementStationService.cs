@@ -130,7 +130,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			if (location is null)
 				return Result.NotFound("Locatie niet gevonden.");
 		}
-		
+
 		var installedAt = request.InstalledAt ?? DateTime.UtcNow;
 
 		MeasurementStation station = new(
@@ -146,7 +146,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			MeasurementStationId = station.Id
 		});
 	}
-	
+
 	public Task<Result> EditAsync(
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
