@@ -59,7 +59,8 @@ try {
 			o.DocumentSettings = s => {
 				s.Title = "RISE API";
 			};
-		});
+		})
+		.AddHealthChecks();
 
 	WebApplication app = builder.Build();
 	// apply Database migrations on startup, not so wise in production (Use Generated SQL Scripts) 
@@ -92,6 +93,7 @@ try {
 			};
 		})
 		.UseSwaggerGen();
+	app.MapHealthChecks("/health");
 	app.MapFallbackToFile("index.html"); // Serves the Blazor app from the API, when no routes match.
 	app.Run();
 } catch (Exception ex) {
