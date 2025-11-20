@@ -7,7 +7,6 @@ using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
