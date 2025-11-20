@@ -295,7 +295,7 @@ public class ProjectServiceShould {
 		MeasurementStation station = new(
 			"ST-001",
 			location,
-			new Installation(DateTime.UtcNow);
+			new Installation(DateTime.UtcNow));
 
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
