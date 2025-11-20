@@ -10,79 +10,69 @@
 -->
 
 <MudHidden Breakpoint="Breakpoint.SmAndDown">
-	<MudToolBar Gutters="false" Class=" py-2 gap-3" Style="background-color: transparent;">
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Variant="Variant.Outlined"
-		              Size="Size.Small"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              Class="flex-grow-1"
-		              Style="max-width: 500px;"
-		              Margin="Margin.Dense"/>
+    <MudToolBar Gutters="false" Class=" py-2 gap-3" Style="background-color: transparent;">
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Variant="Variant.Outlined"
+                      Size="Size.Small"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="flex-grow-1"
+                      Style="max-width: 500px;"
+                      Margin="Margin.Dense" />
 
-		<MudSpacer/>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.FilterAlt"
+                   Color="Color.Primary"
+                   Class="px-4">
+            Filteren
+        </MudButton>
 
-		<MudButton Variant="Variant.Filled"
-		           Size="Size.Small"
-		           StartIcon="@Icons.Material.Filled.ViewColumn"
-		           Color="Color.Primary"
-		           Class="px-4">
-			Kolommen
-		</MudButton>
+        <MudDivider Vertical="true" FlexItem="true" Class="my-2" />
 
-		<MudButton Variant="Variant.Filled"
-		           Size="Size.Small"
-		           StartIcon="@Icons.Material.Filled.FilterAlt"
-		           Color="Color.Primary"
-		           Class="px-4">
-			Filteren
-		</MudButton>
-
-		<MudDivider Vertical="true" FlexItem="true" Class="my-2"/>
-
-		@* call the parent callback with the requested anchor *@
-		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.MoreHoriz"
-		           Size="Size.Small"
-		           Color="Color.Primary"
-		           OnClick="@OpenActionsDrawer"
-		           Class="px-4">
-			Acties
-		</MudButton>
-	</MudToolBar>
+        @* call the parent callback with the requested anchor *@
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.MoreHoriz"
+                   Size="Size.Small"
+                   Color="Color.Primary"
+                   OnClick="@OpenActionsDrawer"
+                   Class="px-4">
+            Acties
+        </MudButton>
+    </MudToolBar>
 </MudHidden>
 
 <MudHidden Breakpoint="Breakpoint.MdAndUp">
-	<MudToolBar Gutters="false" Class="gap-2 mb-6" Style="background-color: transparent;">
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Variant="Variant.Outlined"
-		              Size="Size.Small"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              Class="flex-grow-1"
-		              Margin="Margin.Dense"
-		/>
+    <MudToolBar Gutters="false" Class="gap-2 mb-6" Style="background-color: transparent;">
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Variant="Variant.Outlined"
+                      Size="Size.Small"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Class="flex-grow-1"
+                      Margin="Margin.Dense" />
 
-		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
-		               Color="Color.Primary"
-		               Size="Size.Small"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="@HandleSortClickAsync" />
 
-		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
-		               Color="Color.Primary"
-		               Size="Size.Small"/>
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+                       Color="Color.Primary"
+                       Size="Size.Small" />
 
-		<MudDivider Vertical="true" FlexItem="true" Class="my-4"/>
+        <MudDivider Vertical="true" FlexItem="true" Class="my-4" />
 
-		<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
-		               Color="Color.Primary"
-		               Size="Size.Small"
-		               OnClick="@OpenActionsDrawer"/>
-	</MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="@OpenActionsDrawer" />
+    </MudToolBar>
 </MudHidden>
-@* </MudPaper> *@
 
 @* Use two-way binding (@bind-Open) so the parent (`ToolBar`) and the `ActionsDrawer`
    are automatically kept in sync without needing a separate OnClose callback. *@
-<Rise.Client.Layout.ActionsDrawer @bind-Open="_actionsDrawerOpen"/>
+<Rise.Client.Layout.ActionsDrawer @bind-Open="_actionsDrawerOpen" />

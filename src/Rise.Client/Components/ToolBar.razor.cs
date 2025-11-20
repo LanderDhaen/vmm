@@ -12,12 +12,11 @@ public partial class ToolBar : ComponentBase {
 	[Parameter] public string Search { get; set; } = string.Empty;
 	[Parameter] public EventCallback<string> SearchChanged { get; set; }
 
-	// These are callbacks the parent of ToolBar could pass in; not used directly by the drawer.
+	// These are callbacks the parent of ToolBar could pass in.
 	[Parameter] public EventCallback OnColumnsClicked { get; set; }
 	[Parameter] public EventCallback OnFilterClicked { get; set; }
 	[Parameter] public EventCallback OnActionsClicked { get; set; }
-
-	// Callback used by the drawer to notify the parent of sort changes (if implemented).
+	[Parameter] public EventCallback OnSortClicked { get; set; }
 	[Parameter] public EventCallback<string> OnSortChanged { get; set; }
 
 	// Called from the toolbar UI when the user requests "Acties" / More actions.
@@ -25,5 +24,11 @@ public partial class ToolBar : ComponentBase {
 	// which causes the MudDrawer to display.
 	private void OpenActionsDrawer() {
 		_actionsDrawerOpen = true;
+	}
+
+	private async Task HandleSortClickAsync() {
+		if (OnSortClicked.HasDelegate) {
+			await OnSortClicked.InvokeAsync();
+		}
 	}
 }

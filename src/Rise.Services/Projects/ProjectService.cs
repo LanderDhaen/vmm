@@ -84,9 +84,29 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		int totalCount = await query.CountAsync(ctx);
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
-			query = query.OrderBy(p => EF.Property<object>(p, req.OrderBy));
+			bool desc = req.OrderDescending;
+			switch (req.OrderBy) {
+
+			case nameof(DateRange.StartDate):
+				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
+				break;
+			case nameof(DateRange.EndDate):
+				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
+				break;
+			case nameof(MeasurementNetwork):
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
+				break;
+			case nameof(Zone):
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
+				break;
+			default:
+				query = desc
+					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
+					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+				break;
+			}
 		} else {
-			query = query.OrderBy(p => p.Name);
+			query = query.OrderBy(p => p.Id);
 		}
 
 		IQueryable<Project> page = query
