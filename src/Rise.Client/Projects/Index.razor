@@ -1,4 +1,5 @@
 @page "/projects"
+@using Rise.Client.Components
 @using Rise.Shared.Projects
 @attribute [Authorize]
 <PageTitle>Projecten</PageTitle>
@@ -40,14 +41,19 @@
                  Hover="true"
                  RowClick="@(args => NavigateToProject(args.Item.Id))">
 
-        <Columns>
-            <PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary" />
-            <PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary" />
-            <PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary" />
-            <PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary" />
-            <PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary" />
-            <PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary" />
-        </Columns>
+	    <Columns>
+		    <PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary" />
+		    <PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary" />
+		    <PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary" />
+		    <PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary" />
+		    <PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary" />
+		    <PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary" />
+	    </Columns>
+	    
+	    <PagerContent>
+		    <Pagination T="ProjectDto.Index"></Pagination>
+	    </PagerContent>
+	    
     </MudDataGrid>
 </MudHidden>
 
