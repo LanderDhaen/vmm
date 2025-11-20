@@ -20,6 +20,6 @@ public interface IMeasurementStationService {
 	Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
 		Guid stationId,
 		CancellationToken ctx = default);
-	
+
 	Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ctx = default);
 }

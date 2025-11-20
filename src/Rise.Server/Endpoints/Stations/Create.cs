@@ -1,5 +1,5 @@
-using Rise.Shared.Stations;
 using Rise.Shared.Identity;
+using Rise.Shared.Stations;
 
 namespace Rise.Server.Endpoints.Stations;
 

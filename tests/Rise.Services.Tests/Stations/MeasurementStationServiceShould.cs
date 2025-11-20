@@ -61,7 +61,7 @@ public class MeasurementStationServiceShould {
 				$"STN-{i}",
 				loc,
 				new Installation(DateTime.UtcNow.AddDays(-i)));
-			
+
 			db.MeasurementStations.Add(station);
 		}
 

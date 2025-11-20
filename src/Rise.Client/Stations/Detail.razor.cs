@@ -27,7 +27,7 @@ public partial class Detail {
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
-	
+
 	private async Task SetTabAsync(int index) {
 		_selectedTab = index;
 

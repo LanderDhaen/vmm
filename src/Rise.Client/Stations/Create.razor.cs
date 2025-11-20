@@ -30,7 +30,7 @@ public partial class Create {
 	protected override async Task OnInitializedAsync() {
 		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
 		_locations = result.Value.Locations;
-		
+
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
