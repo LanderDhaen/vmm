@@ -30,4 +30,12 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 		return (await httpClient.GetFromJsonAsync<Result<List<ProjectDto.Index>>>(
 			$"/api/stations/{stationId}/projects", ctx))!;
 	}
+
+	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/stations", request, ctx);
+		Result<MeasurementStationResponse.Create>? result =
+			await response.Content.ReadFromJsonAsync<Result<MeasurementStationResponse.Create>>(ctx);
+		return result!;
+	}
 }

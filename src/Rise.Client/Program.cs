@@ -72,7 +72,7 @@ try {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 
-	builder.Services.AddHttpClient<StationService>(client => {
+	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 

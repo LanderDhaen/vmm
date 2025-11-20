@@ -11,7 +11,7 @@ namespace Rise.Client.Stations;
 public partial class Index {
 	private List<MeasurementStationDto.Index>? _mobileStations;
 	private int _mobileTotal;
-	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }

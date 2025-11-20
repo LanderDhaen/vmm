@@ -43,7 +43,7 @@ public partial class Create {
 			"Voeg toe",
 			Icons.Material.Filled.ArrowBack,
 			() => {
-				Navigation.NavigateTo("/projects/");
+				NavigationManager.NavigateTo("/projects/");
 				return Task.CompletedTask;
 			}
 		);

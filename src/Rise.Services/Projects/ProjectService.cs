@@ -218,7 +218,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
 				Code = s.Code,
-				Status = s.Status,
 				InstalledAt = s.Installation.InstalledAt,
 				RemovedAt = s.Installation.RemovedAt,
 				Location = s.Location.Name,

@@ -2,7 +2,6 @@ using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 
 namespace Rise.Domain.Tests.Stations;
 
@@ -37,41 +36,29 @@ public class MeasurementStationShould {
 
 		MeasurementStation station = new(
 			"STN-001",
-			"Active",
 			location,
-			new Installation(installed),
-			new[] { DummyProject }
+			new Installation(installed)
 		);
 
 		station.Code.ShouldBe("STN-001");
-		station.Status.ShouldBe("Active");
 		station.Location.ShouldNotBeNull();
 		station.Installation.InstalledAt.ShouldBe(installed);
 		station.Installation.RemovedAt.ShouldBeNull();
-
-		station.Projects.Count.ShouldBe(1);
-		station.Projects.Single().ShouldBe(DummyProject);
 	}
 
 	[Fact]
 	public void AllowUpdatingStatusAndRemovalDate() {
 		MeasurementStation station = new(
 			"STN-001",
-			"Active",
 			MakeLocation(),
-			new Installation(DateTime.UtcNow.AddDays(-30)),
-			new[] { DummyProject }
+			new Installation(DateTime.UtcNow.AddDays(-30))
 		);
 
-		station.UpdateStatus("Inactive");
 		DateTime removedAt = DateTime.UtcNow;
 		station.UpdateInstallation(new Installation(station.Installation.InstalledAt, removedAt));
 
-		station.Status.ShouldBe("Inactive");
 		station.Installation.RemovedAt.ShouldNotBeNull();
 		station.Installation.RemovedAt!.Value.ShouldBe(removedAt, TimeSpan.FromSeconds(1));
-
-		station.Projects.ShouldContain(DummyProject);
 	}
 
 	[Fact]
@@ -79,10 +66,8 @@ public class MeasurementStationShould {
 		Location originalLocation = MakeLocation("Old Place");
 		MeasurementStation station = new(
 			"STN-100",
-			"Active",
 			originalLocation,
-			new Installation(DateTime.UtcNow.AddDays(-5)),
-			new[] { DummyProject }
+			new Installation(DateTime.UtcNow.AddDays(-5))
 		);
 
 		station.Installation.RemovedAt.ShouldBeNull();
@@ -92,6 +77,5 @@ public class MeasurementStationShould {
 
 		station.Location.ShouldBe(newLocation);
 		station.Installation.RemovedAt.ShouldBeNull();
-		station.Projects.ShouldContain(DummyProject);
 	}
 }

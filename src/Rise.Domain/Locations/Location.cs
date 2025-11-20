@@ -12,9 +12,9 @@ public class Location : Entity {
 	private Location() {
 	}
 
-	public Location(string name, Address? address, Coordinate coordinate) {
+	public Location(string name, Address address, Coordinate coordinate) {
 		Name = name;
-		Address = address;
+		Address = Guard.Against.Null(address);
 		Coordinate = Guard.Against.Null(coordinate);
 	}
 
@@ -28,7 +28,7 @@ public class Location : Entity {
 	///     Address and link it to the location.
 	///     <see cref="LocationConfiguration" />
 	/// </summary>
-	public Address? Address { get; init; }
+	public Address Address { get; init; }
 
 	/// <summary>
 	///     The coordinate is immutable and owned by the <see cref="Location" />. If you want to change the coordinate, create
