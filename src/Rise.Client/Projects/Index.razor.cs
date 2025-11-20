@@ -56,7 +56,7 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		
+
 		var sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
@@ -113,7 +113,7 @@ public partial class Index {
 	private void NavigateToCreate() {
 		NavigationManager.NavigateTo($"/projects/create");
 	}
-	
+
 	// Other
 
 	private Color DefineColor(Status status) {
