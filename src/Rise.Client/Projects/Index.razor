@@ -111,14 +111,30 @@
                         <MudCardContent>
                             <MudText Typo="Typo.h6">@item.Name</MudText>
 
-                            <MudText Typo="Typo.caption">
-                                <b>Code:</b> @item.Code<br />
-                                <b>Zone:</b> @item.Zone<br />
-                                <b>Status:</b> @item.Status<br />
-                                <b>Start datum:</b> @(item.StartDate.ToString("dd/MM/yyyy"))<br />
-                                <b>Eind datum:</b> @(item.EndDate?.ToString("dd/MM/yyyy"))<br />
-                                <b>Meetnet:</b> @item.MeasurementNetwork
-                            </MudText>
+                            <MudItem xs="12">
+	                            <MudCard Elevation="2" 
+	                                     Class="rounded-lg" 
+	                                     @onclick="() => NavigateToProject(item.Id)">
+		                            <MudCardHeader>
+			                            <CardHeaderContent>
+				                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+					                            <MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
+					                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+				                            </MudStack>
+				                            <MudText Typo="Typo.h6">@item.Name</MudText>
+			                            </CardHeaderContent>
+		                            </MudCardHeader>
+		                            <MudCardContent Class="pt-0">
+			                            <MudText Typo="Typo.subtitle1">
+				                            <b>Start datum:</b> @item.StartDate
+				                            <b>Eind datum:</b> @item.EndDate
+				                            <b>Meetnet:</b> @item.MeasurementNetwork
+				                            <b>Zone:</b> @item.Zone
+			                            </MudText>
+		                            </MudCardContent>
+	                            </MudCard>
+                            </MudItem>
+                            
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
