@@ -7,32 +7,31 @@
 @* Desktop view *@
 
 <MudHidden Breakpoint="Breakpoint.Xs">
-    <MudToolBar Gutters="false" Class="gap-3">
-        <MudTextField T="string"
-                      Label="Zoek"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      FullWidth="true"
-                      Margin="Margin.Dense" />
-
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled"
-                   Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.FilterAlt"
-                   Color="Color.Primary"
-                   Class="px-4">
-            Filteren
-        </MudButton>
-        <MudButton Variant="Variant.Filled"
-                   StartIcon="@Icons.Material.Filled.Add"
-                   Size="Size.Small"
-                   Color="Color.Primary"
-                   Class="px-4"
-                   OnClick="@NavigateToCreate">
-            Project
-        </MudButton>
-    </MudToolBar>
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="m-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              FullWidth="true"
+		              Margin="Margin.Dense" />
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@Icons.Material.Filled.FilterAlt"
+		           Color="Color.Primary"
+		           Class="px-4">
+			Filteren
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
+			Project
+		</MudButton>
+	</MudStack>
 
     <MudDataGrid T="ProjectDto.Index"
                  ServerData="GetProjectsAsync"
@@ -60,29 +59,30 @@
 @* Mobile view *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-    <MudToolBar Gutters="false" Class="gap-3">
-        <MudTextField T="string"
-                      Label="Zoek"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      FullWidth="true"
-                      Margin="Margin.Dense" />
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="m-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              FullWidth="true"
+		              Margin="Margin.Dense" />
 
-        <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       OnClick="@ToggleSortingDrawer" />
+		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@ToggleSortingDrawer" />
 
-        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
-                       Color="Color.Primary"
-                       Size="Size.Small" />
-
-        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       OnClick="@NavigateToCreate" />
-    </MudToolBar>
+		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+		               Color="Color.Primary"
+		               Size="Size.Small" />
+		
+		<MudIconButton Icon="@Icons.Material.Filled.Add"
+		               Color="Color.Primary"
+		               Size="Size.Small" 
+		               OnClick="@NavigateToCreate"/>
+	</MudStack>
 
     <MudGrid Spacing="4">
         @if (_mobileItems is null)
@@ -103,14 +103,6 @@
         {
             @foreach (var item in _mobileItems)
             {
-                <MudItem xs="12">
-                    <MudCard
-                        Elevation="2"
-                        Class="rounded-lg"
-                        @onclick="() => NavigateToProject(item.Id)">
-                        <MudCardContent>
-                            <MudText Typo="Typo.h6">@item.Name</MudText>
-
                             <MudItem xs="12">
 	                            <MudCard Elevation="2" 
 	                                     Class="rounded-lg" 
@@ -134,10 +126,6 @@
 		                            </MudCardContent>
 	                            </MudCard>
                             </MudItem>
-                            
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
             }
         }
     </MudGrid>
