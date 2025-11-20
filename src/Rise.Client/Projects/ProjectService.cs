@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
 
 namespace Rise.Client.Projects;
 
@@ -44,6 +45,16 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/status", req, ctx);
 
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
+
+	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+		Guid projectId,
+		CancellationToken ctx = default) {
+		Result<List<MeasurementStationDto.Index>>? result =
+			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
+				$"/api/projects/{projectId}/stations",
+				cancellationToken: ctx);
 		return result!;
 	}
 }

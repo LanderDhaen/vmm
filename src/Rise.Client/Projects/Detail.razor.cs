@@ -4,6 +4,7 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
 
 namespace Rise.Client.Projects;
 
@@ -20,6 +21,7 @@ public partial class Detail {
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
+	private List<MeasurementStationDto.Index>? _stations;
 
 	private string? _remarks;
 	private int _selectedTab;
@@ -38,10 +40,18 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Result<ProjectResponse.Detail> result = await ProjectService.GetDetailAsync(ProjectId);
+		// Load project details and stations in parallel
+		Task<Result<ProjectResponse.Detail>> detailTask = ProjectService.GetDetailAsync(ProjectId);
+		Task<Result<List<MeasurementStationDto.Index>>> stationsTask = ProjectService.GetStationsAsync(ProjectId);
 
-		if (result.IsSuccess) {
-			_project = result.Value.Project;
+		await Task.WhenAll(detailTask, stationsTask);
+
+		Result<ProjectResponse.Detail> detailResult = detailTask.Result;
+		Result<List<MeasurementStationDto.Index>> stationsResult = stationsTask.Result;
+
+		// --- Project detail ---
+		if (detailResult.IsSuccess) {
+			_project = detailResult.Value.Project;
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
@@ -59,6 +69,28 @@ public partial class Detail {
 					return Task.CompletedTask;
 				}
 			);
+		} else {
+			string message = detailResult.Errors != null
+				? string.Join(Environment.NewLine, detailResult.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+			return;
+		}
+
+		// --- Stations for this project (for tab count & grid) ---
+		if (stationsResult.IsSuccess && stationsResult.Value is not null) {
+			_stations = stationsResult.Value;
+			_tabs[1] = $"Meetstations ({_stations.Count})";
+		} else {
+			_stations = new List<MeasurementStationDto.Index>();
+			_tabs[1] = "Meetstations (0)";
+
+			if (!stationsResult.IsSuccess) {
+				string message = stationsResult.Errors != null
+					? string.Join(Environment.NewLine, stationsResult.Errors)
+					: "Kon meetstations niet laden.";
+				Snackbar.Add(message, Severity.Warning);
+			}
 		}
 	}
 
@@ -143,6 +175,55 @@ public partial class Detail {
 		}
 	}
 
+	private Task<GridData<MeasurementStationDto.Index>> GetStationsGridAsync(
+		GridState<MeasurementStationDto.Index> state) {
+		if (_stations is null) {
+			return LoadAndSliceStationsAsync(state);
+		}
+
+		List<MeasurementStationDto.Index> items = _stations
+			.Skip(state.Page * state.PageSize)
+			.Take(state.PageSize)
+			.ToList();
+
+		return Task.FromResult(new GridData<MeasurementStationDto.Index> {
+			TotalItems = _stations.Count,
+			Items = items
+		});
+	}
+
+	private async Task<GridData<MeasurementStationDto.Index>> LoadAndSliceStationsAsync(
+		GridState<MeasurementStationDto.Index> state) {
+
+		if (_stations is null) {
+			Result<List<MeasurementStationDto.Index>> res =
+				await ProjectService.GetStationsAsync(ProjectId);
+
+			_stations = res.IsSuccess && res.Value is not null
+				? res.Value
+				: new List<MeasurementStationDto.Index>();
+
+			_tabs[1] = $"Meetstations ({_stations.Count})";
+		}
+
+		List<MeasurementStationDto.Index> items = _stations
+			.Skip(state.Page * state.PageSize)
+			.Take(state.PageSize)
+			.ToList();
+
+		return new GridData<MeasurementStationDto.Index> {
+			TotalItems = _stations.Count,
+			Items = items
+		};
+	}
+
+	private void OnStationRowClick(DataGridRowClickEventArgs<MeasurementStationDto.Index> args) {
+		Navigation.NavigateTo($"/stations/{args.Item.Id}");
+	}
+
+	private static string FormatDate(DateTime? dt) {
+		return dt is null ? "-" : dt.Value.ToShortDateString();
+	}
 
 	//NAV
 	private void NavigateToProjects() {
