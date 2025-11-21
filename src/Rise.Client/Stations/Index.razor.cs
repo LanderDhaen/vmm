@@ -13,9 +13,7 @@ public partial class Index {
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-
-	// Id is intentionally NOT included here so it won't be visible in the drawer,
-	// but _activeSorting remains "Id" as default.
+	
 	private static readonly (string Value, string Label)[] SortColumns =
 	[
 		("Code", "Code"),
@@ -26,13 +24,12 @@ public partial class Index {
 		("City", "Gemeente"),
 		("ProjectsCount", "Projecten")
 	];
-
-	// Default sorting set to Id (used for initial load), but Id is hidden in the drawer.
-	private string _activeSorting = "Id";
+	
+	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
 
 
-	[Inject] public required StationService StationService { get; init; } // <- changed from IProjectService
+	[Inject] public required StationService StationService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
