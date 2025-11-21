@@ -1,15 +1,12 @@
 using System.Data.Common;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Stations.ValueObjects;
 using Rise.Persistence;
 using Rise.Services.Stations;
 using Rise.Services.Tests.Common;
@@ -54,7 +51,6 @@ namespace Rise.Services.Tests.Stations {
 			return orderBy switch {
 				"Id" => dto.Id.ToString(),
 				"Code" => dto.Code ?? string.Empty,
-				"Status" => dto.Status ?? string.Empty,
 				"InstalledAt" => dto.InstalledAt != default ? dto.InstalledAt.ToString("yyyy-MM-dd") : string.Empty,
 				"RemovedAt" => dto.RemovedAt.HasValue ? dto.RemovedAt.Value.ToString("yyyy-MM-dd") : string.Empty,
 				"Location" => dto.Location ?? string.Empty,
@@ -169,15 +165,15 @@ namespace Rise.Services.Tests.Stations {
 				var proj3 = new Project("P3", "P-3", new DateRange(new DateOnly(2023, 6, 1), new DateOnly(2024, 6, 1)), net1); // reuse net1 / zone1
 
 				// Create stations with varying properties to exercise ordering.
-				var s1 = new MeasurementStation("ST-001", "Active", locA, new Installation(new DateTime(2024, 01, 10)), new[] { proj1 });
-				var s2 = new MeasurementStation("ST-002", "Inactive", locB, new Installation(new DateTime(2023, 05, 20), new DateTime(2024, 05, 20)), new[] { proj1, proj2 });
-				var s3 = new MeasurementStation("ST-010", "Active", locC, new Installation(new DateTime(2025, 03, 15)), new[] { proj3 });
-				var s4 = new MeasurementStation("A-100", "Inactive", locB, new Installation(new DateTime(2022, 07, 01)), new[] { proj2, proj3 });
-				var s5 = new MeasurementStation("ZZ-999", "Active", locA, new Installation(new DateTime(2021, 12, 31), new DateTime(2022, 12, 31)), new Project[] { });
+				var s1 = new MeasurementStation("ST-001", locA, new Installation(new DateTime(2024, 01, 10)));
+				var s2 = new MeasurementStation("ST-002", locB, new Installation(new DateTime(2023, 05, 20), new DateTime(2024, 05, 20)));
+				var s3 = new MeasurementStation("ST-010", locC, new Installation(new DateTime(2025, 03, 15)));
+				var s4 = new MeasurementStation("A-100", locB, new Installation(new DateTime(2022, 07, 01)));
+				var s5 = new MeasurementStation("ZZ-999", locA, new Installation(new DateTime(2021, 12, 31), new DateTime(2022, 12, 31)));
 
 				// add a station with same location name but different city to test city ordering
 				var locA2 = new Location("Loc-A", new Address("L1", "L2", "CityAA", "1100"), new Coordinate(4.36, 50.86));
-				var s6 = new MeasurementStation("M-007", "Active", locA2, new Installation(new DateTime(2024, 06, 01)), new[] { proj1, proj2, proj3 });
+				var s6 = new MeasurementStation("M-007", locA2, new Installation(new DateTime(2024, 06, 01)));
 
 				return new List<MeasurementStation> { s1, s2, s3, s4, s5, s6 };
 			}

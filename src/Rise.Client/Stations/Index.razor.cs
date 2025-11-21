@@ -17,7 +17,6 @@ public partial class Index {
 	private static readonly (string Value, string Label)[] SortColumns =
 	[
 		("Code", "Code"),
-		("Status", "Status"),
 		("InstalledAt", "Geïnstalleerd"),
 		("RemovedAt", "Verwijderd"),
 		("Location", "Locatie"),
@@ -72,17 +71,7 @@ public partial class Index {
 			Items = result.Value.Stations,
 		};
 	}
-	private static string TranslateStatus(string raw) {
-		if (string.IsNullOrWhiteSpace(raw)) {
-			return string.Empty;
-		}
-
-		return raw switch {
-			"Active" or "Actief" => "Actief",
-			"Inactive" or "Inactief" => "Inactief",
-			_ => raw
-		};
-	}
+	
 	// Mobile
 
 	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {
@@ -117,19 +106,5 @@ public partial class Index {
 
 	private void NavigateToStation(Guid stationId) {
 		NavigationManager.NavigateTo($"/stations/{stationId}/projects");
-	}
-
-
-	// Other
-
-	private Color DefineColor(string statusRaw) {
-		if (string.IsNullOrWhiteSpace(statusRaw))
-			return Color.Default;
-
-		return statusRaw switch {
-			"Active" or "Actief" => Color.Success,
-			"Inactive" or "Inactief" => Color.Default,
-			_ => Color.Default
-		};
 	}
 }
