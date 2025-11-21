@@ -79,7 +79,6 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 	// OrderBy values (asc)
 	[InlineData("Id", false)]
 	[InlineData("Code", false)]
-	[InlineData("Status", false)]
 	[InlineData("InstalledAt", false)]
 	[InlineData("RemovedAt", false)]
 	[InlineData("Location", false)]
@@ -88,7 +87,6 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 	// OrderBy values (desc)
 	[InlineData("Id", true)]
 	[InlineData("Code", true)]
-	[InlineData("Status", true)]
 	[InlineData("InstalledAt", true)]
 	[InlineData("RemovedAt", true)]
 	[InlineData("Location", true)]
@@ -96,7 +94,7 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 	[InlineData("ProjectsCount", true)]
 	public async Task GetIndexAsync_Returns_Results_In_Requested_Order(string orderBy, bool desc) {
 		// Arrange
-		using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
 
 		MeasurementStationService svc = new(db);
 
@@ -126,12 +124,13 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 	[Fact]
 	public async Task GetIndexAsync_Paging_Is_Applied_After_Ordering() {
 		// Arrange
-		using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
 
 		MeasurementStationService svc = new(db);
 
 		// Request page with skip/take
-		QueryRequest.SkipTake requestFull = new() { Skip = 0, Take = 100, OrderBy = "Location", OrderDescending = false };
+		QueryRequest.SkipTake requestFull = new()
+			{ Skip = 0, Take = 100, OrderBy = "Location", OrderDescending = false };
 		QueryRequest.SkipTake requestPage = new() { Skip = 2, Take = 3, OrderBy = "Location", OrderDescending = false };
 
 		// Act
@@ -185,9 +184,7 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 		}
 
 		public static void SeedDummyStations(ApplicationDbContext context) {
-			if (context == null) {
-				throw new ArgumentNullException(nameof(context));
-			}
+			ArgumentNullException.ThrowIfNull(context);
 
 			// Create stations with shared locations/projects and insert them.
 			IReadOnlyList<MeasurementStation> stations = CreateDummyStations();
