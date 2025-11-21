@@ -9,111 +9,99 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Index {
-	private List<MeasurementStationDto.Index>? _mobileStations;
-	private int _mobileTotal;
-	[Inject] public required IMeasurementStationService StationService { get; set; }
-	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
-	[Inject] public required HeaderService HeaderService { get; set; }
-	[Inject] public required NavigationManager NavigationManager { get; set; }
+	private static readonly (string Value, string Label)[] SortColumns = [
+		("Code", "Code"),
+		("InstalledAt", "Geïnstalleerd"),
+		("RemovedAt", "Verwijderd"),
+		("Location", "Locatie"),
+		("City", "Gemeente"),
+		("ProjectsCount", "Projecten")
+	];
+
+	private string _activeSorting = "Code";
+	private bool _activeSortingDesc;
+
+	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
+
+	private bool _mobileSortOptionsOpen;
+
+
+	[Inject] public required IMeasurementStationService StationService { get; init; }
+	[Inject] public required NavigationManager NavigationManager { get; init; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
+	[Inject] public required HeaderService HeaderService { get; init; }
+	[Inject] public required IBrowserViewportService ViewportService { get; init; }
+
 
 	protected override async Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
-		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Meetstations", null, true)
 		);
+
 		HeaderService.Set("Meetstations");
+
+		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+
+		if (breakpoint == Breakpoint.Xs) {
+			await GetStationsMobileAsync(_activeSorting, _activeSortingDesc);
+		}
 	}
+
+	// Desktop
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-		int skip = state.Page * state.PageSize;
-		int take = state.PageSize;
-		// Keep "Id" for default ordering to match previous behaviour; adapt if you map sorting later.
-		Result<MeasurementStationResponse.Index>? response = await FetchStationsAsync(skip, take, "Id");
+		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
 
-		if (response?.Value is not null) {
-			return new GridData<MeasurementStationDto.Index> {
-				TotalItems = response.Value.TotalCount,
-				Items = response.Value.Stations
-			};
-		}
+		QueryRequest.SkipTake request = new() {
+			Skip = state.Page * state.PageSize,
+			Take = state.PageSize,
+			OrderBy = sorting?.SortBy ?? "Code",
+			OrderDescending = sorting?.Descending ?? false
+		};
 
-		// On error or empty response return an empty dataset so the grid can render.
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+
 		return new GridData<MeasurementStationDto.Index> {
-			TotalItems = 0,
-			Items = Array.Empty<MeasurementStationDto.Index>()
+			TotalItems = result.Value.TotalCount,
+			Items = result.Value.Stations
 		};
 	}
 
-	private void OnRowClick(DataGridRowClickEventArgs<MeasurementStationDto.Index> args) {
-		NavigationManager.NavigateTo($"/stations/{args.Item.Id}");
-	}
+	// Mobile
 
-	private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy) {
-		return new QueryRequest.SkipTake {
-			Skip = skip,
-			Take = take,
-			OrderBy = orderBy
+	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 10,
+			OrderBy = orderBy,
+			OrderDescending = orderDescending
 		};
+
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+
+		_mobileItems = result.Value.Stations;
 	}
 
-	// --- Centralized fetch used by both grid and mobile -----------------
+	// Mobile Sorting
 
-	/// <summary>
-	///     Centralized fetch that builds the request, calls the service and handles logging/errors.
-	///     Returns null on exception so callers can handle fallback behaviour.
-	/// </summary>
-	private async Task<Result<MeasurementStationResponse.Index>?> FetchStationsAsync(int skip, int take,
-		string? orderBy = null) {
-		try {
-			QueryRequest.SkipTake req = BuildRequest(skip, take, orderBy);
-			Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(req);
-			return result;
-		} catch (Exception ex) {
-			Log.Error(ex, "FetchStationsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy})", skip, take,
-				orderBy);
-			return null;
-		}
+	private void ToggleSortingDrawer() {
+		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
 	}
 
-	// --- Mobile data (cards) --------------------------------------------
-
-	// Default parameter values make fields unnecessary; call parameterless for page 0 / size 10
-	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
-		Result<MeasurementStationResponse.Index>? response =
-			await FetchStationsAsync(page * pageSize, pageSize, orderBy);
-
-		if (response?.Value is not null) {
-			_mobileStations = response.Value.Stations?.ToList() ?? new List<MeasurementStationDto.Index>();
-			_mobileTotal = response.Value.TotalCount;
-		} else {
-			Log.Warning("FetchMobileItemsAsync: service returned null or empty result");
-			_mobileStations = new List<MeasurementStationDto.Index>();
-			_mobileTotal = 0;
-		}
-
-		await InvokeAsync(StateHasChanged);
+	private async Task SortMobileAsync(string orderBy, bool descending) {
+		await GetStationsMobileAsync(orderBy, descending);
+		ToggleSortingDrawer();
+		_activeSorting = orderBy;
+		_activeSortingDesc = descending;
 	}
 
-	private static string TranslateStatus(string raw) {
-		if (string.IsNullOrWhiteSpace(raw)) {
-			return string.Empty;
-		}
+	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
 
-		return raw switch {
-			"Active" or "Actief" => "Actief",
-			"Inactive" or "Inactief" => "Inactief",
-			_ => raw
-		};
-	}
+	// Navigation
 
-	private void NavigateToStation(object? id) {
-		if (id is null) {
-			return;
-		}
-
-		NavigationManager.NavigateTo($"/stations/{id}");
+	private void NavigateToStation(Guid stationId) {
+		NavigationManager.NavigateTo($"/stations/{stationId}/projects");
 	}
 }

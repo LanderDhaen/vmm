@@ -7,6 +7,24 @@ namespace Rise.Domain.Projects;
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
+	// History
+
+	private readonly List<ProjectHistory> _projectHistories = [];
+
+	// Constructors
+
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private Project() { }
+
+	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+		Name = Guard.Against.NullOrWhiteSpace(name);
+		Code = Guard.Against.NullOrWhiteSpace(code);
+		DateRange = Guard.Against.Null(dateRange);
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
+		UpdateStatusBasedOnEndDate();
+	}
 
 	// Properties
 
@@ -18,47 +36,27 @@ public class Project : Entity {
 	// Relations
 
 	public MeasurementNetwork MeasurementNetwork { get; private set; }
+
 	public ICollection<MeasurementStation> Stations { get; private set; } =
 		new List<MeasurementStation>();
 
-	// History
-
-	private readonly List<ProjectHistory> _projectHistories = [];
 	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
-
-	// Constructors
-
-	/// <summary>
-	/// Entity Framework Core Constructor
-	/// </summary>
-	private Project() { }
-
-	public Project(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
-		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
-		DateRange = Guard.Against.Null(dateRange);
-		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
-		UpdateStatusBasedOnEndDate();
-	}
 
 	// Functions
 
 	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
-
-
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
 		}
 
-		Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
-		Code = Guard.Against.NullOrWhiteSpace(code, nameof(code));
+		Name = Guard.Against.NullOrWhiteSpace(name);
+		Code = Guard.Against.NullOrWhiteSpace(code);
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 
 		UpdateDateRange(dateRange);
 	}
 
 	private void UpdateDateRange(DateRange dateRange) {
-
 		// Check if the values are the same as the old values
 
 		if (dateRange.Equals(DateRange)) {
@@ -100,15 +98,16 @@ public class Project : Entity {
 }
 
 public class ProjectHistory : HistoryEntity {
-	public DateRange DateRange { get; init; }
-
 	/// <summary>
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private ProjectHistory() {
 	}
+
 	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
-		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
-		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));
+		DateRange = Guard.Against.Null(dateRange);
+		ValidityRange = Guard.Against.Null(validityRange);
 	}
+
+	public DateRange DateRange { get; init; }
 }
