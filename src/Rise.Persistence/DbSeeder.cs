@@ -26,6 +26,7 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
+		await MeasurementStationsHistoriesAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -235,7 +236,7 @@ public class DbSeeder(
 			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
 
-			// Move the end date
+			// Add the end date
 
 			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]),
 				project.MeasurementNetwork);
@@ -251,40 +252,75 @@ public class DbSeeder(
 		if (dbContext.MeasurementStations.Any()) {
 			return;
 		}
+		
+		List<Location> locations = await dbContext.Locations.ToListAsync();
+		
+		List<Project> projects = await dbContext.Projects.ToListAsync();
+		
+		// Initialise as stations without removedAt to allow easier history seeding
 
-		List<Location> locations = dbContext.Locations.Local.Any()
-			? dbContext.Locations.Local.ToList()
-			: await dbContext.Locations.ToListAsync();
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15)),
+			new Installation(new DateTime(2025, 2, 1)),
+			new Installation(new DateTime(2025, 3, 10)),
+			new Installation(new DateTime(2025, 4, 5)),
+			new Installation(new DateTime(2025, 5, 12)),
+			new Installation(new DateTime(2025, 5, 12))
+		};
 
-		List<Project> projects = dbContext.Projects.Local.Any()
-			? dbContext.Projects.Local.ToList()
-			: await dbContext.Projects.ToListAsync();
+		List<MeasurementStation> stations = new() {
+			new MeasurementStation("STN-001", locations[0], installations[0]),
+			new MeasurementStation("STN-002", locations[1], installations[1]),
+			new MeasurementStation("STN-003", locations[2], installations[2]),
+			new MeasurementStation("STN-004", locations[3], installations[3]),
+			new MeasurementStation("STN-005", locations[4], installations[4]),
+			new MeasurementStation("STN-006", locations[5], installations[5]),
+		};
 
-		if (!locations.Any() || !projects.Any()) {
+		dbContext.MeasurementStations.AddRange(stations);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private async Task MeasurementStationsHistoriesAsync() {
+		if (!dbContext.MeasurementStations.Any()) {
 			return;
 		}
+		
+		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 
-		int l0 = 0;
-		int l1 = Math.Min(1, locations.Count - 1);
-		int p0 = 0;
-		int p1 = Math.Min(1, projects.Count - 1);
+		List<DateTime?> removedAts = new() {
+			new DateTime(2025, 6, 30),
+			new DateTime(2025, 8, 15),
+			new DateTime(2025, 9, 25),
+			null,
+			new DateTime(2025, 12, 31),
+			null
+		};
+		
+		int i = 0;
 
-		MeasurementStation station1 = new(
-			"STN-001",
-			locations[l0],
-			new Installation(DateTime.UtcNow.AddMonths(-6))
-		);
+		foreach (MeasurementStation station in stations) {
+			
+			Installation installation = station.Installation;
+			
+			// Move the installed at
+			
+			station.UpdateInstallation(new Installation(installation.InstalledAt.AddDays(1), installation.RemovedAt));
+			await dbContext.SaveChangesAsync();
+			
+			// Revert the change
 
-		MeasurementStation station2 = new(
-			"STN-002",
-			locations[l1],
-			new Installation(
-				DateTime.UtcNow.AddYears(-1),
-				DateTime.UtcNow.AddDays(-30)
-			)
-		);
+			station.UpdateInstallation(installation);
+			await dbContext.SaveChangesAsync();
+			
+			// Add removed at
+			
+			station.UpdateInstallation(new Installation(installation.InstalledAt, removedAts[i]));
+			await dbContext.SaveChangesAsync();
+			
+			// Update the counter
 
-		dbContext.MeasurementStations.AddRange(station1, station2);
-		await dbContext.SaveChangesAsync();
+			i++;
+		}
 	}
 }
