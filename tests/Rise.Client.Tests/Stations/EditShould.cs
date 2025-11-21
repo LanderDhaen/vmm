@@ -82,7 +82,6 @@ namespace Rise.Client.Tests.Stations {
 				Station = new MeasurementStationDto.Detail {
 					Id = stationId,
 					Code = "STN-77",
-					Status = "Active",
 					InstalledAt = new DateTime(2024, 11, 1, 0, 0, 0, DateTimeKind.Utc),
 					RemovedAt = null,
 					Location = "Loc A",

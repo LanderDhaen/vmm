@@ -24,7 +24,7 @@ public partial class Detail {
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
 	[Parameter] public Guid StationId { get; set; }
-	[Inject] public required StationService StationService { get; set; }
+	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 
@@ -103,13 +103,5 @@ public partial class Detail {
 
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
-	}
-
-	private static string FormatStatus(string? raw) {
-		return raw switch {
-			"Active" or "Actief" => "Actief",
-			"Inactive" or "Inactief" => "Inactief",
-			_ => raw ?? "-"
-		};
 	}
 }

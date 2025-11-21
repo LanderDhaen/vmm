@@ -11,7 +11,6 @@ namespace Rise.Persistence.Configurations.Projects;
 /// </summary>
 internal class ProjectConfiguration : EntityConfiguration<Project> {
 	public override void Configure(EntityTypeBuilder<Project> builder) {
-
 		// Properties
 
 		base.Configure(builder);

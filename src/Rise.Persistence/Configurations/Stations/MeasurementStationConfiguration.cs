@@ -15,9 +15,9 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 			.IsRequired()
 			.HasMaxLength(64);
 
-		builder.Property(x => x.Status)
+		/*builder.Property(x => x.Status)
 			.IsRequired()
-			.HasMaxLength(32);
+			.HasMaxLength(32);*/
 
 		builder.HasOne(x => x.Location)
 			.WithMany()
