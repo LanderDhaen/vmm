@@ -20,4 +20,22 @@ public static class MeasurementStationDto {
 		public string? City { get; set; }
 		public int ProjectsCount { get; set; }
 	}
+
+	public class History {
+		public required Guid Id { get; init; }
+		public required string Code { get; init; }
+		public required DateTime InstalledAt { get; init; }
+		public required DateTime? RemovedAt { get; init; }
+		public required IReadOnlyList<MeasurementStationHistoryDto.Index> MeasurementStationHistories { get; init; }
+	}
+}
+
+public static class MeasurementStationHistoryDto {
+	public class Index {
+		public required Guid Id { get; init; }
+		public required DateTime InstalledAt { get; init; }
+		public required DateTime? RemovedAt { get; init; }
+		public required DateTime ValidFrom  { get; init; }
+		public required DateTime ValidTo  { get; init; }
+	}
 }

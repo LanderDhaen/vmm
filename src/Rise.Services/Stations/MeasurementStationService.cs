@@ -109,6 +109,39 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
 	}
 
+	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
+		CancellationToken ct = default) {
+		
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+		
+		MeasurementStationDto.History? measurementstation = await query
+			.Where(s => s.Id == stationId)
+			.Select(s => new MeasurementStationDto.History {
+				Id = s.Id,
+				Code = s.Code,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				MeasurementStationHistories = s.MeasurementStationHistories
+					.OrderByDescending(h => h.ValidityRange.ValidTo)
+					.Select(h => new MeasurementStationHistoryDto.Index {
+						Id = h.Id,
+						InstalledAt = h.Installation.InstalledAt,
+						RemovedAt = h.Installation.RemovedAt,
+						ValidFrom = h.ValidityRange.ValidFrom,
+						ValidTo = h.ValidityRange.ValidTo,
+					}).ToList()
+			})
+			.FirstOrDefaultAsync(ct);
+
+		if (measurementstation is null) {
+			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
+		}
+
+		return Result.Success(new MeasurementStationResponse.History {
+			MeasurementStation = measurementstation
+		});
+	}
+
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
 		CancellationToken ct = default) {
 		Location location;
