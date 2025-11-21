@@ -260,12 +260,12 @@ public class DbSeeder(
 		// Initialise as stations without removedAt to allow easier history seeding
 
 		List<Installation> installations = new() {
-			new Installation(new DateTime(2025, 1, 15)),
-			new Installation(new DateTime(2025, 2, 1)),
-			new Installation(new DateTime(2025, 3, 10)),
-			new Installation(new DateTime(2025, 4, 5)),
-			new Installation(new DateTime(2025, 5, 12)),
-			new Installation(new DateTime(2025, 5, 12))
+			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new Installation(new DateTime(2025, 4, 5, 3 , 24, 59)),
+			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
 		};
 
 		List<MeasurementStation> stations = new() {
@@ -289,11 +289,11 @@ public class DbSeeder(
 		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 
 		List<DateTime?> removedAts = new() {
-			new DateTime(2025, 6, 30),
-			new DateTime(2025, 8, 15),
-			new DateTime(2025, 9, 25),
+			new DateTime(2025, 6, 30, 5, 12, 30),
+			new DateTime(2025, 8, 15, 12, 40, 19),
+			new DateTime(2025, 9, 25, 16, 1, 21),
 			null,
-			new DateTime(2025, 12, 31),
+			new DateTime(2025, 12, 31, 9, 1, 1),
 			null
 		};
 		
