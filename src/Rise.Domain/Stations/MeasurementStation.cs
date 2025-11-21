@@ -34,11 +34,26 @@ public class MeasurementStation : Entity {
 	
 	// Functions
 
-	public void MoveTo(Location newLocation) {
-		Location = newLocation;
+	public void MoveTo(Location location) {
+		Location = location;
 	}
 
 	public void UpdateInstallation(Installation installation) {
+		
+		// Check if the values are the same as the old values
+
+		if (installation.Equals(Installation)) {
+			return;
+		}
+		
+		// Create history object using the old values
+		
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		MeasurementStationHistory measurementStationHistory = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), validityRange);
+		_measurementStationHistories.Add(measurementStationHistory);
+		
+		// Assign the new values
+		
 		Installation = installation;
 	}
 }
