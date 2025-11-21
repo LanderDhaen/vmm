@@ -6,7 +6,6 @@ using Ardalis.Result;
 using Microsoft.Data.Sqlite;
 
 using Rise.Domain.Locations;
-using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
@@ -47,7 +46,7 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 	private static string GetSortableString(MeasurementStationDto.Index dto, string orderBy) {
 		return orderBy switch {
 			"Id" => dto.Id.ToString(),
-			"Code" => dto.Code ?? string.Empty,
+			"Code" => dto.Code,
 			"InstalledAt" => dto.InstalledAt != default ? dto.InstalledAt.ToString("yyyy-MM-dd") : string.Empty,
 			"RemovedAt" => dto.RemovedAt.HasValue ? dto.RemovedAt.Value.ToString("yyyy-MM-dd") : string.Empty,
 			"Location" => dto.Location ?? string.Empty,
@@ -148,24 +147,11 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 
 	// The factory is embedded in the test class so all test-data and seeding logic is local.
 	private static class DummyStationsFactory {
-		public static IReadOnlyList<MeasurementStation> CreateDummyStations() {
+		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
 			// Create a few locations with distinct names/cities.
 			Location locA = new("Loc-A", new Address("L1", "L2", "CityA", "1000"), new Coordinate(4.35, 50.85));
 			Location locB = new("Loc-B", new Address("L1", "L2", "CityB", "2000"), new Coordinate(5.35, 51.85));
 			Location locC = new("Loc-C", new Address("L1", "L2", "CityC", "3000"), new Coordinate(6.35, 52.85));
-
-			// Create shared zones / networks so we don't violate UNIQUE constraints on Zone.Code.
-			Zone zone1 = new("Zone-1", "Z1");
-			Zone zone2 = new("Zone-2", "Z2");
-
-			MeasurementNetwork net1 = new("Net-1", zone1);
-			MeasurementNetwork net2 = new("Net-2", zone2);
-
-			// Create some projects to attach to stations; reuse net1 for proj1 and proj3 to avoid duplicate Zone entries.
-			Project proj1 = new("P1", "P-1", new DateRange(new DateOnly(2024, 1, 1), new DateOnly(2024, 12, 31)), net1);
-			Project proj2 = new("P2", "P-2", new DateRange(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31)), net2);
-			Project proj3 = new("P3", "P-3", new DateRange(new DateOnly(2023, 6, 1), new DateOnly(2024, 6, 1)),
-				net1); // reuse net1 / zone1
 
 			// Create stations with varying properties to exercise ordering.
 			MeasurementStation s1 = new("ST-001", locA, new Installation(new DateTime(2024, 01, 10)));
