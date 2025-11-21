@@ -15,7 +15,6 @@ using Severity = MudBlazor.Severity;
 namespace Rise.Client.Stations;
 
 public partial class Edit {
-	private readonly string[] _statuses = ["Actief", "Inactief"];
 	private readonly MeasurementStationRequest.Edit.Validator validator = new();
 
 	private IEnumerable<LocationDto.Index> _locations = Array.Empty<LocationDto.Index>();
@@ -66,17 +65,9 @@ public partial class Edit {
 				string.Equals(l.Address.City, detail.Value.Station.City, StringComparison.OrdinalIgnoreCase))
 			?.Id ?? _locations.FirstOrDefault()?.Id ?? Guid.Empty;
 
-		string status = detail.Value.Station.Status;
-		if (!_statuses.Contains(status, StringComparer.OrdinalIgnoreCase)) {
-			status = status.Equals("Active", StringComparison.OrdinalIgnoreCase) ? "Actief"
-				: status.Equals("Inactive", StringComparison.OrdinalIgnoreCase) ? "Inactief"
-				: "Actief";
-		}
-
 		Model = new MeasurementStationRequest.Edit {
 			StationId = StationId,
 			Code = detail.Value.Station.Code,
-			Status = status,
 			InstalledAt = detail.Value.Station.InstalledAt,
 			RemovedAt = detail.Value.Station.RemovedAt,
 			LocationId = locationId,
@@ -86,7 +77,7 @@ public partial class Edit {
 
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
-			new BreadcrumbItem("Projecten", "/projects"),
+			new BreadcrumbItem("Meetstations", "/stations"),
 			new BreadcrumbItem("Bewerk", $"/stations/edit/{StationId}", true)
 		);
 
@@ -95,7 +86,7 @@ public partial class Edit {
 			"Bewerk",
 			Icons.Material.Filled.ArrowBack,
 			() => {
-				Navigation.NavigateTo("/projects/");
+				Navigation.NavigateTo("/stations/");
 				return Task.CompletedTask;
 			}
 		);

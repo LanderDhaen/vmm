@@ -7,6 +7,7 @@ using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
+using Rise.Shared.Stations;
 
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
@@ -83,9 +84,29 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		int totalCount = await query.CountAsync(ctx);
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
-			query = query.OrderBy(p => EF.Property<object>(p, req.OrderBy));
+			bool desc = req.OrderDescending;
+			switch (req.OrderBy) {
+
+			case nameof(DateRange.StartDate):
+				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
+				break;
+			case nameof(DateRange.EndDate):
+				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
+				break;
+			case nameof(MeasurementNetwork):
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
+				break;
+			case nameof(Zone):
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
+				break;
+			default:
+				query = desc
+					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
+					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+				break;
+			}
 		} else {
-			query = query.OrderBy(p => p.Name);
+			query = query.OrderBy(p => p.Id);
 		}
 
 		IQueryable<Project> page = query
@@ -143,6 +164,40 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		});
 	}
 
+	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+
+		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
+
+		ProjectDto.History? project = await query
+			.Where(p => p.Id == projectId)
+			.Select(p => new ProjectDto.History {
+				Id = p.Id,
+				Name = p.Name,
+				Code = p.Code,
+				StartDate = p.DateRange.StartDate,
+				EndDate = p.DateRange.EndDate,
+				ProjectHistories = p.ProjectHistories
+					.OrderByDescending(h => h.ValidityRange.ValidTo)
+					.Select(h => new ProjectHistoryDto.Index {
+						Id = h.Id,
+						StartDate = h.DateRange.StartDate,
+						EndDate = h.DateRange.EndDate,
+						ValidFrom = h.ValidityRange.ValidFrom,
+						ValidTo = h.ValidityRange.ValidTo,
+					}).ToList()
+			})
+			.FirstOrDefaultAsync(ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project with Id '{projectId}' was not found");
+		}
+
+		return Result.Success(new ProjectResponse.History {
+			Project = project
+		});
+	}
+
+
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
@@ -158,11 +213,39 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		// 	return Result.Unauthorized("You are not authorized to edit this project.");
 		// }
 
-
 		project.UpdateStatus((Status)req.NewStatus);
 
 		await dbContext.SaveChangesAsync(ctx);
 
 		return Result.Success();
+	}
+
+	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+		Guid projectId,
+		CancellationToken ctx = default) {
+
+		bool exists = await dbContext.Projects
+			.AsNoTracking()
+			.AnyAsync(p => p.Id == projectId, ctx);
+
+		if (!exists) {
+			return Result.NotFound($"Project met Id '{projectId}' was niet gevonden.");
+		}
+
+		List<MeasurementStationDto.Index> stations = await dbContext.MeasurementStations
+			.AsNoTracking()
+			.Where(s => s.Projects.Any(p => p.Id == projectId))
+			.Select(s => new MeasurementStationDto.Index {
+				Id = s.Id,
+				Code = s.Code,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				Location = s.Location.Name,
+				City = s.Location.Address.City,
+				ProjectsCount = s.Projects.Count()
+			})
+			.ToListAsync(ctx);
+
+		return Result.Success(stations);
 	}
 }

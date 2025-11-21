@@ -13,3 +13,5 @@
 @using Blazored.FluentValidation
 @using MudBlazor
 @using LeafletForBlazor
+@using Rise.Shared.Identity
+@attribute [Authorize(Roles = AppRoles.Administrator)]

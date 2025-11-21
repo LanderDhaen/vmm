@@ -1,80 +1,81 @@
 @page "/"
 @page "/login"
+@attribute [AllowAnonymous]
 @layout LoginLayout
 
 <PageTitle>Login</PageTitle>
 
 <AuthorizeView>
-    <Authorized Context="authContext">
-    </Authorized>
+	<Authorized Context="authContext">
+	</Authorized>
 
-    <NotAuthorized Context="notAuth">
-        <MudContainer MaxWidth="MaxWidth.Small" Class="mt-12">
-            <MudGrid Justify="Justify.Center">
-                <MudItem xs="12">
-                    <MudStack Spacing="1" Class="mb-4">
-                        <MudAvatar Size="Size.Large" Color="Color.Primary">
-                            <MudIcon Icon="@Icons.Material.Filled.Person" />
-                        </MudAvatar>
-                        <MudText Typo="Typo.h5">VMM App - Expert</MudText>
-                        <MudText Typo="Typo.subtitle2">
-                            Meld je aan om verder te gaan.
-                        </MudText>
-                    </MudStack>
-                </MudItem>
+	<NotAuthorized Context="notAuth">
+		<MudContainer MaxWidth="MaxWidth.Small" Class="mt-12">
+			<MudGrid Justify="Justify.Center">
+				<MudItem xs="12">
+					<MudStack Spacing="1" Class="mb-4">
+						<MudAvatar Size="Size.Large" Color="Color.Primary">
+							<MudIcon Icon="@Icons.Material.Filled.Person"/>
+						</MudAvatar>
+						<MudText Typo="Typo.h5">VMM App - Expert</MudText>
+						<MudText Typo="Typo.subtitle2">
+							Meld je aan om verder te gaan.
+						</MudText>
+					</MudStack>
+				</MudItem>
 
-                <MudItem xs="12">
-                    @if (_result.Errors != null && _result.Errors.Any())
-                    {
-                        <MudAlert Severity="Severity.Error"
-                                  Elevation="1"
-                                  Variant="Variant.Filled"
-                                  Class="mb-4">
-                            <MudText Typo="Typo.subtitle2">
-                                Het e-mailadres of wachtwoord is onjuist.
-                            </MudText>
-                        </MudAlert>
-                    }
-                </MudItem>
+				<MudItem xs="12">
+					@if (_result.Errors != null && _result.Errors.Any())
+					{
+						<MudAlert Severity="Severity.Error"
+						          Elevation="1"
+						          Variant="Variant.Filled"
+						          Class="mb-4">
+							<MudText Typo="Typo.subtitle2">
+								Het e-mailadres of wachtwoord is onjuist.
+							</MudText>
+						</MudAlert>
+					}
+				</MudItem>
 
-                <MudItem xs="12">
-                    <MudPaper Elevation="3" Class="pa-6">
-                        <EditForm Model="Model" OnValidSubmit="LoginUser">
-                            <FluentValidationValidator />
+				<MudItem xs="12">
+					<MudPaper Elevation="3" Class="pa-6">
+						<EditForm Model="Model" OnValidSubmit="LoginUser">
+							<FluentValidationValidator/>
 
-                            <MudStack Spacing="3">
-                                <MudTextField @bind-Value="Model.Email"
-                                              Label="E-mail"
-                                              Variant="Variant.Outlined"
-                                              Required="true"
-                                              For="() => Model.Email"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Email"
-                                              InputType="InputType.Email"
-                                              Autocomplete="username" />
+							<MudStack Spacing="3">
+								<MudTextField @bind-Value="Model.Email"
+								              Label="E-mail"
+								              Variant="Variant.Outlined"
+								              Required="true"
+								              For="() => Model.Email"
+								              Adornment="Adornment.Start"
+								              AdornmentIcon="@Icons.Material.Filled.Email"
+								              InputType="InputType.Email"
+								              Autocomplete="username"/>
 
-                                <MudTextField @bind-Value="Model.Password"
-                                              Label="Wachtwoord"
-                                              Variant="Variant.Outlined"
-                                              Required="true"
-                                              For="() => Model.Password"
-                                              Adornment="Adornment.Start"
-                                              AdornmentIcon="@Icons.Material.Filled.Lock"
-                                              InputType="InputType.Password"
-                                              Autocomplete="current-password" />
+								<MudTextField @bind-Value="Model.Password"
+								              Label="Wachtwoord"
+								              Variant="Variant.Outlined"
+								              Required="true"
+								              For="() => Model.Password"
+								              Adornment="Adornment.Start"
+								              AdornmentIcon="@Icons.Material.Filled.Lock"
+								              InputType="InputType.Password"
+								              Autocomplete="current-password"/>
 
-                                <MudButton ButtonType="ButtonType.Submit"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           FullWidth="true">
-                                    Inloggen
-                                </MudButton>
-                                
-                            </MudStack>
-                        </EditForm>
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
-    </NotAuthorized>
+								<MudButton ButtonType="ButtonType.Submit"
+								           Variant="Variant.Filled"
+								           Color="Color.Primary"
+								           FullWidth="true">
+									Inloggen
+								</MudButton>
+
+							</MudStack>
+						</EditForm>
+					</MudPaper>
+				</MudItem>
+			</MudGrid>
+		</MudContainer>
+	</NotAuthorized>
 </AuthorizeView>

@@ -1,6 +1,7 @@
 @page "/stations/edit/{StationId:guid}"
 @inject NavigationManager Navigation
 
+<PageTitle>Meetstation bewerken</PageTitle>
 
 <MudText Typo="Typo.h3">Bewerk meetstation</MudText>
 
@@ -27,20 +28,6 @@ else
 						              Immediate="true"
 						              Variant="Variant.Outlined"
 						              Placeholder="Code"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Status</MudText>
-						<MudSelect T="string"
-						           @bind-Value="Model.Status"
-						           For="@(() => Model.Status)"
-						           Variant="Variant.Outlined"
-						           Placeholder="Kies status">
-							@foreach (var s in _statuses)
-							{
-								<MudSelectItem Value="@s">@s</MudSelectItem>
-							}
-						</MudSelect>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">

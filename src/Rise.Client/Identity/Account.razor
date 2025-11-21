@@ -1,5 +1,4 @@
 @page "/account"
-@attribute [Authorize]
 
 <PageTitle>Account</PageTitle>
 
@@ -7,7 +6,7 @@
 {
 	<MudContainer Class="mt-6">
 		<MudText Typo="Typo.h6">Accountgegevens laden...</MudText>
-		<MudProgressLinear Indeterminate="true" Class="mt-2" />
+		<MudProgressLinear Indeterminate="true" Class="mt-2"/>
 	</MudContainer>
 }
 else
@@ -43,7 +42,7 @@ else
 				</MudItem>
 			</MudGrid>
 
-			<MudDivider Class="my-2" />
+			<MudDivider Class="my-2"/>
 
 			<MudCardActions Class="justify-end">
 				<MudButton OnClick="Logout"

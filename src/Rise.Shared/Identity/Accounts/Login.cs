@@ -2,7 +2,7 @@
 
 namespace Rise.Shared.Identity.Accounts;
 
-public static partial class AccountRequest {
+public static class AccountRequest {
 	public class Login {
 		/// <summary>
 		///     The user's email address which acts as a user name.
