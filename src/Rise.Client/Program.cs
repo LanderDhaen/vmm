@@ -6,12 +6,14 @@ using MudBlazor;
 using MudBlazor.Services;
 
 using Rise.Client;
+using Rise.Client.Devices;
 using Rise.Client.Identity;
 using Rise.Client.Locations;
 using Rise.Client.Networks;
 using Rise.Client.Projects;
 using Rise.Client.Services;
 using Rise.Client.Stations;
+using Rise.Shared.Devices;
 using Rise.Shared.Locations;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -69,6 +71,11 @@ try {
 	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	}).AddHttpMessageHandler<CookieHandler>();
+
+
+	builder.Services.AddHttpClient<IDeviceService, DeviceService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 
