@@ -1,0 +1,59 @@
+@* Desktop view with full ValidityRange *@
+
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudTimeline>
+		<MudTimelineItem Color="Color.Primary">
+			<ItemOpposite>
+				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
+			</ItemOpposite>
+			<ItemContent>
+				<MudText Typo="Typo.h6">@MeasurementStation.Code</MudText>
+				<MudText>Geïnstalleerd: @MeasurementStation.InstalledAt</MudText>
+				<MudText>Verwijderd: @MeasurementStation.RemovedAt</MudText>
+			</ItemContent>
+		</MudTimelineItem>
+
+		@foreach (var h in MeasurementStation.MeasurementStationHistories)
+		{
+			<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+				<ItemOpposite>
+					<MudChip T="string" Variant="Variant.Outlined"
+					         Color="Color.Primary">@h.ValidFrom - @h.ValidTo</MudChip>
+				</ItemOpposite>
+
+				<ItemContent>
+					<MudText Typo="Typo.h6">@MeasurementStation.Code</MudText>
+					<MudText>Geïnstalleerd: @h.InstalledAt</MudText>
+					<MudText>Verwijderd: @h.RemovedAt</MudText>
+				</ItemContent>
+			</MudTimelineItem>
+		}
+	</MudTimeline>
+</MudHidden>
+
+@* Mobile view with only ValidFrom *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudTimeline TimelinePosition="TimelinePosition.Left">
+		<MudTimelineItem Color="Color.Primary">
+			<ItemContent>
+				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
+				<MudText Typo="Typo.h6">@MeasurementStation.Code</MudText>
+				<MudText>Geïnstalleerd: @MeasurementStation.InstalledAt</MudText>
+				<MudText>Verwijderd: @MeasurementStation.RemovedAt</MudText>
+			</ItemContent>
+		</MudTimelineItem>
+
+		@foreach (var h in MeasurementStation.MeasurementStationHistories)
+		{
+			<MudTimelineItem Color="Color.Primary">
+				<ItemContent>
+					<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@h.ValidFrom</MudChip>
+					<MudText Typo="Typo.h6">@MeasurementStation.Code</MudText>
+					<MudText>Startdatum: @h.InstalledAt</MudText>
+					<MudText>Einddatum: @h.RemovedAt</MudText>
+				</ItemContent>
+			</MudTimelineItem>
+		}
+	</MudTimeline>
+</MudHidden>

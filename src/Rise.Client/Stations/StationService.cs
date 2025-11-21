@@ -24,10 +24,10 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 			$"/api/stations/{stationId}", ctx))!;
 	}
 
-	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
-		CancellationToken ctx = default) {
+	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId, CancellationToken ctx = default) {
 
-		throw new NotImplementedException();
+		Result<MeasurementStationResponse.History>? result = await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.History>>($"/api/stations/{stationId}/history", ctx);
+		return result!;
 	}
 
 	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
