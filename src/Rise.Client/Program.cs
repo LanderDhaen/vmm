@@ -72,10 +72,6 @@ try {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 
-	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
-		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	}).AddHttpMessageHandler<CookieHandler>();
-
 	await builder.Build().RunAsync();
 } catch (Exception ex) {
 	Log.Fatal(ex, "An exception occurred while creating the WASM host");
