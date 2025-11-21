@@ -29,7 +29,7 @@ public partial class Index {
 	private bool _activeSortingDesc;
 
 
-	[Inject] public required StationService StationService { get; init; }
+	[Inject] public required IMeasurementStationService StationService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
