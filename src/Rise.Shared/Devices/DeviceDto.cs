@@ -1,3 +1,5 @@
+using Rise.Shared.Projects;
+
 namespace Rise.Shared.Devices;
 
 /// <summary>
@@ -11,7 +13,7 @@ public static class DeviceDto {
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
-		public required string DeviceType { get; set; }
-		public required string Status { get; set; }
+		public required DeviceType DeviceType { get; set; }
+		public required Status Status { get; set; }
 	}
 }
