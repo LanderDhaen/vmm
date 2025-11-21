@@ -21,5 +21,6 @@ public interface IMeasurementStationService {
 		Guid stationId,
 		CancellationToken ctx = default);
 
-	Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request, CancellationToken ctx = default);
+	Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
+		CancellationToken ctx = default);
 }

@@ -1,5 +1,4 @@
 @using Rise.Shared.Projects
-
 @* Desktop view with full ValidityRange *@
 
 <MudHidden Breakpoint="Breakpoint.Xs">
@@ -33,48 +32,51 @@
 </MudHidden>
 
 @* Mobile view with only ValidFrom *@
-	    
+
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
 	<MudGrid Spacing="6">
-	<MudItem xs="12">
-		<MudCard Elevation="2" Class="rounded-lg">
-			<MudCardHeader>
-				<CardHeaderContent>
-					<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
-						<MudStack Spacing="0">
-							<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@Project.Code</b></MudText>
-							<MudText Typo="Typo.h6">@Project.Name</MudText>
-						</MudStack>
-						<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig project</MudChip>
-					</MudStack>
-				</CardHeaderContent>
-			</MudCardHeader>
-			<MudCardContent Class="d-flex flex-column gap-1">
-				<MudText Typo="Typo.caption"><b>Start datum:</b> @Project.StartDate</MudText>
-				<MudText Typo="Typo.caption"><b>Eind datum:</b> @Project.EndDate</MudText>
-			</MudCardContent>
-		</MudCard>
-	</MudItem>
-	@foreach (var h in Project.ProjectHistories) {
 		<MudItem xs="12">
-		<MudCard Elevation="2" Class="rounded-lg">
-			<MudCardHeader>
-				<CardHeaderContent>
-					<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
-						<MudStack Spacing="0">
-							<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@Project.Code</b></MudText>
-							<MudText Typo="Typo.h6">@Project.Name</MudText>
+			<MudCard Elevation="2" Class="rounded-lg">
+				<MudCardHeader>
+					<CardHeaderContent>
+						<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+							<MudStack Spacing="0">
+								<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@Project.Code</b></MudText>
+								<MudText Typo="Typo.h6">@Project.Name</MudText>
+							</MudStack>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig project
+							</MudChip>
 						</MudStack>
-						<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@h.ValidFrom</MudChip>
-					</MudStack>
-				</CardHeaderContent>
-			</MudCardHeader>
-			<MudCardContent Class="d-flex flex-column gap-1">
-				<MudText Typo="Typo.caption"><b>Start datum:</b> @h.StartDate</MudText>
-				<MudText Typo="Typo.caption"><b>Eind datum:</b> @h.EndDate</MudText>
-			</MudCardContent>
-		</MudCard>
-	</MudItem>
-	}
+					</CardHeaderContent>
+				</MudCardHeader>
+				<MudCardContent Class="d-flex flex-column gap-1">
+					<MudText Typo="Typo.caption"><b>Start datum:</b> @Project.StartDate</MudText>
+					<MudText Typo="Typo.caption"><b>Eind datum:</b> @Project.EndDate</MudText>
+				</MudCardContent>
+			</MudCard>
+		</MudItem>
+		@foreach (var h in Project.ProjectHistories)
+		{
+			<MudItem xs="12">
+				<MudCard Elevation="2" Class="rounded-lg">
+					<MudCardHeader>
+						<CardHeaderContent>
+							<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+								<MudStack Spacing="0">
+									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@Project.Code</b></MudText>
+									<MudText Typo="Typo.h6">@Project.Name</MudText>
+								</MudStack>
+								<MudChip T="string" Variant="Variant.Outlined"
+								         Color="Color.Primary">@h.ValidFrom</MudChip>
+							</MudStack>
+						</CardHeaderContent>
+					</MudCardHeader>
+					<MudCardContent Class="d-flex flex-column gap-1">
+						<MudText Typo="Typo.caption"><b>Start datum:</b> @h.StartDate</MudText>
+						<MudText Typo="Typo.caption"><b>Eind datum:</b> @h.EndDate</MudText>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+		}
 	</MudGrid>
 </MudHidden>

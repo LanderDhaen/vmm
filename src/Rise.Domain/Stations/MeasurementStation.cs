@@ -4,9 +4,9 @@ using Rise.Domain.Projects;
 namespace Rise.Domain.Stations;
 
 public class MeasurementStation : Entity {
-	private string _code = String.Empty;
-	private Location _location = default!;
+	private string _code = string.Empty;
 	private Installation _installation = default!;
+	private Location _location = default!;
 
 	private MeasurementStation() { }
 

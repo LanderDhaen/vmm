@@ -183,7 +183,7 @@ else
 				             RowClick="OnStationRowClick">
 					<Columns>
 						<PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 						<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" Sortable="false"
 						                Filterable="false" Groupable="false">
 							<CellTemplate Context="row">
@@ -197,19 +197,19 @@ else
 							</CellTemplate>
 						</PropertyColumn>
 						<PropertyColumn Property="x => x.Location" Title="Locatie" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 						<PropertyColumn Property="x => x.City" Title="Gemeente" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 					</Columns>
 
 					<PagerContent>
-						<Pagination T="MeasurementStationDto.Index" />
+						<Pagination T="MeasurementStationDto.Index"/>
 					</PagerContent>
 				</MudDataGrid>
 			</MudPaper>
 			break;
 		case 2:
-			<History ProjectId="ProjectId" />
+			<History ProjectId="ProjectId"/>
 			break;
 	}
 }

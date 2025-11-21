@@ -9,13 +9,7 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Index {
-
-	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
-
-	private bool _mobileSortOptionsOpen;
-	
-	private static readonly (string Value, string Label)[] SortColumns =
-	[
+	private static readonly (string Value, string Label)[] SortColumns = [
 		("Code", "Code"),
 		("InstalledAt", "Geïnstalleerd"),
 		("RemovedAt", "Verwijderd"),
@@ -23,9 +17,13 @@ public partial class Index {
 		("City", "Gemeente"),
 		("ProjectsCount", "Projecten")
 	];
-	
+
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
+
+	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
+
+	private bool _mobileSortOptionsOpen;
 
 
 	[Inject] public required IMeasurementStationService StationService { get; init; }
@@ -36,7 +34,6 @@ public partial class Index {
 
 
 	protected override async Task OnInitializedAsync() {
-
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Meetstations", null, true)
@@ -44,7 +41,7 @@ public partial class Index {
 
 		HeaderService.Set("Meetstations");
 
-		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
 			await GetStationsMobileAsync(_activeSorting, _activeSortingDesc);
@@ -53,25 +50,25 @@ public partial class Index {
 
 	// Desktop
 
-	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(GridState<MeasurementStationDto.Index> state) {
-
-		var sorting = state.SortDefinitions.FirstOrDefault();
+	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
+		GridState<MeasurementStationDto.Index> state) {
+		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
 			OrderBy = sorting?.SortBy ?? "Code",
-			OrderDescending = sorting?.Descending ?? false,
+			OrderDescending = sorting?.Descending ?? false
 		};
 
 		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
-		return new GridData<MeasurementStationDto.Index>() {
+		return new GridData<MeasurementStationDto.Index> {
 			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Stations,
+			Items = result.Value.Stations
 		};
 	}
-	
+
 	// Mobile
 
 	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {

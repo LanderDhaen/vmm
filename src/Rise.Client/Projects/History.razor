@@ -1,14 +1,14 @@
 @using Rise.Client.Components.Projects
-
 <PageTitle>Project Details</PageTitle>
 
-@if (_project is null) {
-    <MudContainer Class="d-flex justify-center align-center">
-        <MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
-    </MudContainer>
-} 
-else {
-
+@if (_project is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
 	<MudToolBar Class="justify-start gap-3" Gutters="false">
 		<MudButton Variant="Variant.Filled"
 		           Class="px-4"
@@ -29,10 +29,13 @@ else {
 			Tabel
 		</MudButton>
 	</MudToolBar>
-    
-    @if (DisplayTable) {
-	    <ProjectHistoryTable Project="_project" />
-    } else {
-	    <ProjectHistoryTimeline Project="_project" />
-    }
+
+	@if (DisplayTable)
+	{
+		<ProjectHistoryTable Project="_project"/>
+	}
+	else
+	{
+		<ProjectHistoryTimeline Project="_project"/>
+	}
 }
