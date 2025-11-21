@@ -6,7 +6,7 @@ namespace Rise.Shared.Devices;
 ///     Provides methods for managing device-related operations.
 /// </summary>
 public interface IDeviceService {
-	Task<Result<Projects.ProjectResponse.Index>> GetIndexAsync(
+	Task<Result<DeviceResponse.Index>> GetIndexAsync(
 		QueryRequest.SkipTake req,
 		CancellationToken ctx = default
 	);

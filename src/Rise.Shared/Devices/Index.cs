@@ -1,8 +1,11 @@
 namespace Rise.Shared.Devices;
 
-public static class ProjectResponse {
+/// <summary>
+///     Represents the response structure for device-related operations.
+/// </summary>
+public static class DeviceResponse {
 	public class Index {
-		public IEnumerable<DevicesDto.Index> Devices { get; set; } = [];
+		public IEnumerable<DeviceDto.Index> Devices { get; set; } = [];
 		public int TotalCount { get; set; }
 	}
 }
