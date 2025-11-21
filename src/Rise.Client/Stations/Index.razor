@@ -27,7 +27,8 @@
 		           StartIcon="@Icons.Material.Filled.Add"
 		           Size="Size.Small"
 		           Color="Color.Primary"
-		           Class="px-4">
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
 			Meetstation
 		</MudButton>
 	</MudStack>
@@ -40,7 +41,7 @@
 	             RowClick="@(args => NavigateToStation(args.Item.Id))">
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary" />
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
@@ -76,7 +77,8 @@
 
 		<MudIconButton Icon="@Icons.Material.Filled.Add"
 		               Color="Color.Primary"
-		               Size="Size.Small"/>
+		               Size="Size.Small"
+		               OnClick="@NavigateToCreate"/>
 	</MudStack>
 	<MudGrid Spacing="4">
 		@if (_mobileItems is null)

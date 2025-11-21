@@ -104,4 +104,9 @@ public partial class Index {
 	private void NavigateToStation(Guid stationId) {
 		NavigationManager.NavigateTo($"/stations/{stationId}");
 	}
+	
+	private void NavigateToCreate() {
+		NavigationManager.NavigateTo("/stations/create");
+	}
+
 }
