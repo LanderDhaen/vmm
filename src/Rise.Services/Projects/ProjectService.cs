@@ -86,18 +86,25 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
-
 			case nameof(DateRange.StartDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange.StartDate)
+					: query.OrderBy(p => p.DateRange.StartDate);
 				break;
 			case nameof(DateRange.EndDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange.EndDate)
+					: query.OrderBy(p => p.DateRange.EndDate);
 				break;
 			case nameof(MeasurementNetwork):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
+				query = desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Name);
 				break;
 			case nameof(Zone):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
+				query = desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
 				break;
 			default:
 				query = desc
@@ -164,8 +171,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		});
 	}
 
-	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-
+	public async Task<Result<ProjectResponse.History>>
+		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		ProjectDto.History? project = await query
@@ -183,7 +190,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						StartDate = h.DateRange.StartDate,
 						EndDate = h.DateRange.EndDate,
 						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo,
+						ValidTo = h.ValidityRange.ValidTo
 					}).ToList()
 			})
 			.FirstOrDefaultAsync(ctx);
@@ -223,7 +230,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
 		Guid projectId,
 		CancellationToken ctx = default) {
-
 		bool exists = await dbContext.Projects
 			.AsNoTracking()
 			.AnyAsync(p => p.Id == projectId, ctx);

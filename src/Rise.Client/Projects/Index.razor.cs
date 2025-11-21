@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
@@ -10,13 +9,7 @@ using Rise.Shared.Projects;
 namespace Rise.Client.Projects;
 
 public partial class Index {
-
-	private IEnumerable<ProjectDto.Index>? _mobileItems;
-
-	private bool _mobileSortOptionsOpen;
-
-	private static readonly (string Value, string Label)[] SortColumns =
-	[
+	private static readonly (string Value, string Label)[] SortColumns = [
 		("Code", "Code"),
 		("Name", "Naam"),
 		("StartDate", "Startdatum"),
@@ -29,6 +22,10 @@ public partial class Index {
 	private string _activeSorting = "Name";
 	private bool _activeSortingDesc;
 
+	private IEnumerable<ProjectDto.Index>? _mobileItems;
+
+	private bool _mobileSortOptionsOpen;
+
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -38,7 +35,6 @@ public partial class Index {
 
 
 	protected override async Task OnInitializedAsync() {
-
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", null, true)
@@ -46,7 +42,7 @@ public partial class Index {
 
 		HeaderService.Set("Projecten");
 
-		var breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
 			await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
@@ -56,21 +52,20 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-
-		var sorting = state.SortDefinitions.FirstOrDefault();
+		SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
 			OrderBy = sorting?.SortBy ?? "Name",
-			OrderDescending = sorting?.Descending ?? false,
+			OrderDescending = sorting?.Descending ?? false
 		};
 
 		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
 
-		return new GridData<ProjectDto.Index>() {
+		return new GridData<ProjectDto.Index> {
 			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Projects,
+			Items = result.Value.Projects
 		};
 	}
 
@@ -111,7 +106,7 @@ public partial class Index {
 	}
 
 	private void NavigateToCreate() {
-		NavigationManager.NavigateTo($"/projects/create");
+		NavigationManager.NavigateTo("/projects/create");
 	}
 
 	// Other

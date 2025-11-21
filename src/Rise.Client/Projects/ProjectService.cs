@@ -35,8 +35,11 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-		Result<ProjectResponse.History>? result = await httpClient.GetFromJsonAsync<Result<ProjectResponse.History>>($"/api/projects/{projectId}/history", ctx);
+	public async Task<Result<ProjectResponse.History>>
+		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		Result<ProjectResponse.History>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.History>>($"/api/projects/{projectId}/history",
+				ctx);
 		return result!;
 	}
 
@@ -54,7 +57,7 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		Result<List<MeasurementStationDto.Index>>? result =
 			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
 				$"/api/projects/{projectId}/stations",
-				cancellationToken: ctx);
+				ctx);
 		return result!;
 	}
 }
