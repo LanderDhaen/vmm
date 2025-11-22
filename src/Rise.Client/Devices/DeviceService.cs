@@ -9,6 +9,6 @@ public class DeviceService(HttpClient httpClient) : IDeviceService {
 	public async Task<Result<DeviceResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		return (await httpClient.GetFromJsonAsync<Result<DeviceResponse.Index>>(
-			$"/api/devices?{request.AsQuery()}", ctx))!;
+			$"/api/maintenancedevices?{request.AsQuery()}", ctx))!;
 	}
 }
