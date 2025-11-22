@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Devices;
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
@@ -26,6 +27,7 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
+		await DevicesAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -266,8 +268,6 @@ public class DbSeeder(
 
 		int l0 = 0;
 		int l1 = Math.Min(1, locations.Count - 1);
-		int p0 = 0;
-		int p1 = Math.Min(1, projects.Count - 1);
 
 		MeasurementStation station1 = new(
 			"STN-001",
@@ -285,6 +285,34 @@ public class DbSeeder(
 		);
 
 		dbContext.MeasurementStations.AddRange(station1, station2);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private async Task DevicesAsync() {
+		if (dbContext.Devices.Any()) {
+			return;
+		}
+
+		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
+			? dbContext.MeasurementStations.Local.ToList()
+			: await dbContext.MeasurementStations.ToListAsync();
+
+		// If there are no stations, still create some unassigned devices
+		Device d1 = new("W-Sonde", "567927", DeviceType.Sonde, "Aquatroll");
+		Device d2 = new("W-Logger", "31045", DeviceType.Logger, "Campbell");
+		Device d3 = new("W-Modem", "354990101102816", DeviceType.Modem, "Centerion");
+		Device d4 = new("W-SIM", "2100267739177", DeviceType.Sim, "002.APN.VMM.BE");
+		Device d5 = new("W-Voeding", "03Y90D0134", DeviceType.Voeding, "Kyocera");
+
+		// Attach some devices to the first station if available
+		if (stations.Any()) {
+			d1.AssignToMeasurementStation(stations[0]);
+			if (stations.Count > 1) {
+				d2.AssignToMeasurementStation(stations[1]);
+			}
+		}
+
+		dbContext.Devices.AddRange(d1, d2, d3, d4, d5);
 		await dbContext.SaveChangesAsync();
 	}
 }
