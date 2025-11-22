@@ -40,6 +40,17 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
+		if (request.StationId is not null) {
+			var station = await dbContext.MeasurementStations
+				.SingleOrDefaultAsync(s => s.Id == request.StationId, ctx);
+
+			if (station is null) {
+				return Result.NotFound("Meetstation niet gevonden.");
+			}
+
+			p.Stations.Add(station);
+		}
+
 		dbContext.Projects.Add(p);
 
 		await dbContext.SaveChangesAsync(ctx);
@@ -87,18 +98,25 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
-
 			case nameof(DateRange.StartDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange.StartDate)
+					: query.OrderBy(p => p.DateRange.StartDate);
 				break;
 			case nameof(DateRange.EndDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange.EndDate)
+					: query.OrderBy(p => p.DateRange.EndDate);
 				break;
 			case nameof(MeasurementNetwork):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
+				query = desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Name);
 				break;
 			case nameof(Zone):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
+				query = desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
 				break;
 			default:
 				query = desc
@@ -165,8 +183,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		});
 	}
 
-	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-
+	public async Task<Result<ProjectResponse.History>>
+		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		ProjectDto.History? project = await query
@@ -224,7 +242,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
 		Guid projectId,
 		CancellationToken ctx = default) {
-
 		bool exists = await dbContext.Projects
 			.AsNoTracking()
 			.AnyAsync(p => p.Id == projectId, ctx);
@@ -249,10 +266,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		return Result.Success(stations);
 	}
-	
+
 	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
 		CancellationToken ctx = default) {
-
 		Project? project = await dbContext.Projects
 			.Include(p => p.Stations)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
@@ -260,7 +276,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (project is null) {
 			return Result.NotFound($"Project met id '{req.ProjectId}' is niet gevonden.");
 		}
-		
+
 		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations
 			.Where(ms => req.MeasurementStationIds.Contains(ms.Id))
 			.ToListAsync(ctx);
@@ -268,9 +284,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (measurementStations.Count != req.MeasurementStationIds.Count()) {
 			return Result.Error("Een of meerdere meetstations zijn niet gevonden.");
 		}
-		
+
 		project.UpdateMeasurementStationList(measurementStations);
-		
+
 		await dbContext.SaveChangesAsync(ctx);
 
 		return Result.Success();
