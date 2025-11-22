@@ -127,52 +127,52 @@
 
 @* Drawer for sorting on mobile *@
 
-@* @if (_mobileSortOptionsOpen) *@
-@* { *@
-@* 	<MudDrawer Anchor="Anchor.Bottom" *@
-@* 	           Variant="DrawerVariant.Temporary" *@
-@* 	           Elevation="8" *@
-@* 	           @bind-Open="_mobileSortOptionsOpen" *@
-@* 	           Class="p-4 rounded-lg"> *@
-@* *@
-@* 		<MudText Typo="Typo.h6">Sorteren</MudText> *@
-@* *@
-@* 		<MudStack Spacing="4"> *@
-@* 			<MudDivider/> *@
-@* *@
-@* 			@foreach (var column in SortColumns) *@
-@* 			{ *@
-@* 				<MudStack Row="true" AlignItems="AlignItems.Center"> *@
-@* 					<MudText>@column.Label</MudText> *@
-@* 					<MudSpacer/> *@
-@* *@
-@* 					<MudButton *@
-@* 						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)" *@
-@* 						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)" *@
-@* 						Size="Size.Small" *@
-@* 						OnClick="@(() => SortMobileAsync(column.Value, false))"> *@
-@* 						Oplopend *@
-@* 					</MudButton> *@
-@* *@
-@* 					<MudButton *@
-@* 						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)" *@
-@* 						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)" *@
-@* 						Size="Size.Small" *@
-@* 						OnClick="@(() => SortMobileAsync(column.Value, true))"> *@
-@* 						Aflopend *@
-@* 					</MudButton> *@
-@* 				</MudStack> *@
-@* 			} *@
-@* *@
-@* 			<MudDivider/> *@
-@* *@
-@* 			<MudButton Variant="Variant.Text" *@
-@* 			           Color="Color.Primary" *@
-@* 			           OnClick="@ToggleSortingDrawer"> *@
-@* 				Sluiten *@
-@* 			</MudButton> *@
-@* 		</MudStack> *@
-@* 	</MudDrawer> *@
-@* } *@
+@if (_mobileSortOptionsOpen)
+{
+	<MudDrawer Anchor="Anchor.Bottom"
+	           Variant="DrawerVariant.Temporary"
+	           Elevation="8"
+	           @bind-Open="_mobileSortOptionsOpen"
+	           Class="p-4 rounded-lg">
+
+		<MudText Typo="Typo.h6">Sorteren</MudText>
+
+		<MudStack Spacing="4">
+			<MudDivider/>
+
+			@foreach (var column in SortColumns)
+			{
+				<MudStack Row="true" AlignItems="AlignItems.Center">
+					<MudText>@column.Label</MudText>
+					<MudSpacer/>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, false))">
+						Oplopend
+					</MudButton>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, true))">
+						Aflopend
+					</MudButton>
+				</MudStack>
+			}
+
+			<MudDivider/>
+
+			<MudButton Variant="Variant.Text"
+			           Color="Color.Primary"
+			           OnClick="@ToggleSortingDrawer">
+				Sluiten
+			</MudButton>
+		</MudStack>
+	</MudDrawer>
+}
 
 @* TODO: Implement drawer for filtering *@
