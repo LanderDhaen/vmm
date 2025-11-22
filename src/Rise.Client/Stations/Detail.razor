@@ -84,8 +84,40 @@ else
 			break;
 
 		case 2:
+			<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+				<MudSelect T="Guid" Label="Projecten toevoegen" MultiSelection="true"
+				           @bind-SelectedValues="Model.ProjectIds" Variant="Variant.Outlined"
+				           Margin="Margin.Dense"
+				           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+					<ChildContent>
+						<MudSelectItem T="Guid">
+							<div class="p-2">
+								<MudButton Variant="Variant.Text" Color="Color.Primary"
+								           StartIcon="@Icons.Material.Filled.Add" OnClick="@NavigateToCreateProject">Nieuw
+									project toevoegen
+								</MudButton>
+							</div>
+						</MudSelectItem>
+						@foreach (var project in _allProjects)
+						{
+							<MudSelectItem T="Guid" Value="@project.Id">@project.Code</MudSelectItem>
+						}
+					</ChildContent>
+				</MudSelect>
+
+				<MudButton Variant="Variant.Filled"
+				           StartIcon="@Icons.Material.Filled.Add"
+				           Size="Size.Small"
+				           Color="Color.Primary"
+				           Class="px-4"
+				           OnClick="@UpdateProjects"
+				>
+					Project toevoegen
+				</MudButton>
+			</MudStack>
 			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 				<MudDataGrid T="ProjectDto.Index"
+				             @ref="_projectsGrid"
 				             ServerData="GetProjectsGridAsync"
 				             RowsPerPage="10"
 				             Bordered="true"

@@ -34,8 +34,20 @@ public class MeasurementStation : Entity {
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
 	
-	public void AddProjects(List<Project> projects) {
-		_projects = projects;
+	public void UpdateProjectList(ICollection<Project> projects) {
+		// Get all the projects that are not already in the measurement station
+		List<Project> projectsToAdd = projects
+			.Where(s => Projects.All(pr => pr.Id != s.Id))
+			.ToList();
+
+		projectsToAdd.ForEach(p => Projects.Add(p));
+		
+		// Get all the projects that are already in the measurement station but need to be deleted
+		List<Project> projectsToRemove = Projects
+			.Where(p => projects.All(pr => pr.Id != p.Id))
+			.ToList();
+		
+		projectsToRemove.ForEach(p => Projects.Remove(p));
 	}
 
 	public void MoveTo(Location newLocation) {

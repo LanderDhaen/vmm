@@ -14,6 +14,7 @@ public partial class Create {
 	private Result<ProjectResponse.Create>? _result;
 	private MudForm form;
 	private IEnumerable<MeasurementNetworkDto.Index>? networks;
+	[Parameter] public Guid? StationId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required INetworkService NetworkService { get; set; }
@@ -47,6 +48,10 @@ public partial class Create {
 				return Task.CompletedTask;
 			}
 		);
+		
+		if (StationId.HasValue) {
+			Model.StationId = StationId;
+		}
 	}
 
 	private async Task CreateProjectAsync() {
@@ -57,7 +62,9 @@ public partial class Create {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Project succesvol aangemaakt!", Severity.Success);
 				await Task.Delay(2000);
-				NavigationManager.NavigateTo("/projects");
+				if (Model.StationId != null) {
+					NavigationManager.NavigateTo($"/stations/{StationId}");
+				}
 			} else {
 				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
 			}

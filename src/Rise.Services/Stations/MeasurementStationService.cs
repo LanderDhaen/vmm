@@ -220,4 +220,30 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
 	}
+	
+	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,
+		CancellationToken ctx = default) {
+
+		MeasurementStation? measurementStation = await dbContext.MeasurementStations
+			.Include(p => p.Projects)
+			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ctx);
+
+		if (measurementStation is null) {
+			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
+		}
+		
+		List<Project> projects = await dbContext.Projects
+			.Where(p => req.ProjectIds.Contains(p.Id))
+			.ToListAsync(ctx);
+
+		if (projects.Count != req.ProjectIds.Count()) {
+			return Result.Error("Een of meerdere projecten zijn niet gevonden.");
+		}
+		
+		measurementStation.UpdateProjectList(projects);
+		
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
 }

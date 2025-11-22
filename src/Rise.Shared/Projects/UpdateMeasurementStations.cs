@@ -1,5 +1,3 @@
-using FluentValidation.Results;
-
 namespace Rise.Shared.Projects;
 
 /// <summary>
