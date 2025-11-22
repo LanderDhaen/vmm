@@ -36,11 +36,11 @@ public class DbSeeder(
 		}
 
 		List<Device> devices = new() {
-			new Device("Maint Sonde A", "SN-M-S-001", DeviceType.Sonde, "AquaTech", "Sonde-X100"),
-			new Device("Maint Logger A", "SN-M-L-001", DeviceType.Logger, "LoggerCorp", logger: "Logger-L200"),
-			new Device("Maint Modem A", "SN-M-M-001", DeviceType.Modem, "CommsInc", modem: "Modem-M300"),
-			new Device("Maint SIM A", "SN-M-SIM-001", DeviceType.Sim, "Telco", sim: "SIM-9001"),
-			new Device("Maint Power A", "SN-M-P-001", DeviceType.Voeding, "PowerCo", voeding: "Voeding-V12")
+			new Device("W-Sonde A", "567927", DeviceType.Sonde, "Aquatroll"),
+			new Device("W-Logger A", "31045", DeviceType.Logger, "Campbell"),
+			new Device("W-Modem A", "354990101102816", DeviceType.Modem, "Centerion"),
+			new Device("W-SIM A", "2100267739177", DeviceType.Sim, "002.APN.VMM.BE"),
+			new Device("W-Voeding A", "03Y90D0134", DeviceType.Voeding, "Kyocera")
 		};
 
 		dbContext.Devices.AddRange(devices);
