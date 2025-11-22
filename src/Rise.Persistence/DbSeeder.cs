@@ -27,10 +27,10 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
-		await MaintenanceDevicesAsync();
+		await MaintenanceObjectsAsync();
 	}
 
-	private async Task MaintenanceDevicesAsync() {
+	private async Task MaintenanceObjectsAsync() {
 		if (dbContext.Devices.Any()) {
 			return;
 		}
