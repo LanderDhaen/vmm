@@ -4,106 +4,114 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.Common;
+using Rise.Shared.Devices;
 using Rise.Shared.Projects;
+
+using DeviceDto = Rise.Shared.Devices.DeviceDto;
 
 namespace Rise.Client.Devices;
 
 public partial class Index {
-	// Mobile list state (without separate page/pageSize fields)
-	private List<ProjectDto.Index>? _mobileItems;
-	private int _mobileTotal;
-	[Inject] public required IProjectService ProjectService { get; set; }
-	[Inject] public required NavigationManager NavigationManager { get; set; }
-	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
-	[Inject] public required HeaderService HeaderService { get; set; }
+	private static readonly (string Value, string Label)[] SortColumns = [
+		("Serial", "Code"),
+		("Name", "Naam"),
+		("Type", "Type"),
+		("Status", "Status")
+	];
+
+	private string _activeSorting = "Name";
+	private bool _activeSortingDesc;
+
+	private IEnumerable<DeviceDto.Index>? _mobileItems;
+
+	private bool _mobileSortOptionsOpen;
+
+
+	[Inject] public required IDeviceService DeviceService { get; init; }
+	[Inject] public required NavigationManager NavigationManager { get; init; }
+	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
+	[Inject] public required HeaderService HeaderService { get; init; }
+	[Inject] public required IBrowserViewportService ViewportService { get; init; }
+
 
 	protected override async Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
-		await FetchMobileItemsAsync(); // uses default page = 0, pageSize = 10
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Home", "/"),
-			new BreadcrumbItem("Projecten", null, true)
+			new BreadcrumbItem("Onderhouds objecten", null, true)
 		);
-		// set header
-		HeaderService.Set("Projecten");
+
+		HeaderService.Set("Onderhouds objecten");
+
+		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+
+		if (breakpoint == Breakpoint.Xs) {
+			await GetDevicesMobileAsync(_activeSorting, _activeSortingDesc);
+		}
 	}
 
-	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		// Use centralized fetch to avoid duplicating error handling
-		int skip = state.Page * state.PageSize;
-		int take = state.PageSize;
-		// OrderBy can be adapted to use state sorting if available; keep "Id" to match previous behavior
-		Result<ProjectResponse.Index>? result = await FetchProjectsAsync(skip, take, "Id");
+	// Desktop
 
-		if (result?.Value is not null) {
-			return new GridData<ProjectDto.Index> {
-				TotalItems = result.Value.TotalCount,
-				Items = result.Value.Projects
-			};
-		}
+	private async Task<GridData<DeviceDto.Index>> GetDevicesAsync(GridState<DeviceDto.Index> state) {
+		SortDefinition<DeviceDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
 
-		// On error or empty result return an empty dataset so grid can render safely
-		return new GridData<ProjectDto.Index> {
-			TotalItems = 0,
-			Items = Array.Empty<ProjectDto.Index>()
+		QueryRequest.SkipTake request = new() {
+			Skip = state.Page * state.PageSize,
+			Take = state.PageSize,
+			OrderBy = sorting?.SortBy ?? "Name",
+			OrderDescending = sorting?.Descending ?? false
+		};
+
+		Result<DeviceResponse.Index> result = await DeviceService.GetIndexAsync(request);
+
+		return new GridData<DeviceDto.Index> {
+			TotalItems = result.Value.TotalCount,
+			Items = result.Value.Devices
 		};
 	}
 
-	private void OnRowClick(DataGridRowClickEventArgs<ProjectDto.Index> args) {
-		NavigationManager.NavigateTo($"/projects/{args.Item.Id}");
-	}
+	// Mobile
 
-	private static QueryRequest.SkipTake BuildRequest(int skip, int take, string? orderBy) {
-		return new QueryRequest.SkipTake {
-			Skip = skip,
-			Take = take,
-			OrderBy = orderBy
+	private async Task GetDevicesMobileAsync(string orderBy, bool orderDescending) {
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 10,
+			OrderBy = orderBy,
+			OrderDescending = orderDescending
 		};
+
+		Result<DeviceResponse.Index> result = await DeviceService.GetIndexAsync(request);
+
+		_mobileItems = result.Value.Devices;
 	}
 
-	// --- Centralized fetch used by both grid and mobile -----------------
+	// Mobile Sorting
 
-	/// <summary>
-	///     Centralized fetch that builds the request, calls the service and handles logging/errors.
-	///     Returns null on exception so callers can handle fallback behaviour.
-	/// </summary>
-	private async Task<Result<ProjectResponse.Index>?> FetchProjectsAsync(int skip, int take, string? orderBy = null) {
-		try {
-			QueryRequest.SkipTake req = BuildRequest(skip, take, orderBy);
-			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(req);
-			return result;
-		} catch (Exception ex) {
-			// Single place for logging errors for all callers
-			Log.Error(ex, "FetchProjectsAsync failed (skip={Skip}, take={Take}, orderBy={OrderBy})", skip, take,
-				orderBy);
-			return null;
-		}
+	private void ToggleSortingDrawer() {
+		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
 	}
 
-	// --- Mobile data (cards) --------------------------------------------
-
-	// Default parameter values make fields unnecessary; call without parameters for page 0 / size 10
-	private async Task FetchMobileItemsAsync(int page = 0, int pageSize = 10, string? orderBy = null) {
-		Result<ProjectResponse.Index>? response = await FetchProjectsAsync(page * pageSize, pageSize, orderBy);
-
-		if (response?.Value is not null) {
-			_mobileItems = response.Value.Projects?.ToList() ?? new List<ProjectDto.Index>();
-			_mobileTotal = response.Value.TotalCount;
-		} else {
-			Log.Warning("FetchMobileItemsAsync: service returned null or empty result");
-			_mobileItems = new List<ProjectDto.Index>();
-			_mobileTotal = 0;
-		}
-
-		await InvokeAsync(StateHasChanged);
+	private async Task SortMobileAsync(string orderBy, bool descending) {
+		await GetDevicesMobileAsync(orderBy, descending);
+		ToggleSortingDrawer();
+		_activeSorting = orderBy;
+		_activeSortingDesc = descending;
 	}
 
-	// NAVIGATION FOR CARDS (click/tap)
-	private void NavigateToProject(object? id) {
-		if (id is null) {
-			return;
-		}
+	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
 
-		NavigationManager.NavigateTo($"/projects/{id}");
+	// Navigation
+
+	private void NavigateToDevice(Guid deviceId) {
+		NavigationManager.NavigateTo($"/devices/{deviceId}");
+	}
+
+	private void NavigateToCreate() {
+		NavigationManager.NavigateTo("/devices/create");
+	}
+
+	// Other
+
+	private Color DefineColor(Status status) {
+		return status == Status.Actief ? Color.Success : Color.Error;
 	}
 }
