@@ -47,7 +47,7 @@ public class MeasurementStationShould {
 	}
 
 	[Fact]
-	public void AllowUpdatingStatusAndRemovalDate() {
+	public void AllowUpdatingRemovalDate() {
 		MeasurementStation station = new(
 			"STN-001",
 			MakeLocation(),

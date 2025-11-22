@@ -145,7 +145,6 @@ public class MeasurementStationServiceShould {
 		Assert.Null(dto.RemovedAt);
 		Assert.Equal("TestLoc", dto.Location);
 		Assert.Equal("City", dto.City);
-		//Assert.Equal(1, dto.ProjectsCount);
 	}
 
 	[Fact]
@@ -158,35 +157,36 @@ public class MeasurementStationServiceShould {
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
-	// [Fact]
-	// public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
-	// 	ApplicationDbContext db = CreateDbContext(out Guid projectId, out Project project, out Location loc);
-	// 	MeasurementStationService service = new(db);
-	//
-	// 	MeasurementStation station = new(
-	// 		"STN-100",
-	// 		loc,
-	// 		new Installation(DateTime.UtcNow));
-	// 	
-	// 	db.MeasurementStations.Add(station);
-	//
-	// 	Project p2 = new("Second Project", "SP-2",
-	// 		new DateRange(new DateOnly(2025, 2, 1)), DummyMeasurementNetwork);
-	// 	db.Projects.Add(p2);
-	// 	station.Projects.Add(p2);
-	//
-	// 	await db.SaveChangesAsync();
-	//
-	// 	Result<List<ProjectDto.Index>> result = await service.GetProjectsAsync(station.Id);
-	//
-	// 	Assert.True(result.IsSuccess);
-	// 	Assert.NotNull(result.Value);
-	// 	List<ProjectDto.Index>? items = result.Value!;
-	// 	Assert.Equal(2, items.Count);
-	//
-	// 	Assert.Contains(items, x => x.Id == project.Id && x.Code == project.Code && x.Name == project.Name);
-	// 	Assert.Contains(items, x => x.Id == p2.Id && x.Code == p2.Code && x.Name == p2.Name);
-	// }
+	[Fact]
+	public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
+		ApplicationDbContext db = CreateDbContext(out Guid projectId, out Project project, out Location loc);
+		MeasurementStationService service = new(db);
+	
+		MeasurementStation station = new(
+			"STN-100",
+			loc,
+			new Installation(DateTime.UtcNow));
+		
+		station.Projects.Add(project);
+		db.MeasurementStations.Add(station);
+		
+		Project p2 = new("Second Project", "SP-2",
+			new DateRange(new DateOnly(2025, 2, 1)), DummyMeasurementNetwork);
+		db.Projects.Add(p2);
+		station.Projects.Add(p2);
+	
+		await db.SaveChangesAsync();
+	
+		Result<List<ProjectDto.Index>> result = await service.GetProjectsAsync(station.Id);
+	
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		List<ProjectDto.Index>? items = result.Value!;
+		Assert.Equal(2, items.Count);
+	
+		Assert.Contains(items, x => x.Id == project.Id && x.Code == project.Code && x.Name == project.Name);
+		Assert.Contains(items, x => x.Id == p2.Id && x.Code == p2.Code && x.Name == p2.Name);
+	}
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnEmptyList_WhenStationHasNoProjects() {
