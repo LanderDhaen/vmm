@@ -13,7 +13,7 @@ public partial class Create {
 	private Result<MeasurementStationResponse.Create>? _result;
 	private IEnumerable<LocationDto.Index>? _locations;
 	private string _searchText = string.Empty;
-	
+
 	[Parameter] public Guid? ProjectId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -63,10 +63,12 @@ public partial class Create {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
 				await Task.Delay(2000);
-				if (Model.ProjectId != null) {
-					NavigationManager.NavigateTo($"/projects/{ProjectId}");
+				Snackbar.Add($"ProjectId = {Model.ProjectId}", Severity.Info);
+				if (Model.ProjectId.HasValue) {
+					NavigationManager.NavigateTo($"/projects/{Model.ProjectId}");
+				} else {
+					NavigationManager.NavigateTo("/stations");
 				}
-				NavigationManager.NavigateTo("/stations");
 			} else {
 				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
 			}

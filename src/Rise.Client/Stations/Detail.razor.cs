@@ -155,6 +155,6 @@ public partial class Detail {
 	}
 	
 	private void NavigateToCreateProject() {
-		Navigation.NavigateTo($"/projects/create/?stationId={StationId}");
+		Navigation.NavigateTo($"/projects/create/{StationId}");
 	}
 }

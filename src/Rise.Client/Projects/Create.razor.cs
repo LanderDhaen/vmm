@@ -62,8 +62,10 @@ public partial class Create {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Project succesvol aangemaakt!", Severity.Success);
 				await Task.Delay(2000);
-				if (Model.StationId != null) {
-					NavigationManager.NavigateTo($"/stations/{StationId}");
+				if (Model.StationId.HasValue) {
+					NavigationManager.NavigateTo($"/stations/{Model.StationId}");
+				} else {
+					NavigationManager.NavigateTo("/projects");
 				}
 			} else {
 				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
