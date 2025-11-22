@@ -12,15 +12,15 @@ using DeviceDto = Rise.Shared.Devices.DeviceDto;
 namespace Rise.Client.Devices;
 
 public partial class Index {
-	private static readonly (string Value, string Label)[] SortColumns = [
-		("Serial", "Code"),
-		("Name", "Naam"),
-		("Type", "Type"),
-		("Status", "Status")
-	];
-
-	private string _activeSorting = "Name";
-	private bool _activeSortingDesc;
+	// private static readonly (string Value, string Label)[] SortColumns = [
+	// 	("Serial", "Code"),
+	// 	("Name", "Naam"),
+	// 	("Type", "Type"),
+	// 	("Status", "Status")
+	// ];
+	//
+	// private string _activeSorting = "Name";
+	// private bool _activeSortingDesc;
 
 	private IEnumerable<DeviceDto.Index>? _mobileItems;
 
@@ -41,11 +41,11 @@ public partial class Index {
 
 		HeaderService.Set("Onderhouds objecten");
 
-		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
-
-		if (breakpoint == Breakpoint.Xs) {
-			await GetDevicesMobileAsync(_activeSorting, _activeSortingDesc);
-		}
+		// Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+		//
+		// if (breakpoint == Breakpoint.Xs) {
+		// 	await GetDevicesMobileAsync(_activeSorting, _activeSortingDesc);
+		// }
 	}
 
 	// Desktop
@@ -92,8 +92,8 @@ public partial class Index {
 	private async Task SortMobileAsync(string orderBy, bool descending) {
 		await GetDevicesMobileAsync(orderBy, descending);
 		ToggleSortingDrawer();
-		_activeSorting = orderBy;
-		_activeSortingDesc = descending;
+		// _activeSorting = orderBy;
+		// _activeSortingDesc = descending;
 	}
 
 	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
