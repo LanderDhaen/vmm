@@ -36,7 +36,6 @@ public partial class Index {
 
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", null, true)
 		);
 
