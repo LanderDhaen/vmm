@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Devices;
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
@@ -27,24 +26,6 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
-		await MaintenanceObjectsAsync();
-	}
-
-	private async Task MaintenanceObjectsAsync() {
-		if (dbContext.Devices.Any()) {
-			return;
-		}
-
-		List<Device> devices = new() {
-			new Device("W-Sonde A", "567927", DeviceType.Sonde, "Aquatroll"),
-			new Device("W-Logger A", "31045", DeviceType.Logger, "Campbell"),
-			new Device("W-Modem A", "354990101102816", DeviceType.Modem, "Centerion"),
-			new Device("W-SIM A", "2100267739177", DeviceType.Sim, "002.APN.VMM.BE"),
-			new Device("W-Voeding A", "03Y90D0134", DeviceType.Voeding, "Kyocera")
-		};
-
-		dbContext.Devices.AddRange(devices);
-		await dbContext.SaveChangesAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -285,6 +266,8 @@ public class DbSeeder(
 
 		int l0 = 0;
 		int l1 = Math.Min(1, locations.Count - 1);
+		int p0 = 0;
+		int p1 = Math.Min(1, projects.Count - 1);
 
 		MeasurementStation station1 = new(
 			"STN-001",
