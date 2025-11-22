@@ -13,7 +13,7 @@ namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20251121142058_AddMaintenanceDevices")]
-    partial class AddMaintenanceDevices
+    partial class AddMaintenanceObjects
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

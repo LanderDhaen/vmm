@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Rise.Persistence.Migrations {
 	/// <inheritdoc />
-	public partial class AddMaintenanceDevices : Migration {
+	public partial class AddMaintenanceObjects : Migration {
 		/// <inheritdoc />
 		protected override void Up(MigrationBuilder migrationBuilder) {
 			migrationBuilder.CreateTable(
