@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
@@ -247,5 +248,31 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.ToListAsync(ctx);
 
 		return Result.Success(stations);
+	}
+	
+	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
+		CancellationToken ctx = default) {
+
+		Project? project = await dbContext.Projects
+			.Include(p => p.Stations)
+			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project met id '{req.ProjectId}' is niet gevonden.");
+		}
+		
+		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations
+			.Where(ms => req.MeasurementStationIds.Contains(ms.Id))
+			.ToListAsync(ctx);
+
+		if (measurementStations.Count != req.MeasurementStationIds.Count()) {
+			return Result.Error("Een of meerdere meetstations zijn niet gevonden.");
+		}
+		
+		project.UpdateMeasurementStationList(measurementStations);
+		
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
 	}
 }

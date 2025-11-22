@@ -35,8 +35,11 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<ProjectResponse.History>> GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-		Result<ProjectResponse.History>? result = await httpClient.GetFromJsonAsync<Result<ProjectResponse.History>>($"/api/projects/{projectId}/history", ctx);
+	public async Task<Result<ProjectResponse.History>>
+		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		Result<ProjectResponse.History>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.History>>($"/api/projects/{projectId}/history",
+				ctx);
 		return result!;
 	}
 
@@ -55,6 +58,15 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
 				$"/api/projects/{projectId}/stations",
 				cancellationToken: ctx);
+		return result!;
+	}
+
+	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/stations", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
 }

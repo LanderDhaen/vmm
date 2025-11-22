@@ -1,4 +1,5 @@
 @page "/projects/{ProjectId:guid}"
+@using System.Xml.Schema
 @using Rise.Client.Components
 @using Rise.Shared.Projects
 @using Rise.Shared.Stations
@@ -171,8 +172,40 @@ else
 
 			break;
 		case 1:
+			<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+				<MudSelect T="Guid" Label="Meetstations toevoegen" MultiSelection="true"
+				           @bind-SelectedValues="Model.MeasurementStationIds" Variant="Variant.Outlined"
+				           Margin="Margin.Dense"
+				           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+					<ChildContent>
+						<MudSelectItem T="Guid">
+							<div class="p-2">
+								<MudButton Variant="Variant.Text" Color="Color.Primary"
+								           StartIcon="@Icons.Material.Filled.Add" OnClick="@NavigateToCreateStation">Nieuw
+									meetstation toevoegen
+								</MudButton>
+							</div>
+						</MudSelectItem>
+						@foreach (var station in _allStations)
+						{
+							<MudSelectItem T="Guid" Value="@station.Id">@station.Code</MudSelectItem>
+						}
+					</ChildContent>
+				</MudSelect>
+
+				<MudButton Variant="Variant.Filled"
+				           StartIcon="@Icons.Material.Filled.Add"
+				           Size="Size.Small"
+				           Color="Color.Primary"
+				           Class="px-4"
+				           OnClick="@UpdateMeasurementStations"
+				>
+					Meetstation toevoegen
+				</MudButton>
+			</MudStack>
 			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 				<MudDataGrid T="MeasurementStationDto.Index"
+				             @ref="_stationsGrid"
 				             ServerData="GetStationsGridAsync"
 				             RowsPerPage="10"
 				             Bordered="true"
@@ -183,7 +216,7 @@ else
 				             RowClick="OnStationRowClick">
 					<Columns>
 						<PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 						<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" Sortable="false"
 						                Filterable="false" Groupable="false">
 							<CellTemplate Context="row">
@@ -197,19 +230,19 @@ else
 							</CellTemplate>
 						</PropertyColumn>
 						<PropertyColumn Property="x => x.Location" Title="Locatie" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 						<PropertyColumn Property="x => x.City" Title="Gemeente" Sortable="false" Filterable="false"
-						                Groupable="false" />
+						                Groupable="false"/>
 					</Columns>
 
 					<PagerContent>
-						<Pagination T="MeasurementStationDto.Index" />
+						<Pagination T="MeasurementStationDto.Index"/>
 					</PagerContent>
 				</MudDataGrid>
 			</MudPaper>
 			break;
 		case 2:
-			<History ProjectId="ProjectId" />
+			<History ProjectId="ProjectId"/>
 			break;
 	}
 }

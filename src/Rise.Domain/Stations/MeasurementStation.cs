@@ -7,7 +7,8 @@ public class MeasurementStation : Entity {
 	private string _code = String.Empty;
 	private Location _location = default!;
 	private Installation _installation = default!;
-
+	private ICollection<Project> _projects = new List<Project>();
+	
 	private MeasurementStation() { }
 
 	public MeasurementStation(string code, Location location, Installation installation) {
@@ -32,6 +33,10 @@ public class MeasurementStation : Entity {
 	}
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
+	
+	public void AddProjects(List<Project> projects) {
+		_projects = projects;
+	}
 
 	public void MoveTo(Location newLocation) {
 		Location = newLocation;

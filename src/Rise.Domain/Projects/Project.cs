@@ -7,17 +7,16 @@ namespace Rise.Domain.Projects;
 ///     A project is something that owns multiple measuring stations.
 /// </summary>
 public class Project : Entity {
-
 	// Properties
 
 	public string Name { get; private set; }
 	public string Code { get; private set; }
 	public DateRange DateRange { get; private set; } = default!;
 	public Status Status { get; private set; } = Status.Actief;
-
 	// Relations
 
 	public MeasurementNetwork MeasurementNetwork { get; private set; }
+
 	public ICollection<MeasurementStation> Stations { get; private set; } =
 		new List<MeasurementStation>();
 
@@ -43,9 +42,23 @@ public class Project : Entity {
 
 	// Functions
 
+	public void UpdateMeasurementStationList(ICollection<MeasurementStation> measurementStations) {
+		// Get all the measurement stations that are not already in the project
+		List<MeasurementStation> measurementStationsToAdd = measurementStations
+			.Where(s => Stations.All(st => st.Id != s.Id))
+			.ToList();
+
+		measurementStationsToAdd.ForEach(m => Stations.Add(m));
+		
+		// Get all the measurement stations that are already in the project but need to be deleted
+		List<MeasurementStation> measurementStationsToRemove = Stations
+			.Where(s => measurementStations.All(st => st.Id != s.Id))
+			.ToList();
+		
+		measurementStationsToRemove.ForEach(m => Stations.Remove(m));
+	}
+
 	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
-
-
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
 		}
@@ -58,7 +71,6 @@ public class Project : Entity {
 	}
 
 	private void UpdateDateRange(DateRange dateRange) {
-
 		// Check if the values are the same as the old values
 
 		if (dateRange.Equals(DateRange)) {
@@ -107,6 +119,7 @@ public class ProjectHistory : HistoryEntity {
 	/// </summary>
 	private ProjectHistory() {
 	}
+
 	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
 		DateRange = Guard.Against.Null(dateRange, nameof(dateRange));
 		ValidityRange = Guard.Against.Null(validityRange, nameof(validityRange));

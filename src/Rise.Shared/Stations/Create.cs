@@ -7,6 +7,7 @@ public static partial class MeasurementStationRequest {
 		public string Code { get; set; } = default!;
 		public Guid? LocationId { get; set; }
 		public bool IsNewLocation { get; set; }
+		public Guid? ProjectId { get; set; }
 
 		// In case of a new Location
 		public LocationRequest.Create? Location { get; set; } = new();
