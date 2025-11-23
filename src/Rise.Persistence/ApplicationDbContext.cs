@@ -26,7 +26,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 	public DbSet<MeasurementNetwork> MeasurementNetworks => Set<MeasurementNetwork>();
 	public DbSet<Project> Projects => Set<Project>();
 	public DbSet<Technician> Technicians => Set<Technician>();
-
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
 	public DbSet<MaintObj> MaintObjects => Set<MaintObj>();
 

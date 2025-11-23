@@ -8,11 +8,13 @@ public class MaintObj : Entity {
 
 	private MaintObj() { }
 
-	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand = null) {
+	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand,
+		Installation installation) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjType = maintObjType;
 		Brand = brand;
+		Installation = installation;
 	}
 
 	public string SerialNumber {
