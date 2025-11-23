@@ -81,6 +81,19 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
+		// Apply server-side search filter if provided
+		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
+			var term = req.SearchTerm.Trim().ToLowerInvariant();
+
+			// filter on code, name, measurement network name or zone name
+			query = query.Where(p =>
+				EF.Functions.Like(p.Code.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.Name.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{term}%"));
+		}
+
+		// Count after applying filters
 		int totalCount = await query.CountAsync(ctx);
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
