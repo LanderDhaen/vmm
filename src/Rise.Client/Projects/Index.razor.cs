@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -75,6 +69,7 @@ namespace Rise.Client.Projects {
 			await ApplySearchAsync();
 		}
 
+
 		// Apply filter and reload server-side grid + mobile list
 		private async Task ApplySearchAsync() {
 			_appliedSearch = string.IsNullOrWhiteSpace(_searchString) ? string.Empty : _searchString.Trim();
@@ -83,7 +78,12 @@ namespace Rise.Client.Projects {
 			await Task.Yield();
 			await ReloadAllAsync(resetPage: true);
 		}
-
+		// Adornment click handler used by the Razor markup.
+		// If there is search text, clear it and reload.
+		private async Task OnAdornmentClick() {
+			if (!string.IsNullOrWhiteSpace(_searchString))
+				await ClearSearch();
+		}
 		// Clear search and reload
 		private async Task ClearSearch() {
 			_typingCts?.Cancel();
@@ -98,6 +98,7 @@ namespace Rise.Client.Projects {
 			await Task.Yield();
 			await ReloadAllAsync(resetPage: false);
 		}
+
 
 		// Centralized reload logic used by ApplySearchAsync and ClearSearch
 		private async Task ReloadAllAsync(bool resetPage) {
