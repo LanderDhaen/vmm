@@ -13,8 +13,8 @@ public class Device : Entity {
 		Brand = brand;
 	}
 
-	public string Name { get; private set; } = default!;
-	public string SerialNumber { get; private set; } = default!;
+	public string Name { get; private set; } = null!;
+	public string SerialNumber { get; private set; } = null!;
 	public Status Status { get; } = Status.Actief;
 
 	public DeviceType DeviceType { get; private set; }
