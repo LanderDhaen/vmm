@@ -100,7 +100,7 @@ else
 						</MudSelectItem>
 						@foreach (var project in _allProjects)
 						{
-							<MudSelectItem T="Guid" Value="@project.Id">@project.Code</MudSelectItem>
+							<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">@project.Code</MudSelectItem>
 						}
 					</ChildContent>
 				</MudSelect>

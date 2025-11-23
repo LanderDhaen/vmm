@@ -175,13 +175,15 @@ else
 			<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 				<MudSelect T="Guid" Label="Meetstations toevoegen" MultiSelection="true"
 				           @bind-SelectedValues="Model.MeasurementStationIds" Variant="Variant.Outlined"
-				           Margin="Margin.Dense"
+				           Margin="Margin.Dense" Disabled="@(!IsActive)"
 				           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
 					<ChildContent>
 						<MudSelectItem T="Guid">
 							<div class="p-2">
 								<MudButton Variant="Variant.Text" Color="Color.Primary"
-								           StartIcon="@Icons.Material.Filled.Add" OnClick="@NavigateToCreateStation">Nieuw
+								           StartIcon="@Icons.Material.Filled.Add"
+								           OnClick="@NavigateToCreateStation">
+									Nieuw
 									meetstation toevoegen
 								</MudButton>
 							</div>
@@ -193,15 +195,17 @@ else
 					</ChildContent>
 				</MudSelect>
 
-				<MudButton Variant="Variant.Filled"
-				           StartIcon="@Icons.Material.Filled.Add"
-				           Size="Size.Small"
-				           Color="Color.Primary"
-				           Class="px-4"
-				           OnClick="@UpdateMeasurementStations"
-				>
-					Meetstation toevoegen
-				</MudButton>
+				<MudTooltip Delay="400"
+				            Text="@(IsActive ? "Meetstation toevoegen of verwijderen" : "Afgesloten project kan niet bewerkt worden")">
+					<MudButton Variant="Variant.Filled"
+					           StartIcon="@Icons.Material.Filled.Add"
+					           Size="Size.Small"
+					           Color="Color.Primary"
+					           Class="px-4"
+					           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
+						Meetstation toevoegen
+					</MudButton>
+				</MudTooltip>
 			</MudStack>
 			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
 				<MudDataGrid T="MeasurementStationDto.Index"

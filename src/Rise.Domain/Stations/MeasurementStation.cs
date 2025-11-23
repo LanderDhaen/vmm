@@ -34,7 +34,11 @@ public class MeasurementStation : Entity {
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
 	
-	public void UpdateProjectList(ICollection<Project> projects) {
+	public void UpdateProjectList(List<Project> projects) {
+		if (projects.Any(p => p.Status == Status.Afgesloten)) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
+		}
+		
 		// Get all the projects that are not already in the measurement station
 		List<Project> projectsToAdd = projects
 			.Where(s => Projects.All(pr => pr.Id != s.Id))
