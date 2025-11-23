@@ -1,6 +1,6 @@
-@page "/maintenanceobjects"
+@page "/maintobjects"
 @using Rise.Client.Components
-@using Rise.Shared.Devices
+@using Rise.Shared.MaintObjects
 <PageTitle>Onderhouds objecten</PageTitle>
 
 @* Desktop view *@
@@ -32,22 +32,22 @@
 		</MudButton>
 	</MudStack>
 
-	<MudDataGrid T="DeviceDto.Index"
-	             ServerData="GetDevicesAsync"
+	<MudDataGrid T="MaintObjDto.Index"
+	             ServerData="GetMaintObjectsAsync"
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
-	             RowClick="@(args => NavigateToDevice(args.Item.Id))">
+	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
 			<PropertyColumn Property="x => x.SerialNumber" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.DeviceType" Title="Type" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary"/>
 		</Columns>
 
 		<PagerContent>
-			<Pagination T="DeviceDto.Index"></Pagination>
+			<Pagination T="MaintObjDto.Index"></Pagination>
 		</PagerContent>
 
 	</MudDataGrid>
@@ -103,7 +103,7 @@
 				<MudItem xs="12">
 					<MudCard Elevation="2"
 					         Class="rounded-lg"
-					         @onclick="() => NavigateToDevice(item.Id)">
+					         @onclick="() => NavigateToMaintObj(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween"
@@ -116,7 +116,7 @@
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Onderhouds object: </b> @item.DeviceType</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Onderhouds object: </b> @item.MaintObjType</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

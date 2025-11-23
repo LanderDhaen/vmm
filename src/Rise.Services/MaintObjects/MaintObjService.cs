@@ -1,28 +1,29 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Devices;
+using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
-using Rise.Shared.Devices;
+using Rise.Shared.MaintObjects;
 
+using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.Projects.Status;
-using SharedType = Rise.Shared.Devices.DeviceType;
 
 
-namespace Rise.Services.Devices;
+namespace Rise.Services.MaintObjects;
 
 /// <summary>
-///     Service for devices. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
+///     Service for maintenance objects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
+///     this layer
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
 /// <param name="sessionContextProvider"></param>
-public class DeviceService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
-	: IDeviceService {
-	public async Task<Result<DeviceResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
+public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+	: IMaintObjService {
+	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-		IQueryable<Device> query = dbContext.Devices.AsQueryable();
+		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable();
 
 		int totalCount = await query.CountAsync(ctx);
 
@@ -40,22 +41,22 @@ public class DeviceService(ApplicationDbContext dbContext, ISessionContextProvid
 			query = query.OrderBy(d => d.Id);
 		}
 
-		IQueryable<Device> page = query
+		IQueryable<MaintObj> page = query
 			.AsNoTracking()
 			.Skip(req.Skip)
 			.Take(req.Take);
-		List<DeviceDto.Index> devices = await page
-			.Select(d => new DeviceDto.Index {
+		List<MaintObjDto.Index> maintObjects = await page
+			.Select(d => new MaintObjDto.Index {
 				Id = d.Id,
 				Name = d.Name,
 				SerialNumber = d.SerialNumber,
-				DeviceType = (SharedType)d.DeviceType,
+				MaintObjType = (MaintObjType)d.MaintObjType,
 				Status = (SharedStatus)d.Status
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(new DeviceResponse.Index {
-			Devices = devices,
+		return Result.Success(new MaintObjResponse.Index {
+			MaintObjects = maintObjects,
 			TotalCount = totalCount
 		});
 	}

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Devices;
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
@@ -28,7 +28,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 	public DbSet<Technician> Technicians => Set<Technician>();
 
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
-	public DbSet<Device> Devices => Set<Device>();
+	public DbSet<MaintObj> MaintObjects => Set<MaintObj>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		// All columns in the database have a maxlength of 4000.

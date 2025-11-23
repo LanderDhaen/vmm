@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using Rise.Persistence;
-using Rise.Services.Devices;
 using Rise.Services.Locations;
+using Rise.Services.MaintObjects;
 using Rise.Services.Networks;
 using Rise.Services.Projects;
 using Rise.Services.Stations;
-using Rise.Shared.Devices;
 using Rise.Shared.Locations;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions {
 		services.AddScoped<ILocationService, LocationService>();
 		services.AddScoped<INetworkService, NetworkService>();
 		services.AddScoped<IMeasurementStationService, MeasurementStationService>();
-		services.AddScoped<IDeviceService, DeviceService>();
+		services.AddScoped<IMaintObjService, MaintObjService>();
 		services.AddTransient<DbSeeder>();
 
 		// Add other application services here.

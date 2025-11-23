@@ -1,17 +1,17 @@
 using Rise.Domain.Projects;
 
-namespace Rise.Domain.Devices;
+namespace Rise.Domain.MaintObjects;
 
-public class Device : Entity {
+public class MaintObj : Entity {
 	private Installation _installation = null!;
 	private string _serialNumber = string.Empty;
 
-	private Device() { }
+	private MaintObj() { }
 
-	public Device(string name, string serialNumber, DeviceType deviceType, string? brand = null) {
+	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand = null) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
-		DeviceType = deviceType;
+		MaintObjType = maintObjType;
 		Brand = brand;
 	}
 
@@ -28,7 +28,7 @@ public class Device : Entity {
 	public string Name { get; private set; } = null!;
 	public Status Status { get; } = Status.Actief;
 
-	public DeviceType DeviceType { get; private set; }
+	public MaintObjType MaintObjType { get; private set; }
 
 	public string? Brand { get; private set; }
 }

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Devices;
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
@@ -29,7 +29,7 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
-		await DevicesAsync();
+		await MaintObjectsAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -290,8 +290,8 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private async Task DevicesAsync() {
-		if (dbContext.Devices.Any()) {
+	private async Task MaintObjectsAsync() {
+		if (dbContext.MaintObjects.Any()) {
 			return;
 		}
 
@@ -299,14 +299,14 @@ public class DbSeeder(
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
 
-		// If there are no stations, still create some unassigned devices
-		Device d1 = new("W-Sonde", "567927", DeviceType.Sonde, "Aquatroll");
-		Device d2 = new("W-Logger", "31045", DeviceType.Logger, "Campbell");
-		Device d3 = new("W-Modem", "354990101102816", DeviceType.Modem, "Centerion");
-		Device d4 = new("W-SIM", "2100267739177", DeviceType.Sim, "002.APN.VMM.BE");
-		Device d5 = new("W-Voeding", "03Y90D0134", DeviceType.Voeding, "Kyocera");
+		// If there are no stations, still create some unassigned maintenance objects
+		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll");
+		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell");
+		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion");
+		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE");
+		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera");
 
-		dbContext.Devices.AddRange(d1, d2, d3, d4, d5);
+		dbContext.MaintObjects.AddRange(d1, d2, d3, d4, d5);
 		await dbContext.SaveChangesAsync();
 	}
 }

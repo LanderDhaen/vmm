@@ -1,13 +1,13 @@
-namespace Rise.Shared.Devices;
+namespace Rise.Shared.MaintObjects;
 
-public static class DeviceRequest {
+public static class MaintObjRequest {
 	// public class UpdateStatus {
 	// 	public Guid ProjectId { get; set; }
 	// 	public Status NewStatus { get; set; }
 	// }
 }
 
-public enum DeviceType {
+public enum MaintObjType {
 	Sonde,
 	Logger,
 	Modem,

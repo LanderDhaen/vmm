@@ -1,4 +1,4 @@
-namespace Rise.Domain.Devices;
+namespace Rise.Domain.MaintObjects;
 
 public sealed class Installation : ValueObject {
 	private Installation() { }
