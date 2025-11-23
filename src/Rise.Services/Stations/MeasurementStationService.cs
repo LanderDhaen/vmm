@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;

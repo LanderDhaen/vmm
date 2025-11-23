@@ -7,7 +7,7 @@ using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
-using StationInstallation = Rise.Domain.Stations.Installation;
+using Installation = Rise.Domain.Common.Installation;
 
 namespace Rise.Persistence;
 
@@ -274,13 +274,13 @@ public class DbSeeder(
 		MeasurementStation station1 = new(
 			"STN-001",
 			locations[l0],
-			new StationInstallation(DateTime.UtcNow.AddMonths(-6))
+			new Installation(DateTime.UtcNow.AddMonths(-6))
 		);
 
 		MeasurementStation station2 = new(
 			"STN-002",
 			locations[l1],
-			new StationInstallation(
+			new Installation(
 				DateTime.UtcNow.AddYears(-1),
 				DateTime.UtcNow.AddDays(-30)
 			)

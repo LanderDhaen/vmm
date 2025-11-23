@@ -5,6 +5,7 @@ using Ardalis.Result;
 
 using Microsoft.Data.Sqlite;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
@@ -128,7 +129,8 @@ public class MeasurementStationServiceSortingTests : IDisposable {
 		MeasurementStationService svc = new(db);
 
 		// Request page with skip/take
-		QueryRequest.SkipTake requestFull = new() { Skip = 0, Take = 100, OrderBy = "Location", OrderDescending = false };
+		QueryRequest.SkipTake requestFull = new()
+			{ Skip = 0, Take = 100, OrderBy = "Location", OrderDescending = false };
 		QueryRequest.SkipTake requestPage = new() { Skip = 2, Take = 3, OrderBy = "Location", OrderDescending = false };
 
 		// Act
