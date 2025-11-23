@@ -7,6 +7,8 @@ using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
+using StationInstallation = Rise.Domain.Stations.Installation;
+
 namespace Rise.Persistence;
 
 /// <summary>
@@ -272,13 +274,13 @@ public class DbSeeder(
 		MeasurementStation station1 = new(
 			"STN-001",
 			locations[l0],
-			new Installation(DateTime.UtcNow.AddMonths(-6))
+			new StationInstallation(DateTime.UtcNow.AddMonths(-6))
 		);
 
 		MeasurementStation station2 = new(
 			"STN-002",
 			locations[l1],
-			new Installation(
+			new StationInstallation(
 				DateTime.UtcNow.AddYears(-1),
 				DateTime.UtcNow.AddDays(-30)
 			)
@@ -303,14 +305,6 @@ public class DbSeeder(
 		Device d3 = new("W-Modem", "354990101102816", DeviceType.Modem, "Centerion");
 		Device d4 = new("W-SIM", "2100267739177", DeviceType.Sim, "002.APN.VMM.BE");
 		Device d5 = new("W-Voeding", "03Y90D0134", DeviceType.Voeding, "Kyocera");
-
-		// Attach some devices to the first station if available
-		if (stations.Any()) {
-			d1.AssignToMeasurementStation(stations[0]);
-			if (stations.Count > 1) {
-				d2.AssignToMeasurementStation(stations[1]);
-			}
-		}
 
 		dbContext.Devices.AddRange(d1, d2, d3, d4, d5);
 		await dbContext.SaveChangesAsync();

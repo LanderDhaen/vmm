@@ -30,5 +30,7 @@ public static class DeviceDto {
 		public required string? Brand { get; set; }
 		public required Status Status { get; set; }
 		public Guid? MeasurementStationId { get; set; }
+		public DateTime InstalledAt { get; set; }
+		public DateTime? RemovedAt { get; set; }
 	}
 }
