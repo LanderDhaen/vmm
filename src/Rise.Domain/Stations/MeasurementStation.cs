@@ -7,7 +7,7 @@ public class MeasurementStation : Entity {
 	private string _code = string.Empty;
 	private Installation _installation = default!;
 	private Location _location = default!;
-	
+
 	private MeasurementStation() { }
 
 	public MeasurementStation(string code, Location location, Installation installation) {
@@ -32,24 +32,29 @@ public class MeasurementStation : Entity {
 	}
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
-	
+
 	public void UpdateProjectList(List<Project> projects) {
-		if (projects.Any(p => p.Status == Status.Afgesloten)) {
-			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
+		var closedProjectsNotAlreadyLinked = projects
+			.Where(p => p.Status == Status.Afgesloten &&
+			            Projects.All(existing => existing.Id != p.Id))
+			.ToList();
+
+		if (closedProjectsNotAlreadyLinked.Any()) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt of gekoppeld.");
 		}
-		
+
 		// Get all the projects that are not already in the measurement station
 		List<Project> projectsToAdd = projects
 			.Where(s => Projects.All(pr => pr.Id != s.Id))
 			.ToList();
 
 		projectsToAdd.ForEach(p => Projects.Add(p));
-		
+
 		// Get all the projects that are already in the measurement station but need to be deleted
 		List<Project> projectsToRemove = Projects
 			.Where(p => projects.All(pr => pr.Id != p.Id))
 			.ToList();
-		
+
 		projectsToRemove.ForEach(p => Projects.Remove(p));
 	}
 

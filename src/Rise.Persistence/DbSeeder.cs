@@ -284,8 +284,12 @@ public class DbSeeder(
 			)
 		);
 		
-		station1.UpdateProjectList(new List<Project> { projects[0], projects[1], projects[2] });
-		station2.UpdateProjectList(new List<Project> { projects[1], projects[5] });
+		station1.Projects.Add(projects[0]);
+		station1.Projects.Add(projects[1]);
+		station1.Projects.Add(projects[2]);
+		
+		station2.Projects.Add(projects[1]);
+		station2.Projects.Add(projects[5]);
 
 		dbContext.MeasurementStations.AddRange(station1, station2);
 		await dbContext.SaveChangesAsync();
