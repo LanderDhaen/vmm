@@ -53,7 +53,22 @@ public static class QueryRequest {
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
 		public string AsQuery() {
-			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
+			var parts = new List<string>
+			{
+				$"skip={Skip}",
+				$"take={Take}",
+			};
+
+			if (!string.IsNullOrWhiteSpace(OrderBy))
+				parts.Add($"orderBy={Uri.EscapeDataString(OrderBy!)}");
+
+			parts.Add($"orderDescending={OrderDescending.ToString().ToLowerInvariant()}");
+
+			// include search term if present
+			if (!string.IsNullOrWhiteSpace(SearchTerm))
+				parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm!)}");
+
+			return string.Join("&", parts);
 		}
 	}
 
