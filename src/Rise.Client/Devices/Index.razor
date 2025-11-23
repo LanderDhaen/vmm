@@ -4,7 +4,7 @@
 <PageTitle>Onderhouds objecten</PageTitle>
 
 @* Desktop view *@
-
+@* TODO: what to show on overview page *@
 <MudHidden Breakpoint="Breakpoint.Xs">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
@@ -106,17 +106,17 @@
 					         @onclick="() => NavigateToDevice(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween"
+								          Class="pr-3">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.SerialNumber</b>
 									</MudText>
-									<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-									         Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+									<MudBadge Color="@(DefineColor(item.Status))" Dot="true"></MudBadge>
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Start datum:</b> @item.DeviceType</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Onderhouds object: </b> @item.DeviceType</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
