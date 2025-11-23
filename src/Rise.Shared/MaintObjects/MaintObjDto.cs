@@ -22,14 +22,13 @@ public static class MaintObjDto {
 	/// <summary>
 	///     Represents detailed information about a maintenance object.
 	/// </summary>
-	public class Details {
+	public class Detail {
 		public required Guid Id { get; set; }
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
 		public required MaintObjType MaintObjType { get; set; }
-		public required string? Brand { get; set; }
 		public required Status Status { get; set; }
-		public Guid? MeasurementStationId { get; set; }
+		public required string? Brand { get; set; }
 		public DateTime InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
 	}

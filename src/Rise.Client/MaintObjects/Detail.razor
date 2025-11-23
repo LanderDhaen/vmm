@@ -1,0 +1,139 @@
+@page "/maintObjects/{MaintObjId:guid}"
+@using Rise.Shared.MaintObjects
+@inject NavigationManager Navigation
+@attribute [Authorize]
+
+<PageTitle>Onderhouds object Details</PageTitle>
+
+@if (_maintObj is null)
+{
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	// ====== Tabs ======
+	<div class="d-flex justify-space-between m-4 align-center" role="tablist" aria-label="Project tabs">
+		<MudText
+			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+			@onclick="() => SetTab(0)">
+			@_tabs[0]
+		</MudText>
+
+		<MudText
+			Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+			@onclick="() => SetTab(1)">
+			@_tabs[1]
+		</MudText>
+
+		@* <MudText *@
+		@* 	Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")" *@
+		@* 	@onclick="() => SetTab(2)"> *@
+		@* 	@_tabs[2] *@
+		@* </MudText> *@
+		<MudDivider Vertical="true" FlexItem="true"/>
+		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"></MudIconButton>
+		</MudHidden>
+		<MudHidden Breakpoint="Breakpoint.Xs">
+			<MudButton Variant="Variant.Text">Acties
+			</MudButton>
+		</MudHidden>
+	</div>
+
+
+	@switch (_selectedTab)
+	{
+		case 0:
+			<MudPaper Class="p-4">
+
+				<div class="d-flex align-center m-2">
+					@* name: mobile uses a Badge, desktop uses plain Text *@
+					<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+						<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
+							<MudText Class="pl-4" Typo="Typo.h5">@_maintObj.Name</MudText>
+						</MudBadge>
+					</MudHidden>
+
+					<MudHidden Breakpoint="Breakpoint.Xs">
+						<MudText Class="pr-2" Typo="Typo.h5">@_maintObj.Name</MudText>
+					</MudHidden>
+
+					<MudHidden Breakpoint="Breakpoint.Xs">
+						<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
+						         Color="BadgeColor">@_maintObj.Status
+						</MudChip>
+					</MudHidden>
+
+					@* edit button *@
+					<MudTooltip Delay="400"
+					            Placement="Placement.Right"
+					            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
+						<MudIconButton
+							Href="@($"/projects/edit/{MaintObjId}")"
+							Disabled="@(!IsActive)"
+							Icon="@Icons.Material.Filled.Edit"
+							Color="Color.Primary"
+							AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
+					</MudTooltip>
+
+					@* chip only shown on desktop *@
+
+				</div>
+
+				@* //details grid *@
+				@* // TODO: use MudTextField for editable fields *@
+
+				<MudGrid Class="p-2">
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Serienummer</MudText>
+						<MudTextField T="string" @bind-Value="_maintObj.SerialNumber" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Naam</MudText>
+						<MudTextField T="string" @bind-Value="_maintObj.Name" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Type</MudText>
+						<MudTextField T="MaintObjType" @bind-Value="_maintObj.MaintObjType" ReadOnly="true"
+						              Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Merk</MudText>
+						<MudTextField T="string" @bind-Value="_maintObj.Brand" ReadOnly="true"
+						              Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
+						<MudTextField T="DateTime" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12">
+						<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
+						<MudTextField
+							@bind-Value="_remarks"
+							ReadOnly="true"
+							FullWidth="true"
+							Lines="4"
+							Class="white"/>
+					</MudItem>
+				</MudGrid>
+			</MudPaper>
+
+			break;
+
+		case 1:
+			<div>Historiek?</div>
+			break;
+	}
+}

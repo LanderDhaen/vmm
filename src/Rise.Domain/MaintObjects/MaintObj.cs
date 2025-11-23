@@ -17,6 +17,7 @@ public class MaintObj : Entity {
 		Installation = installation;
 	}
 
+
 	public string SerialNumber {
 		get => _serialNumber;
 		private set => _serialNumber = Guard.Against.NullOrEmpty(value);

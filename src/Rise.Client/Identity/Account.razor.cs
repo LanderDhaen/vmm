@@ -32,7 +32,7 @@ public partial class Account {
 
 		if (_isAuthenticated) {
 			_email = user.FindFirst(ClaimTypes.Email)?.Value
-					 ?? user.Identity?.Name;
+			         ?? user.Identity?.Name;
 
 			_roles = user.FindAll(ClaimTypes.Role)
 				.Select(r => r.Value)

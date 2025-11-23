@@ -60,4 +60,28 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			TotalCount = totalCount
 		});
 	}
+
+	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId,
+		CancellationToken ct = default) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.AsNoTracking()
+			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
+
+		if (maintObj is null) {
+			return Result.NotFound();
+		}
+
+		MaintObjDto.Detail dto = new() {
+			Id = maintObj.Id,
+			Name = maintObj.Name,
+			SerialNumber = maintObj.SerialNumber,
+			MaintObjType = (MaintObjType)maintObj.MaintObjType,
+			Status = (SharedStatus)maintObj.Status,
+			Brand = maintObj.Brand,
+			InstalledAt = maintObj.Installation.InstalledAt,
+			RemovedAt = maintObj.Installation.RemovedAt
+		};
+
+		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });
+	}
 }

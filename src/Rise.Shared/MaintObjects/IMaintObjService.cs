@@ -10,4 +10,9 @@ public interface IMaintObjService {
 		QueryRequest.SkipTake req,
 		CancellationToken ctx = default
 	);
+
+	Task<Result<MaintObjResponse.Detail>> GetDetailAsync(
+		Guid maintObjId,
+		CancellationToken ctx = default
+	);
 }
