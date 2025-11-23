@@ -1,182 +1,194 @@
 @page "/projects"
 @using Rise.Client.Components
 @using Rise.Shared.Projects
+@using Microsoft.AspNetCore.Components.Web
 <PageTitle>Projecten</PageTitle>
 
 @* Desktop view *@
 
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Class="m-0"
-		              Variant="Variant.Outlined"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              FullWidth="true"
-		              Margin="Margin.Dense"/>
-		<MudButton Variant="Variant.Filled"
-		           Size="Size.Small"
-		           StartIcon="@Icons.Material.Filled.FilterAlt"
-		           Color="Color.Primary"
-		           Class="px-4">
-			Filteren
-		</MudButton>
-		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.Add"
-		           Size="Size.Small"
-		           Color="Color.Primary"
-		           Class="px-4"
-		           OnClick="@NavigateToCreate">
-			Project
-		</MudButton>
-	</MudStack>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-	<MudDataGrid T="ProjectDto.Index"
-	             ServerData="GetProjectsAsync"
-	             RowsPerPage="10"
-	             Striped="true"
-	             Hover="true"
-	             RowClick="@(args => NavigateToProject(args.Item.Id))">
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Class="m-0"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
+                      FullWidth="true"
+                      Margin="Margin.Dense"
+                      Immediate="true"
+                      @bind-Value="_searchString"
+                      @bind-Value:after="OnSearchInputChanged"
+                      />
 
-		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary"/>
-		</Columns>
+        <MudButton Variant="Variant.Filled"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.FilterAlt"
+                   Color="Color.Primary"
+                   Class="px-4">
+            Filteren
+        </MudButton>
 
-		<PagerContent>
-			<Pagination T="ProjectDto.Index"></Pagination>
-		</PagerContent>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   Size="Size.Small"
+                   Color="Color.Primary"
+                   Class="px-4"
+                   OnClick="@NavigateToCreate">
+            Project
+        </MudButton>
+    </MudStack>
 
-	</MudDataGrid>
+    <MudDataGrid T="ProjectDto.Index"
+                 ServerData="GetProjectsAsync"
+                 RowsPerPage="10"
+                 Striped="true"
+                 Hover="true"
+                 RowClick="@(args => NavigateToProject(args.Item.Id))"
+                 @ref="_grid">
+
+        <Columns>
+            <PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+            <PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
+            <PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
+            <PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+            <PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
+            <PropertyColumn Property="x => x.Zone" Title="Zone" HeaderClass="mud-theme-primary"/>
+        </Columns>
+
+        <PagerContent>
+            <Pagination T="ProjectDto.Index"></Pagination>
+        </PagerContent>
+
+    </MudDataGrid>
 </MudHidden>
 
-@* Mobile view *@
+@* Mobile view (now using same textfield / dynamic clear) *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Class="m-0"
-		              Variant="Variant.Outlined"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              FullWidth="true"
-		              Margin="Margin.Dense"/>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
-		               Color="Color.Primary"
-		               Size="Size.Small"
-		               OnClick="@ToggleSortingDrawer"/>
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Class="m-0"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
+                      FullWidth="true"
+                      Immediate="true"
+                      Margin="Margin.Dense"
+                      @bind-Value="_searchString"
+                      @bind-Value:after="OnSearchInputChanged"
+                      />
 
-		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
-		               Color="Color.Primary"
-		               Size="Size.Small"/>
+        <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="@ToggleSortingDrawer"/>
 
-		<MudIconButton Icon="@Icons.Material.Filled.Add"
-		               Color="Color.Primary"
-		               Size="Size.Small"
-		               OnClick="@NavigateToCreate"/>
-	</MudStack>
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+                       Color="Color.Primary"
+                       Size="Size.Small"/>
 
-	<MudGrid Spacing="4">
-		@if (_mobileItems is null)
-		{
-			<MudItem xs="12">
-				<div>
-					<MudProgressCircular Indeterminate="true"/>
-				</div>
-			</MudItem>
-		}
-		else if (!_mobileItems.Any())
-		{
-			<MudItem xs="12">
-				<MudText>Geen projecten</MudText>
-			</MudItem>
-		}
-		else
-		{
-			@foreach (var item in _mobileItems)
-			{
-				<MudItem xs="12">
-					<MudCard Elevation="2"
-					         Class="rounded-lg"
-					         @onclick="() => NavigateToProject(item.Id)">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-									<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-									         Color="@(DefineColor(item.Status))">@item.Status</MudChip>
-								</MudStack>
-								<MudText Typo="Typo.h6">@item.Name</MudText>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Start datum:</b> @item.StartDate</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Eind datum:</b> @item.EndDate</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Meetnet:</b> @item.MeasurementNetwork</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Zone:</b> @item.Zone</MudText>
-						</MudCardContent>
-					</MudCard>
-				</MudItem>
-			}
-		}
-	</MudGrid>
+        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="@NavigateToCreate"/>
+    </MudStack>
+
+    <MudGrid Spacing="4">
+        @if (_mobileItems is null)
+        {
+            <MudItem xs="12">
+                <div>
+                    <MudProgressCircular Indeterminate="true"/>
+                </div>
+            </MudItem>
+        }
+        else if (!_mobileItems.Any())
+        {
+            <MudItem xs="12">
+                <MudText>Geen projecten</MudText>
+            </MudItem>
+        }
+        else
+        {
+            @foreach (var item in _mobileItems)
+            {
+                <MudItem xs="12">
+                    <MudCard Elevation="2"
+                             Class="rounded-lg"
+                             @onclick="() => NavigateToProject(item.Id)">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                    <MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
+                                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+                                             Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+                                </MudStack>
+                                <MudText Typo="Typo.h6">@item.Name</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <MudText Typo="Typo.subtitle1"><b>Start datum:</b> @item.StartDate</MudText>
+                            <MudText Typo="Typo.subtitle1"><b>Eind datum:</b> @item.EndDate</MudText>
+                            <MudText Typo="Typo.subtitle1"><b>Meetnet:</b> @item.MeasurementNetwork</MudText>
+                            <MudText Typo="Typo.subtitle1"><b>Zone:</b> @item.Zone</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        }
+    </MudGrid>
 </MudHidden>
 
 @* Drawer for sorting on mobile *@
 
 @if (_mobileSortOptionsOpen)
 {
-	<MudDrawer Anchor="Anchor.Bottom"
-	           Variant="DrawerVariant.Temporary"
-	           Elevation="8"
-	           @bind-Open="_mobileSortOptionsOpen"
-	           Class="p-4 rounded-lg">
+    <MudDrawer Anchor="Anchor.Bottom"
+               Variant="DrawerVariant.Temporary"
+               Elevation="8"
+               @bind-Open="_mobileSortOptionsOpen"
+               Class="p-4 rounded-lg">
 
-		<MudText Typo="Typo.h6">Sorteren</MudText>
+        <MudText Typo="Typo.h6">Sorteren</MudText>
 
-		<MudStack Spacing="4">
-			<MudDivider/>
+        <MudStack Spacing="4">
+            <MudDivider/>
 
-			@foreach (var column in SortColumns)
-			{
-				<MudStack Row="true" AlignItems="AlignItems.Center">
-					<MudText>@column.Label</MudText>
-					<MudSpacer/>
+            @foreach (var column in SortColumns)
+            {
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudText>@column.Label</MudText>
+                    <MudSpacer/>
 
-					<MudButton
-						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, false))">
-						Oplopend
-					</MudButton>
+                    <MudButton
+                        Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+                        Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+                        Size="Size.Small"
+                        OnClick="@(() => SortMobileAsync(column.Value, false))">
+                        Oplopend
+                    </MudButton>
 
-					<MudButton
-						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, true))">
-						Aflopend
-					</MudButton>
-				</MudStack>
-			}
+                    <MudButton
+                        Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+                        Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+                        Size="Size.Small"
+                        OnClick="@(() => SortMobileAsync(column.Value, true))">
+                        Aflopend
+                    </MudButton>
+                </MudStack>
+            }
 
-			<MudDivider/>
+            <MudDivider/>
 
-			<MudButton Variant="Variant.Text"
-			           Color="Color.Primary"
-			           OnClick="@ToggleSortingDrawer">
-				Sluiten
-			</MudButton>
-		</MudStack>
-	</MudDrawer>
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Primary"
+                       OnClick="@ToggleSortingDrawer">
+                Sluiten
+            </MudButton>
+        </MudStack>
+    </MudDrawer>
 }
-
-@* TODO: Implement drawer for filtering *@
