@@ -110,7 +110,7 @@ public class ProjectShould {
 			new Installation(DateTime.UtcNow));
 
 		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
-		
+
 		project.Stations.Count.ShouldBe(1);
 		project.Stations.ShouldContain(measurementStation);
 	}
@@ -123,13 +123,13 @@ public class ProjectShould {
 
 		MeasurementStation measurementStation = new("MS001", DummyLocation,
 			new Installation(DateTime.UtcNow));
-		
+
 		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
 		project.Stations.Count.ShouldBe(1);
 		project.Stations.ShouldContain(measurementStation);
 
 		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
-		
+
 		project.Stations.Count.ShouldBe(1);
 		project.Stations.ShouldContain(measurementStation);
 	}
@@ -142,13 +142,13 @@ public class ProjectShould {
 
 		MeasurementStation measurementStation = new("MS001", DummyLocation,
 			new Installation(DateTime.UtcNow));
-		
+
 		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
 		project.Stations.Count.ShouldBe(1);
 		project.Stations.ShouldContain(measurementStation);
 
-		project.UpdateMeasurementStationList(new List<MeasurementStation>{});
-		
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { });
+
 		project.Stations.Count.ShouldBe(0);
 		project.Stations.ShouldNotContain(measurementStation);
 	}

@@ -283,11 +283,11 @@ public class DbSeeder(
 				DateTime.UtcNow.AddDays(-30)
 			)
 		);
-		
+
 		station1.Projects.Add(projects[0]);
 		station1.Projects.Add(projects[1]);
 		station1.Projects.Add(projects[2]);
-		
+
 		station2.Projects.Add(projects[1]);
 		station2.Projects.Add(projects[5]);
 

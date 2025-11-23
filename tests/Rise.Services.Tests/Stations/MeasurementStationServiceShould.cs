@@ -312,7 +312,7 @@ public class MeasurementStationServiceShould {
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2024, 10, 1), null),
 			measurementNetwork);
-		
+
 		db.Zones.Add(zone);
 		db.MeasurementNetworks.Add(measurementNetwork);
 		db.Projects.Add(project);
@@ -544,7 +544,7 @@ public class MeasurementStationServiceShould {
 
 		await Assert.ThrowsAsync<ArgumentException>(async () => await service.EditAsync(req));
 	}
-	
+
 	[Fact]
 	public async Task UpdateProjectsAsync_ShouldReturnSuccess() {
 		// Arrange
@@ -553,7 +553,7 @@ public class MeasurementStationServiceShould {
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
-		
+
 		db.MeasurementStations.Add(measurementStation);
 
 		Zone zone = new("TestZone", "Z-001");
@@ -625,11 +625,11 @@ public class MeasurementStationServiceShould {
 	public async Task CreateAsync_ShouldReturnError_WhenAProjectIsNotFound() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		
+
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
-		
+
 		db.MeasurementStations.Add(measurementStation);
 		await db.SaveChangesAsync();
 

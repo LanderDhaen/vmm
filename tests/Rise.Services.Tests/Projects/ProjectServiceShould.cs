@@ -173,7 +173,7 @@ public class ProjectServiceShould {
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
-		
+
 		db.MeasurementStations.Add(measurementStation);
 
 		Zone zone = new("TestZone", "Z-001");
@@ -502,7 +502,7 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-	
+
 	[Fact]
 	public async Task UpdateMeasurementStationsAsync_ShouldReturnSuccess() {
 		// Arrange
@@ -511,7 +511,7 @@ public class ProjectServiceShould {
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
-		
+
 		db.MeasurementStations.Add(measurementStation);
 
 		Zone zone = new("TestZone", "Z-001");
@@ -554,7 +554,7 @@ public class ProjectServiceShould {
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
-		
+
 		db.MeasurementStations.Add(measurementStation);
 		await db.SaveChangesAsync();
 
@@ -579,7 +579,7 @@ public class ProjectServiceShould {
 	public async Task UpdateMeasurementStationsAsync_ShouldReturnError_WhenAMeasurementStationIsNotFound() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		
+
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),

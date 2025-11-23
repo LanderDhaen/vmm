@@ -22,7 +22,7 @@ public partial class Detail {
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
-	
+
 	private string? _remarks;
 	private int _selectedTab;
 	private List<MeasurementStationDto.Index>? _stationsFromProject;
@@ -89,7 +89,7 @@ public partial class Detail {
 		if (stationsResult.IsSuccess && stationsResult.Value is not null) {
 			_stationsFromProject = stationsResult.Value;
 			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
-			
+
 			_tabs[1] = $"Meetstations ({_stationsFromProject.Count})";
 		} else {
 			_stationsFromProject = new List<MeasurementStationDto.Index>();
@@ -102,7 +102,7 @@ public partial class Detail {
 				Snackbar.Add(message, Severity.Warning);
 			}
 		}
-		
+
 		// --- All stations that can be added to the project ---
 		if (allStationsResult.IsSuccess && allStationsResult.Value is not null) {
 			_allStations = allStationsResult.Value.Stations;
@@ -246,11 +246,11 @@ public partial class Detail {
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
-	
+
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
 			_stationsFromProject?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
-		
+
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
 		} else {
@@ -258,13 +258,12 @@ public partial class Detail {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Meetstations succesvol toegevoegd!", Severity.Success);
 				Result<List<MeasurementStationDto.Index>> stationsResult = await ProjectService.GetStationsAsync(ProjectId);
-				if (stationsResult.IsSuccess && stationsResult.Value is not null)
-				{
+				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
 					_stationsFromProject = stationsResult.Value;
 					_tabs[1] = $"Meetstations ({_stationsFromProject.Count})";
 					StateHasChanged();
 				}
-				
+
 				if (_stationsGrid is not null)
 					await _stationsGrid.ReloadServerData();
 			} else {
@@ -277,7 +276,7 @@ public partial class Detail {
 	private void NavigateToProjects() {
 		Navigation.NavigateTo("/projects/");
 	}
-	
+
 	private void NavigateToCreateStation() {
 		Navigation.NavigateTo($"/stations/create/{ProjectId}");
 	}

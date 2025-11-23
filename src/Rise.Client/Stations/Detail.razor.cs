@@ -72,7 +72,7 @@ public partial class Detail {
 				return Task.CompletedTask;
 			}
 		);
-		
+
 		// --- All projects that can be added to the measurement station ---
 		if (allProjects.IsSuccess && allProjects.Value is not null) {
 			_allProjects = allProjects.Value.Projects;
@@ -119,11 +119,11 @@ public partial class Detail {
 			Items = items
 		};
 	}
-	
+
 	private async Task UpdateProjects() {
 		bool selectionChanged = !Model.ProjectIds.SequenceEqual(
 			_projectsFromMeasurementStation?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
-		
+
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 project selecteren.", Severity.Error);
 		} else {
@@ -131,13 +131,12 @@ public partial class Detail {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Projecten succesvol toegevoegd!", Severity.Success);
 				Result<List<ProjectDto.Index>> projectsResult = await StationService.GetProjectsAsync(StationId);
-				if (projectsResult.IsSuccess && projectsResult.Value is not null)
-				{
+				if (projectsResult.IsSuccess && projectsResult.Value is not null) {
 					_projectsFromMeasurementStation = projectsResult.Value;
 					_tabs[2] = $"Projecten ({_projectsFromMeasurementStation.Count})";
 					StateHasChanged();
 				}
-				
+
 				if (_projectsGrid is not null)
 					await _projectsGrid.ReloadServerData();
 			} else {
@@ -153,7 +152,7 @@ public partial class Detail {
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
-	
+
 	private void NavigateToCreateProject() {
 		Navigation.NavigateTo($"/projects/create/{StationId}");
 	}

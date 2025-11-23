@@ -36,7 +36,7 @@ public class MeasurementStation : Entity {
 	public void UpdateProjectList(List<Project> projects) {
 		var closedProjectsNotAlreadyLinked = projects
 			.Where(p => p.Status == Status.Afgesloten &&
-			            Projects.All(existing => existing.Id != p.Id))
+						Projects.All(existing => existing.Id != p.Id))
 			.ToList();
 
 		if (closedProjectsNotAlreadyLinked.Any()) {

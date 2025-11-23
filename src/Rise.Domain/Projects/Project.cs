@@ -54,12 +54,12 @@ public class Project : Entity {
 			.ToList();
 
 		measurementStationsToAdd.ForEach(m => Stations.Add(m));
-		
+
 		// Get all the measurement stations that are already in the project but need to be deleted
 		List<MeasurementStation> measurementStationsToRemove = Stations
 			.Where(s => measurementStations.All(st => st.Id != s.Id))
 			.ToList();
-		
+
 		measurementStationsToRemove.ForEach(m => Stations.Remove(m));
 	}
 

@@ -78,7 +78,7 @@ public class MeasurementStationShould {
 		station.Location.ShouldBe(newLocation);
 		station.Installation.RemovedAt.ShouldBeNull();
 	}
-	
+
 	[Fact]
 	public void UpdateProjects_AddProjectsToMeasurementStation() {
 		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30));
@@ -89,7 +89,7 @@ public class MeasurementStationShould {
 			new Installation(DateTime.UtcNow));
 
 		measurementStation.UpdateProjectList(new List<Project> { project });
-		
+
 		measurementStation.Projects.Count.ShouldBe(1);
 		measurementStation.Projects.ShouldContain(project);
 	}
@@ -102,7 +102,7 @@ public class MeasurementStationShould {
 
 		MeasurementStation measurementStation = new("MS001", DummyLocation,
 			new Installation(DateTime.UtcNow));
-		
+
 		measurementStation.UpdateProjectList(new List<Project> { project });
 		measurementStation.Projects.Count.ShouldBe(1);
 		measurementStation.Projects.ShouldContain(project);
@@ -120,7 +120,7 @@ public class MeasurementStationShould {
 
 		MeasurementStation measurementStation = new("MS001", DummyLocation,
 			new Installation(DateTime.UtcNow));
-		
+
 		measurementStation.UpdateProjectList(new List<Project> { project });
 		measurementStation.Projects.Count.ShouldBe(1);
 		measurementStation.Projects.ShouldContain(project);

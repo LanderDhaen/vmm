@@ -48,7 +48,7 @@ public partial class Create {
 				return Task.CompletedTask;
 			}
 		);
-		
+
 		if (StationId.HasValue) {
 			Model.StationId = StationId;
 		}
