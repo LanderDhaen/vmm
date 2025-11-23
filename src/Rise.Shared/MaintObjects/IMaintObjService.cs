@@ -10,4 +10,9 @@ public interface IMaintObjService {
 		QueryRequest.SkipTake req,
 		CancellationToken ctx = default
 	);
+	
+	Task<Result<MaintObjResponse.Create>> CreateAsync(
+		MaintObjRequest.Create req,
+		CancellationToken ctx = default
+	);
 }
