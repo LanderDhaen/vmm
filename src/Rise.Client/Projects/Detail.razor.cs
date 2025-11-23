@@ -22,14 +22,13 @@ public partial class Detail {
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
-
+	
+	private string? _remarks;
+	private int _selectedTab;
 	private List<MeasurementStationDto.Index>? _stationsFromProject;
 	private IEnumerable<MeasurementStationDto.Index>? _allStations;
 	private Result? _result;
 	private MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
-
-	private string? _remarks;
-	private int _selectedTab;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
@@ -218,7 +217,6 @@ public partial class Detail {
 
 	private async Task<GridData<MeasurementStationDto.Index>> LoadAndSliceStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-
 		if (_stationsFromProject is null) {
 			Result<List<MeasurementStationDto.Index>> res =
 				await ProjectService.GetStationsAsync(ProjectId);

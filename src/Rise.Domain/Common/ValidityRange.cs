@@ -6,11 +6,9 @@ namespace Rise.Domain.Common;
 /// </summary>
 public class ValidityRange : ValueObject {
 	private ValidityRange() {
-
 	}
 
 	public ValidityRange(DateTime validFrom, DateTime validTo) {
-
 		if (validTo < validFrom) {
 			throw new ArgumentException("End date cannot be before start date");
 		}
@@ -19,9 +17,9 @@ public class ValidityRange : ValueObject {
 		ValidTo = validTo;
 	}
 
-	public DateTime ValidFrom { get; init; } = default!;
+	public DateTime ValidFrom { get; init; }
 
-	public DateTime ValidTo { get; init; } = default!;
+	public DateTime ValidTo { get; init; }
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return ValidFrom;

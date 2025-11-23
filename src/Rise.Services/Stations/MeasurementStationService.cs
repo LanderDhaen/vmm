@@ -127,11 +127,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		} else {
 			location = await dbContext.Set<Location>()
 				.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
-			if (location is null)
+			if (location is null) {
 				return Result.NotFound("Locatie niet gevonden.");
+			}
 		}
 
-		var installedAt = request.InstalledAt ?? DateTime.UtcNow;
+		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
 
 		MeasurementStation station = new(
 			request.Code,

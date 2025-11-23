@@ -57,7 +57,7 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		Result<List<MeasurementStationDto.Index>>? result =
 			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
 				$"/api/projects/{projectId}/stations",
-				cancellationToken: ctx);
+				ctx);
 		return result!;
 	}
 

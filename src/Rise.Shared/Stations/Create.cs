@@ -1,3 +1,5 @@
+using FluentValidation.Results;
+
 using Rise.Shared.Locations;
 
 namespace Rise.Shared.Stations;
@@ -30,11 +32,13 @@ public static partial class MeasurementStationRequest {
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
-				var result =
+				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Create>.CreateWithOptions((Create)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid)
+				if (result.IsValid) {
 					return Array.Empty<string>();
+				}
+
 				return result.Errors.Select(e => e.ErrorMessage);
 			};
 		}

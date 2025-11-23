@@ -202,7 +202,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						StartDate = h.DateRange.StartDate,
 						EndDate = h.DateRange.EndDate,
 						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo,
+						ValidTo = h.ValidityRange.ValidTo
 					}).ToList()
 			})
 			.FirstOrDefaultAsync(ctx);
