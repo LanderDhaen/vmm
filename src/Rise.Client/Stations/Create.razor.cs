@@ -132,8 +132,8 @@ public partial class Create {
 		var result = await dialog.Result;
 
 		if (!result.Canceled && result.Data is CoordinateResult c) {
-			Model.Location.X = Math.Round(c.X, 2, MidpointRounding.AwayFromZero);
-			Model.Location.Y = Math.Round(c.Y, 2, MidpointRounding.AwayFromZero);
+			Model.Location.X = c.X;
+			Model.Location.Y = c.Y;
 		}
 	}
 }
