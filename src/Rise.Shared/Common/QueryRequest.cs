@@ -1,4 +1,8 @@
 namespace Rise.Shared.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 /// <summary>
 ///     Provides structures to facilitate structured queries for data retrieval scenarios.
@@ -52,10 +56,33 @@ public static class QueryRequest {
 		/// <summary>
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
-		public string AsQuery() {
-			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
+			public string AsQuery()
+			{
+				var parts = new List<string>
+				{
+					$"skip={Skip}",
+					$"take={Take}",
+				};
+
+				if (!string.IsNullOrWhiteSpace(OrderBy))
+					parts.Add($"orderBy={Uri.EscapeDataString(OrderBy!)}");
+
+				parts.Add($"orderDescending={OrderDescending.ToString().ToLowerInvariant()}");
+
+				if (!string.IsNullOrWhiteSpace(SearchTerm))
+					parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm!)}");
+
+				// If there are filters, serialize the dictionary as JSON and add as `filters=<json>`
+				if (Filters != null && Filters.Any())
+				{
+					// Use default options; values may be primitives or JsonElement boxed as object
+					string json = JsonSerializer.Serialize(Filters);
+					parts.Add($"filters={Uri.EscapeDataString(json)}");
+				}
+
+				return string.Join("&", parts);
+			}
 		}
-	}
 
 	/// <summary>
 	///     Represents a query request using a cursor-based pagination strategy,
