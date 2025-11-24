@@ -1,5 +1,4 @@
 using Rise.Domain.Locations;
-using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
 namespace Rise.Domain.MaintObjects;
@@ -28,9 +27,9 @@ public class MaintObj : Entity {
 	public Installation Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;
 
-
 	// Nullable FK to MeasurementStation: when null the maint-object is 'in stock'
 	public Guid? MeasurementStationId { get; private set; }
+
 	public MeasurementStation? Station { get; private set; }
 
 	// Location: mirrors the assigned MeasurementStation's location, or null when in stock / unassigned

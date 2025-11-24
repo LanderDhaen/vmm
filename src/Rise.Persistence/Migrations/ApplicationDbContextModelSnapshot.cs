@@ -308,6 +308,12 @@ namespace Rise.Persistence.Migrations
                     b.Property<bool>("IsInStock")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MaintObjStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaintObjType")
                         .HasColumnType("int");
 
@@ -324,13 +330,12 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("MeasurementStationId");
 
@@ -688,6 +693,10 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
                 {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
                     b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
                         .WithMany("MaintObjects")
                         .HasForeignKey("MeasurementStationId")
@@ -716,6 +725,8 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Installation")
                         .IsRequired();
+
+                    b.Navigation("Location");
 
                     b.Navigation("Station");
                 });
