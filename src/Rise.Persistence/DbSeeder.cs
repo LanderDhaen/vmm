@@ -327,7 +327,7 @@ public class DbSeeder(
 		// If stations exist, set the FK for d1/d2 to attach them to stations.
 		if (hasStations) {
 			// Ensure stations are attached/tracked by the context
-			foreach (var s in stations) {
+			foreach (MeasurementStation s in stations) {
 				dbContext.Attach(s);
 			}
 
@@ -335,6 +335,9 @@ public class DbSeeder(
 
 			if (stations.Count > 1) {
 				d2.AssignToStation(stations[1]);
+				d3.AssignToStation(stations[0]);
+				d4.AssignToStation(stations[1]);
+				d5.AssignToStation(stations[0]);
 			}
 		}
 

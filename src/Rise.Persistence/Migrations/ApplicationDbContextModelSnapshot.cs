@@ -305,8 +305,14 @@ namespace Rise.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsInStock")
+                        .HasColumnType("bit");
+
                     b.Property<int>("MaintObjType")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("MeasurementStationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -318,10 +324,15 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MeasurementStationId");
 
                     b.ToTable("MaintObjects");
                 });
@@ -677,6 +688,11 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
                 {
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
+                        .WithMany("MaintObjects")
+                        .HasForeignKey("MeasurementStationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MaintObjId")
@@ -700,6 +716,8 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Installation")
                         .IsRequired();
+
+                    b.Navigation("Station");
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
@@ -841,6 +859,11 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Navigation("ProjectHistories");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
+                {
+                    b.Navigation("MaintObjects");
                 });
 #pragma warning restore 612, 618
         }
