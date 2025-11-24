@@ -732,8 +732,7 @@ namespace Rise.Persistence.Migrations
                                 .HasForeignKey("MaintObjId");
                         });
 
-                    b.Navigation("Installation")
-                        .IsRequired();
+                    b.Navigation("Installation");
 
                     b.Navigation("Location");
 

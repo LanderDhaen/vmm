@@ -8,7 +8,7 @@ public class MaintObj : Entity {
 	private MaintObj() { }
 
 	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand,
-		Installation installation, bool isInStock) {
+		Installation? installation, bool isInStock) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjType = maintObjType;
@@ -24,7 +24,7 @@ public class MaintObj : Entity {
 	public string? Brand { get; private set; }
 	public MaintObjType MaintObjType { get; private set; }
 	public MaintObjStatus MaintObjStatus { get; } = MaintObjStatus.Actief;
-	public Installation Installation { get; private set; }
+	public Installation? Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;
 
 	// Nullable FK to MeasurementStation

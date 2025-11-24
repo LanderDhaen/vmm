@@ -309,52 +309,69 @@ public class DbSeeder(
 		};
 
 		Technician? anyTechnician = dbContext.Technicians.Local.FirstOrDefault()
-		                            ?? await dbContext.Technicians.FirstOrDefaultAsync();
+									?? await dbContext.Technicians.FirstOrDefaultAsync();
+
+		// Ensure we have at least one technician to assign to maint objects
+		if (anyTechnician is null) {
+			anyTechnician = new Technician("Seed", "Tech", "seed-tech-account");
+			dbContext.Technicians.Add(anyTechnician);
+			await dbContext.SaveChangesAsync();
+		}
 
 		List<MaintObj> maintObjects = new();
 
+
+		// Add 5 maintenance objects for each station and assign installation dates and a technician
 		if (stations.Any()) {
-			int i = 0;
+			int idx = 0;
 			foreach (MeasurementStation station in stations) {
-				dbContext.Attach(station);
+				// Cycle through the provided installation dates to give variation
+				Installation installation = installations[idx];
 
-				string[] types = new[] { "Sonde", "Logger", "Modem", "SIM", "Voeding" };
-				string[] brands = new[] { "Aquatroll", "Campbell", "Centerion", "002.APN.VMM.BE", "Kyocera" };
+				List<MaintObj> objsForStation = new() {
+					new MaintObj($"{station.Code}-Sonde", $"SN-{Guid.NewGuid().ToString().Substring(0, 8)}",
+						MaintObjType.Sonde, "Aquatroll",
+						new Installation(installation.InstalledAt, installation.RemovedAt), false),
+					new MaintObj($"{station.Code}-Logger", $"LG-{Guid.NewGuid().ToString().Substring(0, 8)}",
+						MaintObjType.Logger, "Campbell",
+						new Installation(installation.InstalledAt, installation.RemovedAt), false),
+					new MaintObj($"{station.Code}-Modem", $"MD-{Guid.NewGuid().ToString().Substring(0, 8)}",
+						MaintObjType.Modem, "Centerion",
+						new Installation(installation.InstalledAt, installation.RemovedAt), false),
+					new MaintObj($"{station.Code}-SIM", $"SIM-{Guid.NewGuid().ToString().Substring(0, 8)}",
+						MaintObjType.Sim, "002.APN.VMM.BE",
+						new Installation(installation.InstalledAt, installation.RemovedAt), false),
+					new MaintObj($"{station.Code}-Voeding", $"VO-{Guid.NewGuid().ToString().Substring(0, 8)}",
+						MaintObjType.Voeding, "Kyocera",
+						new Installation(installation.InstalledAt, installation.RemovedAt), false)
+				};
 
-				for (int j = 0; j < types.Length; j++) {
-					MaintObj maintObj = new(
-						$"{station.Code}-{types[j]}",
-						$"{types[j].Substring(0, 2).ToUpper()}-{i:00000}",
-						(MaintObjType)j,
-						brands[j],
-						installations[(i + j) % installations.Count],
-						false
-					);
-					maintObj.AssignToStation(station);
-					if (anyTechnician != null) {
-						maintObj.RecordTechnician(anyTechnician);
-					}
-
-					maintObjects.Add(maintObj);
+				// Assign each object to the station and record the technician
+				foreach (MaintObj mo in objsForStation) {
+					mo.AssignToStation(station);
+					mo.RecordTechnician(anyTechnician);
+					maintObjects.Add(mo);
 				}
 
-				i++;
+				idx++;
 			}
 		}
 
+		// Stock items
 		maintObjects.AddRange(new List<MaintObj> {
-			new("Stock-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", installations[0], true),
-			new("Stock-Logger", "31045", MaintObjType.Logger, "Campbell", installations[1], true),
-			new("Stock-Modem", "354990101102816", MaintObjType.Modem, "Centerion", installations[2], true),
-			new("Stock-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
-			new("Stock-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
+			new("Stock-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
+			new("Stock-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
+			new("Stock-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
+			new("Stock-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", null, true),
+			new("Stock-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", null, true)
 		});
 
+		// If there are no stations and no maint objects, add some standalone ones (legacy behaviour)
 		if (!stations.Any() && !maintObjects.Any()) {
 			maintObjects.AddRange(new List<MaintObj> {
-				new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", installations[0], true),
-				new("W-Logger", "31045", MaintObjType.Logger, "Campbell", installations[1], true),
-				new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", installations[2], true),
+				new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
+				new("W-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
+				new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
 				new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
 				new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
 			});

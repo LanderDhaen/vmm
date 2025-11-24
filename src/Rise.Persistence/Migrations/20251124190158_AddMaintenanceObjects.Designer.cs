@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251124170448_AddMaintenanceObjects")]
+    [Migration("20251124190158_AddMaintenanceObjects")]
     partial class AddMaintenanceObjects
     {
         /// <inheritdoc />
@@ -735,8 +735,7 @@ namespace Rise.Persistence.Migrations
                                 .HasForeignKey("MaintObjId");
                         });
 
-                    b.Navigation("Installation")
-                        .IsRequired();
+                    b.Navigation("Installation");
 
                     b.Navigation("Location");
 
