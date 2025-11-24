@@ -81,6 +81,129 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
+		// Apply server-side search filter if provided
+		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
+			var term = req.SearchTerm.Trim().ToLowerInvariant();
+
+			// filter on code, name, measurement network name or zone name
+			query = query.Where(p =>
+				EF.Functions.Like(p.Code.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.Name.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{term}%"));
+		}
+	// Apply additional column filters if provided
+	if (req.Filters != null && req.Filters.Any())
+	{
+		foreach (var kv in req.Filters)
+		{
+			var key = kv.Key;
+			var raw = kv.Value?.ToString();
+			if (string.IsNullOrWhiteSpace(raw))
+				continue;
+
+			switch (key)
+			{
+				case "Code":
+				case "code":
+					{
+						var t = raw.Trim().ToLowerInvariant();
+						query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "Name":
+				case "name":
+					{
+						var t = raw.Trim().ToLowerInvariant();
+						query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "MeasurementNetwork":
+				case "MeasurementNetwork.Name":
+				case "measurementnetwork":
+					{
+						var t = raw.Trim().ToLowerInvariant();
+						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "Zone":
+				case "zone":
+					{
+						var t = raw.Trim().ToLowerInvariant();
+						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "Status":
+				case "status":
+					{
+						// try parse enum by name or numeric value
+						if (Enum.TryParse<Status>(raw, true, out var s))
+						{
+							query = query.Where(p => p.Status == s);
+						}
+						else if (int.TryParse(raw, out var n))
+						{
+							query = query.Where(p => (int)p.Status == n);
+						}
+						break;
+					}
+				case "StartDate":
+					{
+						if (DateOnly.TryParse(raw, out var d))
+						{
+							query = query.Where(p => p.DateRange.StartDate == d);
+						}
+						break;
+					}
+				case "StartDateFrom":
+					{
+						if (DateOnly.TryParse(raw, out var dFrom))
+						{
+							query = query.Where(p => p.DateRange.StartDate >= dFrom);
+						}
+						break;
+					}
+				case "StartDateTo":
+					{
+						if (DateOnly.TryParse(raw, out var dTo))
+						{
+							query = query.Where(p => p.DateRange.StartDate <= dTo);
+						}
+						break;
+					}
+				case "EndDate":
+					{
+						if (DateOnly.TryParse(raw, out var dE))
+						{
+							query = query.Where(p => p.DateRange.EndDate == dE);
+						}
+						break;
+					}
+				case "EndDateFrom":
+					{
+						if (DateOnly.TryParse(raw, out var dEf))
+						{
+							query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= dEf);
+						}
+						break;
+					}
+				case "EndDateTo":
+					{
+						if (DateOnly.TryParse(raw, out var dEt))
+						{
+							query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate <= dEt);
+						}
+						break;
+					}
+				default:
+					{
+						// unknown filter key — you can log or ignore
+						break;
+					}
+			}
+		}
+	}
+		// Count after applying filters
 		int totalCount = await query.CountAsync(ctx);
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
