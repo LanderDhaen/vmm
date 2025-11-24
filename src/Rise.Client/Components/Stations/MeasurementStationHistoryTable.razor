@@ -10,12 +10,14 @@
 				<MudTh Class="mud-theme-primary">#</MudTh>
 				<MudTh Class="mud-theme-primary">Geïnstalleerd</MudTh>
 				<MudTh Class="mud-theme-primary">Verwijderd</MudTh>
+				<MudTh Class="mud-theme-primary">Locatie</MudTh>
 			</MudTHeadRow>
 			<MudTHeadRow>
 				<MudTh colspan="2">Huidig meetstation</MudTh>
 				<MudTh>@MeasurementStation.Code</MudTh>
 				<MudTh>@MeasurementStation.InstalledAt</MudTh>
 				<MudTh>@MeasurementStation.RemovedAt</MudTh>
+				<MudTh>@MeasurementStation.Location</MudTh>
 			</MudTHeadRow>
 		</HeaderContent>
 		<RowTemplate>
@@ -24,6 +26,7 @@
 			<MudTd DataLabel="Code">@MeasurementStation.Code</MudTd>
 			<MudTd DataLabel="Geïnstalleerd">@context.InstalledAt</MudTd>
 			<MudTd DataLabel="Verwijderd">@context.RemovedAt</MudTd>
+			<MudTd DataLabel="Locatie">@context.Location</MudTd>
 		</RowTemplate>
 	</MudTable>
 </MudHidden>
@@ -45,6 +48,7 @@
 				<MudCardContent Class="d-flex flex-column gap-1">
 					<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @MeasurementStation.InstalledAt</MudText>
 					<MudText Typo="Typo.caption"><b>Verwijderd:</b> @MeasurementStation.RemovedAt</MudText>
+					<MudText Typo="Typo.caption"><b>Locatie:</b> @MeasurementStation.Location</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
@@ -64,6 +68,7 @@
 					<MudCardContent Class="d-flex flex-column gap-1">
 						<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @h.InstalledAt</MudText>
 						<MudText Typo="Typo.caption"><b>Verwijderd:</b> @h.RemovedAt</MudText>
+						<MudText Typo="Typo.caption"><b>Locatie:</b> @h.Location</MudText>
 					</MudCardContent>
 				</MudCard>
 			</MudItem>

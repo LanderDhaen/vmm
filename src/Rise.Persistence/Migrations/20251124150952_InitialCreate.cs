@@ -264,6 +264,7 @@ namespace Rise.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MeasurementStationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -271,6 +272,12 @@ namespace Rise.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MeasurementStationHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasurementStationHistory_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_MeasurementStationHistory_MeasurementStation_MeasurementStationId",
                         column: x => x.MeasurementStationId,
@@ -363,6 +370,11 @@ namespace Rise.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MeasurementStation_LocationId",
                 table: "MeasurementStation",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStationHistory_LocationId",
+                table: "MeasurementStationHistory",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(

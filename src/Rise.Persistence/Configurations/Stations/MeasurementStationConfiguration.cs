@@ -39,9 +39,19 @@ internal class MeasurementStationConfiguration : EntityConfiguration<Measurement
 internal class MeasurementStationHistoryConfiguration : HistoryEntityConfiguration<MeasurementStationHistory> {
 	public override void Configure(EntityTypeBuilder<MeasurementStationHistory> builder) {
 		base.Configure(builder);
+		
+		// Properties
+		
 		builder.OwnsOne(x => x.Installation, i => {
 			i.Property(x => x.InstalledAt).IsRequired().HasColumnName(nameof(Installation.InstalledAt));
 			i.Property(x => x.RemovedAt).HasColumnName(nameof(Installation.RemovedAt));
 		}).Navigation(e => e.Installation).IsRequired();
+		
+		// Relations
+		
+		builder.HasOne(x => x.Location)
+			.WithMany()
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

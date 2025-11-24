@@ -26,6 +26,9 @@ public static class MeasurementStationDto {
 		public required string Code { get; init; }
 		public required DateTime InstalledAt { get; init; }
 		public required DateTime? RemovedAt { get; init; }
+		
+		public string Location { get; init; }
+		
 		public required IReadOnlyList<MeasurementStationHistoryDto.Index> MeasurementStationHistories { get; init; }
 	}
 }
@@ -35,6 +38,7 @@ public static class MeasurementStationHistoryDto {
 		public required Guid Id { get; init; }
 		public required DateTime InstalledAt { get; init; }
 		public required DateTime? RemovedAt { get; init; }
+		public required string Location { get; init; }
 		public required DateTime ValidFrom  { get; init; }
 		public required DateTime ValidTo  { get; init; }
 	}

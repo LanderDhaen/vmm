@@ -49,7 +49,7 @@ public class MeasurementStation : Entity {
 		// Create history object using the old values
 		
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		MeasurementStationHistory measurementStationHistory = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), validityRange);
+		MeasurementStationHistory measurementStationHistory = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
 		_measurementStationHistories.Add(measurementStationHistory);
 		
 		// Assign the new values
@@ -67,10 +67,13 @@ public class MeasurementStationHistory : HistoryEntity {
 	/// </summary>
 	private MeasurementStationHistory() { }
 
-	public MeasurementStationHistory(Installation installation, ValidityRange validityRange) {
+	public MeasurementStationHistory(Installation installation, Location location, ValidityRange validityRange) {
+		Location = Guard.Against.Null(location);
 		Installation = Guard.Against.Null(installation);
 		ValidityRange = Guard.Against.Null(validityRange);
 	}
 	
 	public Installation Installation { get; init; }
+	
+	public Location Location { get; init; }
 }

@@ -516,10 +516,15 @@ namespace Rise.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("MeasurementStationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("MeasurementStationId");
 
@@ -801,6 +806,12 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStationHistory", b =>
                 {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Rise.Domain.Stations.MeasurementStation", null)
                         .WithMany("MeasurementStationHistories")
                         .HasForeignKey("MeasurementStationId");
@@ -849,6 +860,8 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Installation")
                         .IsRequired();
+
+                    b.Navigation("Location");
 
                     b.Navigation("ValidityRange")
                         .IsRequired();
