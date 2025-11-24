@@ -295,22 +295,18 @@ public class DbSeeder(
 			return;
 		}
 
-		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
-			? dbContext.MeasurementStations.Local.ToList()
-			: await dbContext.MeasurementStations.ToListAsync();
-
 		//TODO: use daterange for installation dates (ref: branch history -> projects/measurementstations)
 		// If there are no stations, still create some unassigned maintenance objects
 		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
-			new Installation(DateTime.UtcNow.AddMonths(-3)));
+			new Installation(DateTime.UtcNow.AddMonths(-3)), true);
 		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell",
-			new Installation(DateTime.UtcNow.AddMonths(-6)));
+			new Installation(DateTime.UtcNow.AddMonths(-6)), true);
 		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion",
-			new Installation(DateTime.UtcNow.AddMonths(-9)));
+			new Installation(DateTime.UtcNow.AddMonths(-9)), true);
 		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE",
-			new Installation(DateTime.UtcNow.AddMonths(-12)));
+			new Installation(DateTime.UtcNow.AddMonths(-12)), true);
 		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera",
-			new Installation(DateTime.UtcNow.AddMonths(-15)));
+			new Installation(DateTime.UtcNow.AddMonths(-15)), true);
 
 		dbContext.MaintObjects.AddRange(d1, d2, d3, d4, d5);
 		await dbContext.SaveChangesAsync();
