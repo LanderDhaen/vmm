@@ -89,38 +89,28 @@ else
 				           @bind-SelectedValues="Model.ProjectIds" Variant="Variant.Outlined"
 				           Margin="Margin.Dense"
 				           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-					<ChildContent>
-						<MudSelectItem T="Guid">
-							<div class="p-2">
-								<MudButton Variant="Variant.Text" Color="Color.Primary"
-								           StartIcon="@Icons.Material.Filled.Add" OnClick="@NavigateToCreateProject">Nieuw
-									project toevoegen
-								</MudButton>
-							</div>
-						</MudSelectItem>
-						@foreach (var project in _allProjects)
+					@foreach (var project in _allProjects)
+					{
+						if (project.Status == Status.Afgesloten)
 						{
-							if (project.Status == Status.Afgesloten)
-							{
-								<MudSelectItem T="Guid" Value="@project.Id" Disabled="true">@project.Code</MudSelectItem>
-								<MudSelectItem T="Guid" Value="@project.Id" Style="display:none"></MudSelectItem>
-							}
-							else
-							{
-								<MudSelectItem T="Guid" Value="@project.Id">@project.Code</MudSelectItem>
-							}
+							<MudSelectItem T="Guid" Value="@project.Id" Disabled="true">@project.Code - @project.Name</MudSelectItem>
+							<MudSelectItem T="Guid" Value="@project.Id" Style="display:none"></MudSelectItem>
 						}
-					</ChildContent>
+						else
+						{
+							<MudSelectItem T="Guid" Value="@project.Id">@project.Code - @project.Name</MudSelectItem>
+						}
+					}
 				</MudSelect>
 
 				<MudButton Variant="Variant.Filled"
-				           StartIcon="@Icons.Material.Filled.Add"
+				           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 				           Size="Size.Small"
 				           Color="Color.Primary"
 				           Class="px-4"
 				           OnClick="@UpdateProjects"
 				>
-					Project toevoegen
+					Lijst bijwerken
 				</MudButton>
 			</MudStack>
 			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
