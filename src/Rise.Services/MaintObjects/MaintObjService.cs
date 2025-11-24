@@ -30,7 +30,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
-			// TODO
+			// TODO: sorting
 			default:
 				query = desc
 					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))

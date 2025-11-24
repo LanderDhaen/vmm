@@ -299,6 +299,7 @@ public class DbSeeder(
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
 
+		//TODO: use daterange for installation dates (ref: branch history -> projects/measurementstations)
 		// If there are no stations, still create some unassigned maintenance objects
 		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
 			new Installation(DateTime.UtcNow.AddMonths(-3)));

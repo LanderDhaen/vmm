@@ -3,11 +3,17 @@ using Rise.Domain.Projects;
 namespace Rise.Domain.MaintObjects;
 
 public class MaintObj : Entity {
+	//TODO: technieker bijhouden die het laatst gescanned heeft
+	//TODO: meetstation toevoegen
+
+
 	private Installation _installation = null!;
 	private string _serialNumber = string.Empty;
 
 	private MaintObj() { }
 
+	//TODO: locatie toevoegen (van meetstation), zo niet dan stock(bool)
+	//TODO: meetstation heeft een lijst van maintobj(actief) + maintobj hoort bij een meetstation(actief)/stock(inactief)
 	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand,
 		Installation installation) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
