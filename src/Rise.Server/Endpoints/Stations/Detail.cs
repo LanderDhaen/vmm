@@ -25,6 +25,6 @@ public class History(IMeasurementStationService stationService) : Endpoint<Empty
 
 	public override async Task<Result<MeasurementStationResponse.History>> ExecuteAsync(EmptyRequest req, CancellationToken ct) {
 		Guid stationId = Route<Guid>("stationId");
-		return await stationService.GetHistoryAsync(stationId, ct);	
+		return await stationService.GetHistoryAsync(stationId, ct);
 	}
 }

@@ -39,7 +39,7 @@ public static class MeasurementStationHistoryDto {
 		public required DateTime? RemovedAt { get; init; }
 		public required string Location { get; init; }
 		public required string City { get; init; }
-		public required DateTime ValidFrom  { get; init; }
-		public required DateTime ValidTo  { get; init; }
+		public required DateTime ValidFrom { get; init; }
+		public required DateTime ValidTo { get; init; }
 	}
 }

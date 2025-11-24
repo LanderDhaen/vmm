@@ -12,16 +12,16 @@ namespace Rise.Persistence.Configurations.Stations;
 internal class MeasurementStationConfiguration : EntityConfiguration<MeasurementStation> {
 	public override void Configure(EntityTypeBuilder<MeasurementStation> builder) {
 		// Properties
-		
+
 		base.Configure(builder);
 		builder.Property(x => x.Code).IsRequired().HasMaxLength(64);
 		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt).IsRequired().HasColumnName(nameof(Installation.InstalledAt));
 			b.Property(p => p.RemovedAt).HasColumnName(nameof(Installation.RemovedAt));
 		}).Navigation(e => e.Installation).IsRequired();
-		
+
 		// Relations
-		
+
 		builder.HasOne(x => x.Location)
 			.WithMany()
 			.IsRequired()
@@ -29,9 +29,9 @@ internal class MeasurementStationConfiguration : EntityConfiguration<Measurement
 
 		builder.HasMany(s => s.Projects)
 			.WithMany(p => p.Stations);
-		
+
 		// Constraints
-		
+
 		builder.HasIndex(x => x.Code).IsUnique();
 	}
 }
@@ -39,16 +39,16 @@ internal class MeasurementStationConfiguration : EntityConfiguration<Measurement
 internal class MeasurementStationHistoryConfiguration : HistoryEntityConfiguration<MeasurementStationHistory> {
 	public override void Configure(EntityTypeBuilder<MeasurementStationHistory> builder) {
 		base.Configure(builder);
-		
+
 		// Properties
-		
+
 		builder.OwnsOne(x => x.Installation, i => {
 			i.Property(x => x.InstalledAt).IsRequired().HasColumnName(nameof(Installation.InstalledAt));
 			i.Property(x => x.RemovedAt).HasColumnName(nameof(Installation.RemovedAt));
 		}).Navigation(e => e.Installation).IsRequired();
-		
+
 		// Relations
-		
+
 		builder.HasOne(x => x.Location)
 			.WithMany()
 			.IsRequired()

@@ -111,9 +111,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {
-		
+
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
-		
+
 		MeasurementStationDto.History? measurementStation = await query
 			.Where(s => s.Id == stationId)
 			.Select(s => new MeasurementStationDto.History {
@@ -224,10 +224,10 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-		
+
 		// TODO: Potentially refactoring this to match project editing flow
-		
-		
+
+
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Location)
 			.Include(s => s.Projects)
