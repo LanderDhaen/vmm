@@ -18,14 +18,16 @@ public partial class Index {
 		("Zone", "Zone"),
 		("Status", "Status")
 	];
-
+	
 	private string _activeSorting = "Name";
 	private bool _activeSortingDesc;
+	private string _searchTerm;
 
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-
+	
+	private CancellationTokenSource _cancellationTokenSource = new();
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -45,23 +47,26 @@ public partial class Index {
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
+			await GetProjectsMobileAsync();
 		}
 	}
 
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
-
+		
+		SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+			new SortDefinition<ProjectDto.Index>("Code", false, 0, null));
+		
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
 			OrderBy = sorting?.SortBy ?? "Name",
-			OrderDescending = sorting?.Descending ?? false
+			OrderDescending = sorting?.Descending ?? false,
+			SearchTerm = _searchTerm
 		};
 
-		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
+		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		return new GridData<ProjectDto.Index> {
 			TotalItems = result.Value.TotalCount,
@@ -71,15 +76,21 @@ public partial class Index {
 
 	// Mobile
 
-	private async Task GetProjectsMobileAsync(string orderBy, bool orderDescending) {
+	private async Task GetProjectsMobileAsync() {
+		
+		_cancellationTokenSource.Cancel();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
+		
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = orderBy,
-			OrderDescending = orderDescending
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc,
+			SearchTerm = _searchTerm
 		};
 
-		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
+		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.Projects;
 	}
@@ -91,10 +102,16 @@ public partial class Index {
 	}
 
 	private async Task SortMobileAsync(string orderBy, bool descending) {
-		await GetProjectsMobileAsync(orderBy, descending);
-		ToggleSortingDrawer();
 		_activeSorting = orderBy;
 		_activeSortingDesc = descending;
+		await GetProjectsMobileAsync();
+		ToggleSortingDrawer();
+	}
+	
+	// Searching
+
+	private async Task HandleIntervalElapsed() {
+		await GetProjectsMobileAsync();
 	}
 
 	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)

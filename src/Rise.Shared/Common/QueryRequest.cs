@@ -53,7 +53,7 @@ public static class QueryRequest {
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
 		public string AsQuery() {
-			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
+			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&searchTerm={SearchTerm}";
 		}
 	}
 
