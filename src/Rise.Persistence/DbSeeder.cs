@@ -295,18 +295,41 @@ public class DbSeeder(
 			return;
 		}
 
-		//TODO: use daterange for installation dates (ref: branch history -> projects/measurementstations)
-		// If there are no stations, still create some unassigned maintenance objects
+		// Get existing stations (tracked if already loaded locally)
+		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
+			? dbContext.MeasurementStations.Local.ToList()
+			: await dbContext.MeasurementStations.ToListAsync();
+
+		// If there are stations, we'll assign some maint objects to them; others stay in stock.
+		bool hasStations = stations.Any();
+
+		// Create maint objects. For readability, assign first two to stations (if present) and leave others in stock.
 		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
-			new Installation(DateTime.UtcNow.AddMonths(-3)), true);
+			new Installation(DateTime.UtcNow.AddMonths(-3)), hasStations ? false : true);
 		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell",
-			new Installation(DateTime.UtcNow.AddMonths(-6)), true);
+			new Installation(DateTime.UtcNow.AddMonths(-6)), hasStations && stations.Count > 1 ? false : true);
 		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion",
 			new Installation(DateTime.UtcNow.AddMonths(-9)), true);
 		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE",
 			new Installation(DateTime.UtcNow.AddMonths(-12)), true);
 		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera",
 			new Installation(DateTime.UtcNow.AddMonths(-15)), true);
+
+		// If stations exist, set the FK for d1/d2 to attach them to stations.
+		if (hasStations) {
+			// Ensure stations are attached/tracked by the context
+			foreach (MeasurementStation s in stations) {
+				dbContext.Attach(s);
+			}
+
+			// Assign d1 to first station
+			d1.AssignToStation(stations[0]);
+
+			// Assign d2 to second station when available
+			if (stations.Count > 1) {
+				d2.AssignToStation(stations[1]);
+			}
+		}
 
 		dbContext.MaintObjects.AddRange(d1, d2, d3, d4, d5);
 		await dbContext.SaveChangesAsync();

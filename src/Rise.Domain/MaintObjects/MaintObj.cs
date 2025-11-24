@@ -25,6 +25,22 @@ public class MaintObj : Entity {
 	public MaintObjStatus Status { get; } = MaintObjStatus.Actief;
 	public MaintObjType MaintObjType { get; private set; }
 	public string? Brand { get; private set; }
-	public bool IsInStock { get; } = true;
+	public bool IsInStock { get; private set; } = true;
+
+	// Nullable FK to MeasurementStation: when null the maint-object is 'in stock'
+	public Guid? MeasurementStationId { get; private set; }
 	public MeasurementStation? Station { get; private set; }
+
+	// Helper to assign/unassign a maint object to a station in a controlled way
+	public void AssignToStation(MeasurementStation station) {
+		Station = Guard.Against.Null(station);
+		MeasurementStationId = station.Id;
+		IsInStock = false;
+	}
+
+	public void UnassignFromStation() {
+		Station = null;
+		MeasurementStationId = null;
+		IsInStock = true;
+	}
 }
