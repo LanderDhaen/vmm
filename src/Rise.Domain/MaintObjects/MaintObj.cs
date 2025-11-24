@@ -33,4 +33,13 @@ public class MaintObj : Entity {
 	public MaintObjType MaintObjType { get; private set; }
 
 	public string? Brand { get; private set; }
+	
+	public void Edit(string name, string serialNumber, MaintObjType maintObjType, string? brand,
+		Installation installation) {
+		Name = Guard.Against.NullOrWhiteSpace(name);
+		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
+		MaintObjType = maintObjType;
+		Brand = brand;
+		Installation = installation;
+	}
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Common;
 using Rise.Domain.MaintObjects;
+using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
@@ -81,5 +82,27 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		return Result.Created(new MaintObjResponse.Create {
 			MaintObjId = mo.Id
 		});
+	}
+	
+	public async Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx = default) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.SingleOrDefaultAsync(x => x.Id == req.MaintObjId, ctx);
+
+		if (maintObj is null) {
+			return Result.NotFound($"Onderhoudsobject met Id '{req.MaintObjId}' was niet gevonden.");
+		}
+
+		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == req.SerialNumber && x.Id != req.MaintObjId)) {
+			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", req.SerialNumber);
+			return Result.Conflict($"Onderhoudsobject met serienummer '{req.SerialNumber}' bestaat al.");
+		}
+
+		DateTime installedAt = req.InstalledAt ?? maintObj.Installation.InstalledAt;
+
+		maintObj.Edit(req.Name, req.SerialNumber, (MaintObjType)req.MaintObjType, req.Brand, new Installation(installedAt, req.RemovedAt));
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
 	}
 }

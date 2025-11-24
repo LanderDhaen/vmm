@@ -1,0 +1,62 @@
+@* @page "/maintobjects/edit/{MaintObjId:guid}" *@
+@* @using Rise.Shared.MaintObjects *@
+@* *@
+@* @if (Model is null) *@
+@* { *@
+@* 	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;"> *@
+@* 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/> *@
+@* 	</MudContainer> *@
+@* } *@
+@* else *@
+@* { *@
+@* 	<MudText Class="my-4" Typo="Typo.h3">Bewerk onderhoudsobject</MudText> *@
+@* 	<MudCard> *@
+@* 		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0"> *@
+@* 			<MudCardContent> *@
+@* 				<MudGrid> *@
+@* 					<MudItem xs="12" sm="6"> *@
+@* 						<MudText Typo="Typo.subtitle2">Naam</MudText> *@
+@* 						<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250" *@
+@* 						              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/> *@
+@* 					</MudItem> *@
+@* 				 *@
+@* 					<MudItem xs="12" sm="6"> *@
+@* 						<MudText Typo="Typo.subtitle2">Serienummer</MudText> *@
+@* 						<MudTextField @bind-Value="Model.SerialNumber" For="@(() => Model.SerialNumber)" *@
+@* 						              Immediate="true" Variant="Variant.Outlined" Placeholder="Serienummer"/> *@
+@* 					</MudItem> *@
+@* 				 *@
+@* 					<MudItem xs="12" sm="6"> *@
+@* 						<MudText Typo="Typo.subtitle2">Type</MudText> *@
+@* 						<MudSelect @bind-Value="Model.MaintObjType" *@
+@* 						           For="@(() => Model.MaintObjType)" *@
+@* 						           Placeholder="Selecteer een type: " Clearable="true" Variant="Variant.Outlined"> *@
+@* 							@foreach (var type in Enum.GetValues(typeof(MaintObjType)).Cast<MaintObjType>()) *@
+@* 							{ *@
+@* 								<MudSelectItem Value="type">@type.ToString()</MudSelectItem> *@
+@* 							} *@
+@* 						</MudSelect> *@
+@* 					</MudItem> *@
+@* 				 *@
+@* 					<MudItem xs="12" sm="6"> *@
+@* 						<MudText Typo="Typo.subtitle2">Merk</MudText> *@
+@* 						<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)" *@
+@* 						              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/> *@
+@* 					</MudItem> *@
+@* *@
+@* 					<MudItem xs="12" sm="6"> *@
+@* 						<MudText Typo="Typo.subtitle2">Installatie datum</MudText> *@
+@* 						<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)" DateFormat="dd/MM/yyyy" *@
+@* 						               Variant="Variant.Outlined"/> *@
+@* 					</MudItem> *@
+@* 				</MudGrid> *@
+@* 			</MudCardContent> *@
+@* 		</MudForm> *@
+@* 		<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px"> *@
+@* 			<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@EditMaintObjAsync">Opslaan *@
+@* 			</MudButton> *@
+@* 			<MudButton Href="/projects" Variant="Variant.Outlined" Color="Color.Primary">Annuleren *@
+@* 			</MudButton> *@
+@* 		</MudCardActions> *@
+@* 	</MudCard> *@
+@* } *@
