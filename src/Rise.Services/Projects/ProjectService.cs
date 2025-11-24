@@ -40,17 +40,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
-		if (request.StationId is not null) {
-			var station = await dbContext.MeasurementStations
-				.SingleOrDefaultAsync(s => s.Id == request.StationId, ctx);
-
-			if (station is null) {
-				return Result.NotFound("Meetstation niet gevonden.");
-			}
-
-			p.Stations.Add(station);
-		}
-
 		dbContext.Projects.Add(p);
 
 		await dbContext.SaveChangesAsync(ctx);

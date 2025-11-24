@@ -11,7 +11,6 @@ public static partial class ProjectRequest {
 		public string Code { get; set; }
 		public DateTime? StartDate { get; set; } = DateTime.Now;
 		public Guid? MeasurementNetworkId { get; set; }
-		public Guid? StationId { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {

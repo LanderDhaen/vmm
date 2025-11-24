@@ -129,7 +129,7 @@ public partial class Detail {
 		} else {
 			_result = await StationService.UpdateProjectsAsync(Model);
 			if (_result.IsSuccess) {
-				Snackbar.Add("Projecten succesvol toegevoegd!", Severity.Success);
+				Snackbar.Add("Projecten succesvol bijgewerkt!", Severity.Success);
 				Result<List<ProjectDto.Index>> projectsResult = await StationService.GetProjectsAsync(StationId);
 				if (projectsResult.IsSuccess && projectsResult.Value is not null) {
 					_projectsFromMeasurementStation = projectsResult.Value;
@@ -151,9 +151,5 @@ public partial class Detail {
 
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
-	}
-
-	private void NavigateToCreateProject() {
-		Navigation.NavigateTo($"/projects/create/{StationId}");
 	}
 }

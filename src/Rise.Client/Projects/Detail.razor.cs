@@ -256,7 +256,7 @@ public partial class Detail {
 		} else {
 			_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
 			if (_result.IsSuccess) {
-				Snackbar.Add("Meetstations succesvol toegevoegd!", Severity.Success);
+				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
 				Result<List<MeasurementStationDto.Index>> stationsResult = await ProjectService.GetStationsAsync(ProjectId);
 				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
 					_stationsFromProject = stationsResult.Value;
@@ -275,9 +275,5 @@ public partial class Detail {
 	//NAV
 	private void NavigateToProjects() {
 		Navigation.NavigateTo("/projects/");
-	}
-
-	private void NavigateToCreateStation() {
-		Navigation.NavigateTo($"/stations/create/{ProjectId}");
 	}
 }

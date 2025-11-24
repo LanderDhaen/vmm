@@ -140,17 +140,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			new Installation(installedAt)
 		);
 
-		if (request.ProjectId is not null) {
-			var project = await dbContext.Projects
-				.SingleOrDefaultAsync(s => s.Id == request.ProjectId, ct);
-
-			if (project is null) {
-				return Result.NotFound("Project niet gevonden.");
-			}
-
-			station.Projects.Add(project);
-		}
-
 		dbContext.MeasurementStations.Add(station);
 		await dbContext.SaveChangesAsync(ct);
 

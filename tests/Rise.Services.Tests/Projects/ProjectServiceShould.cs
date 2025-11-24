@@ -166,52 +166,6 @@ public class ProjectServiceShould {
 	}
 
 	[Fact]
-	public async Task CreateAsync_ShouldReturnNewProjectId_WithExistingMeasurementStation() {
-		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-
-		MeasurementStation measurementStation = new("ST-001",
-			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
-			new Installation(new DateTime(2025, 1, 1)));
-
-		db.MeasurementStations.Add(measurementStation);
-
-		Zone zone = new("TestZone", "Z-001");
-		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-
-		db.Zones.Add(zone);
-		db.MeasurementNetworks.Add(measurementNetwork);
-		await db.SaveChangesAsync();
-
-		ProjectService service = new(db, null!);
-
-		ProjectRequest.Create request = new() {
-			Name = "Test Project",
-			Code = "TP-001",
-			MeasurementNetworkId = measurementNetwork.Id,
-			StartDate = new DateTime(2025, 1, 1),
-			StationId = measurementStation.Id
-		};
-
-		// Act
-		Result<ProjectResponse.Create> result = await service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.IsCreated());
-		Assert.NotNull(result.Value);
-		Assert.NotEqual(Guid.Empty, result.Value!.ProjectId);
-
-		Project? created = await db.Projects.FindAsync(result.Value.ProjectId);
-		Assert.NotNull(created);
-		Assert.Equal("Test Project", created!.Name);
-		Assert.Equal("TP-001", created.Code);
-		Assert.Equal(measurementStation, created.Stations.First());
-		Assert.Equal(measurementNetwork.Id, created.MeasurementNetwork.Id);
-
-		connection.Close();
-	}
-
-	[Fact]
 	public async Task CreateAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
@@ -262,38 +216,6 @@ public class ProjectServiceShould {
 		// Assert
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 		Assert.Equal($"Meetnet niet gevonden.", result.Errors.First());
-
-		connection.Close();
-	}
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnNotFound_WhenMeasurementStationIsNotFound() {
-		// Arrange
-		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-
-		Zone zone = new("TestZone", "Z-001");
-		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-
-		db.Zones.Add(zone);
-		db.MeasurementNetworks.Add(measurementNetwork);
-		await db.SaveChangesAsync();
-
-		ProjectService service = new(db, null!);
-
-		ProjectRequest.Create request = new() {
-			Name = "Test Project",
-			Code = "TP-001",
-			MeasurementNetworkId = measurementNetwork.Id,
-			StartDate = new DateTime(2025, 1, 1),
-			StationId = Guid.NewGuid()
-		};
-
-		// Act
-		Result<ProjectResponse.Create> result = await service.CreateAsync(request);
-
-		// Assert
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-		Assert.Equal("Meetstation niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}
