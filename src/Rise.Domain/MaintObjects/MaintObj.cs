@@ -1,4 +1,5 @@
 using Rise.Domain.Locations;
+using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 
 namespace Rise.Domain.MaintObjects;
@@ -6,7 +7,6 @@ namespace Rise.Domain.MaintObjects;
 public class MaintObj : Entity {
 	private MaintObj() { }
 
-	//TODO: locatie toevoegen (van meetstation), zo niet dan stock(bool)
 	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand,
 		Installation installation, bool isInStock) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
@@ -27,7 +27,7 @@ public class MaintObj : Entity {
 	public Installation Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;
 
-	// Nullable FK to MeasurementStation: when null the maint-object is 'in stock'
+	// Nullable FK to MeasurementStation
 	public Guid? MeasurementStationId { get; private set; }
 
 	public MeasurementStation? Station { get; private set; }
@@ -35,7 +35,10 @@ public class MaintObj : Entity {
 	// Location: mirrors the assigned MeasurementStation's location, or null when in stock / unassigned
 	public Location? Location { get; private set; }
 
-	// Helper to assign/unassign a maint object to a station in a controlled way
+	// Nullable FK to Technician:
+	public Guid? TechnicianId { get; private set; }
+	public Technician? Technician { get; private set; }
+
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
 		MeasurementStationId = station.Id;
@@ -48,5 +51,15 @@ public class MaintObj : Entity {
 		MeasurementStationId = null;
 		IsInStock = true;
 		Location = null;
+	}
+
+	public void RecordTechnician(Technician technician) {
+		Technician = Guard.Against.Null(technician);
+		TechnicianId = technician.Id;
+	}
+
+	public void ClearTechnician() {
+		Technician = null;
+		TechnicianId = null;
 	}
 }
