@@ -105,36 +105,30 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			switch (key)
 			{
 				case "Code":
-				case "code":
 					{
 						var t = raw.Trim().ToLowerInvariant();
 						query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Name":
-				case "name":
 					{
 						var t = raw.Trim().ToLowerInvariant();
 						query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "MeasurementNetwork":
 				case "MeasurementNetwork.Name":
-				case "measurementnetwork":
 					{
 						var t = raw.Trim().ToLowerInvariant();
 						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Zone":
-				case "zone":
 					{
 						var t = raw.Trim().ToLowerInvariant();
 						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Status":
-				case "status":
 					{
 						// try parse enum by name or numeric value
 						if (Enum.TryParse<Status>(raw, true, out var s))
@@ -197,7 +191,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 					}
 				default:
 					{
-						// unknown filter key — you can log or ignore
+						// unknown filter key 
 						break;
 					}
 			}
