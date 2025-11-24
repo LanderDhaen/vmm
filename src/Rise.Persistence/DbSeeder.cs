@@ -295,13 +295,9 @@ public class DbSeeder(
 			return;
 		}
 
-		// Get existing stations (tracked if already loaded locally)
 		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
-
-		// If there are stations, we'll assign some maint objects to them; others stay in stock.
-		bool hasStations = stations.Any();
 
 		List<Installation> installations = new() {
 			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
@@ -312,36 +308,59 @@ public class DbSeeder(
 			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
 		};
 
-		// Create maint objects. For readability, assign first two to stations (if present) and leave others in stock.
-		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
-			installations[0], hasStations ? false : true);
-		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell",
-			installations[1], hasStations && stations.Count > 1 ? false : true);
-		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion",
-			installations[2], true);
-		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE",
-			installations[3], true);
-		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera",
-			installations[4], true);
+		Technician? anyTechnician = dbContext.Technicians.Local.FirstOrDefault()
+		                            ?? await dbContext.Technicians.FirstOrDefaultAsync();
 
-		// If stations exist, set the FK for d1/d2 to attach them to stations.
-		if (hasStations) {
-			// Ensure stations are attached/tracked by the context
-			foreach (MeasurementStation s in stations) {
-				dbContext.Attach(s);
-			}
+		List<MaintObj> maintObjects = new();
 
-			d1.AssignToStation(stations[0]);
+		if (stations.Any()) {
+			int i = 0;
+			foreach (MeasurementStation station in stations) {
+				dbContext.Attach(station);
 
-			if (stations.Count > 1) {
-				d2.AssignToStation(stations[1]);
-				d3.AssignToStation(stations[0]);
-				d4.AssignToStation(stations[1]);
-				d5.AssignToStation(stations[0]);
+				string[] types = new[] { "Sonde", "Logger", "Modem", "SIM", "Voeding" };
+				string[] brands = new[] { "Aquatroll", "Campbell", "Centerion", "002.APN.VMM.BE", "Kyocera" };
+
+				for (int j = 0; j < types.Length; j++) {
+					MaintObj maintObj = new(
+						$"{station.Code}-{types[j]}",
+						$"{types[j].Substring(0, 2).ToUpper()}-{i:00000}",
+						(MaintObjType)j,
+						brands[j],
+						installations[(i + j) % installations.Count],
+						false
+					);
+					maintObj.AssignToStation(station);
+					if (anyTechnician != null) {
+						maintObj.RecordTechnician(anyTechnician);
+					}
+
+					maintObjects.Add(maintObj);
+				}
+
+				i++;
 			}
 		}
 
-		dbContext.MaintObjects.AddRange(d1, d2, d3, d4, d5);
+		maintObjects.AddRange(new List<MaintObj> {
+			new("Stock-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", installations[0], true),
+			new("Stock-Logger", "31045", MaintObjType.Logger, "Campbell", installations[1], true),
+			new("Stock-Modem", "354990101102816", MaintObjType.Modem, "Centerion", installations[2], true),
+			new("Stock-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
+			new("Stock-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
+		});
+
+		if (!stations.Any() && !maintObjects.Any()) {
+			maintObjects.AddRange(new List<MaintObj> {
+				new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", installations[0], true),
+				new("W-Logger", "31045", MaintObjType.Logger, "Campbell", installations[1], true),
+				new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", installations[2], true),
+				new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
+				new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
+			});
+		}
+
+		dbContext.MaintObjects.AddRange(maintObjects);
 		await dbContext.SaveChangesAsync();
 	}
 }

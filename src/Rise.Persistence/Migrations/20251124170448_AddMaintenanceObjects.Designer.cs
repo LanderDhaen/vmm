@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251124163644_AddMaintenanceObjects")]
+    [Migration("20251124170448_AddMaintenanceObjects")]
     partial class AddMaintenanceObjects
     {
         /// <inheritdoc />
@@ -333,6 +333,9 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("TechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -341,6 +344,8 @@ namespace Rise.Persistence.Migrations
                     b.HasIndex("LocationId");
 
                     b.HasIndex("MeasurementStationId");
+
+                    b.HasIndex("TechnicianId");
 
                     b.ToTable("MaintObjects");
                 });
@@ -705,6 +710,10 @@ namespace Rise.Persistence.Migrations
                         .HasForeignKey("MeasurementStationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId");
+
                     b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MaintObjId")
@@ -732,6 +741,8 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("Station");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
