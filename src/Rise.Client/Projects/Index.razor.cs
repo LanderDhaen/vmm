@@ -28,6 +28,8 @@ public partial class Index {
 	private bool _mobileSortOptionsOpen;
 	
 	private CancellationTokenSource _cancellationTokenSource = new();
+	
+	private MudDataGrid<ProjectDto.Index> _grid;
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -110,7 +112,11 @@ public partial class Index {
 	
 	// Searching
 
-	private async Task HandleIntervalElapsed() {
+	private async Task HandleDesktopIntervalElapsed() {
+		await _grid.ReloadServerData();
+	}
+	
+	private async Task HandleMobileIntervalElapsed() {
 		await GetProjectsMobileAsync();
 	}
 
