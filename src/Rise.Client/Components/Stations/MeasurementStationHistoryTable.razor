@@ -1,0 +1,72 @@
+@using Rise.Shared.Stations
+@* Desktop view with full ValidityRange *@
+
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudTable T="MeasurementStationHistoryDto.Index" Items="MeasurementStation.MeasurementStationHistories" CustomHeader="true">
+		<HeaderContent>
+			<MudTHeadRow>
+				<MudTh Class="mud-theme-primary">Geldig van</MudTh>
+				<MudTh Class="mud-theme-primary">Geldig tot</MudTh>
+				<MudTh Class="mud-theme-primary">#</MudTh>
+				<MudTh Class="mud-theme-primary">Geïnstalleerd</MudTh>
+				<MudTh Class="mud-theme-primary">Verwijderd</MudTh>
+			</MudTHeadRow>
+			<MudTHeadRow>
+				<MudTh colspan="2">Huidig meetstation</MudTh>
+				<MudTh>@MeasurementStation.Code</MudTh>
+				<MudTh>@MeasurementStation.InstalledAt</MudTh>
+				<MudTh>@MeasurementStation.RemovedAt</MudTh>
+			</MudTHeadRow>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd DataLabel="Geldig van">@context.ValidFrom</MudTd>
+			<MudTd DataLabel="Geldig tot">@context.ValidTo</MudTd>
+			<MudTd DataLabel="Code">@MeasurementStation.Code</MudTd>
+			<MudTd DataLabel="Geïnstalleerd">@context.InstalledAt</MudTd>
+			<MudTd DataLabel="Verwijderd">@context.RemovedAt</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudHidden>
+
+@* Mobile view with only ValidFrom *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudGrid Spacing="6">
+		<MudItem xs="12">
+			<MudCard Elevation="2" Class="rounded-lg">
+				<MudCardHeader>
+					<CardHeaderContent>
+						<MudStack Row="true" Justify="Justify.SpaceBetween">
+							<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b></MudText>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig project</MudChip>
+						</MudStack>
+					</CardHeaderContent>
+				</MudCardHeader>
+				<MudCardContent Class="d-flex flex-column gap-1">
+					<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @MeasurementStation.InstalledAt</MudText>
+					<MudText Typo="Typo.caption"><b>Verwijderd:</b> @MeasurementStation.RemovedAt</MudText>
+				</MudCardContent>
+			</MudCard>
+		</MudItem>
+		@foreach (var h in MeasurementStation.MeasurementStationHistories)
+		{
+			<MudItem xs="12">
+				<MudCard Elevation="2" Class="rounded-lg">
+					<MudCardHeader>
+						<CardHeaderContent>
+							<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b></MudText>
+								<MudChip T="string" Variant="Variant.Outlined"
+								         Color="Color.Primary">@h.ValidFrom</MudChip>
+							</MudStack>
+						</CardHeaderContent>
+					</MudCardHeader>
+					<MudCardContent Class="d-flex flex-column gap-1">
+						<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @h.InstalledAt</MudText>
+						<MudText Typo="Typo.caption"><b>Verwijderd:</b> @h.RemovedAt</MudText>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+		}
+	</MudGrid>
+</MudHidden>
