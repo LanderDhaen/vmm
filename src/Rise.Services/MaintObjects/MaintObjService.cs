@@ -83,7 +83,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			MaintObjId = mo.Id
 		});
 	}
-	
+
 	public async Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects
 			.SingleOrDefaultAsync(x => x.Id == req.MaintObjId, ctx);
