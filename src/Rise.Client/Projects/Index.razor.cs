@@ -16,7 +16,7 @@ public partial class Index {
 		("EndDate", "Einddatum"),
 		("MeasurementNetwork", "Meetnet"),
 		("Zone", "Zone"),
-		("MaintObjStatus", "MaintObjStatus")
+		("Status", "Status")
 	];
 
 	private string _activeSorting = "Name";

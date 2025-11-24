@@ -23,7 +23,7 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 		builder.Property(x => x.Brand)
 			.HasMaxLength(256);
 
-		builder.Property(x => x.Status).IsRequired();
+		builder.Property(x => x.MaintObjStatus).IsRequired();
 
 		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt)

@@ -7,7 +7,7 @@ using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
 using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
-using SharedStatus = Rise.Shared.Projects.Status;
+using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 
 
 namespace Rise.Services.MaintObjects;
@@ -51,7 +51,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				Name = d.Name,
 				SerialNumber = d.SerialNumber,
 				MaintObjType = (MaintObjType)d.MaintObjType,
-				Status = (SharedStatus)d.Status
+				MaintObjStatus = (SharedStatus)d.MaintObjStatus
 			})
 			.ToListAsync(ctx);
 

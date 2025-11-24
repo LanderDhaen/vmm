@@ -42,7 +42,7 @@
 			<PropertyColumn Property="x => x.SerialNumber" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Status" Title="MaintObjStatus" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary"/>
 		</Columns>
 
 		<PagerContent>
@@ -109,7 +109,7 @@
 								          Class="pr-3">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.SerialNumber</b>
 									</MudText>
-									<MudBadge Color="@(DefineColor(item.Status))" Dot="true"></MudBadge>
+									<MudBadge Color="@(DefineColor(item.MaintObjStatus))" Dot="true"></MudBadge>
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>

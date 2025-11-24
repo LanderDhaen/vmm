@@ -5,7 +5,6 @@ using MudBlazor;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Projects;
 
 namespace Rise.Client.MaintObjects;
 
@@ -108,7 +107,7 @@ public partial class Index {
 	}
 
 	// Other
-	private Color DefineColor(Status status) {
-		return status == Status.Actief ? Color.Success : Color.Error;
+	private Color DefineColor(MaintObjStatus status) {
+		return status == MaintObjStatus.Actief ? Color.Success : Color.Error;
 	}
 }

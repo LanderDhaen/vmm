@@ -22,7 +22,7 @@ public class MaintObj : Entity {
 	public string SerialNumber { get; private set; }
 	public Installation Installation { get; private set; }
 	public string Name { get; private set; } = null!;
-	public MaintObjStatus Status { get; } = MaintObjStatus.Actief;
+	public MaintObjStatus MaintObjStatus { get; } = MaintObjStatus.Actief;
 	public MaintObjType MaintObjType { get; private set; }
 	public string? Brand { get; private set; }
 	public bool IsInStock { get; private set; } = true;
