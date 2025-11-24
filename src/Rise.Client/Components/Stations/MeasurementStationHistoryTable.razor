@@ -11,6 +11,7 @@
 				<MudTh Class="mud-theme-primary">Geïnstalleerd</MudTh>
 				<MudTh Class="mud-theme-primary">Verwijderd</MudTh>
 				<MudTh Class="mud-theme-primary">Locatie</MudTh>
+				<MudTh Class="mud-theme-primary">Stad</MudTh>
 			</MudTHeadRow>
 			<MudTHeadRow>
 				<MudTh colspan="2">Huidig meetstation</MudTh>
@@ -18,6 +19,7 @@
 				<MudTh>@MeasurementStation.InstalledAt</MudTh>
 				<MudTh>@MeasurementStation.RemovedAt</MudTh>
 				<MudTh>@MeasurementStation.Location</MudTh>
+				<MudTh>@MeasurementStation.City</MudTh>
 			</MudTHeadRow>
 		</HeaderContent>
 		<RowTemplate>
@@ -27,6 +29,7 @@
 			<MudTd DataLabel="Geïnstalleerd">@context.InstalledAt</MudTd>
 			<MudTd DataLabel="Verwijderd">@context.RemovedAt</MudTd>
 			<MudTd DataLabel="Locatie">@context.Location</MudTd>
+			<MudTd DataLabel="Stad">@context.City</MudTd>
 		</RowTemplate>
 	</MudTable>
 </MudHidden>
@@ -49,6 +52,7 @@
 					<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @MeasurementStation.InstalledAt</MudText>
 					<MudText Typo="Typo.caption"><b>Verwijderd:</b> @MeasurementStation.RemovedAt</MudText>
 					<MudText Typo="Typo.caption"><b>Locatie:</b> @MeasurementStation.Location</MudText>
+					<MudText Typo="Typo.caption"><b>Stad:</b> @MeasurementStation.City</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
@@ -69,6 +73,7 @@
 						<MudText Typo="Typo.caption"><b>Geïnstalleerd:</b> @h.InstalledAt</MudText>
 						<MudText Typo="Typo.caption"><b>Verwijderd:</b> @h.RemovedAt</MudText>
 						<MudText Typo="Typo.caption"><b>Locatie:</b> @h.Location</MudText>
+						<MudText Typo="Typo.caption"><b>Stad:</b> @h.City</MudText>
 					</MudCardContent>
 				</MudCard>
 			</MudItem>

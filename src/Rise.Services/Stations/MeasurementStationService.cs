@@ -122,6 +122,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				InstalledAt = s.Installation.InstalledAt,
 				RemovedAt = s.Installation.RemovedAt,
 				Location = s.Location.Name,
+				City = s.Location.Address.City,
 				MeasurementStationHistories = s.MeasurementStationHistories
 					.OrderByDescending(h => h.ValidityRange.ValidTo)
 					.Select(h => new MeasurementStationHistoryDto.Index {
@@ -129,6 +130,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 						InstalledAt = h.Installation.InstalledAt,
 						RemovedAt = h.Installation.RemovedAt,
 						Location = h.Location.Name,
+						City = h.Location.Address.City,
 						ValidFrom = h.ValidityRange.ValidFrom,
 						ValidTo = h.ValidityRange.ValidTo,
 					}).ToList()
