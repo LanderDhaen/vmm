@@ -14,7 +14,7 @@ public partial class Index {
 		("Serial", "Serialnummer"),
 		("Name", "Naam"),
 		("Type", "Type"),
-		("Status", "Status")
+		("MaintObjStatus", "MaintObjStatus")
 	];
 
 	private string _activeSorting = "Name";
