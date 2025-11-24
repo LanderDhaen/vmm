@@ -11,7 +11,6 @@ public partial class NavMenu : ComponentBase {
 	/// </summary>
 	private const NavLinkMatch Match = NavLinkMatch.Prefix;
 
-	// TODO: configure other navs
 	private static readonly List<(string Href, string Icon, string Label, NavLinkMatch Match)> MenuItems = [
 		("/projects", Icons.Material.Filled.Folder, "Projecten", Match),
 		("/stations", Icons.Material.Filled.Map, "Meetstations", Match),

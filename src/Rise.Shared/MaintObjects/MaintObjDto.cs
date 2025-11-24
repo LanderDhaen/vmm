@@ -6,7 +6,6 @@ namespace Rise.Shared.MaintObjects;
 ///     Contains data transfer objects (DTOs) used for maintenance-objects-related operations.
 /// </summary>
 public static class MaintObjDto {
-	//TODO: what is index and what is details?
 
 	/// <summary>
 	///     Represents a maintenance object index containing minimalistic maintenance object details.
