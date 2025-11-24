@@ -309,7 +309,7 @@ public class DbSeeder(
 		};
 
 		Technician? anyTechnician = dbContext.Technicians.Local.FirstOrDefault()
-									?? await dbContext.Technicians.FirstOrDefaultAsync();
+		                            ?? await dbContext.Technicians.FirstOrDefaultAsync();
 
 		// Ensure we have at least one technician to assign to maint objects
 		if (anyTechnician is null) {
@@ -323,10 +323,10 @@ public class DbSeeder(
 
 		// Add 5 maintenance objects for each station and assign installation dates and a technician
 		if (stations.Any()) {
-			int idx = 0;
+			int i = 0;
 			foreach (MeasurementStation station in stations) {
 				// Cycle through the provided installation dates to give variation
-				Installation installation = installations[idx];
+				Installation installation = installations[i];
 
 				List<MaintObj> objsForStation = new() {
 					new MaintObj($"{station.Code}-Sonde", $"SN-{Guid.NewGuid().ToString().Substring(0, 8)}",
@@ -353,7 +353,7 @@ public class DbSeeder(
 					maintObjects.Add(mo);
 				}
 
-				idx++;
+				i++;
 			}
 		}
 
