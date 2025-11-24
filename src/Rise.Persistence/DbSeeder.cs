@@ -303,29 +303,36 @@ public class DbSeeder(
 		// If there are stations, we'll assign some maint objects to them; others stay in stock.
 		bool hasStations = stations.Any();
 
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
+			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
+		};
+
 		// Create maint objects. For readability, assign first two to stations (if present) and leave others in stock.
 		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
-			new Installation(DateTime.UtcNow.AddMonths(-3)), hasStations ? false : true);
+			installations[0], hasStations ? false : true);
 		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell",
-			new Installation(DateTime.UtcNow.AddMonths(-6)), hasStations && stations.Count > 1 ? false : true);
+			installations[1], hasStations && stations.Count > 1 ? false : true);
 		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion",
-			new Installation(DateTime.UtcNow.AddMonths(-9)), true);
+			installations[2], true);
 		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE",
-			new Installation(DateTime.UtcNow.AddMonths(-12)), true);
+			installations[3], true);
 		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera",
-			new Installation(DateTime.UtcNow.AddMonths(-15)), true);
+			installations[4], true);
 
 		// If stations exist, set the FK for d1/d2 to attach them to stations.
 		if (hasStations) {
 			// Ensure stations are attached/tracked by the context
-			foreach (MeasurementStation s in stations) {
+			foreach (var s in stations) {
 				dbContext.Attach(s);
 			}
 
-			// Assign d1 to first station
 			d1.AssignToStation(stations[0]);
 
-			// Assign d2 to second station when available
 			if (stations.Count > 1) {
 				d2.AssignToStation(stations[1]);
 			}
