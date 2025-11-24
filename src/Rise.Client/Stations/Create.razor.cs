@@ -15,12 +15,14 @@ public partial class Create {
 	private Result<MeasurementStationResponse.Create>? _result;
 	private string _searchText = string.Empty;
 	private MudForm form;
-	[Inject] private ISnackbar Snackbar { get; set; }
+
+	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
+	[Inject] private IDialogService DialogService { get; set; } = default!;
 
 	private MeasurementStationRequest.Create Model { get; } = new() {
 		IsNewLocation = false
@@ -104,5 +106,34 @@ public partial class Create {
 		Model.Location = new LocationRequest.Create {
 			Name = _searchText
 		};
+	}
+
+	private async Task OpenMapDialog() {
+		if (!Model.IsNewLocation || Model.Location is null)
+			return;
+
+		var parameters = new DialogParameters {
+			["InitialX"] = Model.Location.X,
+			["InitialY"] = Model.Location.Y
+		};
+
+		var options = new DialogOptions {
+			CloseButton = true,
+			MaxWidth = MaxWidth.Medium,
+			FullWidth = true
+		};
+
+		var dialog = DialogService.Show<PickLocationDialog>(
+			"Kies meetstation locatie",
+			parameters,
+			options
+		);
+
+		var result = await dialog.Result;
+
+		if (!result.Canceled && result.Data is CoordinateResult c) {
+			Model.Location.X = c.X;
+			Model.Location.Y = c.Y;
+		}
 	}
 }

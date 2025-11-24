@@ -616,11 +616,13 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<double>("X")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("X");
 
                             b1.Property<double>("Y")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("Y");
 
                             b1.HasKey("LocationId");
@@ -747,7 +749,7 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("Rise.Domain.Stations.ValueObjects.Installation", "Installation", b1 =>
+                    b.OwnsOne("Rise.Domain.Stations.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationId")
                                 .HasColumnType("uniqueidentifier");
