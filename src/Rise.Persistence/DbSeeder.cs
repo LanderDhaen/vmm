@@ -287,7 +287,8 @@ public class DbSeeder(
 		}
 		
 		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
-
+		List<Location> locations = await dbContext.Locations.ToListAsync();
+		
 		List<DateTime?> removedAts = new() {
 			new DateTime(2025, 6, 30, 5, 12, 30),
 			new DateTime(2025, 8, 15, 12, 40, 19),
@@ -296,19 +297,26 @@ public class DbSeeder(
 			new DateTime(2025, 12, 31, 9, 1, 1),
 			null
 		};
+
+		Location DummyLocation = new("Zwartehoekbrug", new Address("", "","Aalst", "9300"), new Coordinate(50.95, 4.03));
 		
 		int i = 0;
 
 		foreach (MeasurementStation station in stations) {
 			
 			Installation installation = station.Installation;
+			Location location = station.Location;
+			
+			// Move the location
+			
+			station.MoveTo(DummyLocation);
 			
 			// Move the installed at
 			
 			station.UpdateInstallation(new Installation(installation.InstalledAt.AddDays(1), installation.RemovedAt));
 			await dbContext.SaveChangesAsync();
 			
-			// Revert the change
+			// Revert the installed at change
 
 			station.UpdateInstallation(installation);
 			await dbContext.SaveChangesAsync();
@@ -317,6 +325,10 @@ public class DbSeeder(
 			
 			station.UpdateInstallation(new Installation(installation.InstalledAt, removedAts[i]));
 			await dbContext.SaveChangesAsync();
+			
+			// Revert the location change
+			
+			station.MoveTo(location);
 			
 			// Update the counter
 

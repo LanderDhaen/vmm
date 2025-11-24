@@ -35,6 +35,21 @@ public class MeasurementStation : Entity {
 	// Functions
 
 	public void MoveTo(Location location) {
+		
+		// Check if the values are the same as the old values
+
+		if (location.Equals(Location)) {
+			return;
+		}
+		
+		// Create history object using the old values
+		
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		MeasurementStationHistory measurementStationHistory  = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
+		_measurementStationHistories.Add(measurementStationHistory);
+		
+		// Assign the new values
+		
 		Location = location;
 	}
 
