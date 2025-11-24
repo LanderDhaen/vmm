@@ -1,3 +1,5 @@
+using Rise.Domain.Stations;
+
 namespace Rise.Domain.MaintObjects;
 
 public class MaintObj : Entity {
@@ -24,4 +26,5 @@ public class MaintObj : Entity {
 	public MaintObjType MaintObjType { get; private set; }
 	public string? Brand { get; private set; }
 	public bool IsInStock { get; } = true;
+	public MeasurementStation? Station { get; private set; }
 }
