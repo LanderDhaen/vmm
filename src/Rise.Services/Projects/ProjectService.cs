@@ -84,6 +84,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	// ---------------------------
 	// Index / sorting / search/ filtering / paging
 	// ---------------------------
+
 	// Helper type at class scope to avoid language/version issues with 'record'
 	private sealed class FilterSpec {
 		public string? Operator { get; }
@@ -110,13 +111,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 					string? val = null;
 					if (je.TryGetProperty("Operator", out var opProp))
 						op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
-					// support alternate property names
 					if (je.TryGetProperty("Value", out var vProp))
 						val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
-					else if (je.TryGetProperty("FilterValue", out var fvProp))
-						val = fvProp.ValueKind == JsonValueKind.String ? fvProp.GetString() : fvProp.GetRawText();
-					else if (je.TryGetProperty("Values", out var vals))
-						val = vals.GetRawText();
 					return new FilterSpec(op, val);
 				}
 				// simple string/number/array
@@ -138,13 +134,12 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			"isafter" => "GreaterThan",
 			"isonorbefore" => "LessThanOrEqual",
 			"isbefore" => "LessThan",
-			"between" or "betweendates" or "tussen" => "Between",
 			"startswith" => "StartsWith",
 			"endswith" => "EndsWith",
 			"isempty" => "IsEmpty",
 			"isnotempty" => "IsNotEmpty",
-			"is" => "Equal",
-			"isnot" => "NotEqual",
+			"is" or "equals" => "Equal",
+			"isnot" or "notequals" => "NotEqual",
 			"notcontains" => "NotContains",
 			"contains" => "Contains",
 			_ => "Contains"
@@ -160,13 +155,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return false;
 	}
 
-	private static bool TryParseTwoDatesFromRaw(string raw, out DateOnly from, out DateOnly to) {
-		from = default; to = default;
-		if (string.IsNullOrWhiteSpace(raw)) return false;
-		raw.Trim();
-
-		return false;
-	}
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
@@ -201,7 +189,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 				case "Code": {
 						var t = ToLowerTrim(raw);
-						if (t == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"{t}%"));
+						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"{t}%"));
 						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}"));
 						else if (opNorm == "Equal") query = query.Where(p => p.Code.ToLower() == t);
 						else if (opNorm == "NotEqual") query = query.Where(p => p.Code.ToLower() != t);
@@ -223,9 +211,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						else query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "MeasurementNetwork":
-				//case "MeasurementNetwork.Name":
-				{
+				case "MeasurementNetwork": {
 						var t = ToLowerTrim(raw);
 						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"{t}%"));
 						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}"));
@@ -259,10 +245,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				case "StartDate": {
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.StartDate == default);
 						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.StartDate != default);
-						else if (opNorm == "Between") {
-							if (!string.IsNullOrWhiteSpace(raw) && TryParseTwoDatesFromRaw(raw, out var from, out var to))
-								query = query.Where(p => p.DateRange.StartDate >= from && p.DateRange.StartDate <= to);
-						} else {
+						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
 								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.StartDate > d);
 								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.StartDate >= d);
@@ -277,10 +260,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				case "EndDate": {
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.EndDate == null);
 						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.EndDate != null);
-						else if (opNorm == "Between") {
-							if (!string.IsNullOrWhiteSpace(raw) && TryParseTwoDatesFromRaw(raw, out var from, out var to))
-								query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= from && p.DateRange.EndDate <= to);
-						} else {
+						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
 								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate > d);
 								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= d);
