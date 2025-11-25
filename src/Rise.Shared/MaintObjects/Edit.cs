@@ -14,6 +14,7 @@ public static partial class MaintObjRequest {
 		public string? Brand { get; set; }
 		public DateTime? InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
+		public Guid LocationId { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {
@@ -24,6 +25,8 @@ public static partial class MaintObjRequest {
 					.NotEmpty().WithMessage("Serienummer mag niet leeg zijn.");
 				RuleFor(x => x.MaintObjType)
 					.NotNull().WithMessage("Je moet een type selecteren.");
+				RuleFor(x => x.LocationId)
+					.NotNull().WithMessage("Je moet een locatie selecteren.");
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
