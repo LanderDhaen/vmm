@@ -104,6 +104,15 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			parsedType = tmp;
 		}
 
+		DateTime? installedAtOpt = maintObj.Installation?.InstalledAt;
+		DateTime? nextMaintenance = null;
+		DateTime? nextCalibration = null;
+
+		if (installedAtOpt is DateTime installedAtValue && maintObj.MaintObjType is not null) {
+			nextMaintenance = installedAtValue.AddDays(maintObj.MaintObjType.MaintenanceIntervalDays);
+			nextCalibration = installedAtValue.AddDays(maintObj.MaintObjType.CalibrationIntervalDays);
+		}
+
 		MaintObjDto.Detail dto = new() {
 			Id = maintObj.Id,
 			Name = maintObj.Name,
@@ -114,8 +123,10 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			MeasurementStationCode = maintObj.Station?.Code,
 			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
 			IsInStock = maintObj.IsInStock,
-			InstalledAt = maintObj.Installation?.InstalledAt,
-			RemovedAt = maintObj.Installation?.RemovedAt
+			InstalledAt = installedAtOpt,
+			RemovedAt = maintObj.Installation?.RemovedAt,
+			NextMaintenanceDate = nextMaintenance,
+			NextCalibrationDate = nextCalibration
 		};
 
 		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });

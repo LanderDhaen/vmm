@@ -47,7 +47,7 @@ public partial class Detail {
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
-				new BreadcrumbItem("Onderhouds objecten", "/maintObjects"),
+				new BreadcrumbItem("Onderhoudsobjecten", "/maintObjects"),
 				new BreadcrumbItem($"{_maintObj.Name}", null, true)
 			);
 
