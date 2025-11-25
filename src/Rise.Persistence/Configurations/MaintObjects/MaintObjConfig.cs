@@ -17,7 +17,9 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 			.IsRequired()
 			.HasMaxLength(256);
 
-		builder.Property(x => x.MaintObjType)
+		builder.HasOne(x => x.MaintObjType)
+			.WithMany(t => t.MaintObjects)
+			.HasForeignKey(x => x.MaintObjTypeId)
 			.IsRequired();
 
 		builder.Property(x => x.Brand)
