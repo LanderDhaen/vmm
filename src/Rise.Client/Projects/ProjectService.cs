@@ -22,13 +22,12 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-		public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req, CancellationToken ctx = default)
-		{
-			// AsQuery() bevat nu ook filters JSON (indien aanwezig)
-			Result<ProjectResponse.Index>? result =
-				await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
-			return result!;
-		}
+	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req, CancellationToken ctx = default) {
+		// AsQuery() bevat nu ook filters JSON (indien aanwezig)
+		Result<ProjectResponse.Index>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
+		return result!;
+	}
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Result<ProjectResponse.Detail>? result =
