@@ -19,6 +19,10 @@ public class LocationService(ApplicationDbContext dbContext) : ILocationService 
 		CancellationToken ctx = default) {
 		IQueryable<Location> query = dbContext.Locations.AsQueryable();
 
+		if (request.Filters.TryGetValue("isStockLocation", out var stockObj) && stockObj is bool stock) {
+			query = query.Where(l => l.IsStockLocation == stock);
+		}
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(l => EF.Property<object>(l, request.OrderBy));
 		} else {

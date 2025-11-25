@@ -7,15 +7,15 @@ namespace Rise.Domain.MaintObjects;
 public class MaintObj : Entity {
 	private MaintObj() { }
 
-	public MaintObj(string name, string serialNumber, Guid maintObjTypeId, string? brand,
-		Installation? installation, bool isInStock) {
+	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand,
+		Installation? installation, bool isInStock, Location? location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
-		MaintObjTypeId = maintObjTypeId;
+		MaintObjType = maintObjType;
 		Brand = brand;
 		Installation = installation;
 		IsInStock = isInStock;
-		Location = null;
+		Location = location;
 	}
 
 	public string Name { get; private set; } = null!;

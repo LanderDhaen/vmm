@@ -274,6 +274,9 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsStockLocation")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -790,7 +793,8 @@ namespace Rise.Persistence.Migrations
                 {
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId");
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Rise.Domain.MaintObjects.MaintObjType", "MaintObjType")
                         .WithMany("MaintObjects")

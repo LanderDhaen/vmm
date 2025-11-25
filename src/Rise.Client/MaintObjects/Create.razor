@@ -35,12 +35,24 @@
 					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
 				</MudItem>
-
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)" DateFormat="dd/MM/yyyy"
-					               Variant="Variant.Outlined"/>
-				</MudItem>
+				
+				@if (_locations != null)
+				{
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudSelect T="Guid?"
+						           @bind-Value="Model.LocationId"
+						           For="@(() => Model.LocationId)"
+						           Placeholder="Selecteer een locatie"
+						           Clearable="false"
+						           Variant="Variant.Outlined">
+							@foreach (var l in _locations)
+							{
+								<MudSelectItem Value="@(l.Id as Guid?)">@l.Name (@l.Address.City)</MudSelectItem>
+							}
+						</MudSelect>
+					</MudItem>
+				}
 			</MudGrid>
 		</MudCardContent>
 	</MudForm>

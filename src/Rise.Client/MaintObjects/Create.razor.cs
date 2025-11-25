@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
+using MudBlazor.Charts;
 
 using Rise.Client.Services;
 using Rise.Shared.Common;
+using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -13,9 +15,11 @@ namespace Rise.Client.MaintObjects;
 public partial class Create {
 	private readonly MaintObjRequest.Create.Validator _validator = new();
 	private Result<MaintObjResponse.Create>? _result;
+	private IEnumerable<LocationDto.Index>? _locations;
 	private MudForm form;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
+	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
@@ -23,6 +27,15 @@ public partial class Create {
 	private MaintObjRequest.Create Model { get; } = new();
 
 	protected override async Task OnInitializedAsync() {
+		QueryRequest.SkipTake request = new();
+		request.Filters["isStockLocation"] = true;
+
+		// var query = new QueryRequest.SkipTake();
+		// query.Filters.Add("IsStockLocation", "true");
+
+		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(request);
+		_locations = result.Value.Locations;
+		
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Onderhoudsobjecten", "/maintobjects"),
 			new BreadcrumbItem("Voeg toe", "/create", true)

@@ -1,14 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Common;
+using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
-using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
-using SharedMaintObjType = Rise.Shared.MaintObjects.MaintObjType;
+using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 
 namespace Rise.Services.MaintObjects;
@@ -96,10 +95,22 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.Conflict($"Onderhoudsobject met serienummer '{request.SerialNumber}' bestaat al.");
 		}
 
-		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
+		Location? location = await dbContext.Locations
+			.FirstOrDefaultAsync(x => x.Id == request.LocationId);
 
-		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType,
-			request.Brand, new Installation(installedAt));
+		if (location is null) {
+			return Result.NotFound("De locatie werd niet gevonden.");
+		}
+		
+		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
+
+		if (type is null) {
+			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
+		}
+		
+		MaintObj mo = new(request.Name, request.SerialNumber, type,
+			request.Brand, null, true, location);
 
 		dbContext.MaintObjects.Add(mo);
 

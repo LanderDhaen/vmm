@@ -5,6 +5,7 @@ namespace Rise.Domain.Locations;
 /// </summary>
 public class Location : Entity {
 	private string _name = string.Empty;
+	private bool _isStockLocation;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -12,10 +13,11 @@ public class Location : Entity {
 	private Location() {
 	}
 
-	public Location(string name, Address address, Coordinate coordinate) {
+	public Location(string name, Address address, Coordinate coordinate, bool isStockLocation = false) {
 		Name = name;
 		Address = Guard.Against.Null(address);
 		Coordinate = Guard.Against.Null(coordinate);
+		IsStockLocation = isStockLocation;
 	}
 
 	public string Name {
@@ -37,6 +39,11 @@ public class Location : Entity {
 	///     <see cref="LocationConfiguration" />
 	/// </summary>
 	public Coordinate Coordinate { get; init; } = default!;
+
+	public bool IsStockLocation {
+		get => _isStockLocation; 
+		set => _isStockLocation = value;
+	}
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

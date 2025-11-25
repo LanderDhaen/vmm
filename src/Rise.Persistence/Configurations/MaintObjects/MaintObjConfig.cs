@@ -38,5 +38,9 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 			b.WithOwner();
 		});
 		builder.Property(x => x.IsInStock).IsRequired();
+
+		builder.HasOne(x => x.Location)
+			.WithMany()
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

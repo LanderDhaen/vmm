@@ -1,5 +1,7 @@
 using FluentValidation.Results;
 
+using Rise.Shared.Locations;
+
 namespace Rise.Shared.MaintObjects;
 
 /// <summary>
@@ -11,7 +13,7 @@ public static partial class MaintObjRequest {
 		public string SerialNumber { get; set; }
 		public MaintObjType MaintObjType { get; set; }
 		public string? Brand { get; set; }
-		public DateTime? InstalledAt { get; set; }
+		public Guid? LocationId { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
@@ -22,6 +24,8 @@ public static partial class MaintObjRequest {
 					.NotEmpty().WithMessage("Serienummer mag niet leeg zijn.");
 				RuleFor(x => x.MaintObjType)
 					.NotNull().WithMessage("Je moet een type selecteren.");
+				RuleFor(x => x.LocationId)
+					.NotNull().WithMessage("Je moet een stock locatie selecteren.");
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
