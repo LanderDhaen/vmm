@@ -22,9 +22,4 @@ public interface IMaintObjService {
 	);
 
 	Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx);
-
-	Task<Result<MaintObjResponse.Detail>> GetDetailAsync(
-		Guid maintObjId,
-		CancellationToken ctx = default
-	);
 }
