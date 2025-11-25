@@ -319,7 +319,7 @@ public class DbSeeder(
 
 		List<MaintObj> maintObjects = new();
 
-		// Create a deterministic random generator to get consistent seed data across runs
+		// Create a random generator to get consistent seed data across runs
 		Random rnd = new(12345);
 
 		if (stations.Any()) {
@@ -338,7 +338,6 @@ public class DbSeeder(
 				objsForStation.ForEach(mo => {
 					mo.AssignToStation(station);
 					mo.RecordTechnician(technician);
-					// Give each object a varied status
 					mo.SetStatus(RandomStatus(rnd));
 					maintObjects.Add(mo);
 				});
