@@ -22,9 +22,7 @@ internal class DictionaryMudLocalizer : MudLocalizer {
 			{ "MudDataGrid_GreaterThan", "Groter dan" },
 			{ "MudDataGrid_GreaterThanOrEqual", "Groter dan of gelijk aan" },
 			{ "MudDataGrid_LessThan", "Kleiner dan" },
-			{ "MudDataGrid_LessThanOrEqual", "Kleiner dan of gelijk aan" },
-			{ "MudDataGrid_Between", "Tussen" },
-			{ "MudDataGrid_filters", "Zoekterm"},
+			{ "LessThanOrEqual", "Kleiner dan of gelijk aan" },
 		};
 	}
 
