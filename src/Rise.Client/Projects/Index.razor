@@ -240,11 +240,11 @@
 
             <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
             => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
-            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
             <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
             => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
-            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline"/>
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
 
             <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
                 <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@ClearFilters">Wissen</MudButton>
