@@ -26,7 +26,7 @@ public class Index(ILocationService locationService) : Endpoint<QueryRequest.Ski
 			else
 				req.Filters[key] = value.ToString();
 		}
-
+		
 		Task<Result<LocationResponse.Index>> locaties = locationService.GetIndexAsync(req, ct);
 		return locaties;
 	}
