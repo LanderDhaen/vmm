@@ -319,6 +319,9 @@ public class DbSeeder(
 
 		List<MaintObj> maintObjects = new();
 
+		// Create a deterministic random generator to get consistent seed data across runs
+		Random rnd = new(12345);
+
 		if (stations.Any()) {
 			for (int i = 0; i < stations.Count; i++) {
 				MeasurementStation station = stations[i];
@@ -335,6 +338,8 @@ public class DbSeeder(
 				objsForStation.ForEach(mo => {
 					mo.AssignToStation(station);
 					mo.RecordTechnician(technician);
+					// Give each object a varied status
+					mo.SetStatus(RandomStatus(rnd));
 					maintObjects.Add(mo);
 				});
 			}
@@ -343,6 +348,12 @@ public class DbSeeder(
 		maintObjects.AddRange(CreateStockItems());
 		if (!stations.Any() && !maintObjects.Any()) {
 			maintObjects.AddRange(CreateLegacyItems(installations));
+		}
+
+		// Ensure stock/legacy items also get a random status
+		foreach (MaintObj mo in maintObjects) {
+			// keep existing status if already set by previous code paths? We overwrite to introduce variation
+			mo.SetStatus(RandomStatus(rnd));
 		}
 
 		dbContext.MaintObjects.AddRange(maintObjects);
@@ -379,5 +390,19 @@ public class DbSeeder(
 			new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
 			new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
 		};
+	}
+
+	// Helper to pick a random status with weighted probabilities
+	private MaintObjStatus RandomStatus(Random rnd) {
+		int roll = rnd.Next(100); // 0..99
+		if (roll < 40) {
+			return MaintObjStatus.Actief; // 40%
+		}
+
+		if (roll < 80) {
+			return MaintObjStatus.Inactief; // next 40% (40..79)
+		}
+
+		return MaintObjStatus.Defect; // remaining 20%
 	}
 }

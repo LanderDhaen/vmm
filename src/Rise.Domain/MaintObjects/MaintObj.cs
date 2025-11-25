@@ -23,7 +23,7 @@ public class MaintObj : Entity {
 	public string SerialNumber { get; private set; }
 	public string? Brand { get; private set; }
 	public MaintObjType MaintObjType { get; private set; }
-	public MaintObjStatus MaintObjStatus { get; } = MaintObjStatus.Actief;
+	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Actief;
 	public Installation? Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;
 
@@ -61,5 +61,11 @@ public class MaintObj : Entity {
 	public void ClearTechnician() {
 		Technician = null;
 		TechnicianId = null;
+	}
+
+	// Allow controlled status changes from external code (like the seeder)
+	public void SetStatus(MaintObjStatus status) {
+		// Potential place for domain validation in future
+		MaintObjStatus = status;
 	}
 }
