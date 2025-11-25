@@ -24,7 +24,7 @@ else
 				
 				@foreach (var project in _allProjects)
 				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@project.Status == Status.Afgesloten">
+					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
 						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
 							@project.Code - @project.Name 
 							<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(project.Status))">
@@ -83,7 +83,7 @@ else
 				
 				@foreach (var project in _allProjects)
 				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@project.Status == Status.Afgesloten">
+					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
 						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
 							@project.Name 
 							<MudBadge Dot="true" Color="@(DefineColor(project.Status))"/>
