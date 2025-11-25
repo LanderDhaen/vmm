@@ -60,17 +60,12 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			.ToListAsync(ctx);
 
 		List<MaintObjDto.Index> maintObjects = raw.Select(d => {
-			// safe parse of type code to shared enum
-			MaintObjType parsedType = MaintObjType.Sonde;
-			if (d.MaintObjTypeCode is not null &&
-			    Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp)) {
-				parsedType = tmp;
-			}
+			MaintObjType parsedType =
+				Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp) ? tmp : MaintObjType.Sonde;
 
-			DateTime? next = null;
-			if (d.InstalledAt.HasValue && d.IntervalDays.HasValue) {
-				next = d.InstalledAt.Value.AddDays(d.IntervalDays.Value);
-			}
+			DateTime? next = d.InstalledAt.HasValue && d.IntervalDays.HasValue
+				? d.InstalledAt.Value.AddDays(d.IntervalDays.Value)
+				: null;
 
 			return new MaintObjDto.Index {
 				Id = d.Id,
@@ -92,17 +87,17 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		CancellationToken ct = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects
 			.AsNoTracking()
-			.Include(d => d.Station) // include station so we can map station info
-			.Include(d => d.MaintObjType) // include maintobj type so we can read Code/DefaultMaintenanceIntervalDays
+			.Include(d => d.Station)
+			.Include(d => d.MaintObjType)
 			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
 
 		if (maintObj is null) {
 			return Result.NotFound();
 		}
 
-		// safe parse of domain MaintObjType.Code to shared enum
 		MaintObjType parsedType = MaintObjType.Sonde;
-		if (maintObj.MaintObjType?.Code is string code && Enum.TryParse<MaintObjType>(code, out var tmp)) {
+
+		if (maintObj.MaintObjType?.Code is { } code && Enum.TryParse(code, out MaintObjType tmp)) {
 			parsedType = tmp;
 		}
 
@@ -122,7 +117,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		// compute next maintenance date if possible
 		if (dto.InstalledAt.HasValue && maintObj.MaintObjType?.DefaultMaintenanceIntervalDays.HasValue == true) {
-			dto.NextMaintenanceDate = dto.InstalledAt.Value.AddDays(maintObj.MaintObjType.DefaultMaintenanceIntervalDays.Value);
+			dto.NextMaintenanceDate =
+				dto.InstalledAt.Value.AddDays(maintObj.MaintObjType.DefaultMaintenanceIntervalDays.Value);
 		} else {
 			dto.NextMaintenanceDate = null;
 		}

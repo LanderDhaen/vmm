@@ -10,8 +10,8 @@ public class MaintObjType : Entity {
 		DefaultMaintenanceIntervalDays = defaultMaintenanceIntervalDays;
 	}
 
-	public string Code { get; private set; } = null!; // unique code, e.g. "Sonde"
-	public string Name { get; private set; } = null!;
+	public string Code { get; private set; }
+	public string Name { get; private set; }
 	public int? DefaultMaintenanceIntervalDays { get; private set; }
 
 	// Navigation
