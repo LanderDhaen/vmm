@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.RegularExpressions;
+
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Networks;
@@ -22,6 +25,7 @@ namespace Rise.Services.Projects;
 /// <param name="sessionContextProvider"></param>
 public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
 	: IProjectService {
+
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request,
 		CancellationToken ctx = default) {
 		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code)) {
@@ -77,156 +81,242 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
+	// ---------------------------
+	// Index / sorting / search/ filtering / paging
+	// ---------------------------
+	// Helper type at class scope to avoid language/version issues with 'record'
+	private sealed class FilterSpec {
+		public string? Operator { get; }
+		public string? Value { get; }
+
+		public FilterSpec(string? op, string? val) {
+			Operator = op;
+			Value = val;
+		}
+	}
+
+	// ----------------------------
+	// Helpers (class-level, static)
+	// ----------------------------
+	private static string ToLowerTrim(string? s) => (s ?? string.Empty).Trim().ToLowerInvariant();
+
+	private static FilterSpec? ParseFilterSpec(object? rawValue) {
+		if (rawValue == null) return null;
+
+		try {
+			if (rawValue is JsonElement je) {
+				if (je.ValueKind == JsonValueKind.Object) {
+					string? op = null;
+					string? val = null;
+					if (je.TryGetProperty("Operator", out var opProp))
+						op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
+					// support alternate property names
+					if (je.TryGetProperty("Value", out var vProp))
+						val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
+					else if (je.TryGetProperty("FilterValue", out var fvProp))
+						val = fvProp.ValueKind == JsonValueKind.String ? fvProp.GetString() : fvProp.GetRawText();
+					else if (je.TryGetProperty("Values", out var vals))
+						val = vals.GetRawText();
+					return new FilterSpec(op, val);
+				}
+				// simple string/number/array
+				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
+			}
+
+			return new FilterSpec(null, rawValue.ToString());
+		} catch {
+			return null;
+		}
+	}
+
+	private static string NormalizeOperator(string? op) {
+		if (string.IsNullOrWhiteSpace(op)) return "Contains";
+		var cleaned = Regex.Replace(op!, "[^a-zA-Z0-9]", "").ToLowerInvariant();
+
+		return cleaned switch {
+			"isonorafter" => "GreaterThanOrEqual",
+			"isafter" => "GreaterThan",
+			"isonorbefore" => "LessThanOrEqual",
+			"isbefore" => "LessThan",
+			"between" or "betweendates" or "tussen" => "Between",
+			"startswith" => "StartsWith",
+			"endswith" => "EndsWith",
+			"isempty" => "IsEmpty",
+			"isnotempty" => "IsNotEmpty",
+			"is" => "Equal",
+			"isnot" => "NotEqual",
+			"notcontains" => "NotContains",
+			"contains" => "Contains",
+			_ => "Contains"
+		};
+	}
+
+	private static bool TryParseDateOnlySimple(string? raw, out DateOnly d) {
+		d = default;
+		if (string.IsNullOrWhiteSpace(raw)) return false;
+		raw = raw.Trim().Trim('"');
+		if (DateOnly.TryParseExact(raw, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out d))
+			return true;
+		return false;
+	}
+
+	private static bool TryParseTwoDatesFromRaw(string raw, out DateOnly from, out DateOnly to) {
+		from = default; to = default;
+		if (string.IsNullOrWhiteSpace(raw)) return false;
+		raw.Trim();
+
+		return false;
+	}
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
-		// Apply server-side search filter if provided
+		// search term
 		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
-			var term = req.SearchTerm.Trim().ToLowerInvariant();
-
-			// filter on code, name, measurement network name or zone name
+			var t = req.SearchTerm.Trim().ToLowerInvariant();
 			query = query.Where(p =>
-				EF.Functions.Like(p.Code.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.Name.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{term}%"));
+				EF.Functions.Like(p.Code.ToLower(), $"%{t}%") ||
+				EF.Functions.Like(p.Name.ToLower(), $"%{t}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 		}
-	// Apply additional column filters if provided
-	if (req.Filters != null && req.Filters.Any())
-	{
-		foreach (var kv in req.Filters)
-		{
-			var key = kv.Key;
-			var raw = kv.Value?.ToString();
-			if (string.IsNullOrWhiteSpace(raw))
-				continue;
 
-			switch (key)
-			{
-				case "Code":
-					{
-						var t = raw.Trim().ToLowerInvariant();
-						query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
+		// filters loop
+		if (req.Filters != null && req.Filters.Any()) {
+			// parse all filters first (explicit types to avoid inference issues)
+			var temp = req.Filters
+				.Select(kv => (Key: kv.Key, Spec: ParseFilterSpec(kv.Value)))
+				.Where(x => x.Spec != null)
+				.ToList();
+
+			var parsed = temp.Select(x => (Key: x.Key!, Spec: x.Spec!)).ToList();
+
+			foreach ((string keyOrig, FilterSpec spec) in parsed) {
+				var key = keyOrig?.Trim();
+				var raw = spec.Value;
+				var opCandidate = spec.Operator;
+				var opNorm = NormalizeOperator(opCandidate);
+
+				switch (key) {
+
+				case "Code": {
+						var t = ToLowerTrim(raw);
+						if (t == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"{t}%"));
+						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}"));
+						else if (opNorm == "Equal") query = query.Where(p => p.Code.ToLower() == t);
+						else if (opNorm == "NotEqual") query = query.Where(p => p.Code.ToLower() != t);
+						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
+						else if (opNorm == "IsEmpty") query = query.Where(p => p.Code == null || p.Code == string.Empty);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.Code != null && p.Code != string.Empty);
+						else query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "Name":
-					{
-						var t = raw.Trim().ToLowerInvariant();
-						query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
+				case "Name": {
+						var t = ToLowerTrim(raw);
+						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"{t}%"));
+						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}"));
+						else if (opNorm == "Equal") query = query.Where(p => p.Name.ToLower() == t);
+						else if (opNorm == "NotEqual") query = query.Where(p => p.Name.ToLower() != t);
+						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
+						else if (opNorm == "IsEmpty") query = query.Where(p => p.Name == null || p.Name == string.Empty);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.Name != null && p.Name != string.Empty);
+						else query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "MeasurementNetwork.Name":
-					{
-						var t = raw.Trim().ToLowerInvariant();
-						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
+				case "MeasurementNetwork":
+				//case "MeasurementNetwork.Name":
+				{
+						var t = ToLowerTrim(raw);
+						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"{t}%"));
+						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}"));
+						else if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() == t);
+						else if (opNorm == "NotEqual") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() != t);
+						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
+						else if (opNorm == "IsEmpty") query = query.Where(p => p.MeasurementNetwork.Name == null || p.MeasurementNetwork.Name == string.Empty);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.MeasurementNetwork.Name != null && p.MeasurementNetwork.Name != string.Empty);
+						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "Zone":
-					{
-						var t = raw.Trim().ToLowerInvariant();
-						query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
+				case "Zone": {
+						var t = ToLowerTrim(raw);
+						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"{t}%"));
+						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}"));
+						else if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t);
+						else if (opNorm == "NotEqual") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() != t);
+						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
+						else if (opNorm == "IsEmpty") query = query.Where(p => p.MeasurementNetwork.Zone.Name == null || p.MeasurementNetwork.Zone.Name == string.Empty);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.MeasurementNetwork.Zone.Name != null && p.MeasurementNetwork.Zone.Name != string.Empty);
+						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "Status":
-					{
-						// try parse enum by name or numeric value
-						if (Enum.TryParse<Status>(raw, true, out var s))
-						{
-							query = query.Where(p => p.Status == s);
-						}
-						else if (int.TryParse(raw, out var n))
-						{
-							query = query.Where(p => (int)p.Status == n);
-						}
-						break;
-					}
-				case "StartDate":
-					{
-						if (DateOnly.TryParse(raw, out var d))
-						{
-							query = query.Where(p => p.DateRange.StartDate == d);
-						}
-						break;
-					}
-				case "StartDateFrom":
-					{
-						if (DateOnly.TryParse(raw, out var dFrom))
-						{
-							query = query.Where(p => p.DateRange.StartDate >= dFrom);
-						}
-						break;
-					}
-				case "StartDateTo":
-					{
-						if (DateOnly.TryParse(raw, out var dTo))
-						{
-							query = query.Where(p => p.DateRange.StartDate <= dTo);
-						}
-						break;
-					}
-				case "EndDate":
-					{
-						if (DateOnly.TryParse(raw, out var dE))
-						{
-							query = query.Where(p => p.DateRange.EndDate == dE);
-						}
-						break;
-					}
-				case "EndDateFrom":
-					{
-						if (DateOnly.TryParse(raw, out var dEf))
-						{
-							query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= dEf);
+				case "Status": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<Status>(raw, true, out var sRes)) query = query.Where(p => p.Status == sRes);
+							else if (int.TryParse(raw, out var n)) query = query.Where(p => (int)p.Status == n);
 						}
 						break;
 					}
-				case "EndDateTo":
-					{
-						if (DateOnly.TryParse(raw, out var dEt))
-						{
-							query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate <= dEt);
+				case "StartDate": {
+						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.StartDate == default);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.StartDate != default);
+						else if (opNorm == "Between") {
+							if (!string.IsNullOrWhiteSpace(raw) && TryParseTwoDatesFromRaw(raw, out var from, out var to))
+								query = query.Where(p => p.DateRange.StartDate >= from && p.DateRange.StartDate <= to);
+						} else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.StartDate > d);
+								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.StartDate >= d);
+								else if (opNorm == "LessThan") query = query.Where(p => p.DateRange.StartDate < d);
+								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.StartDate <= d);
+								else if (opNorm == "NotEqual") query = query.Where(p => p.DateRange.StartDate != d);
+								else query = query.Where(p => p.DateRange.StartDate == d);
+							}
 						}
 						break;
 					}
-				default:
-					{
-						// unknown filter key 
+				case "EndDate": {
+						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.EndDate == null);
+						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.EndDate != null);
+						else if (opNorm == "Between") {
+							if (!string.IsNullOrWhiteSpace(raw) && TryParseTwoDatesFromRaw(raw, out var from, out var to))
+								query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= from && p.DateRange.EndDate <= to);
+						} else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate > d);
+								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= d);
+								else if (opNorm == "LessThan") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate < d);
+								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate <= d);
+								else if (opNorm == "NotEqual") query = query.Where(p => p.DateRange.EndDate == null || p.DateRange.EndDate != d);
+								else query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate == d);
+							}
+						}
 						break;
 					}
+				}
 			}
 		}
-	}
-		// Count after applying filters
+
+		// Count after filters
 		int totalCount = await query.CountAsync(ctx);
 
+		// ordering
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
 			case nameof(DateRange.StartDate):
-				query = desc
-					? query.OrderByDescending(p => p.DateRange.StartDate)
-					: query.OrderBy(p => p.DateRange.StartDate);
+				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
 				break;
 			case nameof(DateRange.EndDate):
-				query = desc
-					? query.OrderByDescending(p => p.DateRange.EndDate)
-					: query.OrderBy(p => p.DateRange.EndDate);
+				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
 				break;
 			case nameof(MeasurementNetwork):
-				query = desc
-					? query.OrderByDescending(p => p.MeasurementNetwork.Name)
-					: query.OrderBy(p => p.MeasurementNetwork.Name);
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
 				break;
 			case nameof(Zone):
-				query = desc
-					? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name)
-					: query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
+				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
 				break;
 			default:
-				query = desc
-					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
-					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+				query = desc ? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy)) : query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
 				break;
 			}
 		} else {
@@ -251,10 +341,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(new ProjectResponse.Index {
-			Projects = projects,
-			TotalCount = totalCount
-		});
+		return Result.Success(new ProjectResponse.Index { Projects = projects, TotalCount = totalCount });
 	}
 
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
