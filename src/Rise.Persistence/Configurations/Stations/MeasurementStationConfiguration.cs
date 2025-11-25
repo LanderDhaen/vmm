@@ -37,5 +37,10 @@ public class MeasurementStationConfiguration : IEntityTypeConfiguration<Measurem
 
 		builder.HasMany(s => s.Projects)
 			.WithMany(p => p.Stations);
+
+		builder.HasMany(s => s.MaintObjects)
+			.WithOne(m => m.Station)
+			.IsRequired(false)
+			.OnDelete(DeleteBehavior.SetNull);
 	}
 }

@@ -1,13 +1,9 @@
-using Rise.Shared.Projects;
-
 namespace Rise.Shared.MaintObjects;
 
 /// <summary>
 ///     Contains data transfer objects (DTOs) used for maintenance-objects-related operations.
 /// </summary>
 public static class MaintObjDto {
-	//TODO: what is index and what is details?
-
 	/// <summary>
 	///     Represents a maintenance object index containing minimalistic maintenance object details.
 	/// </summary>
@@ -16,7 +12,8 @@ public static class MaintObjDto {
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
 		public required MaintObjType MaintObjType { get; set; }
-		public required Status Status { get; set; }
+		public DateTime? NextMaintenanceDate { get; set; }
+		public required MaintObjStatus MaintObjStatus { get; set; }
 	}
 
 	/// <summary>
@@ -28,9 +25,10 @@ public static class MaintObjDto {
 		public required string SerialNumber { get; set; }
 		public required MaintObjType MaintObjType { get; set; }
 		public required string? Brand { get; set; }
-		public required Status Status { get; set; }
+		public required MaintObjStatus MaintObjStatus { get; set; }
 		public Guid? MeasurementStationId { get; set; }
 		public DateTime InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
+		public DateTime? NextMaintenanceDate { get; set; }
 	}
 }
