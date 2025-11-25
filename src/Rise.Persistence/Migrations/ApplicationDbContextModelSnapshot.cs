@@ -1004,7 +1004,7 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("Rise.Domain.Stations.Installation", "Installation", b1 =>
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationId")
                                 .HasColumnType("uniqueidentifier");
@@ -1043,7 +1043,7 @@ namespace Rise.Persistence.Migrations
                         .WithMany("MeasurementStationHistories")
                         .HasForeignKey("MeasurementStationId");
 
-                    b.OwnsOne("Rise.Domain.Stations.Installation", "Installation", b1 =>
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationHistoryId")
                                 .HasColumnType("uniqueidentifier");
@@ -1107,10 +1107,7 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
                 {
                     b.Navigation("MaintObjects");
-                });
 
-            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
-                {
                     b.Navigation("MeasurementStationHistories");
                 });
 #pragma warning restore 612, 618

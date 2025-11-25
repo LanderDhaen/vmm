@@ -24,8 +24,8 @@ namespace Rise.Persistence.Migrations
                     City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     CountryIso = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: false),
-                    X = table.Column<double>(type: "float", nullable: false),
-                    Y = table.Column<double>(type: "float", nullable: false),
+                    X = table.Column<double>(type: "float(18)", precision: 18, scale: 6, nullable: false),
+                    Y = table.Column<double>(type: "float(18)", precision: 18, scale: 6, nullable: false),
                     IsStockLocation = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -127,23 +127,23 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MeasurementStations",
+                name: "MeasurementStation",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MeasurementStations", x => x.Id);
+                    table.PrimaryKey("PK_MeasurementStation", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MeasurementStations_Location_LocationId",
+                        name: "FK_MeasurementStation_Location_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Location",
                         principalColumn: "Id",
@@ -314,15 +314,43 @@ namespace Rise.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MaintObj_MeasurementStations_StationId",
+                        name: "FK_MaintObj_MeasurementStation_StationId",
                         column: x => x.StationId,
-                        principalTable: "MeasurementStations",
+                        principalTable: "MeasurementStation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_MaintObj_Technician_TechnicianId",
                         column: x => x.TechnicianId,
                         principalTable: "Technician",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MeasurementStationHistory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MeasurementStationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeasurementStationHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MeasurementStationHistory_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MeasurementStationHistory_MeasurementStation_MeasurementStationId",
+                        column: x => x.MeasurementStationId,
+                        principalTable: "MeasurementStation",
                         principalColumn: "Id");
                 });
 
@@ -363,9 +391,9 @@ namespace Rise.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_MeasurementStationProject", x => new { x.ProjectsId, x.StationsId });
                     table.ForeignKey(
-                        name: "FK_MeasurementStationProject_MeasurementStations_StationsId",
+                        name: "FK_MeasurementStationProject_MeasurementStation_StationsId",
                         column: x => x.StationsId,
-                        principalTable: "MeasurementStations",
+                        principalTable: "MeasurementStation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -441,14 +469,30 @@ namespace Rise.Persistence.Migrations
                 column: "ZoneId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStation_Code",
+                table: "MeasurementStation",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStation_LocationId",
+                table: "MeasurementStation",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStationHistory_LocationId",
+                table: "MeasurementStationHistory",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeasurementStationHistory_MeasurementStationId",
+                table: "MeasurementStationHistory",
+                column: "MeasurementStationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MeasurementStationProject_StationsId",
                 table: "MeasurementStationProject",
                 column: "StationsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MeasurementStations_LocationId",
-                table: "MeasurementStations",
-                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Project_Code",
@@ -525,6 +569,9 @@ namespace Rise.Persistence.Migrations
                 name: "MaintObj");
 
             migrationBuilder.DropTable(
+                name: "MeasurementStationHistory");
+
+            migrationBuilder.DropTable(
                 name: "MeasurementStationProject");
 
             migrationBuilder.DropTable(
@@ -552,7 +599,7 @@ namespace Rise.Persistence.Migrations
                 name: "Technician");
 
             migrationBuilder.DropTable(
-                name: "MeasurementStations");
+                name: "MeasurementStation");
 
             migrationBuilder.DropTable(
                 name: "Project");
