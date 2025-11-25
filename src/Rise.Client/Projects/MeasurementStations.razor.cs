@@ -28,7 +28,7 @@ public partial class MeasurementStations {
 		Result<List<MeasurementStationDto.Index>> stationsFromProject =  await ProjectService.GetStationsAsync(ProjectId);
 		Result<MeasurementStationResponse.Index> allStations = await StationService.GetIndexAsync(new QueryRequest.SkipTake());
 		
-		// --- Stations for this project (for tab count & grid) ---
+		// --- Stations for this project ---
 		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
 			_stationsFromProject = stationsFromProject.Value;
 			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
