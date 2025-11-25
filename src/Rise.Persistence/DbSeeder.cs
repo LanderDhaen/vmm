@@ -312,7 +312,7 @@ public class DbSeeder(
 		                        ?? await dbContext.Technicians.FirstOrDefaultAsync()
 		                        ?? new Technician("Seed", "Tech", "seed-tech-account");
 
-		if (technician.Id == null) {
+		if (technician.Id == default) {
 			dbContext.Technicians.Add(technician);
 			await dbContext.SaveChangesAsync();
 		}
@@ -327,36 +327,101 @@ public class DbSeeder(
 		// Create a random generator to get consistent seed data across runs
 		Random rnd = new(12345);
 
-		if (stations.Any()) {
-			for (int i = 0; i < stations.Count; i++) {
-				MeasurementStation station = stations[i];
-				Installation installation = installations[i % installations.Count];
+		// Find common types by code (seeded in configuration)
+		MaintObjType? sondeType = types.FirstOrDefault(t => t.Code == "Sonde");
+		MaintObjType? loggerType = types.FirstOrDefault(t => t.Code == "Logger");
+		MaintObjType? modemType = types.FirstOrDefault(t => t.Code == "Modem");
+		MaintObjType? simType = types.FirstOrDefault(t => t.Code == "Sim");
+		MaintObjType? voedingType = types.FirstOrDefault(t => t.Code == "Voeding");
 
-				List<MaintObj> objsForStation = new() {
-					CreateMaintObj(station, "Sonde", "SN", types.First(t => t.Code == "Sonde").Id, "Aquatroll",
-						installation),
-					CreateMaintObj(station, "Logger", "LG", types.First(t => t.Code == "Logger").Id, "Campbell",
-						installation),
-					CreateMaintObj(station, "Modem", "MD", types.First(t => t.Code == "Modem").Id, "Centerion",
-						installation),
-					CreateMaintObj(station, "SIM", "SIM", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE",
-						installation),
-					CreateMaintObj(station, "Voeding", "VO", types.First(t => t.Code == "Voeding").Id, "Kyocera",
-						installation)
-				};
-
-				objsForStation.ForEach(mo => {
-					mo.AssignToStation(station);
-					mo.RecordTechnician(technician);
-					mo.SetStatus(RandomStatus(rnd));
-					maintObjects.Add(mo);
-				});
-			}
+		// If no types are available, bail out (types are seeded via configuration normally)
+		if (sondeType is null && loggerType is null && modemType is null && simType is null && voedingType is null) {
+			return;
 		}
 
-		maintObjects.AddRange(CreateStockItems(types));
-		if (!stations.Any() && !maintObjects.Any()) {
-			maintObjects.AddRange(CreateLegacyItems(installations, types));
+		// Helper local to safely pick a type fallback
+		MaintObjType PickTypeOrAny(params MaintObjType?[] candidates) {
+			foreach (MaintObjType? c in candidates) {
+				if (c is not null) {
+					return c;
+				}
+			}
+
+			return types.First();
+		}
+
+		// Create a handful of seed maint objects. Use the previously created `installations` list and `stations` and `technician`.
+		maintObjects.Add(new MaintObj(
+			"pH Sonde #1",
+			"SN-PH-001",
+			PickTypeOrAny(sondeType, loggerType),
+			"Hach",
+			installations.Count > 0 ? installations[0] : null,
+			false
+		));
+
+		maintObjects.Add(new MaintObj(
+			"pH Sonde #2",
+			"SN-PH-002",
+			PickTypeOrAny(sondeType, loggerType),
+			"Hach",
+			installations.Count > 1 ? installations[1] : null,
+			false
+		));
+
+		maintObjects.Add(new MaintObj(
+			"Logger A",
+			"LG-0001",
+			PickTypeOrAny(loggerType, modemType),
+			"Campbell",
+			installations.Count > 2 ? installations[2] : null,
+			false
+		));
+
+		maintObjects.Add(new MaintObj(
+			"Modem X",
+			"MD-4521",
+			PickTypeOrAny(modemType, simType),
+			"Sierra",
+			installations.Count > 3 ? installations[3] : null,
+			false
+		));
+
+		maintObjects.Add(new MaintObj(
+			"SIM Card 1",
+			"SIM-8901",
+			PickTypeOrAny(simType, voedingType),
+			"Vodafone",
+			installations.Count > 4 ? installations[4] : null,
+			false
+		));
+
+		maintObjects.Add(new MaintObj(
+			"Power Supply",
+			"PS-01-RED",
+			PickTypeOrAny(voedingType, modemType),
+			"MeanWell",
+			null,
+			true // in stock
+		));
+
+		maintObjects.Add(new MaintObj(
+			"Calibration Kit",
+			"CK-100",
+			PickTypeOrAny(sondeType),
+			"Metrohm",
+			null,
+			true
+		));
+
+		if (stations.Count >= 2) {
+			maintObjects[0].AssignToStation(stations[0]);
+			maintObjects[0].RecordTechnician(technician);
+
+			maintObjects[2].AssignToStation(stations[1]);
+			maintObjects[2].RecordTechnician(technician);
+
+			maintObjects[3].AssignToStation(stations[1]);
 		}
 
 		// Ensure stock/legacy items also get a random status (make stock/legacy items active by default)
@@ -368,37 +433,6 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, Guid maintObjTypeId,
-		string brand, Installation installation) {
-		return new MaintObj(
-			$"{station.Code}-{name}",
-			$"{prefix}-{Guid.NewGuid().ToString().Substring(0, 8)}",
-			maintObjTypeId,
-			brand,
-			new Installation(installation.InstalledAt, installation.RemovedAt),
-			false
-		);
-	}
-
-	private List<MaintObj> CreateStockItems(List<MaintObjType> types) {
-		return new List<MaintObj> {
-			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde").Id, "Aquatroll", null, true),
-			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger").Id, "Campbell", null, true),
-			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem").Id, "Centerion", null, true),
-			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE", null, true),
-			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding").Id, "Kyocera", null, true)
-		};
-	}
-
-	private List<MaintObj> CreateLegacyItems(List<Installation> installations, List<MaintObjType> types) {
-		return new List<MaintObj> {
-			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde").Id, "Aquatroll", null, true),
-			new("W-Logger", "31045", types.First(t => t.Code == "Logger").Id, "Campbell", null, true),
-			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem").Id, "Centerion", null, true),
-			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE", null, true),
-			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding").Id, "Kyocera", null, true)
-		};
-	}
 
 	// Helper to pick a random status with weighted probabilities
 	private static MaintObjStatus RandomStatus(Random rnd) {

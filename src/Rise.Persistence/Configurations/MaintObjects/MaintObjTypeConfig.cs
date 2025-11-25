@@ -1,14 +1,12 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Rise.Domain.MaintObjects;
 
 namespace Rise.Persistence.Configurations.MaintObjects;
 
-public class MaintObjTypeConfig : IEntityTypeConfiguration<MaintObjType> {
-	public void Configure(EntityTypeBuilder<MaintObjType> builder) {
-		builder.HasKey(x => x.Id);
-
+internal class MaintObjTypeConfig : EntityConfiguration<MaintObjType> {
+	public override void Configure(EntityTypeBuilder<MaintObjType> builder) {
+		base.Configure(builder);
 		builder.Property(x => x.Code)
 			.IsRequired()
 			.HasMaxLength(128);

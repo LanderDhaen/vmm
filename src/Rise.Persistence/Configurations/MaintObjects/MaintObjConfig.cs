@@ -5,9 +5,9 @@ using Rise.Domain.MaintObjects;
 
 namespace Rise.Persistence.Configurations.MaintObjects;
 
-public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
-	public void Configure(EntityTypeBuilder<MaintObj> builder) {
-		builder.HasKey(x => x.Id);
+internal class MaintObjConfig : EntityConfiguration<MaintObj> {
+	public override void Configure(EntityTypeBuilder<MaintObj> builder) {
+		base.Configure(builder);
 
 		builder.Property(x => x.Name)
 			.IsRequired()
@@ -19,7 +19,6 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 
 		builder.HasOne(x => x.MaintObjType)
 			.WithMany(t => t.MaintObjects)
-			.HasForeignKey(x => x.MaintObjTypeId)
 			.IsRequired();
 
 		builder.Property(x => x.Brand)
@@ -38,5 +37,7 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 			b.WithOwner();
 		});
 		builder.Property(x => x.IsInStock).IsRequired();
+
+		builder.HasOne(x => x.Location).WithMany().OnDelete(DeleteBehavior.Restrict);
 	}
 }

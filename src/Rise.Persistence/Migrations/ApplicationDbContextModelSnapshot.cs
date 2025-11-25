@@ -300,10 +300,14 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsInStock")
                         .HasColumnType("bit");
@@ -317,9 +321,6 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid>("MaintObjTypeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("MeasurementStationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -330,11 +331,16 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("StationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TechnicianId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
 
@@ -342,11 +348,11 @@ namespace Rise.Persistence.Migrations
 
                     b.HasIndex("MaintObjTypeId");
 
-                    b.HasIndex("MeasurementStationId");
+                    b.HasIndex("StationId");
 
                     b.HasIndex("TechnicianId");
 
-                    b.ToTable("MaintObjects");
+                    b.ToTable("MaintObj", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>
@@ -361,13 +367,17 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int?>("DefaultMaintenanceIntervalDays")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -375,14 +385,16 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("MaintObjTypes");
+                    b.ToTable("MaintObjType", (string)null);
 
                     b.HasData(
                         new
@@ -790,7 +802,8 @@ namespace Rise.Persistence.Migrations
                 {
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId");
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Rise.Domain.MaintObjects.MaintObjType", "MaintObjType")
                         .WithMany("MaintObjects")
@@ -800,7 +813,7 @@ namespace Rise.Persistence.Migrations
 
                     b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
                         .WithMany("MaintObjects")
-                        .HasForeignKey("MeasurementStationId")
+                        .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Rise.Domain.Projects.Technician", "Technician")
@@ -822,7 +835,7 @@ namespace Rise.Persistence.Migrations
 
                             b1.HasKey("MaintObjId");
 
-                            b1.ToTable("MaintObjects");
+                            b1.ToTable("MaintObj");
 
                             b1.WithOwner()
                                 .HasForeignKey("MaintObjId");
