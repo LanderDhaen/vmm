@@ -14,7 +14,7 @@ public partial class NavMenu : ComponentBase {
 	private static readonly List<(string Href, string Icon, string Label, NavLinkMatch Match)> MenuItems = [
 		("/projects", Icons.Material.Filled.Folder, "Projecten", Match),
 		("/stations", Icons.Material.Filled.Map, "Meetstations", Match),
-		("/maintobjects", Icons.Material.Filled.ImportantDevices, "Onderhouds objecten", Match),
+		("/maintobjects", Icons.Material.Filled.ImportantDevices, "Onderhoudsobjecten", Match),
 		("/workorders", Icons.Material.Filled.Archive, "Werkbonnen", Match),
 		("/account", Icons.Material.Filled.Person, "Account", Match),
 		("/settings", Icons.Material.Filled.Settings, "Instellingen", Match)

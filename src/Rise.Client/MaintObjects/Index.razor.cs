@@ -34,10 +34,10 @@ public partial class Index {
 
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Onderhouds objecten", null, true)
+			new BreadcrumbItem("Onderhoudsobjecten", null, true)
 		);
 
-		HeaderService.Set("Onderhouds objecten");
+		HeaderService.Set("Onderhoudsobjecten");
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
