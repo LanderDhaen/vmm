@@ -1,5 +1,3 @@
-@attribute [Authorize]
-
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
@@ -16,10 +14,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000" 
-		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed" 
+		              DebounceInterval="1000"
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
 		              @bind-Value="_searchTerm"
-		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"

@@ -37,6 +37,32 @@ public class MeasurementStation : Entity {
 
 	// Functions
 
+	public void UpdateProjectList(List<Project> projects) {
+		var closedProjectsNotAlreadyLinked = projects
+			.Where(p => p.Status == Status.Afgesloten &&
+						Projects.All(existing => existing.Id != p.Id))
+			.ToList();
+
+		if (closedProjectsNotAlreadyLinked.Any()) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt of gekoppeld.");
+		}
+
+		// Get all the projects that are not already in the measurement station
+		List<Project> projectsToAdd = projects
+			.Where(s => Projects.All(pr => pr.Id != s.Id))
+			.ToList();
+
+		projectsToAdd.ForEach(p => Projects.Add(p));
+
+		// Get all the projects that are already in the measurement station but need to be deleted
+		List<Project> projectsToRemove = Projects
+			.Where(p => projects.All(pr => pr.Id != p.Id))
+			.ToList();
+
+		projectsToRemove.ForEach(p => Projects.Remove(p));
+	}
+
+
 	public void MoveTo(Location location) {
 
 		// Check if the values are the same as the old values

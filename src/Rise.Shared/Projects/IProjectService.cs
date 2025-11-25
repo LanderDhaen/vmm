@@ -38,4 +38,9 @@ public interface IProjectService {
 		Guid projectId,
 		CancellationToken ctx = default
 	);
+
+	Task<Result> UpdateMeasurementStationsAsync(
+		ProjectRequest.UpdateMeasurementStations req,
+		CancellationToken ctx = default
+	);
 }

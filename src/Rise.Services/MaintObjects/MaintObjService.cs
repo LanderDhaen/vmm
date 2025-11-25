@@ -118,6 +118,53 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		return Result.Created(new MaintObjResponse.Create {
 			MaintObjId = mo.Id
 		});
+  }
+    
+	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId,
+		CancellationToken ct = default) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.AsNoTracking()
+			.Include(d => d.Station)
+			.Include(d => d.MaintObjType)
+			.Include(d => d.Location)
+			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
+
+		if (maintObj is null) {
+			return Result.NotFound();
+		}
+
+		MaintObjType parsedType = MaintObjType.Sonde;
+
+		if (maintObj.MaintObjType?.Code is { } code && Enum.TryParse(code, out MaintObjType tmp)) {
+			parsedType = tmp;
+		}
+
+		DateTime? installedAtOpt = maintObj.Installation?.InstalledAt;
+		DateTime? nextMaintenance = null;
+		DateTime? nextCalibration = null;
+
+		if (installedAtOpt is DateTime installedAtValue && maintObj.MaintObjType is not null) {
+			nextMaintenance = installedAtValue.AddDays(maintObj.MaintObjType.MaintenanceIntervalDays);
+			nextCalibration = installedAtValue.AddDays(maintObj.MaintObjType.CalibrationIntervalDays);
+		}
+
+		MaintObjDto.Detail dto = new() {
+			Id = maintObj.Id,
+			Name = maintObj.Name,
+			SerialNumber = maintObj.SerialNumber,
+			MaintObjType = parsedType,
+			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
+			Brand = maintObj.Brand,
+			MeasurementStationCode = maintObj.Station?.Code,
+			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
+			IsInStock = maintObj.IsInStock,
+			InstalledAt = installedAtOpt,
+			RemovedAt = maintObj.Installation?.RemovedAt,
+			NextMaintenanceDate = nextMaintenance,
+			NextCalibrationDate = nextCalibration
+		};
+
+		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });
 	}
 
 	public async Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx = default) {

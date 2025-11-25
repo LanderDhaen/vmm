@@ -1,6 +1,8 @@
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
+using Rise.Domain.Common;
 
 namespace Rise.Domain.Tests.Projects;
 
@@ -96,6 +98,74 @@ public class ProjectShould {
 		Should.Throw<InvalidOperationException>(() =>
 			project.Edit("New Name", "NEWCODE", new DateRange(DateOnly.FromDateTime(DateTime.UtcNow)),
 				DummyMeasurementNetwork)
+		);
+	}
+
+	[Fact]
+	public void UpdateMeasurementStations_AddMeasurementStationToProject() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Actief);
+
+		MeasurementStation measurementStation = new("MS001", DummyLocation,
+			new Installation(DateTime.UtcNow));
+
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
+
+		project.Stations.Count.ShouldBe(1);
+		project.Stations.ShouldContain(measurementStation);
+	}
+
+	[Fact]
+	public void UpdateMeasurementStations_DoesNothing_MeasurementStationAlreadyAdded() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Actief);
+
+		MeasurementStation measurementStation = new("MS001", DummyLocation,
+			new Installation(DateTime.UtcNow));
+
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
+		project.Stations.Count.ShouldBe(1);
+		project.Stations.ShouldContain(measurementStation);
+
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
+
+		project.Stations.Count.ShouldBe(1);
+		project.Stations.ShouldContain(measurementStation);
+	}
+
+	[Fact]
+	public void UpdateMeasurementStations_DeletesMeasurementStation() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Actief);
+
+		MeasurementStation measurementStation = new("MS001", DummyLocation,
+			new Installation(DateTime.UtcNow));
+
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
+		project.Stations.Count.ShouldBe(1);
+		project.Stations.ShouldContain(measurementStation);
+
+		project.UpdateMeasurementStationList(new List<MeasurementStation> { });
+
+		project.Stations.Count.ShouldBe(0);
+		project.Stations.ShouldNotContain(measurementStation);
+	}
+
+	[Fact]
+	public void UpdateMeasurementStations_Throws_WhenProjectIsClosed() {
+		DateRange pastRange = new(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-30),
+			DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1));
+		Project project = new("Closed Project", "CODE123", pastRange, DummyMeasurementNetwork);
+		project.Status.ShouldBe(Status.Afgesloten);
+
+		MeasurementStation measurementStation = new("MS001", DummyLocation,
+			new Installation(DateTime.UtcNow));
+
+		Should.Throw<InvalidOperationException>(() =>
+			project.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation })
 		);
 	}
 

@@ -44,4 +44,13 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 			await response.Content.ReadFromJsonAsync<Result<MeasurementStationResponse.Create>>(ctx);
 		return result!;
 	}
+
+	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/stations/{req.MeasurementStationId}/projects", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
 }
