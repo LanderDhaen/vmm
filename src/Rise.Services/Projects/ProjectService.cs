@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -125,27 +124,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 	}
 
-	private static string NormalizeOperator(string? op) {
-		if (string.IsNullOrWhiteSpace(op)) return "Contains";
-		var cleaned = Regex.Replace(op!, "[^a-zA-Z0-9]", "").ToLowerInvariant();
-
-		return cleaned switch {
-			"greaterthanorequal" => "GreaterThanOrEqual",
-			"isafter" => "GreaterThan",
-			"lessthanorequal" => "LessThanOrEqual",
-			"isbefore" => "LessThan",
-			"startswith" => "StartsWith",
-			"endswith" => "EndsWith",
-			"isempty" => "IsEmpty",
-			"isnotempty" => "IsNotEmpty",
-			"is" or "equals" => "Equal",
-			"isnot" or "notequals" => "NotEqual",
-			"notcontains" => "NotContains",
-			"contains" => "Contains",
-			_ => "Contains"
-		};
-	}
-
 	private static bool TryParseDateOnlySimple(string? raw, out DateOnly d) {
 		d = default;
 		if (string.IsNullOrWhiteSpace(raw)) return false;
@@ -183,7 +161,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				var key = keyOrig?.Trim();
 				var raw = spec.Value;
 				var opCandidate = spec.Operator;
-				var opNorm = NormalizeOperator(opCandidate);
+				var opNorm = string.IsNullOrWhiteSpace(opCandidate) ? "Contains" : opCandidate;
 
 				switch (key) {
 				case "MeasurementNetwork": {
