@@ -14,11 +14,11 @@
                       Class="m-0"
                       Variant="Variant.Outlined"
                       Adornment="Adornment.End"
-											OnAdornmentClick="@OnAdornmentClick"
+					  OnAdornmentClick="@OnAdornmentClick"
                       AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
                       FullWidth="true"
                       Margin="Margin.Dense"
-                      Immediate="true"
+                      DebounceInterval="500"
                       @bind-Value="_searchString"
                       @bind-Value:after="OnSearchInputChanged"/>
 
@@ -79,7 +79,7 @@
                       AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
                       OnAdornmentClick="@OnAdornmentClick"
                       FullWidth="true"
-                      Immediate="true"
+                      DebounceInterval="500"
                       Margin="Margin.Dense"
                       @bind-Value="_searchString"
                       @bind-Value:after="OnSearchInputChanged"/>
