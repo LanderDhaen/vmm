@@ -1,0 +1,89 @@
+@using Rise.Shared.Projects
+@using Rise.Shared.Stations
+<PageTitle>Project Details</PageTitle>
+
+@if (_stationsFromProject is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+		<MudSelect T="Guid" Label="Meetstations toevoegen" MultiSelection="true"
+		           @bind-SelectedValues="Model.MeasurementStationIds" Variant="Variant.Outlined"
+		           Margin="Margin.Dense" Class="m-0" Disabled="@(!IsActive)"
+		           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+			@foreach (var station in _allStations)
+			{
+				<MudSelectItem T="Guid"
+				               Value="@station.Id">@station.Code - @station.Location @station.City</MudSelectItem>
+			}
+		</MudSelect>
+
+		<MudTooltip Delay="400"
+		            Text="@(IsActive ? "Meetstation toevoegen of verwijderen" : "Afgesloten project kan niet bewerkt worden")">
+			<MudButton Variant="Variant.Filled"
+			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+			           Size="Size.Small"
+			           Color="Color.Primary"
+			           Class="px-4"
+			           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
+				Lijst bijwerken
+			</MudButton>
+		</MudTooltip>
+	</MudStack>
+	<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
+		@* Desktop view with full ValidityRange *@
+		<MudHidden Breakpoint="Breakpoint.Xs">
+			<MudTable T="MeasurementStationDto.Index" Items="_stationsFromProject" CustomHeader="true" OnRowClick="OnStationRowClick">
+				<HeaderContent>
+					<MudTHeadRow>
+						<MudTh Class="mud-theme-primary">#</MudTh>
+						<MudTh Class="mud-theme-primary">Geïnstalleerd op</MudTh>
+						<MudTh Class="mud-theme-primary">Verwijderd op</MudTh>
+						<MudTh Class="mud-theme-primary">Locatie</MudTh>
+						<MudTh Class="mud-theme-primary">Gemeente</MudTh>
+					</MudTHeadRow>
+				</HeaderContent>
+				<RowTemplate>
+					<MudTd DataLabel="#">@context.Code</MudTd>
+					<MudTd DataLabel="Geïnstalleerd op">@context.InstalledAt</MudTd>
+					<MudTd DataLabel="Verwijderd op">@context.RemovedAt</MudTd>
+					<MudTd DataLabel="Locatie">@context.Location</MudTd>
+					<MudTd DataLabel="Gemeente">@context.City</MudTd>
+				</RowTemplate>
+			</MudTable>
+		</MudHidden>
+
+		@* Mobile view with only ValidFrom *@
+
+		<MudHidden Breakpoint="Breakpoint.SmAndUp">
+			<MudGrid Spacing="6">
+				@foreach (var p in _stationsFromProject)
+				{
+					<MudItem xs="12">
+						<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnStationCardClick(p))">
+							<MudCardHeader>
+								<CardHeaderContent>
+									<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+										<MudStack Spacing="0">
+											<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@p.Code</b>
+											</MudText>
+											<MudText Typo="Typo.h6">@p.Location, @p.City</MudText>
+										</MudStack>
+									</MudStack>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent Class="d-flex flex-column gap-1">
+								<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @FormatDate(@p.InstalledAt)</MudText>
+								<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @FormatDate(@p.RemovedAt)</MudText>
+							</MudCardContent>
+						</MudCard>
+					</MudItem>
+				}
+			</MudGrid>
+		</MudHidden>
+	</MudPaper>
+}

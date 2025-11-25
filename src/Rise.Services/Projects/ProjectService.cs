@@ -144,6 +144,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
+			.Include(p => p.Stations)
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
@@ -168,7 +169,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		};
 
 		return Result.Success(new ProjectResponse.Detail {
-			Project = projectDto
+			Project = projectDto,
+			TotalMeasurementStationCount = p.Stations.Count
 		});
 	}
 
