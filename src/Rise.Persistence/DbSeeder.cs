@@ -350,10 +350,9 @@ public class DbSeeder(
 			maintObjects.AddRange(CreateLegacyItems(installations));
 		}
 
-		// Ensure stock/legacy items also get a random status
+		// Ensure stock/legacy items also get a random status (make stock/legacy items active by default)
 		foreach (MaintObj mo in maintObjects) {
-			// keep existing status if already set by previous code paths? We overwrite to introduce variation
-			mo.SetStatus(RandomStatus(rnd));
+			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Actief : RandomStatus(rnd));
 		}
 
 		dbContext.MaintObjects.AddRange(maintObjects);
@@ -387,22 +386,16 @@ public class DbSeeder(
 			new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
 			new("W-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
 			new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
-			new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
-			new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
+			new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", null, true),
+			new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", null, true)
 		};
 	}
 
 	// Helper to pick a random status with weighted probabilities
-	private MaintObjStatus RandomStatus(Random rnd) {
-		int roll = rnd.Next(100); // 0..99
-		if (roll < 40) {
-			return MaintObjStatus.Actief; // 40%
-		}
-
-		if (roll < 80) {
-			return MaintObjStatus.Inactief; // next 40% (40..79)
-		}
-
-		return MaintObjStatus.Defect; // remaining 20%
+	private static MaintObjStatus RandomStatus(Random rnd) {
+		int roll = rnd.Next(100);
+		return roll < 40 ? MaintObjStatus.Actief
+			: roll < 80 ? MaintObjStatus.Inactief
+			: MaintObjStatus.Defect;
 	}
 }

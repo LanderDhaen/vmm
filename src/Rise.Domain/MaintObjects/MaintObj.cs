@@ -17,6 +17,7 @@ public class MaintObj : Entity {
 		IsInStock = isInStock;
 		Location = null;
 	}
+
 	//TODO: technieker bijhouden die het laatst gescanned heeft
 
 	public string Name { get; private set; } = null!;
@@ -63,9 +64,7 @@ public class MaintObj : Entity {
 		TechnicianId = null;
 	}
 
-	// Allow controlled status changes from external code (like the seeder)
 	public void SetStatus(MaintObjStatus status) {
-		// Potential place for domain validation in future
 		MaintObjStatus = status;
 	}
 }
