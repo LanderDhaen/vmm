@@ -1,7 +1,7 @@
 @page "/maintobjects"
 @using Rise.Client.Components
 @using Rise.Shared.MaintObjects
-<PageTitle>Onderhouds objecten</PageTitle>
+<PageTitle>Onderhoudsobjecten</PageTitle>
 
 @* Desktop view *@
 <MudHidden Breakpoint="Breakpoint.Xs">
@@ -12,7 +12,6 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -27,7 +26,7 @@
 		           Color="Color.Primary"
 		           Class="px-4"
 		           OnClick="@NavigateToCreate">
-			Onderhouds object
+			Onderhoudsobject
 		</MudButton>
 	</MudStack>
 
@@ -43,6 +42,8 @@
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+
 
 		</Columns>
 
@@ -116,7 +117,7 @@
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Onderhouds object: </b> @item.MaintObjType</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Onderhoudsobject: </b> @item.MaintObjType</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

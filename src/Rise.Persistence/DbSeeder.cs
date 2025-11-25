@@ -321,11 +321,10 @@ public class DbSeeder(
 			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
 		};
 
-		Technician technician = dbContext.Technicians.Local.FirstOrDefault()
-		                        ?? await dbContext.Technicians.FirstOrDefaultAsync()
-		                        ?? new Technician("Seed", "Tech", "seed-tech-account");
-
-		if (technician.Id == null) {
+		// Fetch an existing technician or create a seed technician
+		Technician? technician = await dbContext.Technicians.FirstOrDefaultAsync();
+		if (technician == null) {
+			technician = new Technician("Seed", "Tech", "seed-tech-account");
 			dbContext.Technicians.Add(technician);
 			await dbContext.SaveChangesAsync();
 		}
@@ -352,7 +351,7 @@ public class DbSeeder(
 						installation),
 					CreateMaintObj(station, "Modem", "MD", types.First(t => t.Code == "Modem"), "Centerion",
 						installation),
-					CreateMaintObj(station, "SIM", "SIM", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE",
+					CreateMaintObj(station, "SIM", "SI", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE",
 						installation),
 					CreateMaintObj(station, "Voeding", "VO", types.First(t => t.Code == "Voeding"), "Kyocera",
 						installation)
@@ -369,12 +368,12 @@ public class DbSeeder(
 
 		maintObjects.AddRange(CreateStockItems(types, stockLocations));
 		if (!stations.Any() && !maintObjects.Any()) {
-			maintObjects.AddRange(CreateLegacyItems(installations, types, stockLocations));
+			maintObjects.AddRange(CreateLegacyItems(types, stockLocations));
 		}
 
-		// Ensure stock/legacy items also get a random status (make stock/legacy items active by default)
+		// Ensure stock/legacy items also get a random status (make stock/legacy items inactive by default)
 		foreach (MaintObj mo in maintObjects) {
-			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Actief : RandomStatus(rnd));
+			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Inactief : RandomStatus(rnd));
 		}
 
 		dbContext.MaintObjects.AddRange(maintObjects);
@@ -404,7 +403,7 @@ public class DbSeeder(
 		};
 	}
 
-	private List<MaintObj> CreateLegacyItems(List<Installation> installations, List<MaintObjType> types, List<Location> stockLocations) {
+	private List<MaintObj> CreateLegacyItems(List<MaintObjType> types, List<Location> stockLocations) {
 		return new List<MaintObj> {
 			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
 			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
