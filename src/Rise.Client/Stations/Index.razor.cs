@@ -21,9 +21,9 @@ public partial class Index {
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
 	private string _searchTerm;
-	
+
 	private CancellationTokenSource _cancellationTokenSource = new();
-	
+
 	private MudDataGrid<MeasurementStationDto.Index> _grid;
 
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
@@ -79,11 +79,11 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetStationsMobileAsync() {
-		
+
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
-		
+
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
@@ -109,13 +109,13 @@ public partial class Index {
 		await GetStationsMobileAsync();
 		ToggleSortingDrawer();
 	}
-	
+
 	// Filtering
 
 	private async Task HandleDesktopIntervalElapsed() {
 		await _grid.ReloadServerData();
 	}
-	
+
 	private async Task HandleMobileIntervalElapsed() {
 		await GetStationsMobileAsync();
 	}

@@ -18,7 +18,7 @@ public partial class Index {
 		("Zone", "Zone"),
 		("Status", "Status")
 	];
-	
+
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
 	private string _searchTerm;
@@ -26,9 +26,9 @@ public partial class Index {
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-	
+
 	private CancellationTokenSource _cancellationTokenSource = new();
-	
+
 	private MudDataGrid<ProjectDto.Index> _grid;
 
 	[Inject] public required IProjectService ProjectService { get; init; }
@@ -56,10 +56,10 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		
+
 		SortDefinition<ProjectDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
 			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
-		
+
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
@@ -79,11 +79,11 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetProjectsMobileAsync() {
-		
+
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
-		
+
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
@@ -109,13 +109,13 @@ public partial class Index {
 		await GetProjectsMobileAsync();
 		ToggleSortingDrawer();
 	}
-	
+
 	// Searching
 
 	private async Task HandleDesktopIntervalElapsed() {
 		await _grid.ReloadServerData();
 	}
-	
+
 	private async Task HandleMobileIntervalElapsed() {
 		await GetProjectsMobileAsync();
 	}

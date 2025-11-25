@@ -18,7 +18,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		CancellationToken ctx = default) {
 
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
-		
+
 		// Filtering (MSSQL handles casing)
 
 		query = query.Where(s =>
@@ -29,12 +29,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			EF.Functions.Like(s.Location.Address.City, $"%{request.SearchTerm}%") ||
 			EF.Functions.Like(s.Location.Address.PostalCode, $"%{request.SearchTerm}%")
 		);
-		
-		
+
+
 		int totalCount = await query.CountAsync(ctx);
-		
+
 		// Sorting
-		
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			bool desc = request.OrderDescending;
 
@@ -63,7 +63,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 					=> desc
 						? query.OrderByDescending(s => s.Projects.Count())
 						: query.OrderBy(s => s.Projects.Count()),
-				
+
 				_ => desc
 					? query.OrderByDescending(s => EF.Property<object>(s, request.OrderBy!))
 					: query.OrderBy(s => EF.Property<object>(s, request.OrderBy!))
@@ -71,11 +71,11 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		} else {
 			query = query.OrderBy(s => s.Id);
 		}
-		
+
 		// Paginating
-		
+
 		query = query.Skip(request.Skip).Take(request.Take);
-		
+
 		// Selecting
 
 		List<MeasurementStationDto.Index> stations = await query
