@@ -20,4 +20,6 @@ public interface IMaintObjService {
 		Guid maintObjId,
 		CancellationToken ctx = default
 	);
+
+	Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx);
 }

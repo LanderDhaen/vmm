@@ -63,9 +63,9 @@ else
 					@* edit button *@
 					<MudTooltip Delay="400"
 					            Placement="Placement.Right"
-					            Text="@(IsActive ? "Apparaat bewerken" : "Afgesloten project kan niet bewerkt worden")">
+					            Text="@(IsActive ? "Apparaat bewerken" : "Afgesloten apparaat kan niet bewerkt worden")">
 						<MudIconButton
-							Href="@($"/projects/edit/{MaintObjId}")"
+							Href="@($"/maintobjects/edit/{MaintObjId}")"
 							Disabled="@(!IsActive)"
 							Icon="@Icons.Material.Filled.Edit"
 							Color="Color.Primary"/>

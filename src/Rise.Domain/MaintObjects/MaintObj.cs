@@ -14,7 +14,7 @@ public class MaintObj : Entity {
 		MaintObjType = maintObjType;
 		Brand = brand;
 		Installation = installation;
-		IsInStock = isInStock;
+		IsInStock = Guard.Against.Null(isInStock);
 		Location = location;
 	}
 
@@ -53,5 +53,15 @@ public class MaintObj : Entity {
 
 	public void SetStatus(MaintObjStatus status) {
 		MaintObjStatus = status;
+	}
+
+	public void Edit(string name, string serialNumber, MaintObjType maintObjType, string? brand,
+		Installation installation, Location location) {
+		Name = Guard.Against.NullOrWhiteSpace(name);
+		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
+		MaintObjType = maintObjType;
+		Brand = brand;
+		Installation = installation;
+		Location = location;
 	}
 }
