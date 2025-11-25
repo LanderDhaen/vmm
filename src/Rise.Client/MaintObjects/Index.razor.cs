@@ -37,7 +37,7 @@ public partial class Index {
 			new BreadcrumbItem("Onderhoudsobjecten", null, true)
 		);
 
-		HeaderService.Set("Onderhoudsobjecten");
+		HeaderService.Set("Onderhouds-objecten");
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
