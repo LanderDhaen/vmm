@@ -1,7 +1,3 @@
-using System.Reflection;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -12,34 +8,46 @@ using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects {
 	public partial class Index {
-		private static readonly (string Value, string Label)[] SortColumns = [
+		// Sort options 
+		private static readonly (string Value, string Label)[] SortColumns = new[]
+		{
 			("Code", "Code"),
-		("Name", "Naam"),
-		("StartDate", "Startdatum"),
-		("EndDate", "Einddatum"),
-		("MeasurementNetwork", "Meetnet"),
-		("Zone", "Zone"),
-		("Status", "Status")
-		];
+			("Name", "Naam"),
+			("StartDate", "Startdatum"),
+			("EndDate", "Einddatum"),
+			("MeasurementNetwork", "Meetnet"),
+			("Zone", "Zone"),
+			("Status", "Status")
+		};
 
 		private string _activeSorting = "Name";
 		private bool _activeSortingDesc;
-		private string _searchTerm;
+		private string _searchTerm = string.Empty;
 
 		private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 		private bool _mobileSortOptionsOpen;
+		private bool _filterOptionsOpen;
+		private Anchor _filterDrawerAnchor = Anchor.Right;
 
 		private CancellationTokenSource _cancellationTokenSource = new();
 
-		private MudDataGrid<ProjectDto.Index> _grid;
+		private MudDataGrid<ProjectDto.Index>? _grid;
+
+
+		private Status? _filterStatus;
+		private string? _filterZone;
+		private string? _filterMeasurementNetwork;
+		private DateTime? _filterStartDate;
+		private DateTime? _filterEndDate;
+		private List<string> _zones = new();
+		private List<string> _measurementNetworks = new();
 
 		[Inject] public required IProjectService ProjectService { get; init; }
 		[Inject] public required NavigationManager NavigationManager { get; init; }
 		[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 		[Inject] public required HeaderService HeaderService { get; init; }
 		[Inject] public required IBrowserViewportService ViewportService { get; init; }
-
 
 		protected override async Task OnInitializedAsync() {
 			BreadcrumbService.SetBreadcrumbs(
@@ -50,120 +58,108 @@ namespace Rise.Client.Projects {
 			HeaderService.Set("Projecten");
 
 			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
-
 			if (breakpoint == Breakpoint.Xs) {
-				await GetProjectsMobileAsync();
+				var bp = await ViewportService.GetCurrentBreakpointAsync();
+				if (bp == Breakpoint.Xs)
+					await GetProjectsMobileAsync();
 			}
+
 		}
 
-		// Desktop
-
-		private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-
-			SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
-				new SortDefinition<ProjectDto.Index>("Code", false, 0, null));
-
-			QueryRequest.SkipTake request = new() {
+		private QueryRequest.SkipTake CreateRequestFromGridState(GridState<ProjectDto.Index> state) {
+			var sorting = state.SortDefinitions.FirstOrDefault();
+			var request = new QueryRequest.SkipTake {
 				Skip = state.Page * state.PageSize,
 				Take = state.PageSize,
-				OrderBy = sorting?.SortBy ?? "Name",
-				OrderDescending = sorting?.Descending ?? false,
+				OrderBy = sorting?.SortBy ?? _activeSorting,
+				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
 				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 			};
+			request.Filters ??= new Dictionary<string, object?>();
+			return request;
+		}
+		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
+			request.Filters ??= new Dictionary<string, object?>();
 
-			if (state.FilterDefinitions?.Any() == true) {
-				foreach (var f in state.FilterDefinitions) {
-					var (key, value, op) = ExtractFilter(f);
+			if (_filterStatus.HasValue)
+				request.Filters["Status"] = new { Operator = "Equals", Value = _filterStatus.Value.ToString() };
 
-					// Detect whether operator is an "empty" kind (textual or numeric)
-					bool opLooksLikeEmpty = false;
-					if (!string.IsNullOrWhiteSpace(op)) {
-						var opTrim = op.Trim();
-						// textual recognition (e.g. "is not empty", "is empty", "notempty", ...)
-						if (Regex.IsMatch(opTrim, "(empty|is\\W*empty|is\\W*not\\W*empty|not\\W*empty)", RegexOptions.IgnoreCase))
-							opLooksLikeEmpty = true;
-						else if (int.TryParse(opTrim, out var opInt) && (opInt == 6 || opInt == 7))
-							// many MudBlazor versions use 6 = IsEmpty, 7 = IsNotEmpty
-							opLooksLikeEmpty = true;
-					}
+			if (!string.IsNullOrWhiteSpace(_filterZone))
+				request.Filters["Zone"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterZone!.Trim() };
 
-					// Send filter if there is a value OR if it's an empty-operator
-					if (!string.IsNullOrWhiteSpace(key) && (value != null || opLooksLikeEmpty)) {
-						request.Filters[key] = new { Operator = op ?? "Contains", Value = value };
-					}
-				}
-			}
+			if (!string.IsNullOrWhiteSpace(_filterMeasurementNetwork))
+				request.Filters["MeasurementNetwork"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterMeasurementNetwork!.Trim() };
+
+			if (_filterStartDate.HasValue)
+				request.Filters["StartDate"] = new { Operator = "GreaterThanOrEqual", Value = _filterStartDate.Value.ToString("o") };
+
+			if (_filterEndDate.HasValue)
+				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("o") };
+		}
+		private void UpdateSelectOptions(IEnumerable<ProjectDto.Index> projects) {
+			_zones = projects
+				.Select(p => p.Zone ?? string.Empty)
+				.Where(s => !string.IsNullOrWhiteSpace(s))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+
+			_measurementNetworks = projects
+				.Select(p => p.MeasurementNetwork ?? string.Empty)
+				.Where(s => !string.IsNullOrWhiteSpace(s))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		}
+		private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
+			var request = CreateRequestFromGridState(state);
+
+			ApplyDrawerFilters(request, useContainsForText: false);
 
 			var result = await ProjectService.GetIndexAsync(request);
-			return new GridData<ProjectDto.Index> { TotalItems = result.Value.TotalCount, Items = result.Value.Projects };
-		}
 
-		// compact filter extractor: tries recognizable properties and Column.{Field,PropertyName}
-		private static (string? Key, object? Value, string? Operator) ExtractFilter(object filterDef) {
-			if (filterDef == null) return (null, null, null);
+			var projects = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
+			UpdateSelectOptions(projects);
 
-			static object? TryGet(object? obj, params string[] names) {
-				if (obj == null) return null;
-				var t = obj.GetType();
-				foreach (var n in names) {
-					var p = t.GetProperty(n, BindingFlags.Public | BindingFlags.Instance);
-					if (p != null) return p.GetValue(obj);
-				}
-				return null;
-			}
+			var total = result?.Value?.TotalCount ?? 0;
 
-			// search value
-			var rawVal = TryGet(filterDef, "Value", "FilterValue", "Filter", "Values") ?? TryGet(TryGet(filterDef, "Column"), "FilterValue", "Value");
-			var rawKey = TryGet(filterDef, "PropertyName", "Field", "MemberName", "ColumnName", "Name")
-						 ?? TryGet(TryGet(filterDef, "Column"), "Field", "Property", "PropertyName", "Name");
-			var rawOp = TryGet(filterDef, "Operator", "FilterOperator", "OperatorKey", "OperatorName")
-						 ?? TryGet(TryGet(filterDef, "Column"), "FilterOperator", "Operator");
-
-			object? valToSend = null;
-			if (rawVal is JsonElement je) {
-				valToSend = je.ValueKind switch {
-					JsonValueKind.Object or JsonValueKind.Array => je.GetRawText(),
-					JsonValueKind.String => je.GetString(),
-					JsonValueKind.Number => je.GetRawText(),
-					JsonValueKind.True => true,
-					JsonValueKind.False => false,
-					_ => je.GetRawText()
-				};
-			} else {
-				valToSend = rawVal;
-			}
-
-			string? key = rawKey?.ToString();
-			// normalize p => p.Code or a.b -> Code
-			if (!string.IsNullOrWhiteSpace(key)) {
-				var s = key!.Trim().Trim('"').Trim('\'');
-				if (s.Contains("=>")) s = s.Split("=>").Last().Trim();
-				if (s.Contains('.')) s = s.Split('.').Last().Trim();
-				key = s;
-			}
-
-			return (key, valToSend, rawOp?.ToString());
+			return new GridData<ProjectDto.Index> {
+				TotalItems = total,
+				Items = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>()
+			};
 		}
 
 		private async Task GetProjectsMobileAsync() {
-
 			_cancellationTokenSource.Cancel();
 			_cancellationTokenSource.Dispose();
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			QueryRequest.SkipTake request = new() {
+			var request = new QueryRequest.SkipTake {
 				Skip = 0,
 				Take = 10,
 				OrderBy = _activeSorting,
 				OrderDescending = _activeSortingDesc,
 				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 			};
+			request.Filters ??= new Dictionary<string, object?>();
+
+			ApplyDrawerFilters(request, useContainsForText: true);
 
 			var result = await ProjectService.GetIndexAsync(request);
-			_mobileItems = result.Value.Projects;
+
+			var projects = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
+			UpdateSelectOptions(projects);
+			_mobileItems = projects;
 		}
 
 		private void ToggleSortingDrawer() => _mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+
+		// Toggle filter drawer and set anchor based on current breakpoint
+		private async Task ToggleFiltersDrawer() {
+			var bp = await ViewportService.GetCurrentBreakpointAsync();
+			_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
+			_filterOptionsOpen = !_filterOptionsOpen;
+		}
 
 		private async Task SortMobileAsync(string orderBy, bool descending) {
 			_activeSorting = orderBy;
@@ -171,17 +167,51 @@ namespace Rise.Client.Projects {
 			await GetProjectsMobileAsync();
 			ToggleSortingDrawer();
 		}
-		// Searching
 
 		private async Task HandleDesktopIntervalElapsed() {
-			await _grid.ReloadServerData();
+			if (_grid != null)
+				await _grid.ReloadServerData();
 		}
 
-		private async Task HandleMobileIntervalElapsed() {
-			await GetProjectsMobileAsync();
-		}
+		private async Task HandleMobileIntervalElapsed() => await GetProjectsMobileAsync();
+
 		private void NavigateToProject(Guid projectId) => NavigationManager.NavigateTo($"/projects/{projectId}");
 		private void NavigateToCreate() => NavigationManager.NavigateTo("/projects/create");
 		private Color DefineColor(Status status) => status == Status.Actief ? Color.Success : Color.Error;
+
+		// Apply / Clear drawer filters
+		private async Task ApplyFiltersAsync() {
+			var bp = await ViewportService.GetCurrentBreakpointAsync();
+
+			if (bp == Breakpoint.Xs) {
+				// mobile: fetch mobile items only once
+				await GetProjectsMobileAsync();
+			} else {
+				// desktop/tablet: reload only the data grid (GetProjectsAsync will apply drawer filters)
+				if (_grid != null)
+					await _grid.ReloadServerData();
+			}
+
+			_filterOptionsOpen = false;
+			StateHasChanged();
+		}
+
+		private async Task ClearFilters() {
+			_filterStatus = null;
+			_filterZone = null;
+			_filterMeasurementNetwork = null;
+			_filterStartDate = null;
+			_filterEndDate = null;
+
+			var bp = await ViewportService.GetCurrentBreakpointAsync();
+
+			if (bp == Breakpoint.Xs)
+				await GetProjectsMobileAsync();
+			else if (_grid != null)
+				await _grid.ReloadServerData();
+
+			_filterOptionsOpen = false;
+			StateHasChanged();
+		}
 	}
 }
