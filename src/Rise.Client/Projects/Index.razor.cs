@@ -12,22 +12,27 @@ using Rise.Shared.Projects;
 
 namespace Rise.Client.Projects {
 	public partial class Index {
-		private static readonly (string Value, string Label)[] SortColumns = new[]
-		{
-			("Code","Code"),("Name","Naam"),("StartDate","Startdatum"),("EndDate","Einddatum"),
-			("MeasurementNetwork","Meetnet"),("Zone","Zone"),("Status","Status")
-		};
+		private static readonly (string Value, string Label)[] SortColumns = [
+			("Code", "Code"),
+		("Name", "Naam"),
+		("StartDate", "Startdatum"),
+		("EndDate", "Einddatum"),
+		("MeasurementNetwork", "Meetnet"),
+		("Zone", "Zone"),
+		("Status", "Status")
+		];
 
 		private string _activeSorting = "Name";
 		private bool _activeSortingDesc;
+		private string _searchTerm;
+
 		private IEnumerable<ProjectDto.Index>? _mobileItems;
+
 		private bool _mobileSortOptionsOpen;
 
-		private string? _searchString { get; set; } = string.Empty;
-		private string _appliedSearch { get; set; } = string.Empty;
+		private CancellationTokenSource _cancellationTokenSource = new();
 
-		private MudDataGrid<ProjectDto.Index>? _grid;
-		private CancellationTokenSource? _typingCts;
+		private MudDataGrid<ProjectDto.Index> _grid;
 
 		[Inject] public required IProjectService ProjectService { get; init; }
 		[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -35,61 +40,35 @@ namespace Rise.Client.Projects {
 		[Inject] public required HeaderService HeaderService { get; init; }
 		[Inject] public required IBrowserViewportService ViewportService { get; init; }
 
+
 		protected override async Task OnInitializedAsync() {
-			BreadcrumbService.SetBreadcrumbs(new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Projecten", null, true));
+			BreadcrumbService.SetBreadcrumbs(
+				new BreadcrumbItem("Home", "/"),
+				new BreadcrumbItem("Projecten", null, true)
+			);
+
 			HeaderService.Set("Projecten");
 
-			if (await ViewportService.GetCurrentBreakpointAsync() == Breakpoint.Xs)
-				await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
-		}
+			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
-		private async Task OnSearchInputChanged() {
-			_typingCts?.Cancel();
-			_typingCts?.Dispose();
-			_typingCts = new CancellationTokenSource();
-
-			try { await Task.Delay(350, _typingCts.Token); } catch (TaskCanceledException) { return; }
-
-			_appliedSearch = string.IsNullOrWhiteSpace(_searchString) ? string.Empty : _searchString!.Trim();
-			await ReloadAllAsync(resetPage: true);
-		}
-
-		private async Task OnAdornmentClick() {
-			if (!string.IsNullOrWhiteSpace(_searchString))
-				await ClearSearch();
-		}
-
-		private async Task ClearSearch() {
-			_typingCts?.Cancel();
-			_typingCts?.Dispose();
-			_typingCts = null;
-			_searchString = string.Empty;
-			_appliedSearch = string.Empty;
-			await ReloadAllAsync(resetPage: false);
-		}
-
-		private async Task ReloadAllAsync(bool resetPage) {
-			if (resetPage && _grid is not null) {
-				// MudDataGrid has SetCurrentPageAsync in recent versions; fallback to reflection if unavailable
-				var setPage = _grid.GetType().GetMethod("SetCurrentPageAsync", new[] { typeof(int) });
-				if (setPage != null) await (Task)setPage.Invoke(_grid, new object[] { 0 })!;
+			if (breakpoint == Breakpoint.Xs) {
+				await GetProjectsMobileAsync();
 			}
-
-			if (_grid is not null)
-				await _grid.ReloadServerData();
-
-			await GetProjectsMobileAsync(_activeSorting, _activeSortingDesc);
-			StateHasChanged();
 		}
+
+		// Desktop
 
 		private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-			var sorting = state.SortDefinitions.FirstOrDefault();
-			var request = new QueryRequest.SkipTake {
+
+			SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+				new SortDefinition<ProjectDto.Index>("Code", false, 0, null));
+
+			QueryRequest.SkipTake request = new() {
 				Skip = state.Page * state.PageSize,
 				Take = state.PageSize,
-				OrderBy = sorting?.SortBy ?? _activeSorting ?? "Name",
-				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_appliedSearch) ? string.Empty : _appliedSearch.Trim()
+				OrderBy = sorting?.SortBy ?? "Name",
+				OrderDescending = sorting?.Descending ?? false,
+				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 			};
 
 			if (state.FilterDefinitions?.Any() == true) {
@@ -166,13 +145,18 @@ namespace Rise.Client.Projects {
 			return (key, valToSend, rawOp?.ToString());
 		}
 
-		private async Task GetProjectsMobileAsync(string orderBy, bool orderDescending) {
-			var request = new QueryRequest.SkipTake {
+		private async Task GetProjectsMobileAsync() {
+
+			_cancellationTokenSource.Cancel();
+			_cancellationTokenSource.Dispose();
+			_cancellationTokenSource = new CancellationTokenSource();
+
+			QueryRequest.SkipTake request = new() {
 				Skip = 0,
 				Take = 10,
-				OrderBy = orderBy,
-				OrderDescending = orderDescending,
-				SearchTerm = string.IsNullOrWhiteSpace(_appliedSearch) ? string.Empty : _appliedSearch.Trim()
+				OrderBy = _activeSorting,
+				OrderDescending = _activeSortingDesc,
+				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 			};
 
 			var result = await ProjectService.GetIndexAsync(request);
@@ -184,10 +168,18 @@ namespace Rise.Client.Projects {
 		private async Task SortMobileAsync(string orderBy, bool descending) {
 			_activeSorting = orderBy;
 			_activeSortingDesc = descending;
-			await GetProjectsMobileAsync(orderBy, descending);
+			await GetProjectsMobileAsync();
 			ToggleSortingDrawer();
 		}
+		// Searching
 
+		private async Task HandleDesktopIntervalElapsed() {
+			await _grid.ReloadServerData();
+		}
+
+		private async Task HandleMobileIntervalElapsed() {
+			await GetProjectsMobileAsync();
+		}
 		private void NavigateToProject(Guid projectId) => NavigationManager.NavigateTo($"/projects/{projectId}");
 		private void NavigateToCreate() => NavigationManager.NavigateTo("/projects/create");
 		private Color DefineColor(Status status) => status == Status.Actief ? Color.Success : Color.Error;

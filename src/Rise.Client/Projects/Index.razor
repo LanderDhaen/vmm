@@ -9,18 +9,17 @@
 <MudHidden Breakpoint="Breakpoint.Xs">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-        <MudTextField T="string"
-                      Label="Zoek"
-                      Class="m-0"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-					  OnAdornmentClick="@OnAdornmentClick"
-                      AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
-                      FullWidth="true"
-                      Margin="Margin.Dense"
-                      DebounceInterval="500"
-                      @bind-Value="_searchString"
-                      @bind-Value:after="OnSearchInputChanged"/>
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="m-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed" 
+		              @bind-Value="_searchTerm"
+		              FullWidth="true"
+		              Margin="Margin.Dense"/>
 
         <MudButton Variant="Variant.Filled"
                    Size="Size.Small"
@@ -71,18 +70,17 @@
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-        <MudTextField T="string"
-                      Label="Zoek"
-                      Class="m-0"
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@(_searchString is null || _searchString == string.Empty ? Icons.Material.Filled.Search : Icons.Material.Filled.Close)"
-                      OnAdornmentClick="@OnAdornmentClick"
-                      FullWidth="true"
-                      DebounceInterval="500"
-                      Margin="Margin.Dense"
-                      @bind-Value="_searchString"
-                      @bind-Value:after="OnSearchInputChanged"/>
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="m-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
+		              @bind-Value="_searchTerm"
+		              FullWidth="true"
+		              Margin="Margin.Dense"/>
 
         <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
                        Color="Color.Primary"
