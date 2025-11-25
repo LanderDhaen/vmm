@@ -8,4 +8,8 @@ public static partial class MaintObjResponse {
 		public IEnumerable<MaintObjDto.Index> MaintObjects { get; set; } = [];
 		public int TotalCount { get; set; }
 	}
+
+	public class Detail {
+		public required MaintObjDto.Detail MaintObj { get; set; }
+	}
 }

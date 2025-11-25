@@ -276,7 +276,7 @@ public class DbSeeder(
 			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
 			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
 			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
-			new Installation(new DateTime(2025, 4, 5, 3 , 24, 59)),
+			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
 			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
 			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
 		};
@@ -287,8 +287,17 @@ public class DbSeeder(
 			new MeasurementStation("STN-003", locations[2], installations[2]),
 			new MeasurementStation("STN-004", locations[3], installations[3]),
 			new MeasurementStation("STN-005", locations[4], installations[4]),
-			new MeasurementStation("STN-006", locations[5], installations[5]),
+			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
+		
+		// Add projects to stations
+		
+		stations[0].Projects.Add(projects[0]);
+		stations[0].Projects.Add(projects[1]);
+		stations[0].Projects.Add(projects[2]);
+		
+		stations[1].Projects.Add(projects[1]);
+		stations[1].Projects.Add(projects[5]);
 
 		dbContext.MeasurementStations.AddRange(stations);
 		await dbContext.SaveChangesAsync();

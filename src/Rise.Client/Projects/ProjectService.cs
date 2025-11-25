@@ -60,4 +60,13 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 				ctx);
 		return result!;
 	}
+
+	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/stations", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
 }

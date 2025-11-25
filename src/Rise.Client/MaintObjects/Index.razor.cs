@@ -37,7 +37,7 @@ public partial class Index {
 			new BreadcrumbItem("Onderhoudsobjecten", null, true)
 		);
 
-		HeaderService.Set("Onderhoudsobjecten");
+		HeaderService.Set("Onderhouds-objecten");
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
@@ -109,6 +109,10 @@ public partial class Index {
 
 	// Other
 	private Color DefineColor(MaintObjStatus status) {
-		return status == MaintObjStatus.Actief ? Color.Success : Color.Error;
+		return status switch {
+			MaintObjStatus.Actief => Color.Success,
+			MaintObjStatus.Inactief => Color.Error,
+			_ => Color.Warning
+		};
 	}
 }

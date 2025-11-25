@@ -856,8 +856,7 @@ namespace Rise.Persistence.Migrations
 
                     b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
                         .WithMany("MaintObjects")
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("StationId");
 
                     b.HasOne("Rise.Domain.Projects.Technician", "Technician")
                         .WithMany()

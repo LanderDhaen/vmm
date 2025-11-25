@@ -14,12 +14,6 @@
 else
 {
 	<!-- ===== Desktop ===== -->
-
-	<!-- ===== Mobile ===== -->
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<ArrowHeader Title="Meetstation" OnBack="NavigateToStations"/>
-	</MudHidden>
-
 	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="async () => await SetTabAsync(0)">
@@ -84,36 +78,7 @@ else
 			break;
 
 		case 2:
-			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-				<MudDataGrid T="ProjectDto.Index"
-				             ServerData="GetProjectsGridAsync"
-				             RowsPerPage="10"
-				             Bordered="true"
-				             Striped="true"
-				             Hover="true"
-				             Dense="false"
-				             Elevation="0"
-				             RowClick="OnProjectRowClick">
-					<Columns>
-						<PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-						<PropertyColumn Property="x => x.Name" Title="Naam" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-						<PropertyColumn Property="x => x.StartDate" Title="Startdatum" Sortable="false"
-						                Filterable="false" Groupable="false"/>
-						<PropertyColumn Property="x => x.EndDate" Title="Einddatum" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-						<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" Sortable="false"
-						                Filterable="false" Groupable="false"/>
-						<PropertyColumn Property="x => x.Zone" Title="Zone" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-					</Columns>
-
-					<PagerContent>
-						<Pagination T="ProjectDto.Index"/>
-					</PagerContent>
-				</MudDataGrid>
-			</MudPaper>
+			<Projects StationId="StationId" TabChanged="OnTabChange" />
 			break;
 
 		case 3:
