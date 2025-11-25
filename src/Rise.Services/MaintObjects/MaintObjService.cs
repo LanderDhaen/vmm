@@ -65,7 +65,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
 			if (mo.MaintObjTypeCode is not null &&
-			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
 			}
 
@@ -98,14 +98,14 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (location is null) {
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
-		
+
 		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
 			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-		
+
 		MaintObj mo = new(request.Name, request.SerialNumber, type,
 			request.Brand, null, true, location);
 

@@ -41,7 +41,7 @@ public class Location : Entity {
 	public Coordinate Coordinate { get; init; } = default!;
 
 	public bool IsStockLocation {
-		get => _isStockLocation; 
+		get => _isStockLocation;
 		set => _isStockLocation = value;
 	}
 

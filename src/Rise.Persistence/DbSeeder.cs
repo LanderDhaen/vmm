@@ -357,7 +357,7 @@ public class DbSeeder(
 		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
-		
+
 		List<Location> stockLocations = dbContext.Locations.Local.Any(l => l.IsStockLocation)
 			? dbContext.Locations.Local.Where(l => l.IsStockLocation).ToList()
 			: await dbContext.Locations.Where(l => l.IsStockLocation).ToListAsync();

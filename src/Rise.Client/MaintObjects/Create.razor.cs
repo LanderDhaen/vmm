@@ -35,7 +35,7 @@ public partial class Create {
 
 		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(request);
 		_locations = result.Value.Locations;
-		
+
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Onderhoudsobjecten", "/maintobjects"),
 			new BreadcrumbItem("Voeg toe", "/create", true)

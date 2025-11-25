@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Rise.Domain.Common;
-using Rise.Domain.Stations;
 using Rise.Domain.MaintObjects;
+using Rise.Domain.Stations;
 
 namespace Rise.Persistence.Configurations.Stations;
 
@@ -31,7 +31,7 @@ internal class MeasurementStationConfiguration : EntityConfiguration<Measurement
 
 		builder.HasMany(s => s.Projects)
 			.WithMany(p => p.Stations);
-		
+
 		builder.HasMany(s => s.MaintObjects)
 			.WithOne(m => m.Station)
 			.IsRequired(false)
