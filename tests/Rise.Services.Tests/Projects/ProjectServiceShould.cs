@@ -12,6 +12,7 @@ using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
+using Rise.Domain.Common;
 
 using Status = Rise.Shared.Projects.Status;
 

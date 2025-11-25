@@ -11,6 +11,11 @@ public interface IMaintObjService {
 		CancellationToken ctx = default
 	);
 
+	Task<Result<MaintObjResponse.Create>> CreateAsync(
+		MaintObjRequest.Create req,
+    CancellationToken ctx = default
+   );
+     
 	Task<Result<MaintObjResponse.Detail>> GetDetailAsync(
 		Guid maintObjId,
 		CancellationToken ctx = default

@@ -54,9 +54,8 @@ public static class QueryRequest {
 		/// </summary>
 		public string AsQuery() =>
 			string.IsNullOrWhiteSpace(SearchTerm)
-				? $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}"
+				? $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&{string.Join("&", Filters.Select(f => $"{f.Key}={f.Value}"))}"
 				: $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&searchTerm={SearchTerm}";
-
 	}
 
 	/// <summary>

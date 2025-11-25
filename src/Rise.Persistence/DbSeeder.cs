@@ -148,7 +148,10 @@ public class DbSeeder(
 			new Address("Veldstraat 78", null, "Gent", "9000"),
 			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
 			new Address(null, null, "Breda", "4811", "NL"),
-			new Address("Kustlaan 45", null, "Oostende", "8400")
+			new Address("Kustlaan 45", null, "Oostende", "8400"),
+			new Address("Industrielaan 15", null, "Aalst", "9320"),
+			new Address("Havenlaan 12", null, "Roeselare", "8800"),
+			new Address("Industrieweg 124", null, "Gent", "9040")
 		};
 
 		List<Coordinate> coordinates = new() {
@@ -157,7 +160,10 @@ public class DbSeeder(
 			new Coordinate(3.73, 51.05), // Gent
 			new Coordinate(4.37, 50.84), // Bruxelles (Rue de la Loi)
 			new Coordinate(4.78, 51.59), // Breda
-			new Coordinate(2.92, 51.22) // Oostende
+			new Coordinate(2.92, 51.22), // Oostende
+			new Coordinate(4.06, 50.94), // Aalst
+			new Coordinate(3.11, 50.94), // Roeselare
+			new Coordinate(3.75, 51.03)  // Gentbrugge
 		};
 
 		List<Location> locations = new() {
@@ -166,7 +172,10 @@ public class DbSeeder(
 			new Location("Watersportbaan", addresses[2], coordinates[2]),
 			new Location("Paleisvijver", addresses[3], coordinates[3]),
 			new Location("Stadsgracht", addresses[4], coordinates[4]),
-			new Location("Zee", addresses[5], coordinates[5])
+			new Location("Zee", addresses[5], coordinates[5]),
+			new Location("Aalst stock", addresses[6], coordinates[6], true),
+			new Location("Roeselare stock", addresses[7], coordinates[7], true),
+			new Location("Gent stock", addresses[8], coordinates[8], true)
 		};
 
 		dbContext.Locations.AddRange(locations);
@@ -299,8 +308,7 @@ public class DbSeeder(
 			return;
 		}
 
-		List<MeasurementStation> stations =
-			await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
+		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 		List<Location> locations = await dbContext.Locations.ToListAsync();
 
 		List<DateTime?> removedAts = new() {
@@ -312,12 +320,12 @@ public class DbSeeder(
 			null
 		};
 
-		Location DummyLocation =
-			new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
+		Location DummyLocation = new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
 
 		int i = 0;
 
 		foreach (MeasurementStation station in stations) {
+
 			Installation installation = station.Installation;
 			Location location = station.Location;
 
@@ -358,6 +366,10 @@ public class DbSeeder(
 		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
+
+		List<Location> stockLocations = dbContext.Locations.Local.Any(l => l.IsStockLocation)
+			? dbContext.Locations.Local.Where(l => l.IsStockLocation).ToList()
+			: await dbContext.Locations.Where(l => l.IsStockLocation).ToListAsync();
 
 		List<Installation> installations = new() {
 			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
@@ -413,9 +425,9 @@ public class DbSeeder(
 			}
 		}
 
-		maintObjects.AddRange(CreateStockItems(types));
+		maintObjects.AddRange(CreateStockItems(types, stockLocations));
 		if (!stations.Any() && !maintObjects.Any()) {
-			maintObjects.AddRange(CreateLegacyItems(types));
+			maintObjects.AddRange(CreateLegacyItems(types, stockLocations));
 		}
 
 		// Ensure stock/legacy items also get a random status (make stock/legacy items inactive by default)
@@ -435,28 +447,28 @@ public class DbSeeder(
 			maintObjType,
 			brand,
 			new Installation(installation.InstalledAt, installation.RemovedAt),
-			false
+			false,
+			null
 		);
 	}
 
-	private List<MaintObj> CreateStockItems(List<MaintObjType> types) {
+	private List<MaintObj> CreateStockItems(List<MaintObjType> types, List<Location> stockLocations) {
 		return new List<MaintObj> {
-			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true),
-			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true),
-			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true),
-			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true),
-			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true)
+			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
+			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
+			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true, stockLocations[1]),
+			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true, stockLocations[1]),
+			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[2])
 		};
 	}
 
-
-	private List<MaintObj> CreateLegacyItems(List<MaintObjType> types) {
+	private List<MaintObj> CreateLegacyItems(List<MaintObjType> types, List<Location> stockLocations) {
 		return new List<MaintObj> {
-			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true),
-			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true),
-			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true),
-			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true),
-			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true)
+			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
+			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
+			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true, stockLocations[1]),
+			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true, stockLocations[1]),
+			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[2])
 		};
 	}
 

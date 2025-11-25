@@ -43,10 +43,9 @@
 	             Hover="true"
 	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToStation(args.Item.Id))">
-
+		
 		<Columns>
-			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#"
-			                HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
@@ -57,7 +56,7 @@
 		<PagerContent>
 			<Pagination T="MeasurementStationDto.Index"/>
 		</PagerContent>
-
+		
 	</MudDataGrid>
 </MudHidden>
 
@@ -71,8 +70,8 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000"
-		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
 		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>

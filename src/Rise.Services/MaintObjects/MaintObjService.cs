@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.Identity;
@@ -8,7 +9,6 @@ using Rise.Shared.MaintObjects;
 
 using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
-
 
 namespace Rise.Services.MaintObjects;
 
@@ -85,6 +85,39 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		});
 	}
 
+	public async Task<Result<MaintObjResponse.Create>> CreateAsync(MaintObjRequest.Create request,
+		CancellationToken ctx = default) {
+		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == request.SerialNumber)) {
+			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", request.SerialNumber);
+			return Result.Conflict($"Onderhoudsobject met serienummer '{request.SerialNumber}' bestaat al.");
+		}
+
+		Location? location = await dbContext.Locations
+			.FirstOrDefaultAsync(x => x.Id == request.LocationId);
+
+		if (location is null) {
+			return Result.NotFound("De locatie werd niet gevonden.");
+		}
+
+		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
+
+		if (type is null) {
+			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
+		}
+
+		MaintObj mo = new(request.Name, request.SerialNumber, type,
+			request.Brand, null, true, location);
+
+		dbContext.MaintObjects.Add(mo);
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Created(new MaintObjResponse.Create {
+			MaintObjId = mo.Id
+		});
+  }
+    
 	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId,
 		CancellationToken ct = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects

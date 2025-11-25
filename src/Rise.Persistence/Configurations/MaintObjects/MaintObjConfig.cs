@@ -38,6 +38,8 @@ internal class MaintObjConfig : EntityConfiguration<MaintObj> {
 		});
 		builder.Property(x => x.IsInStock).IsRequired();
 
-		builder.HasOne(x => x.Location).WithMany().OnDelete(DeleteBehavior.Restrict);
+		builder.HasOne(x => x.Location)
+			.WithMany()
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

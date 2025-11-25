@@ -29,6 +29,8 @@ internal class LocationConfiguration : EntityConfiguration<Location> {
 			c.Property(x => x.Y).IsRequired().HasColumnName(nameof(Coordinate.Y)).HasPrecision(18, 6); ;
 		}).Navigation(x => x.Coordinate).IsRequired();
 
+		builder.Property(x => x.IsStockLocation).IsRequired();
+
 		// See /// See https://hogent-web.github.io/csharp/chapters/09/slides/index.html#1 for more information.
 		// Other Project configuration here.
 	}
