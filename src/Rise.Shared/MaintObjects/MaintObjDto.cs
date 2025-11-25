@@ -12,7 +12,6 @@ public static class MaintObjDto {
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
 		public required MaintObjType MaintObjType { get; set; }
-		public DateTime? NextMaintenanceDate { get; set; }
 		public required MaintObjStatus MaintObjStatus { get; set; }
 	}
 

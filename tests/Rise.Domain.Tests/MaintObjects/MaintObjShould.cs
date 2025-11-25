@@ -24,7 +24,7 @@ public class MaintObjShould {
 	}
 
 	private static MaintObjType MakeType(string code = "Sonde", string name = "Sonde") {
-		return new MaintObjType(Guid.NewGuid(), code, name);
+		return new MaintObjType(Guid.NewGuid(), code, name, 30, 180);
 	}
 
 	[Fact]

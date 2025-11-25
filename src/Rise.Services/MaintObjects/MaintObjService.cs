@@ -54,8 +54,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				d.SerialNumber,
 				MaintObjTypeCode = d.MaintObjType != null ? d.MaintObjType.Code : null,
 				d.MaintObjStatus,
-				InstalledAt = d.Installation != null ? d.Installation.InstalledAt : (DateTime?)null,
-				IntervalDays = d.MaintObjType != null ? d.MaintObjType.DefaultMaintenanceIntervalDays : null
+				InstalledAt = d.Installation != null ? d.Installation.InstalledAt : (DateTime?)null
 			})
 			.ToListAsync(ctx);
 
@@ -63,13 +62,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
 			if (d.MaintObjTypeCode is not null &&
-				Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp)) {
+			    Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
-			}
-
-			DateTime? next = null;
-			if (d.InstalledAt.HasValue && d.IntervalDays.HasValue) {
-				next = d.InstalledAt.Value.AddDays(d.IntervalDays.Value);
 			}
 
 			return new MaintObjDto.Index {
@@ -77,8 +71,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				Name = d.Name,
 				SerialNumber = d.SerialNumber,
 				MaintObjType = parsedType,
-				MaintObjStatus = (SharedStatus)d.MaintObjStatus,
-				NextMaintenanceDate = next
+				MaintObjStatus = (SharedStatus)d.MaintObjStatus
 			};
 		}).ToList();
 

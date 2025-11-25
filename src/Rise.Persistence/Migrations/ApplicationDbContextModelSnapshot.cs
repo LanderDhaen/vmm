@@ -361,6 +361,9 @@ namespace Rise.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("CalibrationIntervalDays")
+                        .HasColumnType("int");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -371,13 +374,13 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int?>("DefaultMaintenanceIntervalDays")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<int>("MaintenanceIntervalDays")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -400,50 +403,55 @@ namespace Rise.Persistence.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CalibrationIntervalDays = 21,
                             Code = "Sonde",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultMaintenanceIntervalDays = 14,
                             IsDeleted = false,
+                            MaintenanceIntervalDays = 14,
                             Name = "Sonde",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            CalibrationIntervalDays = 97,
                             Code = "Logger",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultMaintenanceIntervalDays = 90,
                             IsDeleted = false,
+                            MaintenanceIntervalDays = 90,
                             Name = "Logger",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            CalibrationIntervalDays = 187,
                             Code = "Modem",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultMaintenanceIntervalDays = 180,
                             IsDeleted = false,
+                            MaintenanceIntervalDays = 180,
                             Name = "Modem",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            CalibrationIntervalDays = 372,
                             Code = "Sim",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultMaintenanceIntervalDays = 365,
                             IsDeleted = false,
+                            MaintenanceIntervalDays = 365,
                             Name = "SIM",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                            CalibrationIntervalDays = 372,
                             Code = "Voeding",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DefaultMaintenanceIntervalDays = 365,
                             IsDeleted = false,
+                            MaintenanceIntervalDays = 365,
                             Name = "Voeding",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
