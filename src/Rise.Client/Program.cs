@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 using MudBlazor;
 using MudBlazor.Services;
+using MudBlazor.Translations;
 
 using Rise.Client;
 using Rise.Client.Identity;
+using Rise.Client.Layout;
 using Rise.Client.Locations;
 using Rise.Client.Networks;
 using Rise.Client.Projects;
@@ -22,6 +24,8 @@ try {
 
 	builder.RootComponents.Add<App>("#app");
 	builder.RootComponents.Add<HeadOutlet>("head::after");
+	builder.Services.AddMudTranslations();
+
 
 	Log.Logger = new LoggerConfiguration()
 		.MinimumLevel.Information()
