@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251118173527_InitialCreate")]
+    [Migration("20251125220657_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -292,6 +292,174 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("Location", (string)null);
                 });
 
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsInStock")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MaintObjStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("MaintObjTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("StationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("MaintObjTypeId");
+
+                    b.HasIndex("StationId");
+
+                    b.HasIndex("TechnicianId");
+
+                    b.ToTable("MaintObj", (string)null);
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CalibrationIntervalDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("MaintenanceIntervalDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("MaintObjType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CalibrationIntervalDays = 21,
+                            Code = "Sonde",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaintenanceIntervalDays = 14,
+                            Name = "Sonde",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            CalibrationIntervalDays = 97,
+                            Code = "Logger",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaintenanceIntervalDays = 90,
+                            Name = "Logger",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            CalibrationIntervalDays = 187,
+                            Code = "Modem",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaintenanceIntervalDays = 180,
+                            Name = "Modem",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            CalibrationIntervalDays = 372,
+                            Code = "Sim",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaintenanceIntervalDays = 365,
+                            Name = "SIM",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                            CalibrationIntervalDays = 372,
+                            Code = "Voeding",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaintenanceIntervalDays = 365,
+                            Name = "Voeding",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
                 {
                     b.Property<Guid>("Id")
@@ -367,42 +535,6 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("Zone", (string)null);
                 });
 
-            modelBuilder.Entity("Rise.Domain.Products.Product", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Product", (string)null);
-                });
-            
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -522,22 +654,52 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("MeasurementStation", (string)null);
+                });
+
+            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStationHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("MeasurementStationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("MeasurementStations", (string)null);
+                    b.HasIndex("MeasurementStationId");
+
+                    b.ToTable("MeasurementStationHistory", (string)null);
                 });
 
             modelBuilder.Entity("MeasurementStationProject", b =>
@@ -655,11 +817,13 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<double>("X")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("X");
 
                             b1.Property<double>("Y")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("Y");
 
                             b1.HasKey("LocationId");
@@ -675,6 +839,59 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Coordinate")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
+                {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Rise.Domain.MaintObjects.MaintObjType", "MaintObjType")
+                        .WithMany("MaintObjects")
+                        .HasForeignKey("MaintObjTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
+                        .WithMany("MaintObjects")
+                        .HasForeignKey("StationId");
+
+                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId");
+
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
+                        {
+                            b1.Property<Guid>("MaintObjId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("InstalledAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("InstalledAt");
+
+                            b1.Property<DateTime?>("RemovedAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("RemovedAt");
+
+                            b1.HasKey("MaintObjId");
+
+                            b1.ToTable("MaintObj");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MaintObjId");
+                        });
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("MaintObjType");
+
+                    b.Navigation("Station");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
@@ -729,27 +946,6 @@ namespace Rise.Persistence.Migrations
                         .WithMany("ProjectHistories")
                         .HasForeignKey("ProjectId");
 
-                    b.OwnsOne("Rise.Domain.Common.ValidityRange", "ValidityRange", b1 =>
-                        {
-                            b1.Property<Guid>("ProjectHistoryId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<DateTime>("ValidFrom")
-                                .HasColumnType("datetime2")
-                                .HasColumnName("ValidFrom");
-
-                            b1.Property<DateTime>("ValidTo")
-                                .HasColumnType("datetime2")
-                                .HasColumnName("ValidTo");
-
-                            b1.HasKey("ProjectHistoryId");
-
-                            b1.ToTable("ProjectHistory");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProjectHistoryId");
-                        });
-
                     b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
                         {
                             b1.Property<Guid>("ProjectHistoryId")
@@ -762,6 +958,27 @@ namespace Rise.Persistence.Migrations
                             b1.Property<DateOnly>("StartDate")
                                 .HasColumnType("date")
                                 .HasColumnName("StartDate");
+
+                            b1.HasKey("ProjectHistoryId");
+
+                            b1.ToTable("ProjectHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectHistoryId");
+                        });
+
+                    b.OwnsOne("Rise.Domain.Common.ValidityRange", "ValidityRange", b1 =>
+                        {
+                            b1.Property<Guid>("ProjectHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("ValidFrom")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidFrom");
+
+                            b1.Property<DateTime>("ValidTo")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidTo");
 
                             b1.HasKey("ProjectHistoryId");
 
@@ -786,7 +1003,7 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("Rise.Domain.Stations.Installation", "Installation", b1 =>
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MeasurementStationId")
                                 .HasColumnType("uniqueidentifier");
@@ -801,7 +1018,7 @@ namespace Rise.Persistence.Migrations
 
                             b1.HasKey("MeasurementStationId");
 
-                            b1.ToTable("MeasurementStations");
+                            b1.ToTable("MeasurementStation");
 
                             b1.WithOwner()
                                 .HasForeignKey("MeasurementStationId");
@@ -813,9 +1030,84 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("Location");
                 });
 
+            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStationHistory", b =>
+                {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", null)
+                        .WithMany("MeasurementStationHistories")
+                        .HasForeignKey("MeasurementStationId");
+
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
+                        {
+                            b1.Property<Guid>("MeasurementStationHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("InstalledAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("InstalledAt");
+
+                            b1.Property<DateTime?>("RemovedAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("RemovedAt");
+
+                            b1.HasKey("MeasurementStationHistoryId");
+
+                            b1.ToTable("MeasurementStationHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeasurementStationHistoryId");
+                        });
+
+                    b.OwnsOne("Rise.Domain.Common.ValidityRange", "ValidityRange", b1 =>
+                        {
+                            b1.Property<Guid>("MeasurementStationHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("ValidFrom")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidFrom");
+
+                            b1.Property<DateTime>("ValidTo")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidTo");
+
+                            b1.HasKey("MeasurementStationHistoryId");
+
+                            b1.ToTable("MeasurementStationHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MeasurementStationHistoryId");
+                        });
+
+                    b.Navigation("Installation")
+                        .IsRequired();
+
+                    b.Navigation("Location");
+
+                    b.Navigation("ValidityRange")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>
+                {
+                    b.Navigation("MaintObjects");
+                });
+
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Navigation("ProjectHistories");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
+                {
+                    b.Navigation("MaintObjects");
+
+                    b.Navigation("MeasurementStationHistories");
                 });
 #pragma warning restore 612, 618
         }
