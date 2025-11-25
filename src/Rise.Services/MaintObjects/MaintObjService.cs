@@ -91,6 +91,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			.AsNoTracking()
 			.Include(d => d.Station)
 			.Include(d => d.MaintObjType)
+			.Include(d => d.Location)
 			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
 
 		if (maintObj is null) {
@@ -110,20 +111,12 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			MaintObjType = parsedType,
 			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
 			Brand = maintObj.Brand,
-			MeasurementStationId = maintObj.MeasurementStationId,
 			MeasurementStationCode = maintObj.Station?.Code,
+			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
 			IsInStock = maintObj.IsInStock,
 			InstalledAt = maintObj.Installation?.InstalledAt,
 			RemovedAt = maintObj.Installation?.RemovedAt
 		};
-
-		// compute next maintenance date if possible
-		if (dto.InstalledAt.HasValue && maintObj.MaintObjType?.DefaultMaintenanceIntervalDays.HasValue == true) {
-			dto.NextMaintenanceDate =
-				dto.InstalledAt.Value.AddDays(maintObj.MaintObjType.DefaultMaintenanceIntervalDays.Value);
-		} else {
-			dto.NextMaintenanceDate = null;
-		}
 
 		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });
 	}

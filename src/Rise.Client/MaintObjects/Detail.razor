@@ -115,8 +115,18 @@ else
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudTextField T="string" @bind-Value="_maintObj.Location" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Stockage</MudText>
 						<MudTextField T="bool" @bind-Value="_maintObj.IsInStock" ReadOnly="true" Class="p-2"/>
+					</MudItem>
+
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="p-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
@@ -124,11 +134,6 @@ else
 						<MudTextField T="DateTime?" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="p-2"/>
 					</MudItem>
 
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="p-2"/>
-					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Volgende onderhoud</MudText>
