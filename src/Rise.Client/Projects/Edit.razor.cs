@@ -46,7 +46,6 @@ public partial class Edit {
 		}
 
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", "/projects"),
 			new BreadcrumbItem("Bewerk", $"/projects/edit/{ProjectId}", true)
 		);

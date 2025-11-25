@@ -1,4 +1,5 @@
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Projects;
 
 namespace Rise.Domain.Stations;
@@ -29,6 +30,8 @@ public class MeasurementStation : Entity {
 	public Location Location { get; private set; }
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
+	public ICollection<MaintObj> MaintObjects { get; } = new List<MaintObj>();
+
 
 	public IReadOnlyCollection<MeasurementStationHistory> MeasurementStationHistories => _measurementStationHistories.AsReadOnly();
 

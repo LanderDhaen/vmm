@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
+
+using Installation = Rise.Domain.Common.Installation;
 
 namespace Rise.Persistence;
 
@@ -27,6 +30,7 @@ public class DbSeeder(
 		await ProjectHistoriesAsync();
 		await StationsAsync();
 		await MeasurementStationsHistoriesAsync();
+		await MaintObjectsAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -263,7 +267,7 @@ public class DbSeeder(
 			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
 			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
 			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
-			new Installation(new DateTime(2025, 4, 5, 3 , 24, 59)),
+			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
 			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
 			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
 		};
@@ -274,7 +278,7 @@ public class DbSeeder(
 			new MeasurementStation("STN-003", locations[2], installations[2]),
 			new MeasurementStation("STN-004", locations[3], installations[3]),
 			new MeasurementStation("STN-005", locations[4], installations[4]),
-			new MeasurementStation("STN-006", locations[5], installations[5]),
+			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
 
 		dbContext.MeasurementStations.AddRange(stations);
@@ -286,7 +290,8 @@ public class DbSeeder(
 			return;
 		}
 
-		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
+		List<MeasurementStation> stations =
+			await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 		List<Location> locations = await dbContext.Locations.ToListAsync();
 
 		List<DateTime?> removedAts = new() {
@@ -298,16 +303,18 @@ public class DbSeeder(
 			null
 		};
 
-		Location DummyLocation = new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
+		Location DummyLocation =
+			new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
 
 		int i = 0;
 
 		foreach (MeasurementStation station in stations) {
-
 			Installation installation = station.Installation;
 			Location location = station.Location;
 
 			// Move the location
+			int l0 = 0;
+			int l1 = Math.Min(1, locations.Count - 1);
 
 			station.MoveTo(DummyLocation);
 
@@ -334,5 +341,123 @@ public class DbSeeder(
 
 			i++;
 		}
+	}
+
+	private async Task MaintObjectsAsync() {
+		if (dbContext.MaintObjects.Any()) {
+			return;
+		}
+
+		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
+			? dbContext.MeasurementStations.Local.ToList()
+			: await dbContext.MeasurementStations.ToListAsync();
+
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
+			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
+		};
+
+		// Fetch an existing technician or create a seed technician
+		Technician? technician = await dbContext.Technicians.FirstOrDefaultAsync();
+		if (technician == null) {
+			technician = new Technician("Seed", "Tech", "seed-tech-account");
+			dbContext.Technicians.Add(technician);
+			await dbContext.SaveChangesAsync();
+		}
+
+
+		List<MaintObjType> types = dbContext.MaintObjTypes.Local.Any()
+			? dbContext.MaintObjTypes.Local.ToList()
+			: await dbContext.MaintObjTypes.ToListAsync();
+
+		List<MaintObj> maintObjects = new();
+
+		// Create a random generator to get consistent seed data across runs
+		Random rnd = new(12345);
+
+		if (stations.Any()) {
+			for (int i = 0; i < stations.Count; i++) {
+				MeasurementStation station = stations[i];
+				Installation installation = installations[i % installations.Count];
+
+				List<MaintObj> objsForStation = new() {
+					CreateMaintObj(station, "Sonde", "SN", types.First(t => t.Code == "Sonde"), "Aquatroll",
+						installation),
+					CreateMaintObj(station, "Logger", "LG", types.First(t => t.Code == "Logger"), "Campbell",
+						installation),
+					CreateMaintObj(station, "Modem", "MD", types.First(t => t.Code == "Modem"), "Centerion",
+						installation),
+					CreateMaintObj(station, "SIM", "SI", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE",
+						installation),
+					CreateMaintObj(station, "Voeding", "VO", types.First(t => t.Code == "Voeding"), "Kyocera",
+						installation)
+				};
+
+				objsForStation.ForEach(mo => {
+					mo.AssignToStation(station);
+					mo.RecordTechnician(technician);
+					mo.SetStatus(RandomStatus(rnd));
+					maintObjects.Add(mo);
+				});
+			}
+		}
+
+		maintObjects.AddRange(CreateStockItems(types));
+		if (!stations.Any() && !maintObjects.Any()) {
+			maintObjects.AddRange(CreateLegacyItems(types));
+		}
+
+		// Ensure stock/legacy items also get a random status (make stock/legacy items inactive by default)
+		foreach (MaintObj mo in maintObjects) {
+			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Inactief : RandomStatus(rnd));
+		}
+
+		dbContext.MaintObjects.AddRange(maintObjects);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, MaintObjType maintObjType,
+		string brand, Installation installation) {
+		return new MaintObj(
+			$"{station.Code}-{name}",
+			$"{prefix}-{Guid.NewGuid().ToString().Substring(0, 8)}",
+			maintObjType,
+			brand,
+			new Installation(installation.InstalledAt, installation.RemovedAt),
+			false
+		);
+	}
+
+	private List<MaintObj> CreateStockItems(List<MaintObjType> types) {
+		return new List<MaintObj> {
+			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true),
+			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true),
+			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true),
+			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true),
+			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true)
+		};
+	}
+
+
+	private List<MaintObj> CreateLegacyItems(List<MaintObjType> types) {
+		return new List<MaintObj> {
+			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true),
+			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true),
+			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true),
+			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true),
+			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true)
+		};
+	}
+
+	// Helper to pick a random status with weighted probabilities
+	private static MaintObjStatus RandomStatus(Random rnd) {
+		int roll = rnd.Next(100);
+		return roll < 40 ? MaintObjStatus.Actief
+			: roll < 80 ? MaintObjStatus.Inactief
+			: MaintObjStatus.Defect;
 	}
 }

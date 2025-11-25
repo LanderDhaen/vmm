@@ -1,0 +1,13 @@
+using Rise.Shared.Common;
+
+namespace Rise.Shared.MaintObjects;
+
+/// <summary>
+///     Provides methods for managing maintenance-object-related operations.
+/// </summary>
+public interface IMaintObjService {
+	Task<Result<MaintObjResponse.Index>> GetIndexAsync(
+		QueryRequest.SkipTake req,
+		CancellationToken ctx = default
+	);
+}

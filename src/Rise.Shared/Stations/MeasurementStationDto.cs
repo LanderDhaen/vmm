@@ -9,6 +9,7 @@ public static class MeasurementStationDto {
 		public string? Location { get; set; }
 		public string? City { get; set; }
 		public int ProjectsCount { get; set; }
+		public int MaintObjectsCount { get; set; }
 	}
 
 	public sealed class Detail {
@@ -19,6 +20,7 @@ public static class MeasurementStationDto {
 		public string? Location { get; set; }
 		public string? City { get; set; }
 		public int ProjectsCount { get; set; }
+		public int MaintObjectsCount { get; set; }
 	}
 
 	public class History {

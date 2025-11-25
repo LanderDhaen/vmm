@@ -34,7 +34,6 @@ public partial class Create {
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Meetstations", "/stations"),
 			new BreadcrumbItem("Voeg toe", "/stations/create", true)
 		);
