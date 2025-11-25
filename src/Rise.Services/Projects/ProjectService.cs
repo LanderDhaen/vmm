@@ -79,9 +79,21 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-		IQueryable<Project> query = dbContext.Projects.AsQueryable();
+
+		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
+
+		// Filtering (MSSQL handles casing)
+
+		query = query.Where(p =>
+			EF.Functions.Like(p.Name, $"%{req.SearchTerm}%") ||
+			EF.Functions.Like(p.Code, $"%{req.SearchTerm}%") ||
+			EF.Functions.Like(p.MeasurementNetwork.Name, $"%{req.SearchTerm}%") ||
+			EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{req.SearchTerm}%")
+		);
 
 		int totalCount = await query.CountAsync(ctx);
+
+		// Sorting
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
@@ -116,12 +128,15 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			query = query.OrderBy(p => p.Id);
 		}
 
-		IQueryable<Project> page = query
-			.AsNoTracking()
+		// Paginating
+
+		query = query
 			.Skip(req.Skip)
 			.Take(req.Take);
 
-		List<ProjectDto.Index> projects = await page
+		// Selecting
+
+		List<ProjectDto.Index> projects = await query
 			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
 				Name = p.Name,
