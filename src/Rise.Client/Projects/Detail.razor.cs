@@ -52,7 +52,6 @@ public partial class Detail {
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
-				new BreadcrumbItem("Home", "/"),
 				new BreadcrumbItem("Projecten", "/projects"),
 				new BreadcrumbItem($"{_project.Code} - {_project.Name}", null, true)
 			);

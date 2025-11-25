@@ -13,7 +13,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              FullWidth="true"
+		              DebounceInterval="1000"
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
+		              @bind-Value="_searchTerm"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -34,13 +36,16 @@
 
 	<MudDataGrid T="ProjectDto.Index"
 	             ServerData="GetProjectsAsync"
+	             @ref="_grid"
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#"
+			                HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
@@ -65,6 +70,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000"
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed"
+		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 
@@ -108,10 +116,11 @@
 					         @onclick="() => NavigateToProject(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
+								          Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-									<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-									         Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+									<MudBadge Color="@(DefineColor(item.Status))" Dot="true"></MudBadge>
+
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>

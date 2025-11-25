@@ -1,4 +1,4 @@
-namespace Rise.Domain.Stations;
+namespace Rise.Domain.Common;
 
 public sealed class Installation : ValueObject {
 	private Installation() { }

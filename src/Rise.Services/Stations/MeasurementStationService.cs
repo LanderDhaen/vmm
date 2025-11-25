@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
@@ -16,30 +17,45 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
 		QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-		IQueryable<MeasurementStation> query = dbContext.MeasurementStations;
+
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+
+		// Filtering (MSSQL handles casing)
+
+		query = query.Where(s =>
+			EF.Functions.Like(s.Code, $"%{request.SearchTerm}%") ||
+			EF.Functions.Like(s.Location.Name, $"%{request.SearchTerm}%") ||
+			EF.Functions.Like(s.Location.Address.Addressline1, $"%{request.SearchTerm}%") ||
+			EF.Functions.Like(s.Location.Address.Addressline2, $"%{request.SearchTerm}%") ||
+			EF.Functions.Like(s.Location.Address.City, $"%{request.SearchTerm}%") ||
+			EF.Functions.Like(s.Location.Address.PostalCode, $"%{request.SearchTerm}%")
+		);
+
 
 		int totalCount = await query.CountAsync(ctx);
+
+		// Sorting
 
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			bool desc = request.OrderDescending;
 
 			query = request.OrderBy switch {
-				nameof(MeasurementStationDto.Index.InstalledAt)
+				nameof(Installation.InstalledAt)
 					=> desc
 						? query.OrderByDescending(s => s.Installation.InstalledAt)
 						: query.OrderBy(s => s.Installation.InstalledAt),
 
-				nameof(MeasurementStationDto.Index.RemovedAt)
+				nameof(Installation.RemovedAt)
 					=> desc
 						? query.OrderByDescending(s => s.Installation.RemovedAt)
 						: query.OrderBy(s => s.Installation.RemovedAt),
 
-				nameof(MeasurementStationDto.Index.Location)
+				nameof(Location)
 					=> desc
 						? query.OrderByDescending(s => s.Location.Name)
 						: query.OrderBy(s => s.Location.Name),
 
-				nameof(MeasurementStationDto.Index.City)
+				nameof(Location.Address.City)
 					=> desc
 						? query.OrderByDescending(s => s.Location.Address.City)
 						: query.OrderBy(s => s.Location.Address.City),
@@ -49,23 +65,21 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 						? query.OrderByDescending(s => s.Projects.Count())
 						: query.OrderBy(s => s.Projects.Count()),
 
-				nameof(MeasurementStationDto.Index.Code)
-					=> desc
-						? query.OrderByDescending(s => s.Code)
-						: query.OrderBy(s => s.Code),
-
 				_ => desc
 					? query.OrderByDescending(s => EF.Property<object>(s, request.OrderBy!))
 					: query.OrderBy(s => EF.Property<object>(s, request.OrderBy!))
 			};
 		} else {
-			query = query.OrderBy(s => s.Code);
+			query = query.OrderBy(s => s.Id);
 		}
 
+		// Paginating
+
+		query = query.Skip(request.Skip).Take(request.Take);
+
+		// Selecting
+
 		List<MeasurementStationDto.Index> stations = await query
-			.AsNoTracking()
-			.Skip(request.Skip)
-			.Take(request.Take)
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
 				Code = s.Code,
@@ -107,6 +121,43 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		};
 
 		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
+	}
+
+	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
+		CancellationToken ct = default) {
+
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+
+		MeasurementStationDto.History? measurementStation = await query
+			.Where(s => s.Id == stationId)
+			.Select(s => new MeasurementStationDto.History {
+				Id = s.Id,
+				Code = s.Code,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				Location = s.Location.Name,
+				City = s.Location.Address.City,
+				MeasurementStationHistories = s.MeasurementStationHistories
+					.OrderByDescending(h => h.ValidityRange.ValidTo)
+					.Select(h => new MeasurementStationHistoryDto.Index {
+						Id = h.Id,
+						InstalledAt = h.Installation.InstalledAt,
+						RemovedAt = h.Installation.RemovedAt,
+						Location = h.Location.Name,
+						City = h.Location.Address.City,
+						ValidFrom = h.ValidityRange.ValidFrom,
+						ValidTo = h.ValidityRange.ValidTo,
+					}).ToList()
+			})
+			.FirstOrDefaultAsync(ct);
+
+		if (measurementStation is null) {
+			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
+		}
+
+		return Result.Success(new MeasurementStationResponse.History {
+			MeasurementStation = measurementStation
+		});
 	}
 
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
@@ -187,6 +238,10 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
+
+		// TODO: Potentially refactoring this to match project editing flow
+
+
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Location)
 			.Include(s => s.Projects)

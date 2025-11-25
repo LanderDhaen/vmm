@@ -47,7 +47,6 @@ public partial class Detail {
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Meetstations", "/stations"),
 			new BreadcrumbItem($"{_station.Code}", null, true)
 		);

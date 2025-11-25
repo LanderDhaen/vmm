@@ -34,7 +34,6 @@ public partial class Create {
 		networks = result.Value.measurementsNetworks;
 
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Projecten", "/projects"),
 			new BreadcrumbItem("Voeg toe", "/create", true)
 		);

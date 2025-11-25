@@ -52,9 +52,11 @@ public static class QueryRequest {
 		/// <summary>
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
-		public string AsQuery() {
-			return $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}";
-		}
+		public string AsQuery() =>
+			string.IsNullOrWhiteSpace(SearchTerm)
+				? $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}"
+				: $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&searchTerm={SearchTerm}";
+
 	}
 
 	/// <summary>

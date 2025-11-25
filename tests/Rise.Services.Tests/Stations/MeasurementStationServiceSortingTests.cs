@@ -5,6 +5,7 @@ using Ardalis.Result;
 
 using Microsoft.Data.Sqlite;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
