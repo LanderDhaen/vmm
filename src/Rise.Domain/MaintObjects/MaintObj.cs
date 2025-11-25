@@ -23,7 +23,7 @@ public class MaintObj : Entity {
 	public string? Brand { get; private set; }
 	public Guid MaintObjTypeId { get; private set; }
 	public MaintObjType? MaintObjType { get; private set; }
-	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Actief;
+	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactief;
 	public Installation? Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;
 

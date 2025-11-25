@@ -359,9 +359,9 @@ public class DbSeeder(
 			maintObjects.AddRange(CreateLegacyItems(installations, types));
 		}
 
-		// Ensure stock/legacy items also get a random status (make stock/legacy items active by default)
+		// Ensure stock/legacy items also get a random status (make stock/legacy items inactive by default)
 		foreach (MaintObj mo in maintObjects) {
-			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Actief : RandomStatus(rnd));
+			mo.SetStatus(mo.IsInStock ? MaintObjStatus.Inactief : RandomStatus(rnd));
 		}
 
 		dbContext.MaintObjects.AddRange(maintObjects);
