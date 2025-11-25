@@ -80,11 +80,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
-	// ---------------------------
-	// Index / sorting / search/ filtering / paging
-	// ---------------------------
-
-	// Helper type at class scope to avoid language/version issues with 'record'
 	private sealed class FilterSpec {
 		public string? Operator { get; }
 		public string? Value { get; }
@@ -95,9 +90,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 	}
 
-	// ----------------------------
-	// Helpers (class-level, static)
-	// ----------------------------
 	private static FilterSpec? ParseFilterSpec(object? rawValue) {
 		if (rawValue == null) return null;
 
@@ -145,9 +137,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 		}
 
-		// filters loop
 		if (req.Filters != null && req.Filters.Any()) {
-			// parse all filters first (explicit types to avoid inference issues)
 			var temp = req.Filters
 				.Select(kv => (Key: kv.Key, Spec: ParseFilterSpec(kv.Value)))
 				.Where(x => x.Spec != null)
@@ -207,10 +197,8 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			}
 		}
 
-		// Count after filters
 		int totalCount = await query.CountAsync(ctx);
 
-		// ordering
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
