@@ -29,7 +29,7 @@ public static class MaintObjDto {
 		public Guid? MeasurementStationId { get; set; }
 		public string? MeasurementStationCode { get; set; }
 		public bool IsInStock { get; set; }
-		public DateTime InstalledAt { get; set; }
+		public DateTime? InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
 		public DateTime? NextMaintenanceDate { get; set; }
 	}

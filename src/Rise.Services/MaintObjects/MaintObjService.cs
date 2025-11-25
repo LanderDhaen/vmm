@@ -93,25 +93,39 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		MaintObj? maintObj = await dbContext.MaintObjects
 			.AsNoTracking()
 			.Include(d => d.Station) // include station so we can map station info
+			.Include(d => d.MaintObjType) // include maintobj type so we can read Code/DefaultMaintenanceIntervalDays
 			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
 
 		if (maintObj is null) {
 			return Result.NotFound();
 		}
 
+		// safe parse of domain MaintObjType.Code to shared enum
+		MaintObjType parsedType = MaintObjType.Sonde;
+		if (maintObj.MaintObjType?.Code is string code && Enum.TryParse<MaintObjType>(code, out var tmp)) {
+			parsedType = tmp;
+		}
+
 		MaintObjDto.Detail dto = new() {
 			Id = maintObj.Id,
 			Name = maintObj.Name,
 			SerialNumber = maintObj.SerialNumber,
-			MaintObjType = (MaintObjType)maintObj.MaintObjType,
+			MaintObjType = parsedType,
 			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
 			Brand = maintObj.Brand,
 			MeasurementStationId = maintObj.MeasurementStationId,
 			MeasurementStationCode = maintObj.Station?.Code,
 			IsInStock = maintObj.IsInStock,
-			InstalledAt = maintObj.Installation.InstalledAt,
-			RemovedAt = maintObj.Installation.RemovedAt
+			InstalledAt = maintObj.Installation?.InstalledAt,
+			RemovedAt = maintObj.Installation?.RemovedAt
 		};
+
+		// compute next maintenance date if possible
+		if (dto.InstalledAt.HasValue && maintObj.MaintObjType?.DefaultMaintenanceIntervalDays.HasValue == true) {
+			dto.NextMaintenanceDate = dto.InstalledAt.Value.AddDays(maintObj.MaintObjType.DefaultMaintenanceIntervalDays.Value);
+		} else {
+			dto.NextMaintenanceDate = null;
+		}
 
 		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });
 	}

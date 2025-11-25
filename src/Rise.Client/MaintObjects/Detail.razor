@@ -121,7 +121,7 @@ else
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-						<MudTextField T="DateTime" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="p-2"/>
 					</MudItem>
 
 
@@ -130,6 +130,10 @@ else
 						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="p-2"/>
 					</MudItem>
 
+					<MudItem xs="12" sm="6">
+						<MudText Typo="Typo.subtitle2">Volgende onderhoud</MudText>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.NextMaintenanceDate" ReadOnly="true" Class="p-2"/>
+					</MudItem>
 
 				</MudGrid>
 			</MudPaper>
