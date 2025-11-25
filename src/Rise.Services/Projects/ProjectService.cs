@@ -98,8 +98,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	// ----------------------------
 	// Helpers (class-level, static)
 	// ----------------------------
-	private static string ToLowerTrim(string? s) => (s ?? string.Empty).Trim().ToLowerInvariant();
-
 	private static FilterSpec? ParseFilterSpec(object? rawValue) {
 		if (rawValue == null) return null;
 
@@ -165,13 +163,13 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 				switch (key) {
 				case "MeasurementNetwork": {
-						var t = ToLowerTrim(raw);
+						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
 						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() == t);
 						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Zone": {
-						var t = ToLowerTrim(raw);
+						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
 						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t);
 						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 						break;
