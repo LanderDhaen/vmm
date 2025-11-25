@@ -37,20 +37,21 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaintObjTypes",
+                name: "MaintObjType",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    DefaultMaintenanceIntervalDays = table.Column<int>(type: "int", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    MaintenanceIntervalDays = table.Column<int>(type: "int", nullable: false),
+                    CalibrationIntervalDays = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MaintObjTypes", x => x.Id);
+                    table.PrimaryKey("PK_MaintObjType", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -278,7 +279,7 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaintObjects",
+                name: "MaintObj",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -290,36 +291,36 @@ namespace Rise.Persistence.Migrations
                     InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsInStock = table.Column<bool>(type: "bit", nullable: false),
-                    MeasurementStationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    StationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TechnicianId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MaintObjects", x => x.Id);
+                    table.PrimaryKey("PK_MaintObj", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MaintObjects_Location_LocationId",
+                        name: "FK_MaintObj_Location_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Location",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_MaintObjects_MaintObjTypes_MaintObjTypeId",
+                        name: "FK_MaintObj_MaintObjType_MaintObjTypeId",
                         column: x => x.MaintObjTypeId,
-                        principalTable: "MaintObjTypes",
+                        principalTable: "MaintObjType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MaintObjects_MeasurementStations_MeasurementStationId",
-                        column: x => x.MeasurementStationId,
+                        name: "FK_MaintObj_MeasurementStations_StationId",
+                        column: x => x.StationId,
                         principalTable: "MeasurementStations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_MaintObjects_Technician_TechnicianId",
+                        name: "FK_MaintObj_Technician_TechnicianId",
                         column: x => x.TechnicianId,
                         principalTable: "Technician",
                         principalColumn: "Id");
@@ -397,40 +398,40 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "MaintObjTypes",
-                columns: new[] { "Id", "Code", "CreatedAt", "DefaultMaintenanceIntervalDays", "IsDeleted", "Name", "UpdatedAt" },
+                table: "MaintObjType",
+                columns: new[] { "Id", "CalibrationIntervalDays", "Code", "MaintenanceIntervalDays", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), "Sonde", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 14, false, "Sonde", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), "Logger", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 90, false, "Logger", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000003"), "Modem", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 180, false, "Modem", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000004"), "Sim", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 365, false, "SIM", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("00000000-0000-0000-0000-000000000005"), "Voeding", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 365, false, "Voeding", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), 21, "Sonde", 14, "Sonde" },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), 97, "Logger", 90, "Logger" },
+                    { new Guid("00000000-0000-0000-0000-000000000003"), 187, "Modem", 180, "Modem" },
+                    { new Guid("00000000-0000-0000-0000-000000000004"), 372, "Sim", 365, "SIM" },
+                    { new Guid("00000000-0000-0000-0000-000000000005"), 372, "Voeding", 365, "Voeding" }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintObjects_LocationId",
-                table: "MaintObjects",
+                name: "IX_MaintObj_LocationId",
+                table: "MaintObj",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintObjects_MaintObjTypeId",
-                table: "MaintObjects",
+                name: "IX_MaintObj_MaintObjTypeId",
+                table: "MaintObj",
                 column: "MaintObjTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintObjects_MeasurementStationId",
-                table: "MaintObjects",
-                column: "MeasurementStationId");
+                name: "IX_MaintObj_StationId",
+                table: "MaintObj",
+                column: "StationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintObjects_TechnicianId",
-                table: "MaintObjects",
+                name: "IX_MaintObj_TechnicianId",
+                table: "MaintObj",
                 column: "TechnicianId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaintObjTypes_Code",
-                table: "MaintObjTypes",
+                name: "IX_MaintObjType_Code",
+                table: "MaintObjType",
                 column: "Code",
                 unique: true);
 
@@ -521,7 +522,7 @@ namespace Rise.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MaintObjects");
+                name: "MaintObj");
 
             migrationBuilder.DropTable(
                 name: "MeasurementStationProject");
@@ -545,7 +546,7 @@ namespace Rise.Persistence.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "MaintObjTypes");
+                name: "MaintObjType");
 
             migrationBuilder.DropTable(
                 name: "Technician");
