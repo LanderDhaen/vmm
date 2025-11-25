@@ -1,8 +1,8 @@
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
-using Rise.Domain.Stations;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 
 namespace Rise.Domain.Tests.MaintObjects;
 
@@ -36,7 +36,7 @@ public class MaintObjShould {
 		mo.Location.ShouldBeNull();
 		mo.MeasurementStationId.ShouldBeNull();
 		mo.TechnicianId.ShouldBeNull();
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Actief);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
 	}
 
 	[Fact]
@@ -92,4 +92,3 @@ public class MaintObjShould {
 		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", Guid.NewGuid(), null, null, true));
 	}
 }
-
