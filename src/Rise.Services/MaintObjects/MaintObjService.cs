@@ -43,35 +43,34 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
-			.Include(d => d.MaintObjType)
+			.Include(mo => mo.MaintObjType)
 			.Skip(req.Skip)
 			.Take(req.Take);
 
 		var raw = await page
-			.Select(d => new {
-				d.Id,
-				d.Name,
-				d.SerialNumber,
-				MaintObjTypeCode = d.MaintObjType != null ? d.MaintObjType.Code : null,
-				d.MaintObjStatus,
-				InstalledAt = d.Installation != null ? d.Installation.InstalledAt : (DateTime?)null
+			.Select(mo => new {
+				mo.Id,
+				mo.Name,
+				mo.SerialNumber,
+				MaintObjTypeCode = mo.MaintObjType != null ? mo.MaintObjType.Code : null,
+				mo.MaintObjStatus
 			})
 			.ToListAsync(ctx);
 
-		List<MaintObjDto.Index> maintObjects = raw.Select(d => {
+		List<MaintObjDto.Index> maintObjects = raw.Select(mo => {
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
-			if (d.MaintObjTypeCode is not null &&
-			    Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp)) {
+			if (mo.MaintObjTypeCode is not null &&
+			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
 			}
 
 			return new MaintObjDto.Index {
-				Id = d.Id,
-				Name = d.Name,
-				SerialNumber = d.SerialNumber,
+				Id = mo.Id,
+				Name = mo.Name,
+				SerialNumber = mo.SerialNumber,
 				MaintObjType = parsedType,
-				MaintObjStatus = (SharedStatus)d.MaintObjStatus
+				MaintObjStatus = (SharedStatus)mo.MaintObjStatus
 			};
 		}).ToList();
 
