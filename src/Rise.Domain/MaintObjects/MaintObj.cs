@@ -14,12 +14,12 @@ public class MaintObj : Entity {
 		MaintObjType = maintObjType;
 		Brand = brand;
 		Installation = installation;
-		IsInStock = isInStock;
+		IsInStock = Guard.Against.Null(isInStock);
 		Location = location;
 	}
 
-	public string Name { get; private set; } = null!;
-	public string SerialNumber { get; private set; } = null!;
+	public string Name { get; private set; }
+	public string SerialNumber { get; private set; }
 	public string? Brand { get; private set; }
 	public MaintObjType MaintObjType { get; private set; }
 	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactief;
@@ -27,8 +27,6 @@ public class MaintObj : Entity {
 	public bool IsInStock { get; private set; } = true;
 
 	public MeasurementStation? Station { get; private set; }
-
-	// Location: mirrors the assigned MeasurementStation's location, or null when in stock / unassigned
 	public Location? Location { get; private set; }
 
 	public Technician? Technician { get; private set; }
