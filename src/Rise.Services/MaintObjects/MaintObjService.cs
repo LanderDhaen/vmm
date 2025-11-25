@@ -44,6 +44,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
 			.Include(mo => mo.MaintObjType)
+			.Include(mo => mo.Station)
+			.Include(mo => mo.Location)
 			.Skip(req.Skip)
 			.Take(req.Take);
 
@@ -53,7 +55,9 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				mo.Name,
 				mo.SerialNumber,
 				MaintObjTypeCode = mo.MaintObjType != null ? mo.MaintObjType.Code : null,
-				mo.MaintObjStatus
+				mo.MaintObjStatus,
+				LocationName = mo.Location != null ? mo.Location.Name :
+					mo.Station != null ? mo.Station.Location.Name : null
 			})
 			.ToListAsync(ctx);
 
@@ -70,7 +74,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				Name = mo.Name,
 				SerialNumber = mo.SerialNumber,
 				MaintObjType = parsedType,
-				MaintObjStatus = (SharedStatus)mo.MaintObjStatus
+				MaintObjStatus = (SharedStatus)mo.MaintObjStatus,
+				Location = mo.LocationName ?? string.Empty
 			};
 		}).ToList();
 

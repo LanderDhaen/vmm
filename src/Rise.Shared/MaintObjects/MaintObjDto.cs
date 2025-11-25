@@ -12,7 +12,11 @@ public static class MaintObjDto {
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
 		public required MaintObjType MaintObjType { get; set; }
+
 		public required MaintObjStatus MaintObjStatus { get; set; }
+
+		// Location name of the maintenance object (mirrors assigned station's location when assigned)
+		public required string Location { get; set; }
 	}
 
 	/// <summary>
