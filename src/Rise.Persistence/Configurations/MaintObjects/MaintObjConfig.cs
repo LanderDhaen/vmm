@@ -23,6 +23,8 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 		builder.Property(x => x.Brand)
 			.HasMaxLength(256);
 
+		builder.Property(x => x.MaintObjStatus).IsRequired();
+
 		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt)
 				.HasColumnName("InstalledAt")
@@ -33,5 +35,6 @@ public class MaintObjConfig : IEntityTypeConfiguration<MaintObj> {
 
 			b.WithOwner();
 		});
+		builder.Property(x => x.IsInStock).IsRequired();
 	}
 }

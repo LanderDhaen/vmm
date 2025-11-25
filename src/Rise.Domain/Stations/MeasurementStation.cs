@@ -1,4 +1,5 @@
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Projects;
 
 namespace Rise.Domain.Stations;
@@ -32,6 +33,8 @@ public class MeasurementStation : Entity {
 	}
 
 	public ICollection<Project> Projects { get; } = new List<Project>();
+	public ICollection<MaintObj> MaintObjects { get; } = new List<MaintObj>();
+
 
 	public void MoveTo(Location newLocation) {
 		Location = newLocation;

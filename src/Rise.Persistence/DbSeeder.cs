@@ -299,19 +299,85 @@ public class DbSeeder(
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
 
-		// If there are no stations, still create some unassigned maintenance objects
-		MaintObj d1 = new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll",
-			new Installation(DateTime.UtcNow.AddMonths(-3)));
-		MaintObj d2 = new("W-Logger", "31045", MaintObjType.Logger, "Campbell",
-			new Installation(DateTime.UtcNow.AddMonths(-6)));
-		MaintObj d3 = new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion",
-			new Installation(DateTime.UtcNow.AddMonths(-9)));
-		MaintObj d4 = new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE",
-			new Installation(DateTime.UtcNow.AddMonths(-12)));
-		MaintObj d5 = new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera",
-			new Installation(DateTime.UtcNow.AddMonths(-15)));
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
+			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
+		};
 
-		dbContext.MaintObjects.AddRange(d1, d2, d3, d4, d5);
+		Technician technician = dbContext.Technicians.Local.FirstOrDefault()
+		                        ?? await dbContext.Technicians.FirstOrDefaultAsync()
+		                        ?? new Technician("Seed", "Tech", "seed-tech-account");
+
+		if (technician.Id == null) {
+			dbContext.Technicians.Add(technician);
+			await dbContext.SaveChangesAsync();
+		}
+
+		List<MaintObj> maintObjects = new();
+
+		if (stations.Any()) {
+			for (int i = 0; i < stations.Count; i++) {
+				MeasurementStation station = stations[i];
+				Installation installation = installations[i % installations.Count];
+
+				List<MaintObj> objsForStation = new() {
+					CreateMaintObj(station, "Sonde", "SN", MaintObjType.Sonde, "Aquatroll", installation),
+					CreateMaintObj(station, "Logger", "LG", MaintObjType.Logger, "Campbell", installation),
+					CreateMaintObj(station, "Modem", "MD", MaintObjType.Modem, "Centerion", installation),
+					CreateMaintObj(station, "SIM", "SIM", MaintObjType.Sim, "002.APN.VMM.BE", installation),
+					CreateMaintObj(station, "Voeding", "VO", MaintObjType.Voeding, "Kyocera", installation)
+				};
+
+				objsForStation.ForEach(mo => {
+					mo.AssignToStation(station);
+					mo.RecordTechnician(technician);
+					maintObjects.Add(mo);
+				});
+			}
+		}
+
+		maintObjects.AddRange(CreateStockItems());
+		if (!stations.Any() && !maintObjects.Any()) {
+			maintObjects.AddRange(CreateLegacyItems(installations));
+		}
+
+		dbContext.MaintObjects.AddRange(maintObjects);
 		await dbContext.SaveChangesAsync();
+	}
+
+	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, MaintObjType type,
+		string brand, Installation installation) {
+		return new MaintObj(
+			$"{station.Code}-{name}",
+			$"{prefix}-{Guid.NewGuid().ToString().Substring(0, 8)}",
+			type,
+			brand,
+			new Installation(installation.InstalledAt, installation.RemovedAt),
+			false
+		);
+	}
+
+	private List<MaintObj> CreateStockItems() {
+		return new List<MaintObj> {
+			new("Stock-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
+			new("Stock-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
+			new("Stock-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
+			new("Stock-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", null, true),
+			new("Stock-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", null, true)
+		};
+	}
+
+	private List<MaintObj> CreateLegacyItems(List<Installation> installations) {
+		return new List<MaintObj> {
+			new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
+			new("W-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
+			new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
+			new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", installations[3], true),
+			new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", installations[4], true)
+		};
 	}
 }

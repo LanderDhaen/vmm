@@ -305,8 +305,20 @@ namespace Rise.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsInStock")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MaintObjStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaintObjType")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("MeasurementStationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -318,10 +330,19 @@ namespace Rise.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("TechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("MeasurementStationId");
+
+                    b.HasIndex("TechnicianId");
 
                     b.ToTable("MaintObjects");
                 });
@@ -677,6 +698,19 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
                 {
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
+                        .WithMany("MaintObjects")
+                        .HasForeignKey("MeasurementStationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId");
+
                     b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
                             b1.Property<Guid>("MaintObjId")
@@ -698,8 +732,13 @@ namespace Rise.Persistence.Migrations
                                 .HasForeignKey("MaintObjId");
                         });
 
-                    b.Navigation("Installation")
-                        .IsRequired();
+                    b.Navigation("Installation");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Station");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
@@ -841,6 +880,11 @@ namespace Rise.Persistence.Migrations
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>
                 {
                     b.Navigation("ProjectHistories");
+                });
+
+            modelBuilder.Entity("Rise.Domain.Stations.MeasurementStation", b =>
+                {
+                    b.Navigation("MaintObjects");
                 });
 #pragma warning restore 612, 618
         }
