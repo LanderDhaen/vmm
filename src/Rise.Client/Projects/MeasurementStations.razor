@@ -26,7 +26,7 @@ else
 				@foreach (var station in _allStations)
 				{
 					<MudSelectItem T="Guid" Value="@station.Id">
-						@station.Code - @station.Location @station.City
+						@station.Code - @station.Location @station.City 
 					</MudSelectItem>
 				}
 			</MudSelect>
