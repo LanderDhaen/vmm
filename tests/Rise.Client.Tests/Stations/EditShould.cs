@@ -139,36 +139,50 @@ namespace Rise.Client.Tests.Stations {
 		[Fact]
 		public async Task Save_CallsEditAsync() {
 			using ClientTestContext baseCtx = new();
-			TestContext ctx = baseCtx.Ctx;
+			var ctx = baseCtx.Ctx;
 
 			RegisterHappyPathMocks(ctx);
-			IMeasurementStationService stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
+			var stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
 
-			IRenderedFragment cut = RenderWithMudProviders(ctx);
-			FindSaveButton(cut).Click();
+			var cut = RenderWithMudProviders(ctx);
 
-			await stationSvc.Received(1).EditAsync(
-				Arg.Any<MeasurementStationRequest.Edit>(),
-				Arg.Any<CancellationToken>());
+			cut.WaitForAssertion(() =>
+				Assert.Contains("STN-77", cut.Markup)
+			);
+
+			await cut.InvokeAsync(() => FindSaveButton(cut).Click());
+
+			cut.WaitForAssertion(() =>
+				stationSvc.Received(1).EditAsync(
+					Arg.Any<MeasurementStationRequest.Edit>(),
+					Arg.Any<CancellationToken>())
+			);
 		}
 
 		[Fact]
 		public async Task Save_ShowsError_WhenServiceReturnsNotFound() {
 			using ClientTestContext baseCtx = new();
-			TestContext ctx = baseCtx.Ctx;
+			var ctx = baseCtx.Ctx;
 
 			RegisterHappyPathMocks(ctx);
-			IMeasurementStationService stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
+			var stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
 
 			stationSvc.EditAsync(Arg.Any<MeasurementStationRequest.Edit>(), Arg.Any<CancellationToken>())
 				.Returns(Task.FromResult(Result.NotFound()));
 
-			IRenderedFragment cut = RenderWithMudProviders(ctx);
-			FindSaveButton(cut).Click();
+			var cut = RenderWithMudProviders(ctx);
 
-			await stationSvc.Received(1).EditAsync(
-				Arg.Any<MeasurementStationRequest.Edit>(),
-				Arg.Any<CancellationToken>());
+			cut.WaitForAssertion(() =>
+				Assert.Contains("STN-77", cut.Markup)
+			);
+
+			await cut.InvokeAsync(() => FindSaveButton(cut).Click());
+
+			cut.WaitForAssertion(() =>
+				stationSvc.Received(1).EditAsync(
+					Arg.Any<MeasurementStationRequest.Edit>(),
+					Arg.Any<CancellationToken>())
+			);
 		}
 	}
 }

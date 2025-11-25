@@ -26,6 +26,7 @@ public class DbSeeder(
 		await ProjectsAsync();
 		await ProjectHistoriesAsync();
 		await StationsAsync();
+		await MeasurementStationsHistoriesAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -235,7 +236,7 @@ public class DbSeeder(
 			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
 			await dbContext.SaveChangesAsync();
 
-			// Move the end date
+			// Add the end date
 
 			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]),
 				project.MeasurementNetwork);
@@ -252,39 +253,86 @@ public class DbSeeder(
 			return;
 		}
 
-		List<Location> locations = dbContext.Locations.Local.Any()
-			? dbContext.Locations.Local.ToList()
-			: await dbContext.Locations.ToListAsync();
+		List<Location> locations = await dbContext.Locations.ToListAsync();
 
-		List<Project> projects = dbContext.Projects.Local.Any()
-			? dbContext.Projects.Local.ToList()
-			: await dbContext.Projects.ToListAsync();
+		List<Project> projects = await dbContext.Projects.ToListAsync();
 
-		if (!locations.Any() || !projects.Any()) {
+		// Initialise as stations without removedAt to allow easier history seeding
+
+		List<Installation> installations = new() {
+			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new Installation(new DateTime(2025, 4, 5, 3 , 24, 59)),
+			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
+		};
+
+		List<MeasurementStation> stations = new() {
+			new MeasurementStation("STN-001", locations[0], installations[0]),
+			new MeasurementStation("STN-002", locations[1], installations[1]),
+			new MeasurementStation("STN-003", locations[2], installations[2]),
+			new MeasurementStation("STN-004", locations[3], installations[3]),
+			new MeasurementStation("STN-005", locations[4], installations[4]),
+			new MeasurementStation("STN-006", locations[5], installations[5]),
+		};
+
+		dbContext.MeasurementStations.AddRange(stations);
+		await dbContext.SaveChangesAsync();
+	}
+
+	private async Task MeasurementStationsHistoriesAsync() {
+		if (!dbContext.MeasurementStations.Any()) {
 			return;
 		}
 
-		int l0 = 0;
-		int l1 = Math.Min(1, locations.Count - 1);
-		int p0 = 0;
-		int p1 = Math.Min(1, projects.Count - 1);
+		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
+		List<Location> locations = await dbContext.Locations.ToListAsync();
 
-		MeasurementStation station1 = new(
-			"STN-001",
-			locations[l0],
-			new Installation(DateTime.UtcNow.AddMonths(-6))
-		);
+		List<DateTime?> removedAts = new() {
+			new DateTime(2025, 6, 30, 5, 12, 30),
+			new DateTime(2025, 8, 15, 12, 40, 19),
+			new DateTime(2025, 9, 25, 16, 1, 21),
+			null,
+			new DateTime(2025, 12, 31, 9, 1, 1),
+			null
+		};
 
-		MeasurementStation station2 = new(
-			"STN-002",
-			locations[l1],
-			new Installation(
-				DateTime.UtcNow.AddYears(-1),
-				DateTime.UtcNow.AddDays(-30)
-			)
-		);
+		Location DummyLocation = new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
 
-		dbContext.MeasurementStations.AddRange(station1, station2);
-		await dbContext.SaveChangesAsync();
+		int i = 0;
+
+		foreach (MeasurementStation station in stations) {
+
+			Installation installation = station.Installation;
+			Location location = station.Location;
+
+			// Move the location
+
+			station.MoveTo(DummyLocation);
+
+			// Move the installed at
+
+			station.UpdateInstallation(new Installation(installation.InstalledAt.AddDays(1), installation.RemovedAt));
+			await dbContext.SaveChangesAsync();
+
+			// Revert the installed at change
+
+			station.UpdateInstallation(installation);
+			await dbContext.SaveChangesAsync();
+
+			// Add removed at
+
+			station.UpdateInstallation(new Installation(installation.InstalledAt, removedAts[i]));
+			await dbContext.SaveChangesAsync();
+
+			// Revert the location change
+
+			station.MoveTo(location);
+
+			// Update the counter
+
+			i++;
+		}
 	}
 }

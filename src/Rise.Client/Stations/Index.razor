@@ -30,7 +30,8 @@
 		           StartIcon="@Icons.Material.Filled.Add"
 		           Size="Size.Small"
 		           Color="Color.Primary"
-		           Class="px-4">
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
 			Meetstation
 		</MudButton>
 	</MudStack>
@@ -87,7 +88,8 @@
 
 		<MudIconButton Icon="@Icons.Material.Filled.Add"
 		               Color="Color.Primary"
-		               Size="Size.Small"/>
+		               Size="Size.Small"
+		               OnClick="@NavigateToCreate"/>
 	</MudStack>
 	<MudGrid Spacing="4">
 		@if (_mobileItems is null)
