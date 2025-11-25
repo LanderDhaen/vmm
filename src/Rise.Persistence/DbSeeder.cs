@@ -317,6 +317,11 @@ public class DbSeeder(
 			await dbContext.SaveChangesAsync();
 		}
 
+
+		List<MaintObjType> types = dbContext.MaintObjTypes.Local.Any()
+			? dbContext.MaintObjTypes.Local.ToList()
+			: await dbContext.MaintObjTypes.ToListAsync();
+
 		List<MaintObj> maintObjects = new();
 
 		// Create a random generator to get consistent seed data across runs
@@ -328,11 +333,16 @@ public class DbSeeder(
 				Installation installation = installations[i % installations.Count];
 
 				List<MaintObj> objsForStation = new() {
-					CreateMaintObj(station, "Sonde", "SN", MaintObjType.Sonde, "Aquatroll", installation),
-					CreateMaintObj(station, "Logger", "LG", MaintObjType.Logger, "Campbell", installation),
-					CreateMaintObj(station, "Modem", "MD", MaintObjType.Modem, "Centerion", installation),
-					CreateMaintObj(station, "SIM", "SIM", MaintObjType.Sim, "002.APN.VMM.BE", installation),
-					CreateMaintObj(station, "Voeding", "VO", MaintObjType.Voeding, "Kyocera", installation)
+					CreateMaintObj(station, "Sonde", "SN", types.First(t => t.Code == "Sonde").Id, "Aquatroll",
+						installation),
+					CreateMaintObj(station, "Logger", "LG", types.First(t => t.Code == "Logger").Id, "Campbell",
+						installation),
+					CreateMaintObj(station, "Modem", "MD", types.First(t => t.Code == "Modem").Id, "Centerion",
+						installation),
+					CreateMaintObj(station, "SIM", "SIM", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE",
+						installation),
+					CreateMaintObj(station, "Voeding", "VO", types.First(t => t.Code == "Voeding").Id, "Kyocera",
+						installation)
 				};
 
 				objsForStation.ForEach(mo => {
@@ -344,9 +354,9 @@ public class DbSeeder(
 			}
 		}
 
-		maintObjects.AddRange(CreateStockItems());
+		maintObjects.AddRange(CreateStockItems(types));
 		if (!stations.Any() && !maintObjects.Any()) {
-			maintObjects.AddRange(CreateLegacyItems(installations));
+			maintObjects.AddRange(CreateLegacyItems(installations, types));
 		}
 
 		// Ensure stock/legacy items also get a random status (make stock/legacy items active by default)
@@ -358,35 +368,35 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, MaintObjType type,
+	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, Guid maintObjTypeId,
 		string brand, Installation installation) {
 		return new MaintObj(
 			$"{station.Code}-{name}",
 			$"{prefix}-{Guid.NewGuid().ToString().Substring(0, 8)}",
-			type,
+			maintObjTypeId,
 			brand,
 			new Installation(installation.InstalledAt, installation.RemovedAt),
 			false
 		);
 	}
 
-	private List<MaintObj> CreateStockItems() {
+	private List<MaintObj> CreateStockItems(List<MaintObjType> types) {
 		return new List<MaintObj> {
-			new("Stock-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
-			new("Stock-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
-			new("Stock-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
-			new("Stock-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", null, true),
-			new("Stock-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", null, true)
+			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde").Id, "Aquatroll", null, true),
+			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger").Id, "Campbell", null, true),
+			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem").Id, "Centerion", null, true),
+			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE", null, true),
+			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding").Id, "Kyocera", null, true)
 		};
 	}
 
-	private List<MaintObj> CreateLegacyItems(List<Installation> installations) {
+	private List<MaintObj> CreateLegacyItems(List<Installation> installations, List<MaintObjType> types) {
 		return new List<MaintObj> {
-			new("W-Sonde", "567927", MaintObjType.Sonde, "Aquatroll", null, true),
-			new("W-Logger", "31045", MaintObjType.Logger, "Campbell", null, true),
-			new("W-Modem", "354990101102816", MaintObjType.Modem, "Centerion", null, true),
-			new("W-SIM", "2100267739177", MaintObjType.Sim, "002.APN.VMM.BE", null, true),
-			new("W-Voeding", "03Y90D0134", MaintObjType.Voeding, "Kyocera", null, true)
+			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde").Id, "Aquatroll", null, true),
+			new("W-Logger", "31045", types.First(t => t.Code == "Logger").Id, "Campbell", null, true),
+			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem").Id, "Centerion", null, true),
+			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim").Id, "002.APN.VMM.BE", null, true),
+			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding").Id, "Kyocera", null, true)
 		};
 	}
 

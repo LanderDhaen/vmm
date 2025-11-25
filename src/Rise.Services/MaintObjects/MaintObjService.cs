@@ -43,17 +43,44 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
+			.Include(d => d.MaintObjType)
 			.Skip(req.Skip)
 			.Take(req.Take);
-		List<MaintObjDto.Index> maintObjects = await page
-			.Select(d => new MaintObjDto.Index {
+
+		var raw = await page
+			.Select(d => new {
+				d.Id,
+				d.Name,
+				d.SerialNumber,
+				MaintObjTypeCode = d.MaintObjType != null ? d.MaintObjType.Code : null,
+				d.MaintObjStatus,
+				InstalledAt = d.Installation != null ? d.Installation.InstalledAt : (DateTime?)null,
+				IntervalDays = d.MaintObjType != null ? d.MaintObjType.DefaultMaintenanceIntervalDays : null
+			})
+			.ToListAsync(ctx);
+
+		List<MaintObjDto.Index> maintObjects = raw.Select(d => {
+			// safe parse of type code to shared enum
+			MaintObjType parsedType = MaintObjType.Sonde;
+			if (d.MaintObjTypeCode is not null &&
+			    Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp)) {
+				parsedType = tmp;
+			}
+
+			DateTime? next = null;
+			if (d.InstalledAt.HasValue && d.IntervalDays.HasValue) {
+				next = d.InstalledAt.Value.AddDays(d.IntervalDays.Value);
+			}
+
+			return new MaintObjDto.Index {
 				Id = d.Id,
 				Name = d.Name,
 				SerialNumber = d.SerialNumber,
-				MaintObjType = (MaintObjType)d.MaintObjType,
-				MaintObjStatus = (SharedStatus)d.MaintObjStatus
-			})
-			.ToListAsync(ctx);
+				MaintObjType = parsedType,
+				MaintObjStatus = (SharedStatus)d.MaintObjStatus,
+				NextMaintenanceDate = next
+			};
+		}).ToList();
 
 		return Result.Success(new MaintObjResponse.Index {
 			MaintObjects = maintObjects,
