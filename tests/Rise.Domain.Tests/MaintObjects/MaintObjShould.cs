@@ -23,61 +23,62 @@ public class MaintObjShould {
 		return new Technician("John", "Doe", "account-1");
 	}
 
+	private static MaintObjType MakeType(string code = "Sonde", string name = "Sonde") {
+		return new MaintObjType(Guid.NewGuid(), code, name, 30, 180);
+	}
+
 	[Fact]
 	public void BeCreatedWithExpectedDefaults() {
-		Guid typeId = Guid.NewGuid();
-		MaintObj mo = new("Sensor-1", "SN-123", typeId, "BrandX", null, true);
+		MaintObjType type = MakeType();
+		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", null, true);
 
 		mo.Name.ShouldBe("Sensor-1");
 		mo.SerialNumber.ShouldBe("SN-123");
-		mo.MaintObjTypeId.ShouldBe(typeId);
+		mo.MaintObjType.ShouldBe(type);
 		mo.Brand.ShouldBe("BrandX");
 		mo.IsInStock.ShouldBeTrue();
 		mo.Location.ShouldBeNull();
-		mo.MeasurementStationId.ShouldBeNull();
-		mo.TechnicianId.ShouldBeNull();
+		mo.Station.ShouldBeNull();
+		mo.Technician.ShouldBeNull();
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
 	}
 
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
-		MaintObj mo = new("Sensor-1", "SN-123", Guid.NewGuid(), null, null, true);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true);
 		MeasurementStation station = MakeStation("STN-100");
 
 		mo.AssignToStation(station);
 
 		mo.Station.ShouldBe(station);
-		mo.MeasurementStationId.ShouldBe(station.Id);
+		mo.Station!.Id.ShouldBe(station.Id);
 		mo.IsInStock.ShouldBeFalse();
 		mo.Location.ShouldBe(station.Location);
 
 		mo.UnassignFromStation();
 
 		mo.Station.ShouldBeNull();
-		mo.MeasurementStationId.ShouldBeNull();
 		mo.IsInStock.ShouldBeTrue();
 		mo.Location.ShouldBeNull();
 	}
 
 	[Fact]
 	public void RecordAndClearTechnician() {
-		MaintObj mo = new("Sensor-1", "SN-123", Guid.NewGuid(), null, null, true);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true);
 		Technician tech = MakeTechnician();
 
 		mo.RecordTechnician(tech);
 
 		mo.Technician.ShouldBe(tech);
-		mo.TechnicianId.ShouldBe(tech.Id);
 
 		mo.ClearTechnician();
 
 		mo.Technician.ShouldBeNull();
-		mo.TechnicianId.ShouldBeNull();
 	}
 
 	[Fact]
 	public void AllowChangingStatus() {
-		MaintObj mo = new("Sensor-1", "SN-123", Guid.NewGuid(), null, null, true);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true);
 
 		mo.SetStatus(MaintObjStatus.Defect);
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Defect);
@@ -88,7 +89,7 @@ public class MaintObjShould {
 
 	[Fact]
 	public void ConstructorGuardsAgainstInvalidArguments() {
-		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", Guid.NewGuid(), null, null, true));
-		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", Guid.NewGuid(), null, null, true));
+		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MakeType(), null, null, true));
+		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MakeType(), null, null, true));
 	}
 }

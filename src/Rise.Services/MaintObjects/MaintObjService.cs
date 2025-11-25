@@ -43,37 +43,39 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
-			.Include(d => d.MaintObjType)
+			.Include(mo => mo.MaintObjType)
+			.Include(mo => mo.Station)
+			.Include(mo => mo.Location)
 			.Skip(req.Skip)
 			.Take(req.Take);
 
 		var raw = await page
-			.Select(d => new {
-				d.Id,
-				d.Name,
-				d.SerialNumber,
-				MaintObjTypeCode = d.MaintObjType != null ? d.MaintObjType.Code : null,
-				d.MaintObjStatus,
-				InstalledAt = d.Installation != null ? d.Installation.InstalledAt : (DateTime?)null,
-				IntervalDays = d.MaintObjType != null ? d.MaintObjType.DefaultMaintenanceIntervalDays : null
+			.Select(mo => new {
+				mo.Id,
+				mo.Name,
+				mo.SerialNumber,
+				MaintObjTypeCode = mo.MaintObjType != null ? mo.MaintObjType.Code : null,
+				mo.MaintObjStatus,
+				LocationName = mo.Location != null ? mo.Location.Name :
+					mo.Station != null ? mo.Station.Location.Name : null
 			})
 			.ToListAsync(ctx);
 
-		List<MaintObjDto.Index> maintObjects = raw.Select(d => {
-			MaintObjType parsedType =
-				Enum.TryParse(d.MaintObjTypeCode, out MaintObjType tmp) ? tmp : MaintObjType.Sonde;
-
-			DateTime? next = d.InstalledAt.HasValue && d.IntervalDays.HasValue
-				? d.InstalledAt.Value.AddDays(d.IntervalDays.Value)
-				: null;
+		List<MaintObjDto.Index> maintObjects = raw.Select(mo => {
+			// safe parse of type code to shared enum
+			MaintObjType parsedType = MaintObjType.Sonde;
+			if (mo.MaintObjTypeCode is not null &&
+			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+				parsedType = tmp;
+			}
 
 			return new MaintObjDto.Index {
-				Id = d.Id,
-				Name = d.Name,
-				SerialNumber = d.SerialNumber,
+				Id = mo.Id,
+				Name = mo.Name,
+				SerialNumber = mo.SerialNumber,
 				MaintObjType = parsedType,
-				MaintObjStatus = (SharedStatus)d.MaintObjStatus,
-				NextMaintenanceDate = next
+				MaintObjStatus = (SharedStatus)mo.MaintObjStatus,
+				Location = mo.LocationName ?? string.Empty
 			};
 		}).ToList();
 
