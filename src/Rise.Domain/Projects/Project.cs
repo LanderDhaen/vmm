@@ -44,6 +44,25 @@ public class Project : Entity {
 
 	// Functions
 
+	public void UpdateMeasurementStationList(ICollection<MeasurementStation> measurementStations) {
+		if (Status == Status.Afgesloten) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
+		}
+		// Get all the measurement stations that are not already in the project
+		List<MeasurementStation> measurementStationsToAdd = measurementStations
+			.Where(s => Stations.All(st => st.Id != s.Id))
+			.ToList();
+
+		measurementStationsToAdd.ForEach(m => Stations.Add(m));
+
+		// Get all the measurement stations that are already in the project but need to be deleted
+		List<MeasurementStation> measurementStationsToRemove = Stations
+			.Where(s => measurementStations.All(st => st.Id != s.Id))
+			.ToList();
+
+		measurementStationsToRemove.ForEach(m => Stations.Remove(m));
+	}
+
 	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");

@@ -3,8 +3,10 @@ using Ardalis.Result;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
@@ -121,6 +123,99 @@ public class ProjectServiceShould {
 		// Reload from DB to verify change persisted
 		Project updated = await db.Projects.SingleAsync(p => p.Id == project.Id);
 		Assert.Equal(Domain.Projects.Status.Afgesloten, updated.Status);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNewProjectId() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await service.CreateAsync(request);
+
+		// Assert
+		Assert.True(result.IsCreated());
+		Assert.NotNull(result.Value);
+		Assert.NotEqual(Guid.Empty, result.Value!.ProjectId);
+
+		Project? created = await db.Projects.FindAsync(result.Value.ProjectId);
+		Assert.NotNull(created);
+		Assert.Equal("Test Project", created!.Name);
+		Assert.Equal("TP-001", created.Code);
+		Assert.Equal(measurementNetwork.Id, created.MeasurementNetwork.Id);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		db.Projects.Add(new Project("Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)), measurementNetwork));
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await service.CreateAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+		Assert.Equal($"Project met code 'TP-001' bestaat al.", result.Errors.First());
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await service.CreateAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Meetnet niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}
@@ -275,44 +370,46 @@ public class ProjectServiceShould {
 	}
 
 
-	// [Fact]
-	// public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
-	// 	await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-	//
-	// 	Zone zone = new("TestZone", "Z-001");
-	// 	MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-	// 	DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-	//
-	// 	Project project = new("Test Project", "TP-003", dateRange, measurementNetwork);
-	//
-	// 	Location location = new(
-	// 		"TestLoc",
-	// 		new Address("Street 1", "Bus 2", "City", "1234"),
-	// 		new Coordinate(4.35, 50.85));
-	//
-	// 	MeasurementStation station = new(
-	// 		"ST-001",
-	// 		location,
-	// 		new Installation(DateTime.UtcNow));
-	//
-	// 	db.Zones.Add(zone);
-	// 	db.MeasurementNetworks.Add(measurementNetwork);
-	// 	db.Projects.Add(project);
-	// 	db.Locations.Add(location);
-	// 	db.MeasurementStations.Add(station);
-	// 	await db.SaveChangesAsync();
-	//
-	// 	ProjectService service = new(db, null!);
-	//
-	// 	Result<List<MeasurementStationDto.Index>> result = await service.GetStationsAsync(project.Id);
-	//
-	// 	Assert.True(result.IsSuccess);
-	// 	Assert.NotNull(result.Value);
-	// 	Assert.Single(result.Value);
-	// 	Assert.Equal("ST-001", result.Value![0].Code);
-	//
-	// 	connection.Close();
-	// }
+	[Fact]
+	public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
+		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+
+		Project project = new("Test Project", "TP-003", dateRange, measurementNetwork);
+
+		Location location = new(
+			"TestLoc",
+			new Address("Street 1", "Bus 2", "City", "1234"),
+			new Coordinate(4.35, 50.85));
+
+		MeasurementStation station = new(
+			"ST-001",
+			location,
+			new Installation(DateTime.UtcNow));
+
+		project.Stations.Add(station);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		db.Locations.Add(location);
+		db.MeasurementStations.Add(station);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		Result<List<MeasurementStationDto.Index>> result = await service.GetStationsAsync(project.Id);
+
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.Single(result.Value);
+		Assert.Equal("ST-001", result.Value![0].Code);
+
+		connection.Close();
+	}
 
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
@@ -324,6 +421,110 @@ public class ProjectServiceShould {
 		Result<List<MeasurementStationDto.Index>> result = await service.GetStationsAsync(nonExistentId);
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnSuccess() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		db.MeasurementStations.Add(measurementStation);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.UpdateMeasurementStations request = new() {
+			ProjectId = project.Id,
+			MeasurementStationIds = new List<Guid> { measurementStation.Id }
+		};
+
+		// Act
+		Result result = await service.UpdateMeasurementStationsAsync(request);
+
+		// Assert
+		Assert.True(result.IsSuccess);
+
+		Project updated = db.Projects.Local.Single(p => p.Id == project.Id);
+		Assert.NotNull(updated);
+		Assert.NotEmpty(updated.Stations);
+		Assert.Equal(measurementStation.Id, updated.Stations.First().Id);
+		Assert.Equal(measurementStation.Code, updated.Stations.First().Code);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnNotFound_WithNonExistingPrjectId() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		db.MeasurementStations.Add(measurementStation);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.UpdateMeasurementStations request = new() {
+			ProjectId = Guid.Empty,
+			MeasurementStationIds = new List<Guid> { measurementStation.Id }
+		};
+
+		// Act
+		Result result = await service.UpdateMeasurementStationsAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Project met id '{request.ProjectId}' is niet gevonden.", result.Errors.First());
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnError_WhenAMeasurementStationIsNotFound() {
+		// Arrange
+		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		db.Zones.Add(zone);
+		db.MeasurementNetworks.Add(measurementNetwork);
+		db.Projects.Add(project);
+		await db.SaveChangesAsync();
+
+		ProjectService service = new(db, null!);
+
+		ProjectRequest.UpdateMeasurementStations request = new() {
+			ProjectId = project.Id,
+			MeasurementStationIds = new List<Guid> { Guid.NewGuid() }
+		};
+
+		// Act
+		Result result = await service.UpdateMeasurementStationsAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.Error, result.Status);
+		Assert.Equal("Een of meerdere meetstations zijn niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}

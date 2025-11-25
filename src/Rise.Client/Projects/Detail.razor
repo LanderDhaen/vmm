@@ -1,7 +1,5 @@
 @page "/projects/{ProjectId:guid}"
-@using Rise.Client.Components
 @using Rise.Shared.Projects
-@using Rise.Shared.Stations
 @inject NavigationManager Navigation
 @attribute [Authorize]
 
@@ -166,45 +164,9 @@ else
 					</MudItem>
 				</MudGrid>
 			</MudPaper>
-
 			break;
 		case 1:
-			<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-				<MudDataGrid T="MeasurementStationDto.Index"
-				             ServerData="GetStationsGridAsync"
-				             RowsPerPage="10"
-				             Bordered="true"
-				             Striped="true"
-				             Hover="true"
-				             Dense="false"
-				             Elevation="0"
-				             RowClick="OnStationRowClick">
-					<Columns>
-						<PropertyColumn Property="x => x.Code" Title="#" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-						<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" Sortable="false"
-						                Filterable="false" Groupable="false">
-							<CellTemplate Context="row">
-								@FormatDate(row.Item.InstalledAt)
-							</CellTemplate>
-						</PropertyColumn>
-						<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" Sortable="false"
-						                Filterable="false" Groupable="false">
-							<CellTemplate Context="row">
-								@FormatDate(row.Item.RemovedAt)
-							</CellTemplate>
-						</PropertyColumn>
-						<PropertyColumn Property="x => x.Location" Title="Locatie" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-						<PropertyColumn Property="x => x.City" Title="Gemeente" Sortable="false" Filterable="false"
-						                Groupable="false"/>
-					</Columns>
-
-					<PagerContent>
-						<Pagination T="MeasurementStationDto.Index"/>
-					</PagerContent>
-				</MudDataGrid>
-			</MudPaper>
+			<MeasurementStations ProjectId="ProjectId" IsActive="IsActive" TabChanged="@OnTabChange"/>
 			break;
 		case 2:
 			<History ProjectId="ProjectId"/>

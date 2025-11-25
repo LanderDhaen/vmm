@@ -280,6 +280,15 @@ public class DbSeeder(
 			new MeasurementStation("STN-005", locations[4], installations[4]),
 			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
+		
+		// Add projects to stations
+		
+		stations[0].Projects.Add(projects[0]);
+		stations[0].Projects.Add(projects[1]);
+		stations[0].Projects.Add(projects[2]);
+		
+		stations[1].Projects.Add(projects[1]);
+		stations[1].Projects.Add(projects[5]);
 
 		dbContext.MeasurementStations.AddRange(stations);
 		await dbContext.SaveChangesAsync();
@@ -313,8 +322,6 @@ public class DbSeeder(
 			Location location = station.Location;
 
 			// Move the location
-			int l0 = 0;
-			int l1 = Math.Min(1, locations.Count - 1);
 
 			station.MoveTo(DummyLocation);
 
