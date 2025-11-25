@@ -19,7 +19,7 @@ public partial class Index {
 		("Status", "Status")
 	];
 	
-	private string _activeSorting = "Name";
+	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
 	private string _searchTerm;
 
@@ -57,14 +57,14 @@ public partial class Index {
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		
-		SortDefinition<ProjectDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<ProjectDto.Index>("Code", false, 0, null));
+		SortDefinition<ProjectDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
+			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
 		
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting?.SortBy ?? "Name",
-			OrderDescending = sorting?.Descending ?? false,
+			OrderBy = sorting.SortBy,
+			OrderDescending = sorting.Descending,
 			SearchTerm = _searchTerm
 		};
 

@@ -41,10 +41,11 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>

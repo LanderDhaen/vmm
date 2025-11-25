@@ -41,10 +41,11 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToStation(args.Item.Id))">
 		
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
