@@ -207,34 +207,47 @@
         <MudStack Spacing="3" Class="mt-2">
             <MudDivider/>
 
-            <MudSelect T="Status?" Label="Status" @bind-Value="_filterStatus" Dense="true" Clearable="true">
-                @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
-                {
-                    <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
-                }
-            </MudSelect>
+<MudSelect T="Status?"
+           Label="Status"
+           Value="_filterStatus"
+           ValueChanged="@(async (Status? val) => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })"
+           ValueExpression="() => _filterStatus"
+           Dense="true"
+           Clearable="true">
+    @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
+    {
+        <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
+    }
+</MudSelect>
 
-            <MudSelect T="string" Label="Zone" @bind-Value="_filterZone" Dense="true" Clearable="true" Placeholder="Selecteer...">
+            <MudSelect T="string" Label="Zone" Value="_filterZone" ValueChanged="@(async (string? val) 
+            => { _filterZone = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterZone" 
+            Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var z in _zones)
                 {
                     <MudSelectItem T="string" Value="@z">@z</MudSelectItem>
                 }
             </MudSelect>
 
-            <MudSelect T="string" Label="Meetnet" @bind-Value="_filterMeasurementNetwork" Dense="true" Clearable="true" Placeholder="Selecteer...">
+            <MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork" ValueChanged="@(async (string? val) 
+            => { _filterZone = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterMeetnet" 
+            Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var m in _measurementNetworks)
                 {
                     <MudSelectItem T="string" Value="@m">@m</MudSelectItem>
                 }
             </MudSelect>
 
-            <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" @bind-Date="_filterStartDate" DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
+            <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
+            => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
 
-            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" @bind-Date="_filterEndDate" DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
+            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
+            => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline"/>
 
-            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2" Class="pt-2">
+            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
                 <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@ClearFilters">Wissen</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@ApplyFiltersAsync">Toepassen</MudButton>
             </MudStack>
 
         </MudStack>
