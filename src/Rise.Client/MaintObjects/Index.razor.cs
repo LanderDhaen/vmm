@@ -10,10 +10,11 @@ namespace Rise.Client.MaintObjects;
 
 public partial class Index {
 	private static readonly (string Value, string Label)[] SortColumns = [
-		("Serial", "Serialnummer"),
+		("SerialNumber", "Serienummer"),
 		("Name", "Naam"),
-		("Type", "Type"),
-		("MaintObjStatus", "MaintObjStatus")
+		("MaintObjType", "Type"),
+		("MaintObjStatus", "Status"),
+		("Location", "Locatie")
 	];
 
 	private string _activeSorting = "Name";
