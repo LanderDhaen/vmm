@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Domain.Projects;
@@ -131,10 +132,22 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", req.SerialNumber);
 			return Result.Conflict($"Onderhoudsobject met serienummer '{req.SerialNumber}' bestaat al.");
 		}
+		
+		Location? location = await dbContext.Locations
+			.FirstOrDefaultAsync(x => x.Id == req.LocationId);
 
-		DateTime installedAt = req.InstalledAt ?? maintObj.Installation.InstalledAt;
+		if (location is null) {
+			return Result.NotFound("De locatie werd niet gevonden.");
+		}
 
-		maintObj.Edit(req.Name, req.SerialNumber, (MaintObjType)req.MaintObjType, req.Brand, new Installation(installedAt, req.RemovedAt));
+		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+			.FirstOrDefaultAsync(s => s.Name == req.MaintObjType.ToString(), ctx);
+
+		if (type is null) {
+			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
+		}
+		
+		maintObj.Edit(req.Name, req.SerialNumber, type, req.Brand, new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
 
 		await dbContext.SaveChangesAsync(ctx);
 
@@ -177,6 +190,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
 			Brand = maintObj.Brand,
 			MeasurementStationCode = maintObj.Station?.Code,
+			LocationId = maintObj.Location?.Id ?? maintObj.Station?.Location.Id,
 			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
 			IsInStock = maintObj.IsInStock,
 			InstalledAt = installedAtOpt,

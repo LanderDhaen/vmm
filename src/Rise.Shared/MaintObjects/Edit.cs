@@ -14,7 +14,7 @@ public static partial class MaintObjRequest {
 		public string? Brand { get; set; }
 		public DateTime? InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
-		public Guid LocationId { get; set; }
+		public Guid? LocationId { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {

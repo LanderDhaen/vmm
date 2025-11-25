@@ -32,6 +32,7 @@ public static class MaintObjDto {
 		public string? MeasurementStationCode { get; set; }
 
 		// Location name (nullable when the object is in stock / unassigned)
+		public Guid? LocationId { get; set; }
 		public string? Location { get; set; }
 		public bool IsInStock { get; set; }
 		public DateTime? InstalledAt { get; set; }

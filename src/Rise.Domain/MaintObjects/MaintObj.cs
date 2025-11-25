@@ -56,11 +56,12 @@ public class MaintObj : Entity {
 	}
 
 	public void Edit(string name, string serialNumber, MaintObjType maintObjType, string? brand,
-		Installation installation) {
+		Installation installation, Location location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjType = maintObjType;
 		Brand = brand;
 		Installation = installation;
+		Location = location;
 	}
 }
