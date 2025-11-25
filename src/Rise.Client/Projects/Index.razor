@@ -8,7 +8,6 @@
 <PageTitle>Projecten</PageTitle>
 
 @* Desktop view *@
-
 <MudHidden Breakpoint="Breakpoint.Xs">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
@@ -49,9 +48,7 @@
                  Striped="true"
                  Hover="true"
                  RowClick="@(args => NavigateToProject(args.Item.Id))"
-                 @ref="_grid"
-                 Filterable
-                 FilterMode="DataGridFilterMode.ColumnFilterMenu">
+                 @ref="_grid">
 
         <Columns>
             <PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
@@ -70,7 +67,6 @@
 </MudHidden>
 
 @* Mobile view *@
-
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
@@ -148,8 +144,7 @@
     </MudGrid>
 </MudHidden>
 
-@* Drawer for sorting on mobile *@
-
+@* Sort drawer (mobile) *@
 @if (_mobileSortOptionsOpen)
 {
     <MudDrawer Anchor="Anchor.Bottom"
@@ -198,13 +193,13 @@
     </MudDrawer>
 }
 
-@* Filter drawer (adaptief anchor: right op groot, bottom op xs) *@
-@if (_mobileFilterOptionsOpen)
+@* Filter drawer (adaptive anchor: right on large screens, bottom on xs) *@
+@if (_filterOptionsOpen)
 {
-    <MudDrawer Anchor="Anchor.Bottom"
+    <MudDrawer Anchor="@_filterDrawerAnchor"
                Variant="DrawerVariant.Temporary"
                Elevation="8"
-               @bind-Open="_mobileFilterOptionsOpen"
+               @bind-Open="_filterOptionsOpen"
                Class="p-4 rounded-lg">
 
         <MudText Typo="Typo.h6">Filteren</MudText>
@@ -219,16 +214,14 @@
                 }
             </MudSelect>
 
-            @* Zone: select met opties uit de laatst geladen resultaten; placeholder toont "Geen waarden" wanneer leeg *@
-            <MudSelect T="string" Label="Zone" @bind-Value="_filterZone" Dense="true" Clearable="true" Placeholder="Geen waarden">
+            <MudSelect T="string" Label="Zone" @bind-Value="_filterZone" Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var z in _zones)
                 {
                     <MudSelectItem T="string" Value="@z">@z</MudSelectItem>
                 }
             </MudSelect>
 
-            @* Measurement network select *@
-            <MudSelect T="string" Label="Meetnet" @bind-Value="_filterMeasurementNetwork" Dense="true" Clearable="true" Placeholder="Geen waarden">
+            <MudSelect T="string" Label="Meetnet" @bind-Value="_filterMeasurementNetwork" Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var m in _measurementNetworks)
                 {
                     <MudSelectItem T="string" Value="@m">@m</MudSelectItem>
