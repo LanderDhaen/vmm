@@ -1,7 +1,10 @@
 @page "/projects"
 @using Rise.Client.Components
 @using Rise.Shared.Projects
+@using Rise.Shared.Common
 @using Microsoft.AspNetCore.Components.Web
+@using MudBlazor
+
 <PageTitle>Projecten</PageTitle>
 
 @* Desktop view *@
@@ -9,23 +12,24 @@
 <MudHidden Breakpoint="Breakpoint.Xs">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Class="m-0"
-		              Variant="Variant.Outlined"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000" 
-		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed" 
-		              @bind-Value="_searchTerm"
-		              FullWidth="true"
-		              Margin="Margin.Dense"/>
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Class="m-0"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      DebounceInterval="1000"
+                      OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
+                      @bind-Value="_searchTerm"
+                      FullWidth="true"
+                      Margin="Margin.Dense"/>
 
         <MudButton Variant="Variant.Filled"
                    Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.FilterAlt"
                    Color="Color.Primary"
-                   Class="px-4">
+                   Class="px-4"
+                   OnClick="@ToggleFiltersDrawer">
             Filteren
         </MudButton>
 
@@ -65,22 +69,22 @@
     </MudDataGrid>
 </MudHidden>
 
-@* Mobile view (now using same textfield / dynamic clear) *@
+@* Mobile view *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Class="m-0"
-		              Variant="Variant.Outlined"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000" 
-		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
-		              @bind-Value="_searchTerm"
-		              FullWidth="true"
-		              Margin="Margin.Dense"/>
+        <MudTextField T="string"
+                      Label="Zoek"
+                      Class="m-0"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      DebounceInterval="1000"
+                      OnDebounceIntervalElapsed="HandleMobileIntervalElapsed"
+                      @bind-Value="_searchTerm"
+                      FullWidth="true"
+                      Margin="Margin.Dense"/>
 
         <MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
                        Color="Color.Primary"
@@ -89,7 +93,8 @@
 
         <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
                        Color="Color.Primary"
-                       Size="Size.Small"/>
+                       Size="Size.Small"
+                       OnClick="@ToggleFiltersDrawer"/>
 
         <MudIconButton Icon="@Icons.Material.Filled.Add"
                        Color="Color.Primary"
@@ -189,6 +194,56 @@
                        OnClick="@ToggleSortingDrawer">
                 Sluiten
             </MudButton>
+        </MudStack>
+    </MudDrawer>
+}
+
+@* Filter drawer (adaptief anchor: right op groot, bottom op xs) *@
+@if (_mobileFilterOptionsOpen)
+{
+    <MudDrawer Anchor="Anchor.Bottom"
+               Variant="DrawerVariant.Temporary"
+               Elevation="8"
+               @bind-Open="_mobileFilterOptionsOpen"
+               Class="p-4 rounded-lg">
+
+        <MudText Typo="Typo.h6">Filteren</MudText>
+
+        <MudStack Spacing="3" Class="mt-2">
+            <MudDivider/>
+
+            <MudSelect T="Status?" Label="Status" @bind-Value="_filterStatus" Dense="true" Clearable="true">
+                @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
+                {
+                    <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
+                }
+            </MudSelect>
+
+            @* Zone: select met opties uit de laatst geladen resultaten; placeholder toont "Geen waarden" wanneer leeg *@
+            <MudSelect T="string" Label="Zone" @bind-Value="_filterZone" Dense="true" Clearable="true" Placeholder="Geen waarden">
+                @foreach (var z in _zones)
+                {
+                    <MudSelectItem T="string" Value="@z">@z</MudSelectItem>
+                }
+            </MudSelect>
+
+            @* Measurement network select *@
+            <MudSelect T="string" Label="Meetnet" @bind-Value="_filterMeasurementNetwork" Dense="true" Clearable="true" Placeholder="Geen waarden">
+                @foreach (var m in _measurementNetworks)
+                {
+                    <MudSelectItem T="string" Value="@m">@m</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" @bind-Date="_filterStartDate" DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
+
+            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" @bind-Date="_filterEndDate" DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Inline" />
+
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2" Class="pt-2">
+                <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@ClearFilters">Wissen</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@ApplyFiltersAsync">Toepassen</MudButton>
+            </MudStack>
+
         </MudStack>
     </MudDrawer>
 }
