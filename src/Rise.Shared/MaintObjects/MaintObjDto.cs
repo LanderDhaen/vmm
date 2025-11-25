@@ -26,6 +26,8 @@ public static class MaintObjDto {
 		public required string? Brand { get; set; }
 		public required MaintObjStatus MaintObjStatus { get; set; }
 		public Guid? MeasurementStationId { get; set; }
+		public string? MeasurementStationCode { get; set; }
+		public bool IsInStock { get; set; }
 		public DateTime InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
 	}

@@ -108,6 +108,10 @@ public partial class Index {
 
 	// Other
 	private Color DefineColor(MaintObjStatus status) {
-		return status == MaintObjStatus.Actief ? Color.Success : Color.Error;
+		return status switch {
+			MaintObjStatus.Actief => Color.Success,
+			MaintObjStatus.Inactief => Color.Error,
+			_ => Color.Warning
+		};
 	}
 }

@@ -4,7 +4,6 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Projects;
 
 namespace Rise.Client.MaintObjects;
 
@@ -21,7 +20,6 @@ public partial class Detail {
 	// Drawer
 	// private bool _open;
 
-	private string? _remarks;
 	private int _selectedTab;
 
 	[Parameter] public Guid MaintObjId { get; set; }
@@ -30,8 +28,7 @@ public partial class Detail {
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
-	private Color BadgeColor => _maintObj?.Status == Status.Actief ? Color.Success : Color.Error;
-	private bool IsActive => _maintObj?.Status == Status.Actief;
+	private bool IsActive => _maintObj?.MaintObjStatus == MaintObjStatus.Actief;
 
 	private void SetTab(int index) {
 		_selectedTab = index;
@@ -69,5 +66,14 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
+	}
+
+	// Other
+	private Color DefineColor(MaintObjStatus status) {
+		return status switch {
+			MaintObjStatus.Actief => Color.Success,
+			MaintObjStatus.Inactief => Color.Error,
+			_ => Color.Warning
+		};
 	}
 }

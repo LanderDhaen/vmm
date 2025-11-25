@@ -65,6 +65,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		CancellationToken ct = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects
 			.AsNoTracking()
+			.Include(d => d.Station) // include station so we can map station info
 			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
 
 		if (maintObj is null) {
@@ -76,8 +77,11 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Name = maintObj.Name,
 			SerialNumber = maintObj.SerialNumber,
 			MaintObjType = (MaintObjType)maintObj.MaintObjType,
-			Status = (SharedStatus)maintObj.Status,
+			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
 			Brand = maintObj.Brand,
+			MeasurementStationId = maintObj.MeasurementStationId,
+			MeasurementStationCode = maintObj.Station?.Code,
+			IsInStock = maintObj.IsInStock,
 			InstalledAt = maintObj.Installation.InstalledAt,
 			RemovedAt = maintObj.Installation.RemovedAt
 		};
