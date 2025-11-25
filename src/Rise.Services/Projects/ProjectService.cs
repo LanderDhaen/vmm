@@ -130,9 +130,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		var cleaned = Regex.Replace(op!, "[^a-zA-Z0-9]", "").ToLowerInvariant();
 
 		return cleaned switch {
-			"isonorafter" => "GreaterThanOrEqual",
+			"greaterthanorequal" => "GreaterThanOrEqual",
 			"isafter" => "GreaterThan",
-			"isonorbefore" => "LessThanOrEqual",
+			"lessthanorequal" => "LessThanOrEqual",
 			"isbefore" => "LessThan",
 			"startswith" => "StartsWith",
 			"endswith" => "EndsWith",
@@ -186,52 +186,15 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				var opNorm = NormalizeOperator(opCandidate);
 
 				switch (key) {
-
-				case "Code": {
-						var t = ToLowerTrim(raw);
-						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"{t}%"));
-						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}"));
-						else if (opNorm == "Equal") query = query.Where(p => p.Code.ToLower() == t);
-						else if (opNorm == "NotEqual") query = query.Where(p => p.Code.ToLower() != t);
-						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
-						else if (opNorm == "IsEmpty") query = query.Where(p => p.Code == null || p.Code == string.Empty);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.Code != null && p.Code != string.Empty);
-						else query = query.Where(p => EF.Functions.Like(p.Code.ToLower(), $"%{t}%"));
-						break;
-					}
-				case "Name": {
-						var t = ToLowerTrim(raw);
-						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"{t}%"));
-						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}"));
-						else if (opNorm == "Equal") query = query.Where(p => p.Name.ToLower() == t);
-						else if (opNorm == "NotEqual") query = query.Where(p => p.Name.ToLower() != t);
-						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
-						else if (opNorm == "IsEmpty") query = query.Where(p => p.Name == null || p.Name == string.Empty);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.Name != null && p.Name != string.Empty);
-						else query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{t}%"));
-						break;
-					}
 				case "MeasurementNetwork": {
 						var t = ToLowerTrim(raw);
-						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"{t}%"));
-						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}"));
-						else if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() == t);
-						else if (opNorm == "NotEqual") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() != t);
-						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
-						else if (opNorm == "IsEmpty") query = query.Where(p => p.MeasurementNetwork.Name == null || p.MeasurementNetwork.Name == string.Empty);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.MeasurementNetwork.Name != null && p.MeasurementNetwork.Name != string.Empty);
+						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() == t);
 						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Zone": {
 						var t = ToLowerTrim(raw);
-						if (opNorm == "StartsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"{t}%"));
-						else if (opNorm == "EndsWith") query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}"));
-						else if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t);
-						else if (opNorm == "NotEqual") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() != t);
-						else if (opNorm == "NotContains") query = query.Where(p => !EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
-						else if (opNorm == "IsEmpty") query = query.Where(p => p.MeasurementNetwork.Zone.Name == null || p.MeasurementNetwork.Zone.Name == string.Empty);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.MeasurementNetwork.Zone.Name != null && p.MeasurementNetwork.Zone.Name != string.Empty);
+						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t);
 						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 						break;
 					}
@@ -244,14 +207,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 					}
 				case "StartDate": {
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.StartDate == default);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.StartDate != default);
 						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
-								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.StartDate > d);
-								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.StartDate >= d);
-								else if (opNorm == "LessThan") query = query.Where(p => p.DateRange.StartDate < d);
+								if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.StartDate >= d);
 								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.StartDate <= d);
-								else if (opNorm == "NotEqual") query = query.Where(p => p.DateRange.StartDate != d);
 								else query = query.Where(p => p.DateRange.StartDate == d);
 							}
 						}
@@ -259,14 +218,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 					}
 				case "EndDate": {
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.EndDate == null);
-						else if (opNorm == "IsNotEmpty") query = query.Where(p => p.DateRange.EndDate != null);
 						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
-								if (opNorm == "GreaterThan") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate > d);
-								else if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= d);
-								else if (opNorm == "LessThan") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate < d);
+								if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= d);
 								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate <= d);
-								else if (opNorm == "NotEqual") query = query.Where(p => p.DateRange.EndDate == null || p.DateRange.EndDate != d);
 								else query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate == d);
 							}
 						}
