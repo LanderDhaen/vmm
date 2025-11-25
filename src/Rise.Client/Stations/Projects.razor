@@ -9,89 +9,117 @@
 }
 else
 {
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-		<MudSelect T="Guid" Label="Projecten toevoegen" MultiSelection="true"
-		           @bind-SelectedValues="Model.ProjectIds" Variant="Variant.Outlined"
-		           Margin="Margin.Dense"
-		           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-			@foreach (var project in _allProjects)
+	
+	@* Desktop view *@
+	
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+			<MudSelect T="Guid"
+			           Label="Projecten toevoegen"
+			           MultiSelection="true"
+			           @bind-SelectedValues="Model.ProjectIds"
+			           Variant="Variant.Outlined"
+			           Margin="Margin.Dense"
+			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+				
+				@foreach (var project in _allProjects)
+				{
+					if (project.Status == Status.Afgesloten)
+					{
+						<MudSelectItem T="Guid" Value="@project.Id" Disabled="true">@project.Code - @project.Name</MudSelectItem>
+						<MudSelectItem T="Guid" Value="@project.Id" Style="display:none"></MudSelectItem>
+					}
+					else
+					{
+						<MudSelectItem T="Guid" Value="@project.Id">@project.Code - @project.Name</MudSelectItem>
+					}
+				}
+			</MudSelect>
+
+			<MudButton Variant="Variant.Filled"
+			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+			           Size="Size.Small"
+			           Color="Color.Primary"
+			           Class="px-4"
+			           OnClick="@UpdateProjects"
+			>
+				Lijst bijwerken
+			</MudButton>
+		</MudStack>
+		
+		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="OnProjectRowClick">
+			<HeaderContent>
+				<MudTHeadRow>
+					<MudTh Class="mud-theme-primary">#</MudTh>
+					<MudTh Class="mud-theme-primary">Naam</MudTh>
+					<MudTh Class="mud-theme-primary">Startdatum</MudTh>
+					<MudTh Class="mud-theme-primary">Einddatum</MudTh>
+					<MudTh Class="mud-theme-primary">Meetnet</MudTh>
+					<MudTh Class="mud-theme-primary">Zone</MudTh>
+				</MudTHeadRow>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="#">@context.Code</MudTd>
+				<MudTd DataLabel="Naam">@context.Name</MudTd>
+				<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
+				<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
+				<MudTd DataLabel="Locatie">@context.MeasurementNetwork</MudTd>
+				<MudTd DataLabel="Gemeente">@context.Zone</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</MudHidden>
+
+	@* Mobile view *@
+
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		
+		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+			<MudSelect T="Guid"
+			           Label="Projecten toevoegen"
+			           MultiSelection="true"
+			           @bind-SelectedValues="Model.ProjectIds"
+			           Variant="Variant.Outlined"
+			           Margin="Margin.Dense"
+			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+				
+				@foreach (var project in _allProjects)
+				{
+						<MudSelectItem T="Guid" Value="@project.Id" Disabled="@project.Status == Status.Afgesloten">@project.Code - @project.Name</MudSelectItem>
+				}
+			</MudSelect>
+
+			<MudIconButton Variant="Variant.Filled"
+			               Icon="@Icons.Material.Filled.PlaylistAdd"
+			               Size="Size.Small"
+			               Color="Color.Primary"
+			               OnClick="@UpdateProjects"/>
+		</MudStack>
+		
+		<MudGrid Spacing="6">
+			@foreach (var p in _projectsFromStation)
 			{
-				if (project.Status == Status.Afgesloten)
-				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="true">@project.Code - @project.Name</MudSelectItem>
-					<MudSelectItem T="Guid" Value="@project.Id" Style="display:none"></MudSelectItem>
-				}
-				else
-				{
-					<MudSelectItem T="Guid" Value="@project.Id">@project.Code - @project.Name</MudSelectItem>
-				}
-			}
-		</MudSelect>
-
-		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-		           Size="Size.Small"
-		           Color="Color.Primary"
-		           Class="px-4"
-		           OnClick="@UpdateProjects"
-		>
-			Lijst bijwerken
-		</MudButton>
-	</MudStack>
-	<MudPaper Class="projects-grid-wrapper" Elevation="2" Rounded="true">
-		@* Desktop view with full ValidityRange *@
-		<MudHidden Breakpoint="Breakpoint.Xs">
-			<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="OnProjectRowClick">
-				<HeaderContent>
-					<MudTHeadRow>
-						<MudTh Class="mud-theme-primary">#</MudTh>
-						<MudTh Class="mud-theme-primary">Naam</MudTh>
-						<MudTh Class="mud-theme-primary">Startdatum</MudTh>
-						<MudTh Class="mud-theme-primary">Einddatum</MudTh>
-						<MudTh Class="mud-theme-primary">Meetnet</MudTh>
-						<MudTh Class="mud-theme-primary">Zone</MudTh>
-					</MudTHeadRow>
-				</HeaderContent>
-				<RowTemplate>
-					<MudTd DataLabel="#">@context.Code</MudTd>
-					<MudTd DataLabel="Naam">@context.Name</MudTd>
-					<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
-					<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
-					<MudTd DataLabel="Locatie">@context.MeasurementNetwork</MudTd>
-					<MudTd DataLabel="Gemeente">@context.Zone</MudTd>
-				</RowTemplate>
-			</MudTable>
-		</MudHidden>
-
-		@* Mobile view with only ValidFrom *@
-
-		<MudHidden Breakpoint="Breakpoint.SmAndUp">
-			<MudGrid Spacing="6">
-				@foreach (var p in _projectsFromStation)
-				{
-					<MudItem xs="12">
-						<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnProjectCardClick(p))">
-							<MudCardHeader>
-								<CardHeaderContent>
-									<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
-										<MudStack Spacing="0">
-											<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@p.Code</b>
-											</MudText>
-											<MudText Typo="Typo.h6">@p.Name</MudText>
-										</MudStack>
+				<MudItem xs="12">
+					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnProjectCardClick(p))">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
+									<MudStack Spacing="0">
+										<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@p.Code</b>
+										</MudText>
+										<MudText Typo="Typo.h6">@p.Name</MudText>
 									</MudStack>
-								</CardHeaderContent>
-							</MudCardHeader>
-							<MudCardContent Class="d-flex flex-column gap-1">
-								<MudText Typo="Typo.caption"><b>Startdatum:</b> @p.StartDate</MudText>
-								<MudText Typo="Typo.caption"><b>Einddatum:</b> @p.EndDate</MudText>
-								<MudText Typo="Typo.caption"><b>Meetnet:</b> @p.MeasurementNetwork</MudText>
-								<MudText Typo="Typo.caption"><b>Zone:</b> @p.Zone</MudText>
-							</MudCardContent>
-						</MudCard>
-					</MudItem>
-				}
-			</MudGrid>
-		</MudHidden>
-	</MudPaper>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="d-flex flex-column gap-1">
+							<MudText Typo="Typo.caption"><b>Startdatum:</b> @p.StartDate</MudText>
+							<MudText Typo="Typo.caption"><b>Einddatum:</b> @p.EndDate</MudText>
+							<MudText Typo="Typo.caption"><b>Meetnet:</b> @p.MeasurementNetwork</MudText>
+							<MudText Typo="Typo.caption"><b>Zone:</b> @p.Zone</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+			}
+		</MudGrid>
+	</MudHidden>
 }
