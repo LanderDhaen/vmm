@@ -309,8 +309,8 @@ public class DbSeeder(
 		};
 
 		Technician technician = dbContext.Technicians.Local.FirstOrDefault()
-		                        ?? await dbContext.Technicians.FirstOrDefaultAsync()
-		                        ?? new Technician("Seed", "Tech", "seed-tech-account");
+								?? await dbContext.Technicians.FirstOrDefaultAsync()
+								?? new Technician("Seed", "Tech", "seed-tech-account");
 
 		if (technician.Id == null) {
 			dbContext.Technicians.Add(technician);
