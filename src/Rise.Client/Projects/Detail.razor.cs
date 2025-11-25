@@ -222,9 +222,4 @@ public partial class Detail {
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
-
-	//NAV
-	private void NavigateToProjects() {
-		Navigation.NavigateTo("/projects/");
-	}
 }

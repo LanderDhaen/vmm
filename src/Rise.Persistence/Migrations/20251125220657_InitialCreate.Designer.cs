@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251125220033_InitialCreate")]
+    [Migration("20251125220657_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
