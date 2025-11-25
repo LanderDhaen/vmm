@@ -108,10 +108,11 @@
 					         @onclick="() => NavigateToProject(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
+								          Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-									<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-									         Color="@(DefineColor(item.Status))">@item.Status</MudChip>
+									<MudBadge Color="@(DefineColor(item.Status))" Dot="true"></MudBadge>
+
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>
