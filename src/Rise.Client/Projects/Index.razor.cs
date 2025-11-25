@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 
 using MudBlazor;
 
@@ -91,10 +92,10 @@ namespace Rise.Client.Projects {
 				request.Filters["MeasurementNetwork"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterMeasurementNetwork!.Trim() };
 
 			if (_filterStartDate.HasValue)
-				request.Filters["StartDate"] = new { Operator = "GreaterThanOrEqual", Value = _filterStartDate.Value.ToString("o") };
+				request.Filters["StartDate"] = new { Operator = "GreaterThanOrEqual", Value = _filterStartDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 
 			if (_filterEndDate.HasValue)
-				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("o") };
+				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
 		private void UpdateSelectOptions(IEnumerable<ProjectDto.Index> projects) {
 			_zones = projects
