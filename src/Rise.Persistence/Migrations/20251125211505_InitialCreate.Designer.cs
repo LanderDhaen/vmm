@@ -12,8 +12,13 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:src/Rise.Persistence/Migrations/20251125211505_InitialCreate.Designer.cs
     [Migration("20251125211505_InitialCreate")]
     partial class InitialCreate
+========
+    [Migration("20251124184923_IncreaseCoordinatePrecision")]
+    partial class IncreaseCoordinatePrecision
+>>>>>>>> main:src/Rise.Persistence/Migrations/20251124184923_IncreaseCoordinatePrecision.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -790,11 +795,13 @@ namespace Rise.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<double>("X")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("X");
 
                             b1.Property<double>("Y")
-                                .HasColumnType("float")
+                                .HasPrecision(18, 6)
+                                .HasColumnType("float(18)")
                                 .HasColumnName("Y");
 
                             b1.HasKey("LocationId");

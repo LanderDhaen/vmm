@@ -1,0 +1,41 @@
+@using Rise.Client.Components.Stations
+<PageTitle>Station Details</PageTitle>
+
+@if (_measurementStation is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	<MudToolBar Class="justify-start gap-3" Gutters="false">
+		<MudButton Variant="Variant.Filled"
+		           Class="px-4"
+		           Size="Size.Small"
+		           StartIcon="@(Icons.Material.Filled.Timeline)"
+		           Color="Color.Primary"
+		           OnClick="@(() => DisplayTable = false)"
+		           Disabled="@(!DisplayTable)">
+			Tijdslijn
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           Class="px-4"
+		           Size="Size.Small"
+		           StartIcon="@(Icons.Material.Filled.TableRows)"
+		           Color="Color.Primary"
+		           OnClick="@(() => DisplayTable = true)"
+		           Disabled="DisplayTable">
+			Tabel
+		</MudButton>
+	</MudToolBar>
+	
+	@if (DisplayTable)
+	{
+		<MeasurementStationHistoryTable MeasurementStation="_measurementStation" />
+	}
+	else
+	{
+		<MeasurementStationHistoryTimeline MeasurementStation="_measurementStation"/>
+	}
+}

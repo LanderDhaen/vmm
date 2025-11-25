@@ -20,6 +20,11 @@ public partial class Index {
 
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
+	private string _searchTerm;
+
+	private CancellationTokenSource _cancellationTokenSource = new();
+
+	private MudDataGrid<MeasurementStationDto.Index> _grid;
 
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
@@ -43,7 +48,7 @@ public partial class Index {
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetStationsMobileAsync(_activeSorting, _activeSortingDesc);
+			await GetStationsMobileAsync();
 		}
 	}
 
@@ -51,16 +56,18 @@ public partial class Index {
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
+		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting?.SortBy ?? "Code",
-			OrderDescending = sorting?.Descending ?? false
+			OrderBy = sorting.SortBy,
+			OrderDescending = sorting.Descending,
+			SearchTerm = _searchTerm
 		};
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request); // No support for cancellation, see https://github.com/HOGENT-RISE/dotnet-2526-vc2/pull/42
 
 		return new GridData<MeasurementStationDto.Index> {
 			TotalItems = result.Value.TotalCount,
@@ -70,15 +77,21 @@ public partial class Index {
 
 	// Mobile
 
-	private async Task GetStationsMobileAsync(string orderBy, bool orderDescending) {
+	private async Task GetStationsMobileAsync() {
+
+		_cancellationTokenSource.Cancel();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
+
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = orderBy,
-			OrderDescending = orderDescending
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc,
+			SearchTerm = _searchTerm
 		};
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.Stations;
 	}
@@ -90,10 +103,20 @@ public partial class Index {
 	}
 
 	private async Task SortMobileAsync(string orderBy, bool descending) {
-		await GetStationsMobileAsync(orderBy, descending);
-		ToggleSortingDrawer();
 		_activeSorting = orderBy;
 		_activeSortingDesc = descending;
+		await GetStationsMobileAsync();
+		ToggleSortingDrawer();
+	}
+
+	// Filtering
+
+	private async Task HandleDesktopIntervalElapsed() {
+		await _grid.ReloadServerData();
+	}
+
+	private async Task HandleMobileIntervalElapsed() {
+		await GetStationsMobileAsync();
 	}
 
 	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
@@ -103,4 +126,9 @@ public partial class Index {
 	private void NavigateToStation(Guid stationId) {
 		NavigationManager.NavigateTo($"/stations/{stationId}");
 	}
+
+	private void NavigateToCreate() {
+		NavigationManager.NavigateTo("/stations/create");
+	}
+
 }

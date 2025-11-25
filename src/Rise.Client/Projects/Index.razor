@@ -13,6 +13,10 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed" 
+		              @bind-Value="_searchTerm"
+		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -33,13 +37,15 @@
 
 	<MudDataGrid T="ProjectDto.Index"
 	             ServerData="GetProjectsAsync"
+	             @ref="_grid"
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
@@ -64,6 +70,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
+		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 
