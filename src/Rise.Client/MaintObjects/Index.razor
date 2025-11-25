@@ -1,10 +1,9 @@
 @page "/maintobjects"
 @using Rise.Client.Components
 @using Rise.Shared.MaintObjects
-<PageTitle>Onderhouds objecten</PageTitle>
+<PageTitle>Onderhoudsobjecten</PageTitle>
 
 @* Desktop view *@
-@* TODO: what to show on overview page *@
 <MudHidden Breakpoint="Breakpoint.Xs">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
@@ -13,7 +12,6 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -28,7 +26,7 @@
 		           Color="Color.Primary"
 		           Class="px-4"
 		           OnClick="@NavigateToCreate">
-			Onderhouds object
+			Onderhoudsobject
 		</MudButton>
 	</MudStack>
 
@@ -43,7 +41,10 @@
 			<PropertyColumn Property="x => x.SerialNumber" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+
+
 		</Columns>
 
 		<PagerContent>
@@ -110,13 +111,13 @@
 								          Class="pr-3">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.SerialNumber</b>
 									</MudText>
-									<MudBadge Color="@(DefineColor(item.Status))" Dot="true"></MudBadge>
+									<MudBadge Color="@(DefineColor(item.MaintObjStatus))" Dot="true"></MudBadge>
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Onderhouds object: </b> @item.MaintObjType</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Onderhoudsobject: </b> @item.MaintObjType</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

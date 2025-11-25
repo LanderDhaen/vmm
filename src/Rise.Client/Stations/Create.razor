@@ -116,6 +116,21 @@
 								              Immediate="true" Variant="Variant.Outlined"
 								              Placeholder="Y-coordinaat"/>
 							</MudItem>
+
+							@if (Model.IsNewLocation)
+							{
+								<MudItem xs="12">
+									<MudButton Variant="Variant.Outlined"
+									           StartIcon="@Icons.Material.Filled.Place"
+									           OnClick="OpenMapDialog">
+										Kies op kaart
+									</MudButton>
+
+									<MudText Typo="Typo.caption" Class="mt-1">
+										Klik op de kaart om X/Y automatisch in te vullen.
+									</MudText>
+								</MudItem>
+							}
 						</MudGrid>
 					</MudPaper>
 				</MudItem>

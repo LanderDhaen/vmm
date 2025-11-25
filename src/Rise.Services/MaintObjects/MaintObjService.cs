@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Common;
+using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Domain.Projects;
 using Rise.Persistence;
@@ -8,9 +8,8 @@ using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
-using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
-using SharedMaintObjType = Rise.Shared.MaintObjects.MaintObjType;
-using SharedStatus = Rise.Shared.Projects.Status;
+using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
+using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 
 namespace Rise.Services.MaintObjects;
 
@@ -32,7 +31,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			switch (req.OrderBy) {
-			// TODO
+			// TODO: sorting
 			default:
 				query = desc
 					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
@@ -45,17 +44,41 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
+			.Include(mo => mo.MaintObjType)
+			.Include(mo => mo.Station)
+			.Include(mo => mo.Location)
 			.Skip(req.Skip)
 			.Take(req.Take);
-		List<MaintObjDto.Index> maintObjects = await page
-			.Select(d => new MaintObjDto.Index {
-				Id = d.Id,
-				Name = d.Name,
-				SerialNumber = d.SerialNumber,
-				MaintObjType = (SharedMaintObjType)d.MaintObjType,
-				Status = (SharedStatus)d.Status
+
+		var raw = await page
+			.Select(mo => new {
+				mo.Id,
+				mo.Name,
+				mo.SerialNumber,
+				MaintObjTypeCode = mo.MaintObjType != null ? mo.MaintObjType.Code : null,
+				mo.MaintObjStatus,
+				LocationName = mo.Location != null ? mo.Location.Name :
+					mo.Station != null ? mo.Station.Location.Name : null
 			})
 			.ToListAsync(ctx);
+
+		List<MaintObjDto.Index> maintObjects = raw.Select(mo => {
+			// safe parse of type code to shared enum
+			MaintObjType parsedType = MaintObjType.Sonde;
+			if (mo.MaintObjTypeCode is not null &&
+				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+				parsedType = tmp;
+			}
+
+			return new MaintObjDto.Index {
+				Id = mo.Id,
+				Name = mo.Name,
+				SerialNumber = mo.SerialNumber,
+				MaintObjType = parsedType,
+				MaintObjStatus = (SharedStatus)mo.MaintObjStatus,
+				Location = mo.LocationName ?? string.Empty
+			};
+		}).ToList();
 
 		return Result.Success(new MaintObjResponse.Index {
 			MaintObjects = maintObjects,
@@ -70,10 +93,22 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.Conflict($"Onderhoudsobject met serienummer '{request.SerialNumber}' bestaat al.");
 		}
 
-		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
+		Location? location = await dbContext.Locations
+			.FirstOrDefaultAsync(x => x.Id == request.LocationId);
 
-		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType,
-			request.Brand, new Installation(installedAt));
+		if (location is null) {
+			return Result.NotFound("De locatie werd niet gevonden.");
+		}
+
+		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
+
+		if (type is null) {
+			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
+		}
+
+		MaintObj mo = new(request.Name, request.SerialNumber, type,
+			request.Brand, null, true, location);
 
 		dbContext.MaintObjects.Add(mo);
 

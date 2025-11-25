@@ -5,16 +5,16 @@ using MudBlazor;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Projects;
 
 namespace Rise.Client.MaintObjects;
 
 public partial class Index {
 	private static readonly (string Value, string Label)[] SortColumns = [
-		("Serial", "Serialnummer"),
+		("SerialNumber", "Serienummer"),
 		("Name", "Naam"),
-		("Type", "Type"),
-		("Status", "Status")
+		("MaintObjType", "Type"),
+		("MaintObjStatus", "Status"),
+		("Location", "Locatie")
 	];
 
 	private string _activeSorting = "Name";
@@ -34,10 +34,10 @@ public partial class Index {
 
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Onderhouds objecten", null, true)
+			new BreadcrumbItem("Onderhoudsobjecten", null, true)
 		);
 
-		HeaderService.Set("Onderhouds objecten");
+		HeaderService.Set("Onderhoudsobjecten");
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
@@ -108,7 +108,7 @@ public partial class Index {
 	}
 
 	// Other
-	private Color DefineColor(Status status) {
-		return status == Status.Actief ? Color.Success : Color.Error;
+	private Color DefineColor(MaintObjStatus status) {
+		return status == MaintObjStatus.Actief ? Color.Success : Color.Error;
 	}
 }
