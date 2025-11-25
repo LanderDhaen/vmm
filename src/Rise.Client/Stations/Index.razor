@@ -1,12 +1,12 @@
-@attribute [Authorize]
-
 @page "/stations"
 @using Rise.Client.Components
 @using Rise.Shared.Stations
 
 <PageTitle>Stations</PageTitle>
-<MudHidden Breakpoint="Breakpoint.Xs">
 
+@* Desktop view *@
+
+<MudHidden Breakpoint="Breakpoint.Xs">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
@@ -14,6 +14,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed" 
+		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
@@ -34,10 +37,12 @@
 
 	<MudDataGrid T="MeasurementStationDto.Index"
 	             ServerData="GetStationsAsync"
+	             @ref="_grid"
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
 	             RowClick="@(args => NavigateToStation(args.Item.Id))">
+		
 		<Columns>
 			<PropertyColumn Property="x => x.Code" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
@@ -50,10 +55,12 @@
 		<PagerContent>
 			<Pagination T="MeasurementStationDto.Index"/>
 		</PagerContent>
+		
 	</MudDataGrid>
 </MudHidden>
 
-<!-- MOBILE: list with MudCard components (visible on xs and down). Drawer lives here -->
+@* Mobile view *@
+
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
@@ -62,6 +69,9 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              DebounceInterval="1000" 
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
+		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 
@@ -119,6 +129,7 @@
 </MudHidden>
 
 @* Drawer for sorting on mobile. Render only when open to avoid display conflicts with MudBlazor *@
+
 @if (_mobileSortOptionsOpen)
 {
 	<MudDrawer Anchor="Anchor.Bottom"
@@ -159,3 +170,5 @@
 		</MudStack>
 	</MudDrawer>
 }
+
+@* TODO: Implement drawer for filtering *@
