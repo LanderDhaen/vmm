@@ -31,8 +31,6 @@ public class MaintObj : Entity {
 	// Location: mirrors the assigned MeasurementStation's location, or null when in stock / unassigned
 	public Location? Location { get; private set; }
 
-	// Nullable FK to Technician:
-	public Guid? TechnicianId { get; private set; }
 	public Technician? Technician { get; private set; }
 
 	public void AssignToStation(MeasurementStation station) {
@@ -49,12 +47,10 @@ public class MaintObj : Entity {
 
 	public void RecordTechnician(Technician technician) {
 		Technician = Guard.Against.Null(technician);
-		TechnicianId = technician.Id;
 	}
 
 	public void ClearTechnician() {
 		Technician = null;
-		TechnicianId = null;
 	}
 
 	public void SetStatus(MaintObjStatus status) {

@@ -29,7 +29,7 @@ public class MaintObjShould {
 
 	[Fact]
 	public void BeCreatedWithExpectedDefaults() {
-		var type = MakeType();
+		MaintObjType type = MakeType();
 		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", null, true);
 
 		mo.Name.ShouldBe("Sensor-1");
@@ -39,7 +39,7 @@ public class MaintObjShould {
 		mo.IsInStock.ShouldBeTrue();
 		mo.Location.ShouldBeNull();
 		mo.Station.ShouldBeNull();
-		mo.TechnicianId.ShouldBeNull();
+		mo.Technician.ShouldBeNull();
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
 	}
 
@@ -70,12 +70,10 @@ public class MaintObjShould {
 		mo.RecordTechnician(tech);
 
 		mo.Technician.ShouldBe(tech);
-		mo.TechnicianId.ShouldBe(tech.Id);
 
 		mo.ClearTechnician();
 
 		mo.Technician.ShouldBeNull();
-		mo.TechnicianId.ShouldBeNull();
 	}
 
 	[Fact]
