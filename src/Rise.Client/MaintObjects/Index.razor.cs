@@ -112,7 +112,8 @@ public partial class Index {
 		return status switch {
 			MaintObjStatus.Actief => Color.Success,
 			MaintObjStatus.Inactief => Color.Error,
-			_ => Color.Warning
+			MaintObjStatus.Defect => Color.Warning,
+			_ => Color.Default
 		};
 	}
 }
