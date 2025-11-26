@@ -20,7 +20,7 @@ public partial class Index {
 	];
 
 	private string _activeSorting = "Code";
-	private bool _activeSortingDesc;
+	private bool _activeSortingDesc = true;
 	private string _searchTerm;
 
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
