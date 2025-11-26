@@ -95,21 +95,21 @@ public class Project : Entity {
 	}
 
 	public void UpdateStatus(Status newStatus) {
-		
+
 		// Check if the values are the same as the old values
-		
+
 		if (Status == newStatus) {
 			return;
 		}
-		
+
 		// Create history object using the old values
-		
+
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
 		_projectHistories.Add(projectHistory);
-		
+
 		// Assign the new values
-		
+
 		DateRange = newStatus switch {
 			Status.Actief => new DateRange(DateRange.StartDate),
 			Status.Afgesloten when !DateRange.EndDate.HasValue => new DateRange(DateRange.StartDate,

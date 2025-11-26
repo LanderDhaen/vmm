@@ -3,6 +3,7 @@ using Ardalis.Result;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
@@ -12,7 +13,6 @@ using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
-using Rise.Domain.Common;
 
 using Status = Rise.Shared.Projects.Status;
 

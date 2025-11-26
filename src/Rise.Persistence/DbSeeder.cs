@@ -158,7 +158,7 @@ public class DbSeeder(
 
 		List<Coordinate> coordinates = new() {
 			new Coordinate(50.88486, 4.36695),
-			new Coordinate(50.84326, 3.32974), 
+			new Coordinate(50.84326, 3.32974),
 			new Coordinate(51.04535, 3.68276),
 			new Coordinate(50.94093, 4.04293),
 			new Coordinate(51.60512, 4.75128),
@@ -167,7 +167,7 @@ public class DbSeeder(
 			// Stock
 			
 			new Coordinate(50.91215, 4.03795),
-			new Coordinate(51.09013, 3.68663) 
+			new Coordinate(51.09013, 3.68663)
 		};
 
 		List<Location> locations = new() {
@@ -299,9 +299,9 @@ public class DbSeeder(
 			new MeasurementStation("STN-005", locations[4], installations[4]),
 			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
-		
+
 		// Add projects to stations
-		
+
 		stations[0].Projects.Add(projects[0]);
 		stations[1].Projects.Add(projects[1]);
 		stations[2].Projects.Add(projects[2]);

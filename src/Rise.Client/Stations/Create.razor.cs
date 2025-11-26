@@ -109,7 +109,7 @@ public partial class Create {
 
 	private string BuildString(Guid? id) {
 		var location = _locations.FirstOrDefault(x => x.Id == id);
-		
+
 		return $"{location?.Name} ({location?.Address.City})";
 	}
 
