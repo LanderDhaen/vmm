@@ -28,7 +28,7 @@
 					{
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
 						<MudAutocomplete T="Guid?" SearchFunc="Search"
-						                 ToStringFunc="id => _locations.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
+						                 ToStringFunc="@(id => BuildString(id))"
 						                 @bind-Value="Model.LocationId"
 						                 @bind-Value:after="OnLocationSelected"
 						                 @bind-Text="_searchText"
