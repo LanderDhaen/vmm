@@ -15,9 +15,9 @@
 		@* </MudAppBar> *@
 
 		@* === 2 === same color, blurred, elevation *@
-		<MudAppBar Style="background-color: rgb(236 ,236 ,236,0.7); backdrop-filter: blur(10px);" Elevation="3">
-			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
-		</MudAppBar>
+		@* <MudAppBar Style="background-color: rgb(236 ,236 ,236,0.7); backdrop-filter: blur(10px);" Elevation="3"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
 
 		@* === 3 === same color, blurred, flat *@
 		@* <MudAppBar Style="background-color: rgb(236 ,236 ,236,0.6); backdrop-filter: blur(10px);" Elevation="0"> *@
@@ -39,9 +39,9 @@
 		@* </MudAppBar> *@
 
 		@* === 6 === same color, flat *@
-		@* <MudAppBar Style="background-color: #ececec;" Elevation="0"> *@
-		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
-		@* </MudAppBar> *@
+		<MudAppBar Style="background-color: #ececec;" Elevation="0">
+			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
+		</MudAppBar>
 
 		@* === 7 ===  same color, flat, border *@
 		@* <MudAppBar Style="background-color: #ececec; border-bottom: solid 1px black" Elevation="0"> *@
