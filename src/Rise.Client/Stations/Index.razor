@@ -18,11 +18,12 @@
 		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
 		              @bind-Value="_searchTerm"
 		              Margin="Margin.Dense"/>
-		<MudButton Variant="Variant.Filled"
-		           Size="Size.Small"
-		           StartIcon="@Icons.Material.Filled.FilterAlt"
-		           Color="Color.Primary"
-		           Class="px-4">
+        <MudButton Variant="Variant.Filled"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.FilterAlt"
+                   Color="Color.Primary"
+                   Class="px-4"
+                   OnClick="@ToggleFiltersDrawer">
 			Filteren
 		</MudButton>
 		<MudButton Variant="Variant.Filled"
@@ -81,9 +82,10 @@
 		               Size="Size.Small"
 		               OnClick="@ToggleSortingDrawer"/>
 
-		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
-		               Color="Color.Primary"
-		               Size="Size.Small"/>
+        <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="@ToggleFiltersDrawer"/>
 
 		<MudIconButton Icon="@Icons.Material.Filled.Add"
 		               Color="Color.Primary"
@@ -216,7 +218,7 @@
                 => { _filterProjectsCount = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterProjectsCount"
                 Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @* Standaardopties (0..5) — je kunt deze dynamisch uit de backend vullen *@
-                @foreach (var pc in _projects)
+                @foreach (var pc in _projectCounts)
                 {
                     <MudSelectItem T="int?" Value="@pc">@((pc >= 5) ? $"{pc}+" : pc.ToString())</MudSelectItem>
                 }
