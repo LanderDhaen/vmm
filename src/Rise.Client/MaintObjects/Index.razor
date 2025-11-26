@@ -35,10 +35,11 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
 	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.SerialNumber" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">

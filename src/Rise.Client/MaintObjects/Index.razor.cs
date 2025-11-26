@@ -17,8 +17,8 @@ public partial class Index {
 		("Location", "Locatie")
 	];
 
-	private string _activeSorting = "Name";
-	private bool _activeSortingDesc;
+	private string _activeSorting = "SerialNumber";
+	private bool _activeSortingDesc = true;
 
 	private IEnumerable<MaintObjDto.Index>? _mobileItems;
 
