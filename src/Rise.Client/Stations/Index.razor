@@ -173,4 +173,60 @@
 	</MudDrawer>
 }
 
-@* TODO: Implement drawer for filtering *@
+@* Filter drawer (adaptive anchor: right on large screens, bottom on xs) *@
+@if (_filterOptionsOpen)
+{
+    <MudDrawer Anchor="@_filterDrawerAnchor"
+               Variant="DrawerVariant.Temporary"
+               Elevation="8"
+               @bind-Open="_filterOptionsOpen"
+               Class="@GetFilterDrawerClass()">
+
+        <MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
+
+        <MudStack Spacing="3" Class="mt-2">
+            <MudDivider/>
+
+            <MudDatePicker T="DateTime?" Label="Installatiedatum" Date="_filterInstalledAt" DateChanged="@(async (DateTime? val) 
+            => { _filterInstalledAt = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterInstalledAt" 
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+
+            <MudDatePicker T="DateTime?" Label="Verwijderd op" Date="_filterRemovedAt" DateChanged="@(async (DateTime? val) 
+            => { _filterRemovedAt = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterRemovedAt" 
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+
+            <MudSelect T="string" Label="Locatie" Value="_filterLocation" ValueChanged="@(async (string? val) 
+            => { _filterLocation = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterLocation" 
+            Dense="true" Clearable="true" Placeholder="Selecteer...">
+                @foreach (var z in _locations)
+                {
+                    <MudSelectItem T="string" Value="@z">@z</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSelect T="string" Label="Gemeente" Value="_filterCity" ValueChanged="@(async (string? val) 
+            => { _filterCity = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterCity" 
+            Dense="true" Clearable="true" Placeholder="Selecteer...">
+                @foreach (var m in _cities)
+                {
+                    <MudSelectItem T="string" Value="@m">@m</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="int?" Label="Projecten" Value="_filterProjectsCount" ValueChanged="@(async (int? val)
+                => { _filterProjectsCount = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterProjectsCount"
+                Dense="true" Clearable="true" Placeholder="Selecteer...">
+                @* Standaardopties (0..5) — je kunt deze dynamisch uit de backend vullen *@
+                @foreach (var pc in _projects)
+                {
+                    <MudSelectItem T="int?" Value="@pc">@((pc >= 5) ? $"{pc}+" : pc.ToString())</MudSelectItem>
+                }
+            </MudSelect>
+
+
+            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
+            </MudStack>
+
+        </MudStack>
+    </MudDrawer>
+}
