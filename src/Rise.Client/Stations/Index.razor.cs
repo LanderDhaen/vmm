@@ -117,7 +117,11 @@ public partial class Index {
 	}
 
 	// Filtering
-
+		private async Task ToggleFiltersDrawer() {
+			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+			_filterDrawerAnchor = breakpoint == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
+			_filterOptionsOpen = !_filterOptionsOpen;
+		}
 	private async Task HandleDesktopIntervalElapsed() {
 		await _grid.ReloadServerData();
 	}
