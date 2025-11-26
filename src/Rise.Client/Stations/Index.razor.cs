@@ -77,24 +77,31 @@ public partial class Index {
 
 	// Mobile
 
-	private async Task GetStationsMobileAsync() {
+			private async Task GetStationsMobileAsync() {
+			_cancellationTokenSource.Cancel();
+			_cancellationTokenSource.Dispose();
+			_cancellationTokenSource = new CancellationTokenSource();
 
-		_cancellationTokenSource.Cancel();
-		_cancellationTokenSource.Dispose();
-		_cancellationTokenSource = new CancellationTokenSource();
+			QueryRequest.SkipTake request = new() {
+				Skip = 0,
+				Take = 10,
+				OrderBy = _activeSorting,
+				OrderDescending = _activeSortingDesc,
+				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+			};
+			request.Filters ??= new Dictionary<string, object?>();
 
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			OrderBy = _activeSorting,
-			OrderDescending = _activeSortingDesc,
-			SearchTerm = _searchTerm
-		};
+			ApplyDrawerFilters(request, useContainsForText: true);
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
+			Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
-		_mobileItems = result.Value.Stations;
-	}
+
+			var stations = result?.Value?.Stations ?? Enumerable.Empty<MeasurementStationDto.Index>();
+			UpdateSelectOptions(stations);
+			_mobileItems = result.Value.Stations;
+		}
+
+
 
 	// Mobile Sorting
 
