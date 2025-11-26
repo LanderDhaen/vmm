@@ -130,7 +130,7 @@ public partial class Detail {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt afsluiten?",
-			"Bevestig",
+			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);
@@ -144,7 +144,7 @@ public partial class Detail {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt opstarten?",
-			"Bevestig",
+			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);
