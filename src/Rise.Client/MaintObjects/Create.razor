@@ -5,11 +5,6 @@
 	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 		<MudCardContent>
 			<MudGrid>
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Naam</MudText>
-					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
-					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
-				</MudItem>
 				
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Serienummer</MudText>
@@ -17,6 +12,12 @@
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Serienummer"/>
 				</MudItem>
 				
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+				</MudItem>
+
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Type</MudText>
 					<MudSelect @bind-Value="Model.MaintObjType"
@@ -28,13 +29,13 @@
 						}
 					</MudSelect>
 				</MudItem>
-				
+
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Merk</MudText>
 					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
 				</MudItem>
-				
+
 				@if (_locations != null)
 				{
 					<MudItem xs="12" sm="6">
