@@ -13,14 +13,14 @@ namespace Rise.Client.Projects {
 		// Sort options 
 		private static readonly (string Value, string Label)[] SortColumns = new[]
 		{
-		("Code", "Code"),
-		("Name", "Naam"),
-		("StartDate", "Startdatum"),
-		("EndDate", "Einddatum"),
-		("MeasurementNetwork", "Meetnet"),
-		("Zone", "Zone"),
-		("Status", "Status")
-	};
+			("Code", "Code"),
+			("Name", "Naam"),
+			("StartDate", "Startdatum"),
+			("EndDate", "Einddatum"),
+			("MeasurementNetwork", "Meetnet"),
+			("Zone", "Zone"),
+			("Status", "Status")
+		};
 
 		private string _activeSorting = "Name";
 		private bool _activeSortingDesc;
@@ -205,5 +205,9 @@ namespace Rise.Client.Projects {
 			}
 			StateHasChanged();
 		}
+
+
+		private string GetFilterDrawerClass() =>
+			_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
 	}
 }

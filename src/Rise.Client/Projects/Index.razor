@@ -200,25 +200,25 @@
                Variant="DrawerVariant.Temporary"
                Elevation="8"
                @bind-Open="_filterOptionsOpen"
-               Class="p-4 rounded-lg">
+               Class="@GetFilterDrawerClass()">
 
-        <MudText Typo="Typo.h6">Filteren</MudText>
+        <MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
 
         <MudStack Spacing="3" Class="mt-2">
             <MudDivider/>
 
-<MudSelect T="Status?"
-           Label="Status"
-           Value="_filterStatus"
-           ValueChanged="@(async (Status? val) => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })"
-           ValueExpression="() => _filterStatus"
-           Dense="true"
-           Clearable="true">
-    @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
-    {
-        <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
-    }
-</MudSelect>
+            <MudSelect T="Status?"
+                       Label="Status"
+                       Value="_filterStatus"
+                       ValueChanged="@(async (Status? val) => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })"
+                       ValueExpression="() => _filterStatus"
+                       Dense="true"
+                       Clearable="true">
+                @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
+                {
+                    <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
+                }
+            </MudSelect>
 
             <MudSelect T="string" Label="Zone" Value="_filterZone" ValueChanged="@(async (string? val) 
             => { _filterZone = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterZone" 
@@ -230,7 +230,7 @@
             </MudSelect>
 
             <MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork" ValueChanged="@(async (string? val) 
-            => { _filterZone = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterMeetnet" 
+            => { _filterMeasurementNetwork = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterMeetnet" 
             Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var m in _measurementNetworks)
                 {
@@ -242,12 +242,12 @@
             => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
             DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
-            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
-            => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
-            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
+            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate" DateChanged="@(async (DateTime? val) 
+            => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterEndDate" 
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
             <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
-                <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@ClearFilters">Wissen</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
             </MudStack>
 
         </MudStack>
