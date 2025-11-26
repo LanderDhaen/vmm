@@ -110,7 +110,11 @@ public partial class Create {
 	private string BuildString(Guid? id) {
 		var location = _locations.FirstOrDefault(x => x.Id == id);
 
-		return $"{location?.Name} ({location?.Address.City})";
+		if (location is null) {
+			return string.Empty;
+		}
+
+		return $"{location.Name} ({location.Address.City})";
 	}
 
 	private async Task OpenMapDialog() {
