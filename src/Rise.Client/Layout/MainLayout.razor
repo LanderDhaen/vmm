@@ -9,7 +9,7 @@
 <MudLayout Style="background-color: #ececec ">
 	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudAppBar Color="Color.Transparent" Elevation="0">
+		<MudAppBar Style="background-color: rgb(255,255,255,0.5); backdrop-filter: blur(10px);">
 			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
 		</MudAppBar>
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
