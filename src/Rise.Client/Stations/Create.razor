@@ -45,9 +45,11 @@
 					}
 				</MudItem>
 
-				@*Location*@
+				@if (Model.IsNewLocation)
+				{
+					@*Location*@
 				<MudItem xs="12">
-					<MudPaper Class="pa-4 mt-4" Elevation="1">
+				
 						<MudText Typo="Typo.h5" Class="mb-2">Locatiegegevens</MudText>
 						<MudGrid>
 							<MudItem xs="12" sm="6">
@@ -131,8 +133,8 @@
 								</MudItem>
 							}
 						</MudGrid>
-					</MudPaper>
 				</MudItem>
+				}
 
 			</MudGrid>
 		</MudCardContent>
