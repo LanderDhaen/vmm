@@ -61,11 +61,11 @@ public partial class Detail {
 			}
 		);
 	}
-	
+
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
-	
+
 	private void OnTabChange(string newValue) {
 		_tabs[1] = newValue;
 		StateHasChanged();

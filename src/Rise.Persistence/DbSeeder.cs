@@ -103,8 +103,8 @@ public class DbSeeder(
 		}
 
 		List<Zone> zones = new() {
-			new Zone("Zone West", "ASTA"),
-			new Zone("Zone Oost", "HSTA")
+			new Zone("West", "ASTA"),
+			new Zone("Oost", "HSTA")
 		};
 
 		dbContext.Zones.AddRange(zones);
@@ -129,7 +129,7 @@ public class DbSeeder(
 			new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
 			new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
 			new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
-			new MeasurementNetwork("Overstortmeetnet Oost", zones[1])
+			new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
 		};
 
 		dbContext.MeasurementNetworks.AddRange(measurementNetworks);
@@ -143,39 +143,45 @@ public class DbSeeder(
 		}
 
 		List<Address> addresses = new() {
-			new Address("Koningstraat 12", "Bus 3A", "Brussel", "1000"),
-			new Address("", "", "Antwerpen", "2000"),
-			new Address("Veldstraat 78", null, "Gent", "9000"),
-			new Address("Rue de la Loi 175", "", "Bruxelles", "1040"),
+			new Address(null, null, "Brussel", "1020"),
+			new Address("Meersstraat 5", "Bus 2", "Harlbeke", "8530"),
+			new Address("Duiklaan", null, "Gent", "9000"),
+			new Address("Vaartstraat", null, "Aalst", "9300"),
 			new Address(null, null, "Breda", "4811", "NL"),
-			new Address("Kustlaan 45", null, "Oostende", "8400"),
+			new Address("N9", null, "Aalst", "9300"),
+			
+			// Stock
+			
 			new Address("Industrielaan 15", null, "Aalst", "9320"),
-			new Address("Havenlaan 12", null, "Roeselare", "8800"),
 			new Address("Industrieweg 124", null, "Gent", "9040")
 		};
 
 		List<Coordinate> coordinates = new() {
-			new Coordinate(4.35, 50.85), // Brussel (Koningstraat 12)
-			new Coordinate(4.40, 51.22), // Antwerpen
-			new Coordinate(3.73, 51.05), // Gent
-			new Coordinate(4.37, 50.84), // Bruxelles (Rue de la Loi)
-			new Coordinate(4.78, 51.59), // Breda
-			new Coordinate(2.92, 51.22), // Oostende
-			new Coordinate(4.06, 50.94), // Aalst
-			new Coordinate(3.11, 50.94), // Roeselare
-			new Coordinate(3.75, 51.03)  // Gentbrugge
+			new Coordinate(50.88486, 4.36695),
+			new Coordinate(50.84326, 3.32974),
+			new Coordinate(51.04535, 3.68276),
+			new Coordinate(50.94093, 4.04293),
+			new Coordinate(51.60512, 4.75128),
+			new Coordinate(50.93499, 4.04801), 
+			
+			// Stock
+			
+			new Coordinate(50.91215, 4.03795),
+			new Coordinate(51.09013, 3.68663)
 		};
 
 		List<Location> locations = new() {
-			new Location("Paleisgracht", addresses[0], coordinates[0]),
-			new Location("Schelde", addresses[1], coordinates[1]),
-			new Location("Watersportbaan", addresses[2], coordinates[2]),
-			new Location("Paleisvijver", addresses[3], coordinates[3]),
-			new Location("Stadsgracht", addresses[4], coordinates[4]),
-			new Location("Zee", addresses[5], coordinates[5]),
-			new Location("Aalst stock", addresses[6], coordinates[6], true),
-			new Location("Roeselare stock", addresses[7], coordinates[7], true),
-			new Location("Gent stock", addresses[8], coordinates[8], true)
+			new Location("Koninklijk Domein van Laken", addresses[0], coordinates[0]),
+			new Location("Provinciedomein De Gavers", addresses[1], coordinates[1]),
+			new Location("Duikplaats Blaarmeersen", addresses[2], coordinates[2]),
+			new Location("Sint-Annabrug", addresses[3], coordinates[3]),
+			new Location("Emerput", addresses[4], coordinates[4]),
+			new Location("Zeebergbrug", addresses[5], coordinates[5]),
+			
+			// Stock
+			
+			new Location("Stock Aalst", addresses[6], coordinates[6], true),
+			new Location("Stock Gent", addresses[7], coordinates[7], true)
 		};
 
 		dbContext.Locations.AddRange(locations);
@@ -200,17 +206,20 @@ public class DbSeeder(
 			new DateRange(new DateOnly(2025, 3, 10)),
 			new DateRange(new DateOnly(2025, 4, 5)),
 			new DateRange(new DateOnly(2025, 5, 12)),
-			new DateRange(new DateOnly(2025, 5, 12))
+			new DateRange(new DateOnly(2025, 5, 12)),
+			new DateRange(new DateOnly(2025, 4, 6))
 		};
 
 		List<Project> projects = new() {
-			new Project("Canal Cleanup", "CC2025", dateRanges[0], networks[0]),
-			new Project("River Monitoring", "RM2025", dateRanges[1], networks[1]),
-			new Project("Boating Safety Upgrade", "BSU2025", dateRanges[2], networks[2]),
-			new Project("Pond Restoration", "PR2025", dateRanges[3], networks[3]),
-			new Project("Waterway CRM Analytics", "WCA2025", dateRanges[4], networks[4]),
-			new Project("Coastal Dashboard", "CD2025", dateRanges[5], networks[5])
+			new Project("Conductiviteitsmonitoring Koninklijk Domein", "2025-001", dateRanges[0], networks[0]),
+			new Project("Multiparameteranalyse Gavers", "2025-002", dateRanges[1], networks[1]),
+			new Project("Nitraatobservatie Blaarmeersen", "2025-003", dateRanges[2], networks[2]),
+			new Project("Overstortdetectie Aalst", "2025-004", dateRanges[3], networks[3]),
+			new Project("Conductiviteitsmonitoring Aalst", "2025-005", dateRanges[4], networks[4]),
+			new Project("Multiparameteranalyse", "2025-006", dateRanges[5], networks[5]),
+			new Project("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0]),
 		};
+
 
 		dbContext.Projects.AddRange(projects);
 		await dbContext.SaveChangesAsync();
@@ -230,6 +239,7 @@ public class DbSeeder(
 			new DateOnly(2025, 9, 25),
 			null,
 			new DateOnly(2025, 12, 31),
+			null,
 			null
 		};
 
@@ -289,15 +299,15 @@ public class DbSeeder(
 			new MeasurementStation("STN-005", locations[4], installations[4]),
 			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
-		
+
 		// Add projects to stations
-		
+
 		stations[0].Projects.Add(projects[0]);
-		stations[0].Projects.Add(projects[1]);
-		stations[0].Projects.Add(projects[2]);
-		
 		stations[1].Projects.Add(projects[1]);
-		stations[1].Projects.Add(projects[5]);
+		stations[2].Projects.Add(projects[2]);
+		stations[3].Projects.Add(projects[3]);
+		stations[4].Projects.Add(projects[4]);
+		stations[5].Projects.Add(projects[3]);
 
 		dbContext.MeasurementStations.AddRange(stations);
 		await dbContext.SaveChangesAsync();
@@ -458,7 +468,7 @@ public class DbSeeder(
 			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
 			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true, stockLocations[1]),
 			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true, stockLocations[1]),
-			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[2])
+			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[1])
 		};
 	}
 

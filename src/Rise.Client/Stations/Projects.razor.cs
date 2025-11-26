@@ -12,21 +12,21 @@ public partial class Projects {
 	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 	private IEnumerable<ProjectDto.Index>? _allProjects;
 	private Result? _result;
-	
+
 	[Parameter] public Guid StationId { get; set; }
 	[Parameter] public EventCallback<string> TabChanged { get; set; }
 
-	
+
 	private MeasurementStationRequest.UpdateProjects Model { get; } = new();
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required NavigationManager Navigation { get; set; }
-	
+
 	protected override async Task OnInitializedAsync() {
-		Result<List<ProjectDto.Index>> projectsFromStation =  await StationService.GetProjectsAsync(StationId);
+		Result<List<ProjectDto.Index>> projectsFromStation = await StationService.GetProjectsAsync(StationId);
 		Result<ProjectResponse.Index> allProjects = await ProjectService.GetIndexAsync(new QueryRequest.SkipTake());
-		
+
 		// --- Projects from this station ---
 		if (projectsFromStation.IsSuccess && projectsFromStation.Value is not null) {
 			_projectsFromStation = projectsFromStation.Value;
@@ -59,11 +59,11 @@ public partial class Projects {
 	private void OnProjectRowClick(TableRowClickEventArgs<ProjectDto.Index> args) {
 		Navigation.NavigateTo($"/projects/{args.Item.Id}");
 	}
-	
+
 	private void OnProjectCardClick(ProjectDto.Index project) {
 		Navigation.NavigateTo($"/projects/{project.Id}");
 	}
-	
+
 	private async Task UpdateProjects() {
 		bool selectionChanged = !Model.ProjectIds.SequenceEqual(
 			_projectsFromStation?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
@@ -84,7 +84,7 @@ public partial class Projects {
 			}
 		}
 	}
-	
+
 	private static Color DefineColor(Status status) {
 		return status == Status.Actief ? Color.Success : Color.Error;
 	}

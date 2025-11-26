@@ -1,8 +1,8 @@
+using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
-using Rise.Domain.Common;
 
 namespace Rise.Domain.Tests.Projects;
 

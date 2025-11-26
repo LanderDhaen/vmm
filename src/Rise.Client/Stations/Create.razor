@@ -3,7 +3,6 @@
 
 <PageTitle>Meetstation toevoegen</PageTitle>
 
-<MudText Typo="Typo.h3" Class="mt-4">Meetstation toevoegen</MudText>
 <MudCard Class="my-4">
 	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 		<MudCardContent>
@@ -29,7 +28,7 @@
 					{
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
 						<MudAutocomplete T="Guid?" SearchFunc="Search"
-						                 ToStringFunc="id => _locations.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
+						                 ToStringFunc="@(id => BuildString(id))"
 						                 @bind-Value="Model.LocationId"
 						                 @bind-Value:after="OnLocationSelected"
 						                 @bind-Text="_searchText"
@@ -46,9 +45,11 @@
 					}
 				</MudItem>
 
-				@*Location*@
+				@if (Model.IsNewLocation)
+				{
+					@*Location*@
 				<MudItem xs="12">
-					<MudPaper Class="pa-4 mt-4" Elevation="1">
+				
 						<MudText Typo="Typo.h5" Class="mb-2">Locatiegegevens</MudText>
 						<MudGrid>
 							<MudItem xs="12" sm="6">
@@ -132,8 +133,8 @@
 								</MudItem>
 							}
 						</MudGrid>
-					</MudPaper>
 				</MudItem>
+				}
 
 			</MudGrid>
 		</MudCardContent>

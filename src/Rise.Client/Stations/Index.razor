@@ -14,7 +14,7 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000"
+		              DebounceInterval="300"
 		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
 		              @bind-Value="_searchTerm"
 		              Margin="Margin.Dense"/>
@@ -42,10 +42,12 @@
 	             Striped="true"
 	             Hover="true"
 	             SortMode="SortMode.Single"
+	             AllowUnsorted="false"
+	             ShowColumnOptions="false"
 	             RowClick="@(args => NavigateToStation(args.Item.Id))">
 		
 		<Columns>
-			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
@@ -70,7 +72,7 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="1000" 
+		              DebounceInterval="300" 
 		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
 		              @bind-Value="_searchTerm"
 		              FullWidth="true"

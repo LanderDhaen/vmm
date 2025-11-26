@@ -35,13 +35,22 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             SortMode="SortMode.Single"
+	             AllowUnsorted="false"
+	             ShowColumnOptions="false"
 	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.SerialNumber" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+						<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(context.Item.MaintObjStatus))">
+							@context.Item.MaintObjStatus
+						</MudChip>
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
 
 

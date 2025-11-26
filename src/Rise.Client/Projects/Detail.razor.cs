@@ -24,10 +24,10 @@ public partial class Detail {
 
 	private string? _remarks;
 	private int _selectedTab;
-	private List<MeasurementStationDto.Index>? _stationsFromProject;
-	private IEnumerable<MeasurementStationDto.Index>? _allStations;
-	private Result? _result;
-	private MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
+	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
+	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
+	private readonly Result? _result;
+	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
@@ -44,7 +44,7 @@ public partial class Detail {
 
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
-		
+
 		// --- Project detail ---
 		if (detail.IsSuccess) {
 			_project = detail.Value.Project;
@@ -130,7 +130,7 @@ public partial class Detail {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt afsluiten?",
-			"Bevestig",
+			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);
@@ -144,7 +144,7 @@ public partial class Detail {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
 			"Weet u zeker dat u het project wilt opstarten?",
-			"Bevestig",
+			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
 		);

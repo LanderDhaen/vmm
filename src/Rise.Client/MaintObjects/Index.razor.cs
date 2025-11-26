@@ -17,8 +17,8 @@ public partial class Index {
 		("Location", "Locatie")
 	];
 
-	private string _activeSorting = "Name";
-	private bool _activeSortingDesc;
+	private string _activeSorting = "SerialNumber";
+	private bool _activeSortingDesc = true;
 
 	private IEnumerable<MaintObjDto.Index>? _mobileItems;
 
@@ -112,7 +112,8 @@ public partial class Index {
 		return status switch {
 			MaintObjStatus.Actief => Color.Success,
 			MaintObjStatus.Inactief => Color.Error,
-			_ => Color.Warning
+			MaintObjStatus.Defect => Color.Warning,
+			_ => Color.Default
 		};
 	}
 }
