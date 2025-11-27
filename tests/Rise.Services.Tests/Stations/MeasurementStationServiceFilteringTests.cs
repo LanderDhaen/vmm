@@ -339,6 +339,28 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
     connection.Close();
   }
+
+ 	[Fact]
+	public async Task Search_By_PostalCode_Returns_Stations_In_Location() {
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 100,
+			SearchTerm = "1000"
+		};
+
+		var res = await svc.GetIndexAsync(request);
+		Assert.True(res.IsSuccess);
+
+		var stations = res.Value.Stations.ToList();
+		Assert.Equal(2, stations.Count);
+		Assert.All(stations, s => Assert.Equal("1000", DummyStationsFactory.GetPostalCodeForLocationName(s.Location!)));
+
+		connection.Close();
+	}
+
+
  [Fact]
   public async Task Multiple_Filters_Are_Combined_With_And() {
     await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
@@ -428,7 +450,14 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
 			context.SaveChanges();
 		}
-
+		public static string GetPostalCodeForLocationName(string locationName) {
+			return locationName switch {
+				"Loc-A" => "1000",
+				"Loc-B" => "2000",
+				"Loc-C" => "3000",
+				_ => string.Empty
+			};
+		}
 		private class ReferenceEqualityComparer<T> : IEqualityComparer<T> where T : class {
 			public bool Equals(T? x, T? y) {
 				return ReferenceEquals(x, y);
