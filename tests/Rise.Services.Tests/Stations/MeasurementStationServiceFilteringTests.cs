@@ -111,6 +111,58 @@ public class MeasurementStationServiceFilteringTests : IDisposable {
 
 		connection.Close();
 	}
+    [Fact]
+  public async Task RemovedAt_IsEmpty_Filter_Returns_Stations_Without_Removal() {
+
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+
+    QueryRequest.SkipTake request = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["RemovedAt"] = JsonDocument.Parse("{\"Operator\":\"IsEmpty\"}").RootElement
+      }
+    };
+
+    Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+    Assert.True(result.IsSuccess);
+
+    var stations = result.Value.Stations.ToList();
+
+    Assert.Equal(4, stations.Count);
+    Assert.All(stations, s => Assert.Null(s.RemovedAt));
+
+    connection.Close();
+  }
+
+[Fact]
+public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
+  await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+  MeasurementStationService svc = new(db);
+
+  QueryRequest.SkipTake request = new() {
+    Skip = 0,
+    Take = 100,
+    Filters = new Dictionary<string, object?> {
+      ["RemovedAt"] = JsonDocument.Parse("{\"Operator\":\"GreaterThanOrEqual\",\"Value\":\"2024-01-01\"}").RootElement
+    }
+  };
+
+  Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+  Assert.True(result.IsSuccess);
+
+  var stations = result.Value.Stations.ToList();
+
+  Assert.Single(stations);
+
+  DateTime? removedAt = stations.Single().RemovedAt;
+  Assert.True(removedAt.HasValue, "Expected RemovedAt to have a value for the single returned station.");
+  Assert.Equal(new DateTime(2024, 05, 20), removedAt.Value.Date);
+
+  connection.Close();
+}
+
 
 	private static class DummyStationsFactory {
 		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
@@ -159,5 +211,6 @@ public class MeasurementStationServiceFilteringTests : IDisposable {
 				return RuntimeHelpers.GetHashCode(obj);
 			}
 		}
+    
 	}
 }
