@@ -26,7 +26,7 @@ public partial class Edit {
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 
 	private MaintObjRequest.Edit Model { get; set; }
-	
+
 	protected override async Task OnInitializedAsync() {
 		Result<MaintObjResponse.Detail> maintObj = await MaintObjService.GetDetailAsync(MaintObjId);
 		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());

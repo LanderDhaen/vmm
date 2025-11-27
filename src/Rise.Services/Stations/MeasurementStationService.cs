@@ -17,7 +17,7 @@ namespace Rise.Services.Stations;
 
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService {
 
-// Filtering
+	// Filtering
 	private sealed class FilterSpec {
 		public string? Operator { get; }
 		public string? Value { get; }
@@ -203,8 +203,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		// Paginating
 		query = query.Skip(request.Skip).Take(request.Take);
-		
-    // Selecting
+
+		// Selecting
 		List<MeasurementStationDto.Index> stations = await query
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,

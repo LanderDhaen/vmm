@@ -155,7 +155,7 @@ public partial class Index {
 	}
 
 	// Filtering
-		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
+	private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
 		request.Filters ??= new Dictionary<string, object?>();
 
 		if (_filterInstalledAt.HasValue)
@@ -170,17 +170,13 @@ public partial class Index {
 		if (!string.IsNullOrWhiteSpace(_filterCity))
 			request.Filters["City"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterCity!.Trim() };
 
-    if (_filterProjectsCount.HasValue)
-    {
-      if (_filterProjectsCount.Value >= 5)
-      {
-        request.Filters["ProjectsCount"] = new { Operator = "GreaterThanOrEqual", Value = _filterProjectsCount.Value };
-      }
-      else
-      {
-        request.Filters["ProjectsCount"] = new { Operator = "Equals", Value = _filterProjectsCount.Value };
-      }
-    }
+		if (_filterProjectsCount.HasValue) {
+			if (_filterProjectsCount.Value >= 5) {
+				request.Filters["ProjectsCount"] = new { Operator = "GreaterThanOrEqual", Value = _filterProjectsCount.Value };
+			} else {
+				request.Filters["ProjectsCount"] = new { Operator = "Equals", Value = _filterProjectsCount.Value };
+			}
+		}
 	}
 	private void UpdateSelectOptions(IEnumerable<MeasurementStationDto.Index> stations) {
 		_locations = stations

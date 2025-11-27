@@ -289,13 +289,13 @@ public class DbSeeder(
 			new MeasurementStation("STN-005", locations[4], installations[4]),
 			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
-		
+
 		// Add projects to stations
-		
+
 		stations[0].Projects.Add(projects[0]);
 		stations[0].Projects.Add(projects[1]);
 		stations[0].Projects.Add(projects[2]);
-		
+
 		stations[1].Projects.Add(projects[1]);
 		stations[1].Projects.Add(projects[5]);
 

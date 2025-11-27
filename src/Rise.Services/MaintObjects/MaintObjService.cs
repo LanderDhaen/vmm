@@ -118,8 +118,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		return Result.Created(new MaintObjResponse.Create {
 			MaintObjId = mo.Id
 		});
-  }
-    
+	}
+
 	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId,
 		CancellationToken ct = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects
@@ -179,7 +179,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", req.SerialNumber);
 			return Result.Conflict($"Onderhoudsobject met serienummer '{req.SerialNumber}' bestaat al.");
 		}
-		
+
 		Location? location = await dbContext.Locations
 			.FirstOrDefaultAsync(x => x.Id == req.LocationId);
 
@@ -193,7 +193,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (type is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-		
+
 		maintObj.Edit(req.Name, req.SerialNumber, type, req.Brand, new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
 
 		await dbContext.SaveChangesAsync(ctx);
