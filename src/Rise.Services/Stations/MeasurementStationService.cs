@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Common;
@@ -14,28 +16,154 @@ using SharedStatus = Rise.Shared.Projects.Status;
 namespace Rise.Services.Stations;
 
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService {
+
+// Filtering
+	private sealed class FilterSpec {
+		public string? Operator { get; }
+		public string? Value { get; }
+
+		public FilterSpec(string? op, string? val) {
+			Operator = op;
+			Value = val;
+		}
+	}
+
+	private static FilterSpec? ParseFilterSpec(object? rawValue) {
+		if (rawValue == null) return null;
+
+		try {
+			if (rawValue is JsonElement je) {
+				if (je.ValueKind == JsonValueKind.Object) {
+					string? op = null;
+					string? val = null;
+					if (je.TryGetProperty("Operator", out var opProp))
+						op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
+					if (je.TryGetProperty("Value", out var vProp))
+						val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
+					return new FilterSpec(op, val);
+				}
+				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
+			}
+
+			return new FilterSpec(null, rawValue.ToString());
+		} catch {
+			return null;
+		}
+	}
+
+	private static bool TryParseDateTimeSimple(string? raw, out DateTime d) {
+		d = default;
+		if (string.IsNullOrWhiteSpace(raw)) return false;
+		raw = raw.Trim().Trim('"');
+		if (DateTime.TryParseExact(raw, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out d))
+			return true;
+		return DateTime.TryParse(raw, out d);
+	}
+
 	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
 		QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 
-		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations
+			.AsQueryable()
+			.Include(s => s.Location)
+			.ThenInclude(l => l.Address)
+			.Include(s => s.Projects)
+			.AsNoTracking();
 
-		// Filtering (MSSQL handles casing)
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			var t = request.SearchTerm.Trim().ToLowerInvariant();
+			query = query.Where(s =>
+				EF.Functions.Like(s.Code, $"%{t}%") ||
+				EF.Functions.Like(s.Location.Name, $"%{t}%") ||
+				EF.Functions.Like(s.Location.Address.Addressline1, $"%{t}%") ||
+				EF.Functions.Like(s.Location.Address.Addressline2, $"%{t}%") ||
+				EF.Functions.Like(s.Location.Address.City, $"%{t}%") ||
+				EF.Functions.Like(s.Location.Address.PostalCode, $"%{t}%")
+			);
+		}
 
-		query = query.Where(s =>
-			EF.Functions.Like(s.Code, $"%{request.SearchTerm}%") ||
-			EF.Functions.Like(s.Location.Name, $"%{request.SearchTerm}%") ||
-			EF.Functions.Like(s.Location.Address.Addressline1, $"%{request.SearchTerm}%") ||
-			EF.Functions.Like(s.Location.Address.Addressline2, $"%{request.SearchTerm}%") ||
-			EF.Functions.Like(s.Location.Address.City, $"%{request.SearchTerm}%") ||
-			EF.Functions.Like(s.Location.Address.PostalCode, $"%{request.SearchTerm}%")
-		);
+		if (request.Filters != null && request.Filters.Any()) {
+			var temp = request.Filters
+				.Select(kv => (Key: kv.Key, Spec: ParseFilterSpec(kv.Value)))
+				.Where(x => x.Spec != null)
+				.ToList();
 
+			var parsed = temp.Select(x => (Key: x.Key!, Spec: x.Spec!)).ToList();
+
+			foreach ((string keyOrig, FilterSpec spec) in parsed) {
+				var key = keyOrig?.Trim();
+				var raw = spec.Value;
+				var opCandidate = spec.Operator;
+				var opNorm = string.IsNullOrWhiteSpace(opCandidate) ? "Contains" : opCandidate;
+
+				switch (key) {
+				case "InstalledAt": {
+						if (opNorm == "IsEmpty") {
+							query = query.Where(s => s.Installation.InstalledAt == default);
+						} else {
+							if (TryParseDateTimeSimple(raw, out var d)) {
+								if (opNorm == "GreaterThanOrEqual")
+									query = query.Where(s => s.Installation.InstalledAt >= d);
+								else if (opNorm == "LessThanOrEqual")
+									query = query.Where(s => s.Installation.InstalledAt <= d);
+								else
+									query = query.Where(s => s.Installation.InstalledAt == d);
+							}
+						}
+						break;
+					}
+				case "RemovedAt": {
+						if (opNorm == "IsEmpty") {
+							query = query.Where(s => s.Installation.RemovedAt == null);
+						} else {
+							if (TryParseDateTimeSimple(raw, out var d)) {
+								if (opNorm == "GreaterThanOrEqual")
+									query = query.Where(s => s.Installation.RemovedAt != null && s.Installation.RemovedAt >= d);
+								else if (opNorm == "LessThanOrEqual")
+									query = query.Where(s => s.Installation.RemovedAt != null && s.Installation.RemovedAt <= d);
+								else
+									query = query.Where(s => s.Installation.RemovedAt != null && s.Installation.RemovedAt == d);
+							}
+						}
+						break;
+					}
+				case "Location": {
+						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
+						if (opNorm == "Equals" || opNorm == "Equal")
+							query = query.Where(s => s.Location.Name.ToLower() == t);
+						else
+							query = query.Where(s => EF.Functions.Like(s.Location.Name.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "City": {
+						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
+						if (opNorm == "Equals" || opNorm == "Equal")
+							query = query.Where(s => s.Location.Address.City.ToLower() == t);
+						else
+							query = query.Where(s => EF.Functions.Like(s.Location.Address.City.ToLower(), $"%{t}%"));
+						break;
+					}
+				case "ProjectsCount": {
+						if (!string.IsNullOrWhiteSpace(raw) && int.TryParse(raw.Trim().Trim('"'), out var n)) {
+							if (opNorm == "Equals" || opNorm == "Equal")
+								query = query.Where(s => s.Projects.Count() == n);
+							else if (opNorm == "LessThanOrEqual")
+								query = query.Where(s => s.Projects.Count() <= n);
+							else if (opNorm == "GreaterThan")
+								query = query.Where(s => s.Projects.Count() > n);
+							else
+								query = query.Where(s => s.Projects.Count() >= n);
+						}
+						break;
+					}
+				}
+			}
+		}
 
 		int totalCount = await query.CountAsync(ctx);
 
 		// Sorting
-
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			bool desc = request.OrderDescending;
 
@@ -50,12 +178,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 						? query.OrderByDescending(s => s.Installation.RemovedAt)
 						: query.OrderBy(s => s.Installation.RemovedAt),
 
-				nameof(Location)
+				"Location"
 					=> desc
 						? query.OrderByDescending(s => s.Location.Name)
 						: query.OrderBy(s => s.Location.Name),
 
-				nameof(Location.Address.City)
+				"City"
 					=> desc
 						? query.OrderByDescending(s => s.Location.Address.City)
 						: query.OrderBy(s => s.Location.Address.City),
@@ -74,11 +202,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		}
 
 		// Paginating
-
 		query = query.Skip(request.Skip).Take(request.Take);
-
-		// Selecting
-
+		
+    // Selecting
 		List<MeasurementStationDto.Index> stations = await query
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
@@ -96,7 +222,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			TotalCount = totalCount
 		});
 	}
-
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
@@ -238,9 +363,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-
-		// TODO: Potentially refactoring this to match project editing flow
-
 
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Location)
