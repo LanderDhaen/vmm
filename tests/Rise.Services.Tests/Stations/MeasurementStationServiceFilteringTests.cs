@@ -37,7 +37,80 @@ public class MeasurementStationServiceFilteringTests : IDisposable {
 		return db;
 	}
 
+	[Fact]
+	public async Task InstalledAt_Equals_Filter_Returns_Only_Expected() {
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 100,
+			Filters = new Dictionary<string, object?> {
+				["InstalledAt"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"2024-01-10\"}").RootElement
+			}
+		};
 
+		Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+		Assert.True(result.IsSuccess);
+
+		var stations = result.Value.Stations.ToList();
+		Assert.Single(stations);
+		Assert.Equal(new DateTime(2024, 01, 10), stations.Single().InstalledAt);
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task InstalledAt_GreaterThanOrEqual_Filter_Returns_Expected_Set() {
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
+
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 100,
+			Filters = new Dictionary<string, object?> {
+				["InstalledAt"] = JsonDocument.Parse("{\"Operator\":\"GreaterThanOrEqual\",\"Value\":\"2024-01-10\"}").RootElement
+			}
+		};
+
+		Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+		Assert.True(result.IsSuccess);
+
+		var stations = result.Value.Stations.ToList();
+
+		Assert.Equal(3, stations.Count);
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2024, 01, 10));
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2025, 03, 15));
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2024, 06, 01));
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task InstalledAt_LessThanOrEqual_Filter_Returns_Expected_Set() {
+
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
+
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 100,
+			Filters = new Dictionary<string, object?> {
+				["InstalledAt"] = JsonDocument.Parse("{\"Operator\":\"LessThanOrEqual\",\"Value\":\"2023-12-31\"}").RootElement
+			}
+		};
+
+		Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+		Assert.True(result.IsSuccess);
+
+		var stations = result.Value.Stations.ToList();
+
+		Assert.Equal(3, stations.Count);
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2023, 05, 20));
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2022, 07, 01));
+		Assert.Contains(stations, s => s.InstalledAt == new DateTime(2021, 12, 31));
+
+		connection.Close();
+	}
 
 	private static class DummyStationsFactory {
 		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
