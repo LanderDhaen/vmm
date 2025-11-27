@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 
-
 using MudBlazor;
 
 using Rise.Client.Services;

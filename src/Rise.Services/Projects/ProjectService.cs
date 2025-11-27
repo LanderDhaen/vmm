@@ -87,10 +87,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 			// filter on code, name, measurement network name or zone name
 			query = query.Where(p =>
-				EF.Functions.Like(p.Code.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.Name.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{term}%")
-				|| EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{term}%"));
+				EF.Functions.Like(p.Code, $"%{term}%")
+				|| EF.Functions.Like(p.Name, $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Name, $"%{term}%")
+				|| EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{term}%"));
 		}
 
 		// Count after applying filters
