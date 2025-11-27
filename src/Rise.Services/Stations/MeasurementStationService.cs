@@ -6,6 +6,7 @@ using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Shared.Common;
+using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -109,8 +110,17 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				Code = s.Code,
 				InstalledAt = s.Installation.InstalledAt,
 				RemovedAt = s.Installation.RemovedAt,
-				Location = s.Location.Name,
-				City = s.Location.Address.City,
+				Location = new LocationDto.Detail {
+					Id = s.Location.Id,
+					Name = s.Location.Name,
+					AddressLine1 = s.Location.Address.Addressline1,
+					AddressLine2 = s.Location.Address.Addressline2,
+					City = s.Location.Address.City,
+					PostalCode = s.Location.Address.PostalCode,
+					Country = s.Location.Address.CountryIso,
+					X = s.Location.Coordinate.X,
+					Y = s.Location.Coordinate.Y,
+				}
 			})
 			.SingleOrDefaultAsync(ct);
 		

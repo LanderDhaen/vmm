@@ -61,8 +61,8 @@ public partial class Edit {
 
 		Guid locationId = _locations
 			.FirstOrDefault(l =>
-				string.Equals(l.Name, detail.Value.Station.Location, StringComparison.OrdinalIgnoreCase) &&
-				string.Equals(l.Address.City, detail.Value.Station.City, StringComparison.OrdinalIgnoreCase))
+				string.Equals(l.Name, detail.Value.Station.Location.Name, StringComparison.OrdinalIgnoreCase) &&
+				string.Equals(l.Address.City, detail.Value.Station.Location.City, StringComparison.OrdinalIgnoreCase))
 			?.Id ?? _locations.FirstOrDefault()?.Id ?? Guid.Empty;
 
 		Model = new MeasurementStationRequest.Edit {

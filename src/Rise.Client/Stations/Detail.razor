@@ -60,7 +60,7 @@ else
 				<MudCardHeader>
 					<CardHeaderContent>
 						<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-							<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Location</MudText>
+							<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Location.Name</MudText>
 							<MudButton Variant="Variant.Text"
 							           StartIcon="@Icons.Material.Filled.MyLocation"
 							           Size="Size.Small"
@@ -72,7 +72,13 @@ else
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent>
-					<MudText><b>Stad: </b>@_station.City</MudText>
+					<MudText><b>Adresregel 1: </b>@_station.Location.AddressLine2</MudText>
+					<MudText><b>Adresregel 2: </b>@_station.Location.AddressLine2</MudText>
+					<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+						<MudText><b>Stad: </b>@_station.Location.City</MudText>
+						<MudText><b>Postcode: </b>@_station.Location.PostalCode</MudText>
+						<MudText><b>Land: </b>@_station.Location.Country</MudText>
+					</MudStack>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
