@@ -12,7 +12,6 @@ public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
-		"Meetstations",
 		"Historiek"
 	};
 
@@ -24,10 +23,6 @@ public partial class Detail {
 
 	private string? _remarks;
 	private int _selectedTab;
-	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
-	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
-	private readonly Result? _result;
-	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
@@ -48,7 +43,6 @@ public partial class Detail {
 		// --- Project detail ---
 		if (detail.IsSuccess) {
 			_project = detail.Value.Project;
-			_tabs[1] = $"Meetstations ({detail.Value.TotalMeasurementStationCount})";
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
@@ -152,10 +146,5 @@ public partial class Detail {
 		if (result == true) {
 			await Start();
 		}
-	}
-
-	private void OnTabChange(string newValue) {
-		_tabs[1] = newValue;
-		StateHasChanged();
 	}
 }

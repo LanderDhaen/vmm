@@ -65,12 +65,6 @@ else
 			@onclick="() => SetTab(1)">
 			@_tabs[1]
 		</MudText>
-
-		<MudText
-			Class="@($"tab-item {(_selectedTab == 2 ? "active" : "")}")"
-			@onclick="() => SetTab(2)">
-			@_tabs[2]
-		</MudText>
 		<MudDivider Vertical="true" FlexItem="true"/>
 		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
 			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" OnClick="@OpenDrawer"></MudIconButton>
@@ -162,13 +156,15 @@ else
 							Lines="4"
 							Class="white"/>
 					</MudItem>
+
+					<MudItem xs="12">
+						<MudText Typo="Typo.subtitle2">Lijst meetstations</MudText>
+						<MeasurementStations ProjectId="ProjectId" IsActive="IsActive"/>
+					</MudItem>
 				</MudGrid>
 			</MudPaper>
 			break;
 		case 1:
-			<MeasurementStations ProjectId="ProjectId" IsActive="IsActive" TabChanged="@OnTabChange"/>
-			break;
-		case 2:
 			<History ProjectId="ProjectId"/>
 			break;
 	}

@@ -11,7 +11,6 @@ public static partial class ProjectResponse {
 
 	public class Detail {
 		public required ProjectDto.Detail Project { get; set; }
-		public int TotalMeasurementStationCount { get; set; }
 	}
 
 	public class History {

@@ -9,42 +9,10 @@
 }
 else
 {
-	
 	@* Desktop view *@
-	
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Meetstations toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.MeasurementStationIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           Class="m-0" Disabled="@(!IsActive)"
-			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-			
-				@foreach (var station in _allStations)
-				{
-					<MudSelectItem T="Guid" Value="@station.Id">
-						@station.Code - @station.Location @station.City 
-					</MudSelectItem>
-				}
-			</MudSelect>
-
-			<MudTooltip Delay="400"
-			            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
-				<MudButton Variant="Variant.Filled"
-				           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-				           Size="Size.Small"
-				           Color="Color.Primary"
-				           Class="px-4"
-				           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
-					Lijst bijwerken
-				</MudButton>
-			</MudTooltip>
-		</MudStack>
-		
-		<MudTable T="MeasurementStationDto.Index" Items="_stationsFromProject" CustomHeader="true" OnRowClick="OnStationRowClick">
+		<MudTable T="MeasurementStationDto.Index" Items="_stationsFromProject" CustomHeader="true"
+		          OnRowClick="OnStationRowClick">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
@@ -65,34 +33,7 @@ else
 	</MudHidden>
 
 	@* Mobile view *@
-	
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Meetstations toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.MeasurementStationIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           Class="m-0" Disabled="@(!IsActive)"
-			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-			
-				@foreach (var station in _allStations)
-				{
-					<MudSelectItem T="Guid" Value="@station.Id">
-						@station.Code - @station.Location @station.City
-					</MudSelectItem>
-				}
-			</MudSelect>
-
-			<MudIconButton Variant="Variant.Filled"
-				           Icon="@Icons.Material.Filled.PlaylistAdd"
-				           Size="Size.Small"
-				           Color="Color.Primary"
-				           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)"/>
-		</MudStack>
-		
 		<MudGrid Spacing="6">
 			@foreach (var p in _stationsFromProject)
 			{
@@ -118,5 +59,4 @@ else
 			}
 		</MudGrid>
 	</MudHidden>
-		
 }
