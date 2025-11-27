@@ -47,7 +47,8 @@ else
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent>
-				 
+					<MudText><b>Geïnstalleerd: </b>@(StationUtilities.FormatInstalledAt(_station.InstalledAt))</MudText>
+					<MudText><b>Verwijderd: </b>@(StationUtilities.FormatRemovedAt(_station.RemovedAt))</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
@@ -71,7 +72,7 @@ else
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent>
-				 
+					<MudText><b>Stad: </b>@_station.City</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>

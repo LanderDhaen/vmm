@@ -33,7 +33,6 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			_station = result.Value.Station;
-			_tabs[2] = $"Projecten ({result.Value.Station.ProjectsCount})";
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
