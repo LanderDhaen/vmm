@@ -412,7 +412,59 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
     connection.Close();
   }
+	[Fact]
+	public async Task Clearing_Single_Filter_By_Passing_Null_Ignores_That_Filter_But_Applies_Others() {
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
 
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = 100,
+			Filters = new Dictionary<string, object?> {
+				["Location"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"Loc-A\"}").RootElement,
+				["City"] = null
+			}
+		};
+
+		var res = await svc.GetIndexAsync(request);
+		Assert.True(res.IsSuccess);
+
+		var stations = res.Value.Stations.ToList();
+
+		Assert.Equal(3, stations.Count);
+		Assert.All(stations, s => Assert.Equal("loc-a", s.Location!.ToLower()));
+
+		connection.Close();
+	}
+
+	[Fact]
+	public async Task Clearing_All_Filters_By_Empty_Dictionary_Returns_All_Stations() {
+		await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+		MeasurementStationService svc = new(db);
+
+		QueryRequest.SkipTake requestWithEmptyFilters = new() {
+			Skip = 0,
+			Take = 100,
+			Filters = new Dictionary<string, object?>() 
+		};
+
+		var resEmpty = await svc.GetIndexAsync(requestWithEmptyFilters);
+		Assert.True(resEmpty.IsSuccess);
+		var stationsEmpty = resEmpty.Value.Stations.ToList();
+
+		Assert.Equal(6, stationsEmpty.Count);
+
+		QueryRequest.SkipTake requestNoFilters = new() { Skip = 0, Take = 100 };
+		var resNo = await svc.GetIndexAsync(requestNoFilters);
+		Assert.True(resNo.IsSuccess);
+		var stationsNo = resNo.Value.Stations.ToList();
+
+		Assert.Equal(6, stationsNo.Count);
+
+		Assert.Equal(stationsEmpty.Select(s => s.Id).OrderBy(x => x), stationsNo.Select(s => s.Id).OrderBy(x => x));
+
+		connection.Close();
+	}
 	private static class DummyStationsFactory {
 		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
 			Location locA = new("Loc-A", new Address("L1", "L2", "CityA", "1000"), new Coordinate(4.35, 50.85));
