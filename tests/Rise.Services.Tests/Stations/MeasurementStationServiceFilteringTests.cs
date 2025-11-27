@@ -209,6 +209,42 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
     connection.Close();
   }
+  [Fact]
+  public async Task City_Filters_Contain_And_Equals_Behave_As_Expected() {
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+
+    QueryRequest.SkipTake containsRequest = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["City"] = "CityA"
+      }
+    };
+
+    Result<MeasurementStationResponse.Index> containsResult = await svc.GetIndexAsync(containsRequest);
+    Assert.True(containsResult.IsSuccess);
+    var containsStations = containsResult.Value.Stations.ToList();
+    Assert.Equal(3, containsStations.Count);
+    Assert.Contains(containsStations, s => s.City == "CityA");
+    Assert.Contains(containsStations, s => s.City == "CityAA");
+
+    QueryRequest.SkipTake equalsRequest = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["City"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"CityAA\"}").RootElement
+      }
+    };
+
+    Result<MeasurementStationResponse.Index> equalsResult = await svc.GetIndexAsync(equalsRequest);
+    Assert.True(equalsResult.IsSuccess);
+    var equalsStations = equalsResult.Value.Stations.ToList();
+    Assert.Single(equalsStations);
+    Assert.Equal("CityAA", equalsStations.Single().City);
+
+    connection.Close();
+  }
 
 
 	private static class DummyStationsFactory {
