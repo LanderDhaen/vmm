@@ -47,8 +47,8 @@
 		
 		<Columns>
 			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Ascending" Title="#" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary"/>
+    <PropertyColumn Property="x => x.InstalledAt" Title="Geïnstalleerd" HeaderClass="mud-theme-primary" Format="dd-MM-yyyy HH:mm" />
+    <PropertyColumn Property="x => x.RemovedAt" Title="Verwijderd" HeaderClass="mud-theme-primary" Format="dd-MM-yyyy HH:mm" />
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.City" Title="Gemeente" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.ProjectsCount" Title="Projecten" HeaderClass="mud-theme-primary"/>
@@ -120,8 +120,8 @@
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
 							<MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @item.InstalledAt</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @item.RemovedAt</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Locatie:</b> @item.Location</MudText>
+              <MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @(item.InstalledAt is DateTime i ? i.ToString("dd-MM-yyyy HH:mm") : string.Empty)</MudText>
+              <MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @(item.RemovedAt is DateTime r ? r.ToString("dd-MM-yyyy HH:mm") : string.Empty)</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Gemeente:</b> @item.City</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Projecten:</b> @item.ProjectsCount</MudText>
 						</MudCardContent>
