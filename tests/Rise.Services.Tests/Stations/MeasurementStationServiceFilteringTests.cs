@@ -283,8 +283,6 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
   public async Task Search_By_Code_Returns_Matching_Station() {
     await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
     MeasurementStationService svc = new(db);
-
-    // Search by exact code of s6
     QueryRequest.SkipTake request = new() {
       Skip = 0,
       Take = 100,
@@ -305,8 +303,6 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
   public async Task Search_By_City_Partial_Matches_Returns_All() {
     await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
     MeasurementStationService svc = new(db);
-
-    // "CityA" should match CityA and CityAA -> s1, s5, s6
     QueryRequest.SkipTake request = new() {
       Skip = 0,
       Take = 100,
@@ -328,8 +324,6 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
   public async Task Search_By_LocationName_Partial_Matches_Returns_All() {
     await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
     MeasurementStationService svc = new(db);
-
-    // "Loc-A" should match all stations that reference a location named Loc-A (s1, s5, s6)
     QueryRequest.SkipTake request = new() {
       Skip = 0,
       Take = 100,
@@ -345,9 +339,58 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
     connection.Close();
   }
+ [Fact]
+  public async Task Multiple_Filters_Are_Combined_With_And() {
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
 
-  
- 
+    QueryRequest.SkipTake request = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["Location"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"Loc-A\"}").RootElement,
+        ["City"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"CityA\"}").RootElement
+      }
+    };
+
+    var res = await svc.GetIndexAsync(request);
+    Assert.True(res.IsSuccess);
+
+    var stations = res.Value.Stations.ToList();
+
+    Assert.Equal(2, stations.Count);
+    Assert.All(stations, s => Assert.Equal("loc-a", s.Location!.ToLower()));
+    Assert.All(stations, s => Assert.Equal("citya", s.City!.ToLower()));
+
+    connection.Close();
+  }
+
+  [Fact]
+  public async Task Search_And_Filter_Are_Combined_With_And() {
+
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+    QueryRequest.SkipTake request = new() {
+      Skip = 0,
+      Take = 100,
+      SearchTerm = "Loc-A",
+      Filters = new Dictionary<string, object?> {
+        ["City"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"CityA\"}").RootElement
+      }
+    };
+
+    var res = await svc.GetIndexAsync(request);
+    Assert.True(res.IsSuccess);
+
+    var stations = res.Value.Stations.ToList();
+
+    Assert.Equal(2, stations.Count);
+    Assert.All(stations, s => Assert.Equal("loc-a", s.Location!.ToLower()));
+    Assert.All(stations, s => Assert.Equal("CityA", s.City));
+
+    connection.Close();
+  }
+
 	private static class DummyStationsFactory {
 		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
 			Location locA = new("Loc-A", new Address("L1", "L2", "CityA", "1000"), new Coordinate(4.35, 50.85));
