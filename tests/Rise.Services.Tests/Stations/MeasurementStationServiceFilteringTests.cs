@@ -246,6 +246,39 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
     connection.Close();
   }
 
+  [Fact]
+  public async Task ProjectsCount_Filters_Work_For_Zero_And_NonZero() {
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+
+    QueryRequest.SkipTake eqZero = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["ProjectsCount"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"0\"}").RootElement
+      }
+    };
+
+    var eqRes = await svc.GetIndexAsync(eqZero);
+    Assert.True(eqRes.IsSuccess);
+    Assert.Equal(6, eqRes.Value.Stations.Count());
+
+    QueryRequest.SkipTake gtZero = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["ProjectsCount"] = JsonDocument.Parse("{\"Operator\":\"GreaterThan\",\"Value\":\"0\"}").RootElement
+      }
+    };
+
+    var gtRes = await svc.GetIndexAsync(gtZero);
+    Assert.True(gtRes.IsSuccess);
+    Assert.Empty(gtRes.Value.Stations);
+
+    connection.Close();
+  }
+
+
 
 	private static class DummyStationsFactory {
 		private static IReadOnlyList<MeasurementStation> CreateDummyStations() {
