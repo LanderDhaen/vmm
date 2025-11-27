@@ -9,8 +9,8 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Projects {
-	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 	private IEnumerable<ProjectDto.Index>? _allProjects;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 	private Result? _result;
 
 	[Parameter] public Guid StationId { get; set; }
@@ -53,6 +53,7 @@ public partial class Projects {
 				Snackbar.Add(message, Severity.Warning);
 			}
 		}
+
 		Model.MeasurementStationId = StationId;
 	}
 

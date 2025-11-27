@@ -20,7 +20,6 @@ public partial class Index {
 
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc = true;
-	private string _searchTerm;
 
 	private CancellationTokenSource _cancellationTokenSource = new();
 
@@ -29,6 +28,7 @@ public partial class Index {
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
+	private string _searchTerm;
 
 
 	[Inject] public required IMeasurementStationService StationService { get; init; }
@@ -57,7 +57,8 @@ public partial class Index {
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
 		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
+			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0,
+				null)); // Can't seem to have no sort function here
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
@@ -67,7 +68,10 @@ public partial class Index {
 			SearchTerm = _searchTerm
 		};
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request); // No support for cancellation, see https://github.com/HOGENT-RISE/dotnet-2526-vc2/pull/42
+		Result<MeasurementStationResponse.Index>
+			result = await StationService
+				.GetIndexAsync(
+					request); // No support for cancellation, see https://github.com/HOGENT-RISE/dotnet-2526-vc2/pull/42
 
 		return new GridData<MeasurementStationDto.Index> {
 			TotalItems = result.Value.TotalCount,
@@ -78,7 +82,6 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetStationsMobileAsync() {
-
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
@@ -91,7 +94,8 @@ public partial class Index {
 			SearchTerm = _searchTerm
 		};
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
+		Result<MeasurementStationResponse.Index> result =
+			await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.Stations;
 	}
@@ -130,5 +134,4 @@ public partial class Index {
 	private void NavigateToCreate() {
 		NavigationManager.NavigateTo("/stations/create");
 	}
-
 }

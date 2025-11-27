@@ -139,12 +139,12 @@ namespace Rise.Client.Tests.Stations {
 		[Fact]
 		public async Task Save_CallsEditAsync() {
 			using ClientTestContext baseCtx = new();
-			var ctx = baseCtx.Ctx;
+			TestContext ctx = baseCtx.Ctx;
 
 			RegisterHappyPathMocks(ctx);
-			var stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
+			IMeasurementStationService stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
 
-			var cut = RenderWithMudProviders(ctx);
+			IRenderedFragment cut = RenderWithMudProviders(ctx);
 
 			cut.WaitForAssertion(() =>
 				Assert.Contains("STN-77", cut.Markup)
@@ -162,15 +162,15 @@ namespace Rise.Client.Tests.Stations {
 		[Fact]
 		public async Task Save_ShowsError_WhenServiceReturnsNotFound() {
 			using ClientTestContext baseCtx = new();
-			var ctx = baseCtx.Ctx;
+			TestContext ctx = baseCtx.Ctx;
 
 			RegisterHappyPathMocks(ctx);
-			var stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
+			IMeasurementStationService stationSvc = ctx.Services.GetRequiredService<IMeasurementStationService>();
 
 			stationSvc.EditAsync(Arg.Any<MeasurementStationRequest.Edit>(), Arg.Any<CancellationToken>())
 				.Returns(Task.FromResult(Result.NotFound()));
 
-			var cut = RenderWithMudProviders(ctx);
+			IRenderedFragment cut = RenderWithMudProviders(ctx);
 
 			cut.WaitForAssertion(() =>
 				Assert.Contains("STN-77", cut.Markup)

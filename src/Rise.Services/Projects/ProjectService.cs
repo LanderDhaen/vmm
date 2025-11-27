@@ -80,7 +80,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		// Filtering (MSSQL handles casing)

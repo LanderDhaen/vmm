@@ -12,7 +12,8 @@ public partial class History {
 	private bool DisplayTable { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<MeasurementStationResponse.History> result = await MeasurementStationService.GetHistoryAsync(MeasurementStationId);
+		Result<MeasurementStationResponse.History> result =
+			await MeasurementStationService.GetHistoryAsync(MeasurementStationId);
 
 		if (result.IsSuccess) {
 			_measurementStation = result.Value.MeasurementStation;

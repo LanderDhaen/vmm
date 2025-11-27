@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
-using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
@@ -101,7 +100,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
 			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
@@ -187,14 +186,15 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Rise.Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
 			.FirstOrDefaultAsync(s => s.Name == req.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		maintObj.Edit(req.Name, req.SerialNumber, type, req.Brand, new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
+		maintObj.Edit(req.Name, req.SerialNumber, type, req.Brand,
+			new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
 
 		await dbContext.SaveChangesAsync(ctx);
 

@@ -46,7 +46,8 @@
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Descending" Title="#"
+			                HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
@@ -71,8 +72,8 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              DebounceInterval="300" 
-		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed" 
+		              DebounceInterval="300"
+		              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed"
 		              @bind-Value="_searchTerm"
 		              FullWidth="true"
 		              Margin="Margin.Dense"/>

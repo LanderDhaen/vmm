@@ -1,6 +1,4 @@
 @page "/stations/{StationId:guid}"
-@using Rise.Client.Components
-@using Rise.Shared.Projects
 @inject NavigationManager Navigation
 
 <PageTitle>Station Details</PageTitle>
@@ -78,11 +76,11 @@ else
 			break;
 
 		case 2:
-			<Projects StationId="StationId" TabChanged="OnTabChange" />
+			<Projects StationId="StationId" TabChanged="OnTabChange"/>
 			break;
 
 		case 3:
-			<History MeasurementStationId="StationId" />
+			<History MeasurementStationId="StationId"/>
 			break;
 	}
 }

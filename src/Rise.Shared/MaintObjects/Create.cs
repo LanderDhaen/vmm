@@ -1,7 +1,5 @@
 using FluentValidation.Results;
 
-using Rise.Shared.Locations;
-
 namespace Rise.Shared.MaintObjects;
 
 /// <summary>

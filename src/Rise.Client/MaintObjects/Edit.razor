@@ -18,13 +18,13 @@ else
 						<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
 						              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
 					</MudItem>
-				
+
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Serienummer</MudText>
 						<MudTextField @bind-Value="Model.SerialNumber" For="@(() => Model.SerialNumber)"
 						              Immediate="true" Variant="Variant.Outlined" Placeholder="Serienummer"/>
 					</MudItem>
-				
+
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Type</MudText>
 						<MudSelect @bind-Value="Model.MaintObjType"
@@ -36,7 +36,7 @@ else
 							}
 						</MudSelect>
 					</MudItem>
-				
+
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Merk</MudText>
 						<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
@@ -45,10 +45,11 @@ else
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-						<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)" DateFormat="dd/MM/yyyy"
+						<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
+						               DateFormat="dd/MM/yyyy"
 						               Variant="Variant.Outlined"/>
 					</MudItem>
-					
+
 					@if (_locations != null)
 					{
 						<MudItem xs="12" sm="6">

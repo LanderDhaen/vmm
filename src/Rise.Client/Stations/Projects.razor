@@ -9,9 +9,8 @@
 }
 else
 {
-	
 	@* Desktop view *@
-	
+
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 			<MudSelect T="Guid"
@@ -21,13 +20,14 @@ else
 			           Variant="Variant.Outlined"
 			           Margin="Margin.Dense"
 			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-				
+
 				@foreach (var project in _allProjects)
 				{
 					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
 						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Code - @project.Name 
-							<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(project.Status))">
+							@project.Code - @project.Name
+							<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+							         Color="@(DefineColor(project.Status))">
 								@project.Status
 							</MudChip>
 						</MudStack>
@@ -45,7 +45,7 @@ else
 				Lijst bijwerken
 			</MudButton>
 		</MudStack>
-		
+
 		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="OnProjectRowClick">
 			<HeaderContent>
 				<MudTHeadRow>
@@ -71,7 +71,7 @@ else
 	@* Mobile view *@
 
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		
+
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 			<MudSelect T="Guid"
 			           Label="Projecten toevoegen"
@@ -80,12 +80,12 @@ else
 			           Variant="Variant.Outlined"
 			           Margin="Margin.Dense"
 			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-				
+
 				@foreach (var project in _allProjects)
 				{
 					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
 						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Name 
+							@project.Name
 							<MudBadge Dot="true" Color="@(DefineColor(project.Status))"/>
 						</MudStack>
 					</MudSelectItem>
@@ -98,7 +98,7 @@ else
 			               Color="Color.Primary"
 			               OnClick="@UpdateProjects"/>
 		</MudStack>
-		
+
 		<MudGrid Spacing="6">
 			@foreach (var p in _projectsFromStation)
 			{
