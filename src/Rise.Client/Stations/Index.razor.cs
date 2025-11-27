@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
@@ -9,34 +11,43 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Index {
-	private static readonly (string Value, string Label)[] SortColumns = [
+	private static readonly (string Value, string Label)[] SortColumns = new[]
+	{
 		("Code", "Code"),
 		("InstalledAt", "Geïnstalleerd"),
 		("RemovedAt", "Verwijderd"),
 		("Location", "Locatie"),
 		("City", "Gemeente"),
 		("ProjectsCount", "Projecten")
-	];
+	};
 
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc;
-	private string _searchTerm;
+	private string _searchTerm = string.Empty;
 
-	private CancellationTokenSource _cancellationTokenSource = new();
-
-	private MudDataGrid<MeasurementStationDto.Index> _grid;
+	private MudDataGrid<MeasurementStationDto.Index>? _grid;
 
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
+	private DateTime? _filterInstalledAt;
+	private DateTime? _filterRemovedAt;
+	private string? _filterLocation;
+	private string? _filterCity;
+	private int? _filterProjectsCount;
 
+	private List<string> _locations = new();
+	private List<string> _cities = new();
+	private List<int> _projectCounts = new() { 0, 1, 2, 3, 4, 5 };
+
+	private bool _filterOptionsOpen;
+	private Anchor _filterDrawerAnchor = Anchor.Right;
 
 	[Inject] public required IMeasurementStationService StationService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
 	[Inject] public required IBrowserViewportService ViewportService { get; init; }
-
 
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
@@ -51,60 +62,63 @@ public partial class Index {
 			await GetStationsMobileAsync();
 		}
 	}
-
-	// Desktop
-
-	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
-		GridState<MeasurementStationDto.Index> state) {
-		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
-
-		QueryRequest.SkipTake request = new() {
+	private QueryRequest.SkipTake CreateRequestFromGridState(GridState<MeasurementStationDto.Index> state) {
+		var sorting = state.SortDefinitions.FirstOrDefault();
+		var request = new QueryRequest.SkipTake {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting.SortBy,
-			OrderDescending = sorting.Descending,
-			SearchTerm = _searchTerm
+			OrderBy = sorting?.SortBy ?? _activeSorting,
+			OrderDescending = sorting?.Descending ?? _activeSortingDesc,
+			SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 		};
+		request.Filters ??= new Dictionary<string, object?>();
+		return request;
+	}
 
-		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request); // No support for cancellation, see https://github.com/HOGENT-RISE/dotnet-2526-vc2/pull/42
+	// Central fetch-method (one place for server-communication and select-option updates)
+	private async Task<GridData<MeasurementStationDto.Index>> FetchStationsAsync(QueryRequest.SkipTake request, bool useContainsForText) {
+		ApplyDrawerFilters(request, useContainsForText);
+
+		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
+
+		var stations = result?.Value?.Stations ?? Enumerable.Empty<MeasurementStationDto.Index>();
+		UpdateSelectOptions(stations);
+
+		var total = result?.Value?.TotalCount ?? 0;
 
 		return new GridData<MeasurementStationDto.Index> {
-			TotalItems = result.Value.TotalCount,
-			Items = result.Value.Stations
+			TotalItems = total,
+			Items = stations
 		};
 	}
 
-	// Mobile
+	// Desktop 
+	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
+		GridState<MeasurementStationDto.Index> state) {
+		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0, null));
 
-			private async Task GetStationsMobileAsync() {
-			_cancellationTokenSource.Cancel();
-			_cancellationTokenSource.Dispose();
-			_cancellationTokenSource = new CancellationTokenSource();
+		var request = CreateRequestFromGridState(state);
 
-			QueryRequest.SkipTake request = new() {
-				Skip = 0,
-				Take = 10,
-				OrderBy = _activeSorting,
-				OrderDescending = _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
-			};
-			request.Filters ??= new Dictionary<string, object?>();
+		return await FetchStationsAsync(request, useContainsForText: false);
+	}
 
-			ApplyDrawerFilters(request, useContainsForText: true);
+	// Mobile fetch
+	private async Task GetStationsMobileAsync() {
+		var request = new QueryRequest.SkipTake {
+			Skip = 0,
+			Take = 10,
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc,
+			SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+		};
+		request.Filters ??= new Dictionary<string, object?>();
+		var gridData = await FetchStationsAsync(request, useContainsForText: true);
 
-			Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
+		_mobileItems = gridData.Items;
+	}
 
-
-			var stations = result?.Value?.Stations ?? Enumerable.Empty<MeasurementStationDto.Index>();
-			UpdateSelectOptions(stations);
-			_mobileItems = result.Value.Stations;
-		}
-
-
-
-	// Mobile Sorting
-
+	// Mobile Sorting drawer
 	private void ToggleSortingDrawer() {
 		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
 	}
@@ -116,24 +130,22 @@ public partial class Index {
 		ToggleSortingDrawer();
 	}
 
-	// Filtering
-		private async Task ToggleFiltersDrawer() {
-			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
-			_filterDrawerAnchor = breakpoint == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
-			_filterOptionsOpen = !_filterOptionsOpen;
-		}
+	private async Task ToggleFiltersDrawer() {
+		var bp = await ViewportService.GetCurrentBreakpointAsync();
+		_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
+		_filterOptionsOpen = !_filterOptionsOpen;
+	}
+
 	private async Task HandleDesktopIntervalElapsed() {
-		await _grid.ReloadServerData();
+		if (_grid is not null)
+			await _grid.ReloadServerData();
 	}
 
 	private async Task HandleMobileIntervalElapsed() {
 		await GetStationsMobileAsync();
 	}
 
-	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)
-
 	// Navigation
-
 	private void NavigateToStation(Guid stationId) {
 		NavigationManager.NavigateTo($"/stations/{stationId}");
 	}
@@ -142,4 +154,95 @@ public partial class Index {
 		NavigationManager.NavigateTo("/stations/create");
 	}
 
+	// Filtering
+		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
+		request.Filters ??= new Dictionary<string, object?>();
+
+		if (_filterInstalledAt.HasValue)
+			request.Filters["InstalledAt"] = new { Operator = "GreaterThanOrEqual", Value = _filterInstalledAt.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
+
+		if (_filterRemovedAt.HasValue)
+			request.Filters["RemovedAt"] = new { Operator = "LessThanOrEqual", Value = _filterRemovedAt.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
+
+		if (!string.IsNullOrWhiteSpace(_filterLocation))
+			request.Filters["Location"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterLocation!.Trim() };
+
+		if (!string.IsNullOrWhiteSpace(_filterCity))
+			request.Filters["City"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterCity!.Trim() };
+
+    if (_filterProjectsCount.HasValue)
+    {
+      if (_filterProjectsCount.Value >= 5)
+      {
+        request.Filters["ProjectsCount"] = new { Operator = "GreaterThanOrEqual", Value = _filterProjectsCount.Value };
+      }
+      else
+      {
+        request.Filters["ProjectsCount"] = new { Operator = "Equals", Value = _filterProjectsCount.Value };
+      }
+    }
+	}
+	private void UpdateSelectOptions(IEnumerable<MeasurementStationDto.Index> stations) {
+		_locations = stations
+			.Select(s => s.Location ?? string.Empty)
+			.Where(s => !string.IsNullOrWhiteSpace(s))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		_cities = stations
+			.Select(s => s.City ?? string.Empty)
+			.Where(s => !string.IsNullOrWhiteSpace(s))
+			.Distinct(StringComparer.OrdinalIgnoreCase)
+			.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+			.ToList();
+
+		var counts = stations
+			.Select(s => s.ProjectsCount)
+			.Where(c => c >= 0)
+			.Distinct()
+			.OrderBy(c => c)
+			.ToList();
+
+		if (counts.Any()) {
+			var limited = counts.Where(c => c < 5).ToList();
+			if (counts.Any(c => c >= 5)) {
+				limited.Add(5);
+			}
+			_projectCounts = limited.Distinct().OrderBy(c => c).ToList();
+		} else {
+			_projectCounts = new() { 0, 1, 2, 3, 4, 5 };
+		}
+	}
+
+	private async Task ClearFilters() {
+		_filterInstalledAt = null;
+		_filterRemovedAt = null;
+		_filterLocation = null;
+		_filterCity = null;
+		_filterProjectsCount = null;
+
+		var bp = await ViewportService.GetCurrentBreakpointAsync();
+
+		if (bp == Breakpoint.Xs)
+			await GetStationsMobileAsync();
+		else if (_grid is not null)
+			await _grid.ReloadServerData();
+
+		_filterOptionsOpen = false;
+		StateHasChanged();
+	}
+
+	private async Task ApplyOrReloadOnChangeAsync() {
+		var bp = await ViewportService.GetCurrentBreakpointAsync();
+		if (bp == Breakpoint.Xs) {
+			await GetStationsMobileAsync();
+		} else {
+			if (_grid is not null)
+				await _grid.ReloadServerData();
+		}
+		StateHasChanged();
+	}
+	private string GetFilterDrawerClass() =>
+	_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
 }
