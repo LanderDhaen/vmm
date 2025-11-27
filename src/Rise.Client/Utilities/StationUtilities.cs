@@ -4,7 +4,7 @@ namespace Rise.Client.Utilities;
 /// Provides helper methods to format and display information about a measurement station.
 /// </summary>
 
-public static class StationUtilities
+public static class StationUtility
 {
 	/// <summary>
 	/// Formats the installation date and time of a measurement station.
