@@ -131,10 +131,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
 			var t = req.SearchTerm.Trim().ToLowerInvariant();
 			query = query.Where(p =>
-				EF.Functions.Like(p.Code.ToLower(), $"%{t}%") ||
-				EF.Functions.Like(p.Name.ToLower(), $"%{t}%") ||
-				EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%") ||
-				EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
+				EF.Functions.Like(p.Code, $"%{t}%") ||
+				EF.Functions.Like(p.Name, $"%{t}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Name, $"%{t}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{t}%"));
 		}
 
 		if (req.Filters != null && req.Filters.Any()) {
