@@ -10,9 +10,7 @@ namespace Rise.Client.Stations;
 public partial class Detail {
 	// ===== Tabs =====
 	private readonly List<string> _tabs = new() {
-		"Info",
-		"Apparaten",
-		"Projecten",
+		"Informatie",
 		"Historiek"
 	};
 
