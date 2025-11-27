@@ -148,7 +148,7 @@ public class ProjectShould {
 		project.Stations.Count.ShouldBe(1);
 		project.Stations.ShouldContain(measurementStation);
 
-		project.UpdateMeasurementStationList(new List<MeasurementStation> { });
+		project.UpdateMeasurementStationList(new List<MeasurementStation>());
 
 		project.Stations.Count.ShouldBe(0);
 		project.Stations.ShouldNotContain(measurementStation);

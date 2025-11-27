@@ -9,15 +9,56 @@
 <MudLayout Style="background-color: #ececec ">
 	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudAppBar Color="Color.Transparent" Elevation="0">
+		@* === 1 === white, blurred, elevation *@
+		@* <MudAppBar Style="background-color: rgb(255,255,255,0.7); backdrop-filter: blur(10px);" Elevation="3"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 2 === same color, blurred, elevation *@
+		<MudAppBar Style="background-color: rgb(236 ,236 ,236,0.7); backdrop-filter: blur(10px);" Elevation="3">
 			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
 		</MudAppBar>
+
+		@* === 3 === same color, blurred, flat *@
+		@* <MudAppBar Style="background-color: rgb(236 ,236 ,236,0.6); backdrop-filter: blur(10px);" Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 4 === same color, blurred, flat, border-bottom *@
+		@* <MudAppBar *@
+		@* 	Style="background-color: rgb(236 ,236 ,236,0.6); backdrop-filter: blur(10px); border-bottom: solid 1px black" *@
+		@* 	Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 5 === white, blurred, flat, border-bottom *@
+		@* <MudAppBar *@
+		@* 	Style="background-color: rgb(255,255,255,0.7); backdrop-filter: blur(10px); border-bottom: solid 1px black" *@
+		@* 	Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 6 === same color, flat *@
+		@* <MudAppBar Style="background-color: #ececec;" Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 7 ===  same color, flat, border *@
+		@* <MudAppBar Style="background-color: #ececec; border-bottom: solid 1px black" Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
+		@* === 8 === white, flat, border *@
+		@* <MudAppBar Style="background-color: white; border-bottom: solid 1px black" Elevation="0"> *@
+		@* 	<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs> *@
+		@* </MudAppBar> *@
+
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
 			<DrawerHeader/>
 			<NavMenu/>
 		</MudDrawer>
 		<MudMainContent Style="min-height: 100vh;">
-			<MudContainer>
+			<MudContainer Class="mt-4">
 				@Body
 			</MudContainer>
 		</MudMainContent>

@@ -77,6 +77,7 @@ public partial class Edit {
 
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
+			new BreadcrumbItem($"{detail.Value.Station.Code}", $"/stations/{StationId}"),
 			new BreadcrumbItem("Bewerk", $"/stations/edit/{StationId}", true)
 		);
 

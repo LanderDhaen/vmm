@@ -2,21 +2,18 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-using Rise.Client.Locations;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Networks;
-using Rise.Shared.Projects;
 
 namespace Rise.Client.MaintObjects;
 
 public partial class Edit {
 	private readonly MaintObjRequest.Edit.Validator _validator = new();
+	private IEnumerable<LocationDto.Index>? _locations;
 	private Result? _result;
 	private MudForm form;
-	private IEnumerable<LocationDto.Index>? _locations;
 	[Parameter] public Guid MaintObjId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
@@ -47,6 +44,7 @@ public partial class Edit {
 
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Onderhoudsobjecten", "/maintobjects"),
+			new BreadcrumbItem($"{maintObj.Value.MaintObj.Name}", $"/maintobjects/{MaintObjId}"),
 			new BreadcrumbItem("Bewerk", $"/maintobjects/edit/{MaintObjId}", true)
 		);
 

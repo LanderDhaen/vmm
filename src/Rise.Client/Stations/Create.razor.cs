@@ -108,7 +108,7 @@ public partial class Create {
 	}
 
 	private string BuildString(Guid? id) {
-		var location = _locations.FirstOrDefault(x => x.Id == id);
+		LocationDto.Index? location = _locations.FirstOrDefault(x => x.Id == id);
 
 		if (location is null) {
 			return string.Empty;
@@ -118,27 +118,28 @@ public partial class Create {
 	}
 
 	private async Task OpenMapDialog() {
-		if (!Model.IsNewLocation || Model.Location is null)
+		if (!Model.IsNewLocation || Model.Location is null) {
 			return;
+		}
 
-		var parameters = new DialogParameters {
+		DialogParameters parameters = new() {
 			["InitialX"] = Model.Location.X,
 			["InitialY"] = Model.Location.Y
 		};
 
-		var options = new DialogOptions {
+		DialogOptions options = new() {
 			CloseButton = true,
 			MaxWidth = MaxWidth.Medium,
 			FullWidth = true
 		};
 
-		var dialog = DialogService.Show<PickLocationDialog>(
+		IDialogReference dialog = DialogService.Show<PickLocationDialog>(
 			"Kies meetstation locatie",
 			parameters,
 			options
 		);
 
-		var result = await dialog.Result;
+		DialogResult? result = await dialog.Result;
 
 		if (!result.Canceled && result.Data is CoordinateResult c) {
 			Model.Location.X = c.X;

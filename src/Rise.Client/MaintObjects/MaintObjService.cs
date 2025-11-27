@@ -16,7 +16,7 @@ public class MaintObjService(HttpClient httpClient) : IMaintObjService {
 		CancellationToken ctx = default) {
 		HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/maintobjects", request, ctx);
 		Result<MaintObjResponse.Create>? result =
- 			await response.Content.ReadFromJsonAsync<Result<MaintObjResponse.Create>>(ctx);
+			await response.Content.ReadFromJsonAsync<Result<MaintObjResponse.Create>>(ctx);
 		return result!;
 	}
 

@@ -9,6 +9,12 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Projects;
 
 public partial class Detail {
+	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
+	private readonly Result? _result;
+	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
+
+	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
+
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Info",
@@ -24,10 +30,6 @@ public partial class Detail {
 
 	private string? _remarks;
 	private int _selectedTab;
-	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
-	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
-	private readonly Result? _result;
-	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }

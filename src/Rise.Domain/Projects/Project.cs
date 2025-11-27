@@ -37,7 +37,7 @@ public class Project : Entity {
 
 	public MeasurementNetwork MeasurementNetwork { get; private set; }
 
-	public ICollection<MeasurementStation> Stations { get; private set; } =
+	public ICollection<MeasurementStation> Stations { get; } =
 		new List<MeasurementStation>();
 
 	public IReadOnlyList<ProjectHistory> ProjectHistories => _projectHistories.AsReadOnly();
@@ -48,6 +48,7 @@ public class Project : Entity {
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
 		}
+
 		// Get all the measurement stations that are not already in the project
 		List<MeasurementStation> measurementStationsToAdd = measurementStations
 			.Where(s => Stations.All(st => st.Id != s.Id))
@@ -95,7 +96,6 @@ public class Project : Entity {
 	}
 
 	public void UpdateStatus(Status newStatus) {
-
 		// Check if the values are the same as the old values
 
 		if (Status == newStatus) {

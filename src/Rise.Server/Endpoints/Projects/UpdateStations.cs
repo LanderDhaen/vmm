@@ -9,7 +9,8 @@ namespace Rise.Server.Endpoints.Projects;
 ///     See https://fast-endpoints.com/
 /// </summary>
 /// <param name="projectService"></param>
-public class UpdateStations(IProjectService projectService) : Endpoint<ProjectRequest.UpdateMeasurementStations, Result> {
+public class UpdateStations(IProjectService projectService)
+	: Endpoint<ProjectRequest.UpdateMeasurementStations, Result> {
 	public override void Configure() {
 		Put("/api/projects/{ProjectId}/stations");
 		Roles(AppRoles.Administrator);

@@ -1,21 +1,18 @@
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
-using MudBlazor.Charts;
 
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Networks;
-using Rise.Shared.Projects;
 
 namespace Rise.Client.MaintObjects;
 
 public partial class Create {
 	private readonly MaintObjRequest.Create.Validator _validator = new();
-	private Result<MaintObjResponse.Create>? _result;
 	private IEnumerable<LocationDto.Index>? _locations;
+	private Result<MaintObjResponse.Create>? _result;
 	private MudForm form;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }

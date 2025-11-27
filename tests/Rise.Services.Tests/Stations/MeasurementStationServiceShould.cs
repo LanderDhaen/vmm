@@ -226,7 +226,7 @@ public class MeasurementStationServiceShould {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
-		Location location = new Location(
+		Location location = new(
 			"Location", new Address(null, null, "TestCity", "1234"), new Coordinate(4.35, 50.85));
 
 		db.Locations.Add(location);
@@ -318,7 +318,7 @@ public class MeasurementStationServiceShould {
 
 		// Assert
 		Assert.Equal(ResultStatus.NotFound, result.Status);
-		Assert.Equal($"Locatie niet gevonden.", result.Errors.First());
+		Assert.Equal("Locatie niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}

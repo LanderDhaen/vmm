@@ -129,7 +129,7 @@ public class DbSeeder(
 			new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
 			new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
 			new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
-			new MeasurementNetwork("Overstortmeetnet Oost", zones[1]),
+			new MeasurementNetwork("Overstortmeetnet Oost", zones[1])
 		};
 
 		dbContext.MeasurementNetworks.AddRange(measurementNetworks);
@@ -149,9 +149,9 @@ public class DbSeeder(
 			new Address("Vaartstraat", null, "Aalst", "9300"),
 			new Address(null, null, "Breda", "4811", "NL"),
 			new Address("N9", null, "Aalst", "9300"),
-			
+
 			// Stock
-			
+
 			new Address("Industrielaan 15", null, "Aalst", "9320"),
 			new Address("Industrieweg 124", null, "Gent", "9040")
 		};
@@ -162,10 +162,10 @@ public class DbSeeder(
 			new Coordinate(51.04535, 3.68276),
 			new Coordinate(50.94093, 4.04293),
 			new Coordinate(51.60512, 4.75128),
-			new Coordinate(50.93499, 4.04801), 
-			
+			new Coordinate(50.93499, 4.04801),
+
 			// Stock
-			
+
 			new Coordinate(50.91215, 4.03795),
 			new Coordinate(51.09013, 3.68663)
 		};
@@ -177,9 +177,9 @@ public class DbSeeder(
 			new Location("Sint-Annabrug", addresses[3], coordinates[3]),
 			new Location("Emerput", addresses[4], coordinates[4]),
 			new Location("Zeebergbrug", addresses[5], coordinates[5]),
-			
+
 			// Stock
-			
+
 			new Location("Stock Aalst", addresses[6], coordinates[6], true),
 			new Location("Stock Gent", addresses[7], coordinates[7], true)
 		};
@@ -217,7 +217,7 @@ public class DbSeeder(
 			new Project("Overstortdetectie Aalst", "2025-004", dateRanges[3], networks[3]),
 			new Project("Conductiviteitsmonitoring Aalst", "2025-005", dateRanges[4], networks[4]),
 			new Project("Multiparameteranalyse", "2025-006", dateRanges[5], networks[5]),
-			new Project("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0]),
+			new Project("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0])
 		};
 
 
@@ -318,7 +318,8 @@ public class DbSeeder(
 			return;
 		}
 
-		List<MeasurementStation> stations = await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
+		List<MeasurementStation> stations =
+			await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 		List<Location> locations = await dbContext.Locations.ToListAsync();
 
 		List<DateTime?> removedAts = new() {
@@ -330,12 +331,12 @@ public class DbSeeder(
 			null
 		};
 
-		Location DummyLocation = new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
+		Location DummyLocation =
+			new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
 
 		int i = 0;
 
 		foreach (MeasurementStation station in stations) {
-
 			Installation installation = station.Installation;
 			Location location = station.Location;
 
@@ -464,11 +465,16 @@ public class DbSeeder(
 
 	private List<MaintObj> CreateStockItems(List<MaintObjType> types, List<Location> stockLocations) {
 		return new List<MaintObj> {
-			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
-			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
-			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true, stockLocations[1]),
-			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true, stockLocations[1]),
-			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[1])
+			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true,
+				stockLocations[0]),
+			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true,
+				stockLocations[0]),
+			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
+				stockLocations[1]),
+			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
+				stockLocations[1]),
+			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
+				stockLocations[1])
 		};
 	}
 
@@ -476,9 +482,12 @@ public class DbSeeder(
 		return new List<MaintObj> {
 			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
 			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
-			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true, stockLocations[1]),
-			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true, stockLocations[1]),
-			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true, stockLocations[2])
+			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
+				stockLocations[1]),
+			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
+				stockLocations[1]),
+			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
+				stockLocations[2])
 		};
 	}
 

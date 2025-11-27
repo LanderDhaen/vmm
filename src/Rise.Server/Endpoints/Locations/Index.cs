@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Primitives;
+
 using Rise.Shared.Common;
 using Rise.Shared.Identity;
 using Rise.Shared.Locations;
@@ -17,14 +19,16 @@ public class Index(ILocationService locationService) : Endpoint<QueryRequest.Ski
 
 	public override Task<Result<LocationResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct) {
 		// Manually parse filters from query string
-		foreach (var (key, value) in HttpContext.Request.Query) {
-			if (key == "skip" || key == "take" || key == "orderBy" || key == "orderDescending")
+		foreach ((string key, StringValues value) in HttpContext.Request.Query) {
+			if (key == "skip" || key == "take" || key == "orderBy" || key == "orderDescending") {
 				continue;
+			}
 
-			if (bool.TryParse(value, out var boolValue))
+			if (bool.TryParse(value, out bool boolValue)) {
 				req.Filters[key] = boolValue;
-			else
+			} else {
 				req.Filters[key] = value.ToString();
+			}
 		}
 
 		Task<Result<LocationResponse.Index>> locaties = locationService.GetIndexAsync(req, ct);

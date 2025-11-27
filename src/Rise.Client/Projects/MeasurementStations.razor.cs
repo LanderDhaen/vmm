@@ -9,9 +9,9 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Projects;
 
 public partial class MeasurementStations {
-	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 	private IEnumerable<MeasurementStationDto.Index>? _allStations;
 	private Result? _result;
+	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Parameter] public bool IsActive { get; set; }
@@ -25,8 +25,10 @@ public partial class MeasurementStations {
 	[Inject] public required NavigationManager Navigation { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<List<MeasurementStationDto.Index>> stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
-		Result<MeasurementStationResponse.Index> allStations = await StationService.GetIndexAsync(new QueryRequest.SkipTake());
+		Result<List<MeasurementStationDto.Index>>
+			stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
+		Result<MeasurementStationResponse.Index> allStations =
+			await StationService.GetIndexAsync(new QueryRequest.SkipTake());
 
 		// --- Stations for this project ---
 		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
@@ -54,6 +56,7 @@ public partial class MeasurementStations {
 				Snackbar.Add(message, Severity.Warning);
 			}
 		}
+
 		Model.ProjectId = ProjectId;
 	}
 
@@ -79,7 +82,8 @@ public partial class MeasurementStations {
 			_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
-				Result<List<MeasurementStationDto.Index>> stationsResult = await ProjectService.GetStationsAsync(ProjectId);
+				Result<List<MeasurementStationDto.Index>> stationsResult =
+					await ProjectService.GetStationsAsync(ProjectId);
 				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
 					_stationsFromProject = stationsResult.Value;
 					await TabChanged.InvokeAsync($"Meetstations ({_stationsFromProject.Count()})");

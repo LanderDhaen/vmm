@@ -6,18 +6,19 @@ using MudBlazor;
 namespace Rise.Client.Stations;
 
 public partial class PickLocationDialog {
+	private CoordinateResult? _picked;
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
 	[Parameter] public double InitialX { get; set; }
 	[Parameter] public double InitialY { get; set; }
 
-	private CoordinateResult? _picked;
-
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
-		if (!firstRender) return;
+		if (!firstRender) {
+			return;
+		}
 
-		var x = InitialX != 0 ? InitialX : 4.0;   // longitude
-		var y = InitialY != 0 ? InitialY : 51.0;  // latitude
+		double x = InitialX != 0 ? InitialX : 4.0; // longitude
+		double y = InitialY != 0 ? InitialY : 51.0; // latitude
 
 		await JS.InvokeVoidAsync(
 			"pickMap.init",
@@ -33,6 +34,11 @@ public partial class PickLocationDialog {
 		StateHasChanged();
 	}
 
-	private void Confirm() => MudDialog.Close(DialogResult.Ok(_picked));
-	private void Cancel() => MudDialog.Cancel();
+	private void Confirm() {
+		MudDialog.Close(DialogResult.Ok(_picked));
+	}
+
+	private void Cancel() {
+		MudDialog.Cancel();
+	}
 }

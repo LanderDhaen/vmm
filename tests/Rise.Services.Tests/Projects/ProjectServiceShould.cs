@@ -190,7 +190,7 @@ public class ProjectServiceShould {
 
 		// Assert
 		Assert.Equal(ResultStatus.Conflict, result.Status);
-		Assert.Equal($"Project met code 'TP-001' bestaat al.", result.Errors.First());
+		Assert.Equal("Project met code 'TP-001' bestaat al.", result.Errors.First());
 
 		connection.Close();
 	}
@@ -216,7 +216,7 @@ public class ProjectServiceShould {
 
 		// Assert
 		Assert.Equal(ResultStatus.NotFound, result.Status);
-		Assert.Equal($"Meetnet niet gevonden.", result.Errors.First());
+		Assert.Equal("Meetnet niet gevonden.", result.Errors.First());
 
 		connection.Close();
 	}

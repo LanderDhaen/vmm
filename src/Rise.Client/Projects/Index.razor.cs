@@ -21,15 +21,15 @@ public partial class Index {
 
 	private string _activeSorting = "Code";
 	private bool _activeSortingDesc = true;
-	private string _searchTerm;
-
-	private IEnumerable<ProjectDto.Index>? _mobileItems;
-
-	private bool _mobileSortOptionsOpen;
 
 	private CancellationTokenSource _cancellationTokenSource = new();
 
 	private MudDataGrid<ProjectDto.Index> _grid;
+
+	private IEnumerable<ProjectDto.Index>? _mobileItems;
+
+	private bool _mobileSortOptionsOpen;
+	private string _searchTerm;
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -55,9 +55,9 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-
 		SortDefinition<ProjectDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0, null)); // Can't seem to have no sort function here
+			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0,
+				null)); // Can't seem to have no sort function here
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
@@ -67,7 +67,8 @@ public partial class Index {
 			SearchTerm = _searchTerm
 		};
 
-		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
+		Result<ProjectResponse.Index> result =
+			await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		return new GridData<ProjectDto.Index> {
 			TotalItems = result.Value.TotalCount,
@@ -78,7 +79,6 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetProjectsMobileAsync() {
-
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
@@ -91,7 +91,8 @@ public partial class Index {
 			SearchTerm = _searchTerm
 		};
 
-		Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
+		Result<ProjectResponse.Index> result =
+			await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.Projects;
 	}
