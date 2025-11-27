@@ -162,6 +162,53 @@ public async Task RemovedAt_GreaterThanOrEqual_Filter_Returns_Expected() {
 
   connection.Close();
 }
+  [Fact]
+  public async Task Location_Contains_Filter_Matches_Partial_Names() {
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+
+    QueryRequest.SkipTake request = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["Location"] = "Loc-A"
+      }
+    };
+
+    Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+    Assert.True(result.IsSuccess);
+
+    var stations = result.Value.Stations.ToList();
+
+    Assert.Equal(3, stations.Count);
+    Assert.All(stations, s => Assert.Contains("loc-a", s.Location!.ToLower()));
+
+    connection.Close();
+  }
+
+  [Fact]
+  public async Task Location_Equals_Filter_Is_Case_Insensitive() {
+    await using ApplicationDbContext db = CreateContextAndSeed(out SqliteConnection connection);
+    MeasurementStationService svc = new(db);
+
+    QueryRequest.SkipTake request = new() {
+      Skip = 0,
+      Take = 100,
+      Filters = new Dictionary<string, object?> {
+        ["Location"] = JsonDocument.Parse("{\"Operator\":\"Equals\",\"Value\":\"loc-a\"}").RootElement
+      }
+    };
+
+    Result<MeasurementStationResponse.Index> result = await svc.GetIndexAsync(request);
+    Assert.True(result.IsSuccess);
+
+    var stations = result.Value.Stations.ToList();
+
+    Assert.Equal(3, stations.Count);
+    Assert.All(stations, s => Assert.Equal("loc-a", s.Location!.ToLower()));
+
+    connection.Close();
+  }
 
 
 	private static class DummyStationsFactory {
