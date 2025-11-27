@@ -99,27 +99,28 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
-		MeasurementStation? station = await dbContext.MeasurementStations
-			.AsNoTracking()
-			.Include(s => s.Location)
-			.Include(s => s.Projects)
-			.SingleOrDefaultAsync(s => s.Id == stationId, ct);
+		
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
 
+		MeasurementStationDto.Detail? station = await query
+			.Where(s => s.Id == stationId)
+			.Select(s => new MeasurementStationDto.Detail {
+				Id = s.Id,
+				Code = s.Code,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				Location = s.Location.Name,
+				City = s.Location.Address.City,
+			})
+			.SingleOrDefaultAsync(ct);
+		
 		if (station is null) {
-			return Result.NotFound();
+			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
-		MeasurementStationDto.Detail dto = new() {
-			Id = station.Id,
-			Code = station.Code,
-			InstalledAt = station.Installation.InstalledAt,
-			RemovedAt = station.Installation.RemovedAt,
-			Location = station.Location.Name,
-			City = station.Location.Address.City,
-			ProjectsCount = station.Projects.Count()
-		};
-
-		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
+		return Result.Success(new MeasurementStationResponse.Detail {
+			Station = station
+		});
 	}
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
