@@ -28,14 +28,14 @@ public class Project : Entity {
 
 	// Properties
 
-	public string Name { get; private set; }
-	public string Code { get; private set; }
-	public DateRange DateRange { get; private set; } = default!;
+	public string Name { get; private set; } = string.Empty;
+	public string Code { get; private set; } = string.Empty;
+	public DateRange DateRange { get; private set; } = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
 	public Status Status { get; private set; } = Status.Actief;
 
 	// Relations
 
-	public MeasurementNetwork MeasurementNetwork { get; private set; }
+	public MeasurementNetwork MeasurementNetwork { get; private set; } = default!;
 
 	public ICollection<MeasurementStation> Stations { get; } =
 		new List<MeasurementStation>();
@@ -132,6 +132,7 @@ public class ProjectHistory : HistoryEntity {
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private ProjectHistory() {
+		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
 	}
 
 	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
