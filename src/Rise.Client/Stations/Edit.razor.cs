@@ -55,7 +55,7 @@ public partial class Edit {
 		Result<MeasurementStationResponse.Detail> detail = await StationService.GetDetailAsync(StationId);
 		
 		Result<MeasurementStationResponse.ProjectList> linked = 
-			await StationService.GetProjectsAsync(StationId);
+			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
 
 		Guid preselectedProjectId =
 			linked.IsSuccess && linked.Value.Projects.Any()

@@ -34,9 +34,10 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 
 	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
+		QueryRequest.Search request,
 		CancellationToken ctx = default) {
 		return (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.ProjectList>>(
-			$"/api/stations/{stationId}/projects", ctx))!;
+			$"/api/stations/{stationId}/projects?{request.AsQuery()}", ctx))!;
 	}
 
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,

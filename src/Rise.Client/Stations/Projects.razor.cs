@@ -9,6 +9,9 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Projects {
+
+	private string _searchTerm = string.Empty;
+	
 	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 
 	[Parameter] public Guid StationId { get; init; }
@@ -16,17 +19,27 @@ public partial class Projects {
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<MeasurementStationResponse.ProjectList> result = await StationService.GetProjectsAsync(StationId);
+		await GetProjectsAsync();
+	}
+
+	private async Task GetProjectsAsync() {
+
+		QueryRequest.Search request = new() {
+			SearchTerm = _searchTerm
+		};
+		
+		Result<MeasurementStationResponse.ProjectList> result = await StationService.GetProjectsAsync(StationId, request);
 
 		if (result.IsSuccess) {
 			_projectsFromStation = result.Value.Projects;
 		}
 	}
+
+	private async Task HandleIntervalElapsed() {
+		await GetProjectsAsync();
+	}
 	
 	private void NavigateToProject(Guid projectId) {
 		NavigationManager.NavigateTo($"/projects/{projectId}");
-	}
-	private static Color DefineColor(Status status) {
-		return status == Status.Actief ? Color.Success : Color.Error;
 	}
 }

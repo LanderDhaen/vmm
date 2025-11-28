@@ -15,6 +15,17 @@ else
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+			<MudTextField T="string"
+			              InputType="InputType.Search"
+			              Label="Zoek"
+			              Class="m-0"
+			              Variant="Variant.Outlined"
+			              Adornment="Adornment.End"
+			              AdornmentIcon="@Icons.Material.Filled.Search"
+			              DebounceInterval="300"
+			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+			              @bind-Value="_searchTerm"
+			              Margin="Margin.Dense"/>
 			<MudButton Variant="Variant.Filled"
 			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 			           Size="Size.Small"
@@ -56,6 +67,17 @@ else
 
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+			<MudTextField T="string"
+			              InputType="InputType.Search"
+			              Label="Zoek"
+			              Class="m-0"
+			              Variant="Variant.Outlined"
+			              Adornment="Adornment.End"
+			              AdornmentIcon="@Icons.Material.Filled.Search"
+			              DebounceInterval="300"
+			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+			              @bind-Value="_searchTerm"
+			              Margin="Margin.Dense"/>
 			<MudIconButton Variant="Variant.Filled"
 			               Icon="@Icons.Material.Filled.PlaylistAdd"
 			               Size="Size.Small"
