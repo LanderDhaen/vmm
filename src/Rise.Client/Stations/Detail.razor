@@ -37,7 +37,7 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudPaper Class="p-4">
+			<MudPaper Class="pa-4">
 				<div class="d-flex align-center m-2">
 					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
 					<MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -46,26 +46,26 @@ else
 					               Title="Bewerken"/>
 				</div>
 
-				<MudGrid Class="p-2">
+				<MudGrid Class="pa-2">
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-						<MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
+						<MudPaper Class="pa-2">@FormatDate(_station.InstalledAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-						<MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
+						<MudPaper Class="pa-2">@FormatDate(_station.RemovedAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
-						<MudPaper Class="p-2">@_station.Location</MudPaper>
+						<MudPaper Class="pa-2">@_station.Location</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Gemeente</MudText>
-						<MudPaper Class="p-2">@_station.City</MudPaper>
+						<MudPaper Class="pa-2">@_station.City</MudPaper>
 					</MudItem>
 				</MudGrid>
 			</MudPaper>
