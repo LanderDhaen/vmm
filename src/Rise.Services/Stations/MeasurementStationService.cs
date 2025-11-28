@@ -120,7 +120,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 					Country = s.Location.Address.CountryIso,
 					X = s.Location.Coordinate.X,
 					Y = s.Location.Coordinate.Y,
-				}
+				},
+				ProjectsCount = s.Projects.Count()
 			})
 			.SingleOrDefaultAsync(ct);
 		
@@ -130,6 +131,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		return Result.Success(new MeasurementStationResponse.Detail {
 			Station = station
+			
 		});
 	}
 

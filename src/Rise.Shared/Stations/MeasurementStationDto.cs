@@ -21,7 +21,6 @@ public static class MeasurementStationDto {
 		public DateTime? RemovedAt { get; set; }
 		public required LocationDto.Detail Location { get; set; }
 		public int ProjectsCount { get; set; }
-		public int MaintObjectsCount { get; set; }
 	}
 
 	public class History {

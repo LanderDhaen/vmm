@@ -18,6 +18,7 @@ public partial class Detail {
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
+	
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
