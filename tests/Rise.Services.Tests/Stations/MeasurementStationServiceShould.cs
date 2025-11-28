@@ -13,8 +13,12 @@ using Rise.Services.Stations;
 using Rise.Services.Tests.Common;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
+
+using DomainMaintObj = Rise.Domain.MaintObjects.MaintObj;
+using DomainMaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Tests.Stations;
 
@@ -569,5 +573,131 @@ public class MeasurementStationServiceShould {
 		Assert.Equal("Een of meerdere projecten zijn niet gevonden.", result.Errors.First());
 
 		connection.Close();
+	}
+
+	// ---------------------------
+	// ✅ MaintObjects tests added
+	// ---------------------------
+
+	[Fact]
+	public async Task GetMaintObjsAsync_ShouldReturnOnlyMaintObjsFromStation() {
+		ApplicationDbContext db = CreateDbContext(out _, out _, out Location loc);
+		MeasurementStationService service = new(db);
+
+		MeasurementStation s1 = new("STN-1", loc, new Installation(DateTime.UtcNow));
+		MeasurementStation s2 = new("STN-2", loc, new Installation(DateTime.UtcNow));
+		db.MeasurementStations.AddRange(s1, s2);
+
+		DomainMaintObjType type = new(Guid.NewGuid(), "SONDE", "Sonde", 30, 90);
+		db.Set<DomainMaintObjType>().Add(type);
+
+		DomainMaintObj m1 = new("M1", "SN-1", type, null, null, true, null);
+		DomainMaintObj m2 = new("M2", "SN-2", type, null, null, true, null);
+		DomainMaintObj m3 = new("M3", "SN-3", type, null, null, true, null);
+
+		m1.AssignToStation(s1);
+		m2.AssignToStation(s1);
+		m3.AssignToStation(s2);
+
+		db.Set<DomainMaintObj>().AddRange(m1, m2, m3);
+		await db.SaveChangesAsync();
+
+		Result<List<MaintObjDto.Index>> result = await service.GetMaintObjsAsync(s1.Id);
+
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.Equal(2, result.Value!.Count);
+		Assert.All(result.Value!, dto => Assert.Contains(dto.Id, new[] { m1.Id, m2.Id }));
+	}
+
+	[Fact]
+	public async Task UpdateMaintObjsAsync_ShouldAssignAndUnassignCorrectly() {
+		ApplicationDbContext db = CreateDbContext(out _, out _, out Location loc);
+		MeasurementStationService service = new(db);
+
+		MeasurementStation station = new("STN-100", loc, new Installation(DateTime.UtcNow));
+		db.MeasurementStations.Add(station);
+
+		DomainMaintObjType type = new(Guid.NewGuid(), "LOGGER", "Logger", 30, 90);
+		db.Set<DomainMaintObjType>().Add(type);
+
+		DomainMaintObj a = new("A", "SN-A", type, null, null, true, null);
+		DomainMaintObj b = new("B", "SN-B", type, null, null, true, null);
+		DomainMaintObj c = new("C", "SN-C", type, null, null, true, null);
+
+		a.AssignToStation(station);
+		b.AssignToStation(station);
+
+		db.Set<DomainMaintObj>().AddRange(a, b, c);
+		await db.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateMaintObjects req = new() {
+			MeasurementStationId = station.Id,
+			MaintObjIds = new List<Guid> { b.Id, c.Id }
+		};
+
+		Result result = await service.UpdateMaintObjsAsync(req);
+
+		Assert.True(result.IsSuccess);
+
+		DomainMaintObj aReloaded = await db.Set<DomainMaintObj>().Include(x => x.Station).SingleAsync(x => x.Id == a.Id);
+		DomainMaintObj bReloaded = await db.Set<DomainMaintObj>().Include(x => x.Station).SingleAsync(x => x.Id == b.Id);
+		DomainMaintObj cReloaded = await db.Set<DomainMaintObj>().Include(x => x.Station).SingleAsync(x => x.Id == c.Id);
+
+		Assert.Null(aReloaded.Station);
+		Assert.True(aReloaded.IsInStock);
+
+		Assert.NotNull(bReloaded.Station);
+		Assert.Equal(station.Id, bReloaded.Station!.Id);
+
+		Assert.NotNull(cReloaded.Station);
+		Assert.Equal(station.Id, cReloaded.Station!.Id);
+	}
+
+	[Fact]
+	public async Task UpdateMaintObjsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+		ApplicationDbContext db = CreateDbContext(out _, out _, out Location loc);
+		MeasurementStationService service = new(db);
+
+		DomainMaintObjType type = new(Guid.NewGuid(), "SIM", "Sim", 30, 90);
+		db.Set<DomainMaintObjType>().Add(type);
+
+		DomainMaintObj mo = new("X", "SN-X", type, null, null, true, null);
+		db.Set<DomainMaintObj>().Add(mo);
+		await db.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateMaintObjects req = new() {
+			MeasurementStationId = Guid.NewGuid(),
+			MaintObjIds = new List<Guid> { mo.Id }
+		};
+
+		Result result = await service.UpdateMaintObjsAsync(req);
+
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+	}
+
+	[Fact]
+	public async Task UpdateMaintObjsAsync_ShouldReturnError_WhenAnyMaintObjIdIsMissing() {
+		ApplicationDbContext db = CreateDbContext(out _, out _, out Location loc);
+		MeasurementStationService service = new(db);
+
+		MeasurementStation station = new("STN-404", loc, new Installation(DateTime.UtcNow));
+		db.MeasurementStations.Add(station);
+
+		DomainMaintObjType type = new(Guid.NewGuid(), "VOED", "Voeding", 30, 90);
+		db.Set<DomainMaintObjType>().Add(type);
+
+		DomainMaintObj existing = new("Exists", "SN-E", type, null, null, true, null);
+		db.Set<DomainMaintObj>().Add(existing);
+		await db.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateMaintObjects req = new() {
+			MeasurementStationId = station.Id,
+			MaintObjIds = new List<Guid> { existing.Id, Guid.NewGuid() }
+		};
+
+		Result result = await service.UpdateMaintObjsAsync(req);
+
+		Assert.Equal(ResultStatus.Error, result.Status);
 	}
 }
