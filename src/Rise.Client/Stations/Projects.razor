@@ -24,13 +24,14 @@ else
 			</MudButton>
 		</MudStack>
 
-		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
+		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="_projectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
 					<MudTh Class="mud-theme-primary">Naam</MudTh>
 					<MudTh Class="mud-theme-primary">Startdatum</MudTh>
 					<MudTh Class="mud-theme-primary">Einddatum</MudTh>
+					<MudTh Class="mud-theme-primary">Status</MudTh>
 					<MudTh Class="mud-theme-primary">Meetnet</MudTh>
 					<MudTh Class="mud-theme-primary">Zone</MudTh>
 				</MudTHeadRow>
@@ -40,6 +41,11 @@ else
 				<MudTd DataLabel="Naam">@context.Name</MudTd>
 				<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
 				<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
+				<MudTd DataLabel="Status">
+					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(ProjectUtility.DefineStatusColor(context.Status))">
+						@context.Status
+					</MudChip>
+				</MudTd>
 				<MudTd DataLabel="Locatie">@context.MeasurementNetwork</MudTd>
 				<MudTd DataLabel="Gemeente">@context.Zone</MudTd>
 			</RowTemplate>
