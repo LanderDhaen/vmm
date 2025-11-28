@@ -16,7 +16,7 @@ else
 	<MudOverlay @bind-Visible="_visible" DarkBackground AutoClose="true">
 		<MudPaper Class="pa-6 mx-auto" Style="width: 90vh; height: 50vh;">
 			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
-			
+
 			<MudRadioGroup @bind-Value="_selectedOption">
 				<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
 				<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
@@ -57,11 +57,10 @@ else
 			}
 			else if (_selectedOption == "Nieuw")
 			{
-
 			}
 		</MudPaper>
 	</MudOverlay>
-	
+
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
@@ -101,119 +100,99 @@ else
 		</MudDrawer>
 	</MudHidden>
 
-	// ====== Tabs ======
-	<div class="d-flex justify-space-between m-4 align-center" role="tablist" aria-label="Project tabs">
-		<MudText
-			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
-			@onclick="() => SetTab(0)">
+	@* Tabs *@
+	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(0)">
 			@_tabs[0]
 		</MudText>
 
-		<MudText
-			Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
-			@onclick="() => SetTab(1)">
+		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+		         @onclick="async () => await SetTabAsync(1)">
 			@_tabs[1]
 		</MudText>
-		<MudDivider Vertical="true" FlexItem="true"/>
-		<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-			<MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" OnClick="@OpenDrawer"></MudIconButton>
-		</MudHidden>
-		<MudHidden Breakpoint="Breakpoint.Xs">
-			<MudButton Variant="Variant.Text" OnClick="@OpenDrawer">Acties</MudButton>
-		</MudHidden>
-	</div>
-
+	</MudStack>
 
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudPaper Class="p-4">
+			<MudGrid Spacing="4" Class="mt-4">
 
-				<div class="d-flex align-center m-2">
-					@* name: mobile uses a Badge, desktop uses plain Text *@
-					<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-						<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
-							<MudText Class="pl-4" Typo="Typo.h5">@_project.Name</MudText>
-						</MudBadge>
-					</MudHidden>
+				@* Details *@
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">@_project.Code - @_project.Name</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.Edit"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           Href="@($"/projects/edit/{ProjectId}")">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Startdatum:</b> @(_project.StartDate)</MudText>
+							<MudText><b>Einddatum:</b> @(_project.EndDate)</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
 
-					<MudHidden Breakpoint="Breakpoint.Xs">
-						<MudText Class="pr-2" Typo="Typo.h5">@_project.Name</MudText>
-					</MudHidden>
+				@* Meetnet en zone *@
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">@_project.MeasurementNetwork.Name</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.MyLocation"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4">
+										Wijzigen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Zone:</b> @_project.MeasurementNetwork.Zone</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
 
-					<MudHidden Breakpoint="Breakpoint.Xs">
-						<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
-						         Color="BadgeColor">@_project.Status
-						</MudChip>
-					</MudHidden>
+				@* Measurement stations table *@
+				<MudItem xs="12">
+					<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+						<MudTextField T="string"
+						              InputType="InputType.Search"
+						              Label="Zoek"
+						              Class="m-0"
+						              Variant="Variant.Outlined"
+						              DebounceInterval="300"
+						              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+						              @bind-Value="_searchTerm"
+						              Margin="Margin.Dense"/>
+						<MudButton Variant="Variant.Filled"
+						           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+						           Size="Size.Small"
+						           Color="Color.Primary"
+						           Class="px-4"
+						           OnClick="@OpenOverlay">
+							Lijst bijwerken
+						</MudButton>
+					</MudStack>
+					<MeasurementStations MeasurementStationsFromProject="_stationsFromProject"/>
+				</MudItem>
 
-					@* edit button *@
-					<MudTooltip Delay="400"
-					            Placement="Placement.Right"
-					            Text="@(IsActive ? "Project bewerken" : "Afgesloten project kan niet bewerkt worden")">
-						<MudIconButton
-							Href="@($"/projects/edit/{ProjectId}")"
-							Disabled="@(!IsActive)"
-							Icon="@Icons.Material.Filled.Edit"
-							Color="Color.Primary"
-							AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
-					</MudTooltip>
-					
-					<MudButton OnClick="@OpenOverlay">Lijst bewerken</MudButton>
-
-					@* chip only shown on desktop *@
-
-				</div>
-
-				@* details grid *@
-				<MudGrid Class="p-2">
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-						<MudTextField T="string" @bind-Value="_project.Code" ReadOnly="true" Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Naam</MudText>
-						<MudTextField T="string" @bind-Value="_project.Name" ReadOnly="true" Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Start datum</MudText>
-						<MudTextField T="DateOnly" @bind-Value="_project.StartDate" ReadOnly="true" Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-						<MudTextField T="DateOnly?" @bind-Value="_project.EndDate" ReadOnly="true" Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-						<MudTextField T="string" @bind-Value="_project.MeasurementNetwork.Name" ReadOnly="true"
-						              Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Zone</MudText>
-						<MudTextField T="string" @bind-Value="_project.Zone" ReadOnly="true" Class="p-2"/>
-					</MudItem>
-
-					<MudItem xs="12">
-						<MudText Typo="Typo.subtitle2">Opmerkingen</MudText>
-						<MudTextField
-							@bind-Value="_remarks"
-							ReadOnly="true"
-							FullWidth="true"
-							Lines="4"
-							Class="white"/>
-					</MudItem>
-
-					<MudItem xs="12">
-						<MudText Typo="Typo.subtitle2">Lijst meetstations</MudText>
-						<MeasurementStations MeasurementStationsFromProject="@_stationsFromProject"/>
-					</MudItem>
-				</MudGrid>
-			</MudPaper>
+			</MudGrid>
 			break;
 		case 1:
 			<History ProjectId="ProjectId"/>

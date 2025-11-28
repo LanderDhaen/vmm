@@ -1,3 +1,4 @@
+@using Rise.Client.Utilities
 @using Rise.Shared.Stations
 <PageTitle>Project Details</PageTitle>
 
@@ -24,8 +25,8 @@ else
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd DataLabel="#">@context.Code</MudTd>
-				<MudTd DataLabel="Geïnstalleerd op">@context.InstalledAt</MudTd>
-				<MudTd DataLabel="Verwijderd op">@context.RemovedAt</MudTd>
+				<MudTd DataLabel="Geïnstalleerd op">@(StationUtility.FormatInstalledAt(context.InstalledAt))</MudTd>
+				<MudTd DataLabel="Verwijderd op">@(StationUtility.FormatRemovedAt(context.RemovedAt))</MudTd>
 				<MudTd DataLabel="Locatie">@context.Location</MudTd>
 				<MudTd DataLabel="Gemeente">@context.City</MudTd>
 			</RowTemplate>
@@ -51,8 +52,8 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @FormatDate(@p.InstalledAt)</MudText>
-							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @FormatDate(@p.RemovedAt)</MudText>
+							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @(StationUtility.FormatInstalledAt(p.InstalledAt))</MudText>
+							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @(StationUtility.FormatRemovedAt(p.RemovedAt))</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

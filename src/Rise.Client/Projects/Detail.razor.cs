@@ -12,7 +12,7 @@ namespace Rise.Client.Projects;
 public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
-		"Info",
+		"Informatie",
 		"Historiek"
 	};
 
@@ -30,8 +30,9 @@ public partial class Detail {
 	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 	private IEnumerable<MeasurementStationDto.Index>? _allStations = new List<MeasurementStationDto.Index>();
 	private Result? _result;
+	private CancellationTokenSource _cancellationTokenSource = new();
+	private string _searchTerm = string.Empty;
 
-	private string? _remarks;
 	private int _selectedTab;
 
 	[Parameter] public Guid ProjectId { get; set; }
@@ -45,13 +46,12 @@ public partial class Detail {
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
-	private void SetTab(int index) {
+	private async Task SetTabAsync(int index) {
 		_selectedTab = index;
 	}
 
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
-		Result<ProjectResponse.MeasurementStations> stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
 
 		// --- Project detail ---
 		if (detail.IsSuccess) {
@@ -78,7 +78,24 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
-		
+
+		await GetStationsAsync();
+
+		Model.ProjectId = ProjectId;
+	}
+
+	private async Task GetStationsAsync() {
+		_cancellationTokenSource.Cancel();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
+
+		QueryRequest.Search request = new() {
+			SearchTerm = _searchTerm
+		};
+
+		Result<ProjectResponse.MeasurementStations> stationsFromProject =
+			await ProjectService.GetStationsAsync(ProjectId, request, _cancellationTokenSource.Token);
+
 		// --- Stations for this project ---
 		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
 			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
@@ -91,15 +108,19 @@ public partial class Detail {
 				: "Kon meetstations niet laden.";
 			Snackbar.Add(message, Severity.Warning);
 		}
-		Model.ProjectId = ProjectId;
 	}
-	
+
+	private async Task HandleIntervalElapsed() {
+		await GetStationsAsync();
+	}
+
 	private async Task OpenOverlay() {
 		_visible = true;
-		
+
 		if (_allStations is null || !_allStations.Any()) {
-			Result<MeasurementStationResponse.Index> allStations = await StationService.GetIndexAsync(new QueryRequest.SkipTake());
-		
+			Result<MeasurementStationResponse.Index> allStations =
+				await StationService.GetIndexAsync(new QueryRequest.SkipTake());
+
 			// --- Load in all stations for select ---
 			if (allStations.IsSuccess && allStations.Value is not null) {
 				_allStations = allStations.Value.Stations;
@@ -200,13 +221,13 @@ public partial class Detail {
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
 			return;
-		} 
-		
+		}
+
 		_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
 		if (_result.IsSuccess) {
 			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
 			Result<ProjectResponse.MeasurementStations> stationsResult =
-				await ProjectService.GetStationsAsync(ProjectId);
+				await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
 			if (stationsResult.IsSuccess && stationsResult.Value is not null) {
 				_stationsFromProject = stationsResult.Value.MeasurementStationsFromProject;
 			}
