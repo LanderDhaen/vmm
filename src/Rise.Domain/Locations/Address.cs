@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Rise.Domain.Locations;
 
 /// <summary>
@@ -9,6 +11,11 @@ public class Address : ValueObject {
 	///     Entity Framework requires a default constructor.
 	/// </summary>
 	private Address() {
+		Addressline1 = null;
+		Addressline2 = null;
+		City = string.Empty;
+		PostalCode = string.Empty;
+		CountryIso = string.Empty;
 	}
 
 	public Address(string? addressline1, string? addressline2, string city, string zipCode, string countryIso = "BE") {
@@ -30,7 +37,7 @@ public class Address : ValueObject {
 		yield return PostalCode;
 		yield return City;
 		yield return CountryIso;
-		yield return Addressline1;
-		yield return Addressline2;
+		yield return Addressline1 ?? string.Empty;
+		yield return Addressline2 ?? string.Empty;
 	}
 }
