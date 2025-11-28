@@ -214,7 +214,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return UpdateAsync(request.StationId, request, ct);
 	}
 
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
+	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
@@ -240,7 +240,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			})
 			.ToListAsync(ct);
 
-		return Result.Success(projects);
+		return Result.Success(new MeasurementStationResponse.ProjectList {
+			Projects = projects
+		});
 	}
 
 	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,

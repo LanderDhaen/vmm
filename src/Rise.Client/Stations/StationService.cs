@@ -32,10 +32,10 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 		return result!;
 	}
 
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
+	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
 		CancellationToken ctx = default) {
-		return (await httpClient.GetFromJsonAsync<Result<List<ProjectDto.Index>>>(
+		return (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.ProjectList>>(
 			$"/api/stations/{stationId}/projects", ctx))!;
 	}
 

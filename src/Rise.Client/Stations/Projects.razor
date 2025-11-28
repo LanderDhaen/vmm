@@ -13,36 +13,12 @@ else
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Projecten toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.ProjectIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var project in _allProjects)
-				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
-						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Code - @project.Name
-							<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-							         Color="@(DefineColor(project.Status))">
-								@project.Status
-							</MudChip>
-						</MudStack>
-					</MudSelectItem>
-				}
-			</MudSelect>
-
 			<MudButton Variant="Variant.Filled"
 			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 			           Size="Size.Small"
 			           Color="Color.Primary"
-			           Class="px-4"
-			           OnClick="@UpdateProjects"
-			>
-				Lijst bijwerken
+			           Class="px-4">
+				Project toevoegen
 			</MudButton>
 		</MudStack>
 
@@ -71,32 +47,11 @@ else
 	@* Mobile view *@
 
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Projecten toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.ProjectIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var project in _allProjects)
-				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
-						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Name
-							<MudBadge Dot="true" Color="@(DefineColor(project.Status))"/>
-						</MudStack>
-					</MudSelectItem>
-				}
-			</MudSelect>
-
 			<MudIconButton Variant="Variant.Filled"
 			               Icon="@Icons.Material.Filled.PlaylistAdd"
 			               Size="Size.Small"
-			               Color="Color.Primary"
-			               OnClick="@UpdateProjects"/>
+			               Color="Color.Primary"/>
 		</MudStack>
 
 		<MudGrid Spacing="6">

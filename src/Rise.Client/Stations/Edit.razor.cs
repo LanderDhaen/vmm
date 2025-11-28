@@ -53,11 +53,15 @@ public partial class Edit {
 		_projects = projResult.Value.Projects;
 
 		Result<MeasurementStationResponse.Detail> detail = await StationService.GetDetailAsync(StationId);
+		
+		Result<MeasurementStationResponse.ProjectList> linked = 
+			await StationService.GetProjectsAsync(StationId);
 
-		Result<List<ProjectDto.Index>> linked = await StationService.GetProjectsAsync(StationId);
-		Guid preselectedProjectId = linked.IsSuccess && linked.Value.Any()
-			? linked.Value.First().Id
-			: _projects.FirstOrDefault()?.Id ?? Guid.Empty;
+		Guid preselectedProjectId =
+			linked.IsSuccess && linked.Value.Projects.Any()
+				? linked.Value.Projects.First().Id
+				: _projects.FirstOrDefault()?.Id ?? Guid.Empty;
+
 
 		Guid locationId = _locations
 			.FirstOrDefault(l =>
