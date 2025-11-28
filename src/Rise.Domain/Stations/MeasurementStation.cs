@@ -8,29 +8,26 @@ namespace Rise.Domain.Stations;
 ///     A measurement station is something that owns multiple devices.
 /// </summary>
 public class MeasurementStation : Entity {
-	private readonly List<MeasurementStationHistory> _measurementStationHistories = [];
+	// history list (single consistent name)
+	private readonly List<MeasurementStationHistory> _measurementStationHistories = new();
 
+	// EF Core requires a parameterless ctor. Keep it but properties are initialized inline.
 	private MeasurementStation() { }
 
 	public MeasurementStation(string code, Location location, Installation installation) {
-		Code = code;
-		Location = location;
-		Installation = installation;
+		Code = Guard.Against.NullOrWhiteSpace(code);
+		Location = Guard.Against.Null(location);
+		Installation = Guard.Against.Null(installation);
 	}
 
-	// Properties
-
-	public string Code { get; private set; }
-
-	public Installation Installation { get; private set; }
+	// Properties - inline initializers satisfy the nullability checker for the parameterless ctor
+	public string Code { get; private set; } = string.Empty;
+	public Installation Installation { get; private set; } = default!;
+	public Location Location { get; private set; } = default!;
 
 	// Relations
-
-	public Location Location { get; private set; }
-
 	public ICollection<Project> Projects { get; } = new List<Project>();
 	public ICollection<MaintObj> MaintObjects { get; } = new List<MaintObj>();
-
 
 	public IReadOnlyCollection<MeasurementStationHistory> MeasurementStationHistories =>
 		_measurementStationHistories.AsReadOnly();
@@ -62,42 +59,35 @@ public class MeasurementStation : Entity {
 		projectsToRemove.ForEach(p => Projects.Remove(p));
 	}
 
-
 	public void MoveTo(Location location) {
 		// Check if the values are the same as the old values
-
 		if (location.Equals(Location)) {
 			return;
 		}
 
 		// Create history object using the old values
-
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		MeasurementStationHistory measurementStationHistory =
 			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values
-
 		Location = location;
 	}
 
 	public void UpdateInstallation(Installation installation) {
 		// Check if the values are the same as the old values
-
 		if (installation.Equals(Installation)) {
 			return;
 		}
 
 		// Create history object using the old values
-
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		MeasurementStationHistory measurementStationHistory =
 			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values
-
 		Installation = installation;
 	}
 }
@@ -109,7 +99,11 @@ public class MeasurementStationHistory : HistoryEntity {
 	/// <summary>
 	///     Entity Framework Core Constructor
 	/// </summary>
-	private MeasurementStationHistory() { }
+	private MeasurementStationHistory() {
+
+		Installation = default!;
+		Location = default!;
+	}
 
 	public MeasurementStationHistory(Installation installation, Location location, ValidityRange validityRange) {
 		Location = Guard.Against.Null(location);
@@ -118,6 +112,5 @@ public class MeasurementStationHistory : HistoryEntity {
 	}
 
 	public Installation Installation { get; init; }
-
 	public Location Location { get; init; }
 }
