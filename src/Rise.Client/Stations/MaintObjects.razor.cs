@@ -13,7 +13,6 @@ public partial class MaintObjects {
 	private IEnumerable<MaintObjDto.Index>? _maintObjsFromStation;
 	private Result? _result;
 
-	// Track current assigned IDs for change detection
 	private List<Guid> _currentStationMaintObjIds = new();
 
 	[Parameter] public Guid StationId { get; set; }
@@ -69,6 +68,7 @@ public partial class MaintObjects {
 
 		Model.MaintObjIds = _currentStationMaintObjIds.ToList();
 		Model.MeasurementStationId = StationId;
+
 	}
 
 	protected string GetSelectedMaintObjText(List<string?>? selectedValues) {

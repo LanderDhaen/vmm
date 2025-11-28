@@ -107,9 +107,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			.Include(s => s.Projects)
 			.SingleOrDefaultAsync(s => s.Id == stationId, ct);
 
-		if (station is null) {
+		if (station is null)
 			return Result.NotFound();
-		}
+
+		int maintObjectsCount = await dbContext.MaintObjects
+			.AsNoTracking()
+			.CountAsync(m => m.Station != null && m.Station.Id == stationId, ct);
 
 		MeasurementStationDto.Detail dto = new() {
 			Id = station.Id,
@@ -118,11 +121,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			RemovedAt = station.Installation.RemovedAt,
 			Location = station.Location.Name,
 			City = station.Location.Address.City,
-			ProjectsCount = station.Projects.Count()
+			ProjectsCount = station.Projects.Count(),
+			MaintObjectsCount = maintObjectsCount
 		};
 
 		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
 	}
+
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {

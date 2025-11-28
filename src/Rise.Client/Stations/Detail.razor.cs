@@ -35,18 +35,21 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			_station = result.Value.Station;
-			_tabs[2] = $"Projecten ({result.Value.Station.ProjectsCount})";
+
+			_tabs[1] = $"Apparaten ({_station.MaintObjectsCount})";
+			_tabs[2] = $"Projecten ({_station.ProjectsCount})";
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
+			return;
 		}
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
-			new BreadcrumbItem($"{_station.Code}", null, true)
+			new BreadcrumbItem($"{_station!.Code}", null, true)
 		);
 
 		// set header
@@ -63,9 +66,13 @@ public partial class Detail {
 	private static string FormatDate(DateTime? dt) {
 		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
-
-	private void OnTabChange(string newValue) {
+	private void OnMaintTabChange(string newValue) {
 		_tabs[1] = newValue;
+		StateHasChanged();
+	}
+
+	private void OnProjectsTabChange(string newValue) {
+		_tabs[2] = newValue;
 		StateHasChanged();
 	}
 }
