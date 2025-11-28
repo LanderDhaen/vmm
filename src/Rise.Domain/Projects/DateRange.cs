@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Rise.Domain.Projects;
 
 /// <summary>
@@ -26,6 +29,6 @@ public class DateRange : ValueObject {
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return StartDate;
-		yield return EndDate;
+		yield return EndDate.HasValue ? (object)EndDate.Value : (object)DBNull.Value;
 	}
 }
