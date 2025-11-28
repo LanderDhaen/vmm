@@ -4,6 +4,7 @@
 
 /* Base fonts and horizontal overflow prevention */
 html, body {
+	background-color: #ececec;
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
