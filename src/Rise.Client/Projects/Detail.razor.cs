@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 using Rise.Client.Services;
+using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -18,18 +19,29 @@ public partial class Detail {
 	// Drawer
 	private bool _open;
 
+	// Overlay
+	private bool _visible;
+
+	// Radio button
+	private string _selectedOption = "Bestaand";
+
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
+	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
+	private IEnumerable<MeasurementStationDto.Index>? _allStations = new List<MeasurementStationDto.Index>();
+	private Result? _result;
 
 	private string? _remarks;
 	private int _selectedTab;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
+	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
+	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
@@ -39,6 +51,7 @@ public partial class Detail {
 
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
+		Result<List<MeasurementStationDto.Index>> stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
 
 		// --- Project detail ---
 		if (detail.IsSuccess) {
@@ -64,6 +77,38 @@ public partial class Detail {
 				? string.Join(Environment.NewLine, detail.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
+		}
+		
+		// --- Stations for this project ---
+		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
+			_stationsFromProject = stationsFromProject.Value;
+			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
+		} else {
+			_stationsFromProject = new List<MeasurementStationDto.Index>();
+
+			string message = stationsFromProject.Errors != null
+				? string.Join(Environment.NewLine, stationsFromProject.Errors)
+				: "Kon meetstations niet laden.";
+			Snackbar.Add(message, Severity.Warning);
+		}
+		Model.ProjectId = ProjectId;
+	}
+	
+	private async void OpenOverlay() {
+		_visible = true;
+		
+		if (_allStations is null || !_allStations.Any()) {
+			Result<MeasurementStationResponse.Index> allStations = await StationService.GetIndexAsync(new QueryRequest.SkipTake());
+		
+			// --- Load in all stations for select ---
+			if (allStations.IsSuccess && allStations.Value is not null) {
+				_allStations = allStations.Value.Stations;
+			} else {
+				string message = allStations.Errors != null
+					? string.Join(Environment.NewLine, allStations.Errors)
+					: "Kon meetstations niet laden.";
+				Snackbar.Add(message, Severity.Warning);
+			}
 		}
 	}
 
@@ -145,6 +190,29 @@ public partial class Detail {
 
 		if (result == true) {
 			await Start();
+		}
+	}
+
+	private async Task UpdateMeasurementStations() {
+		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
+			_stationsFromProject?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
+
+		if (!selectionChanged) {
+			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
+		} else {
+			_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
+			if (_result.IsSuccess) {
+				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
+				Result<List<MeasurementStationDto.Index>> stationsResult =
+					await ProjectService.GetStationsAsync(ProjectId);
+				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
+					_stationsFromProject = stationsResult.Value;
+				}
+
+				_visible = false;
+			} else {
+				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+			}
 		}
 	}
 }

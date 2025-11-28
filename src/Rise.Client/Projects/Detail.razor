@@ -13,19 +13,68 @@
 }
 else
 {
+	<MudOverlay @bind-Visible="_visible" DarkBackground AutoClose="true">
+		<MudPaper Class="pa-6 mx-auto" Style="width: 90vh; height: 50vh;">
+			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
+			
+			<MudRadioGroup @bind-Value="_selectedOption">
+				<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
+				<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
+			</MudRadioGroup>
+
+			@if (_selectedOption == "Bestaand")
+			{
+				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+					<MudSelect T="Guid"
+					           Label="Meetstations toevoegen"
+					           MultiSelection="true"
+					           @bind-SelectedValues="Model.MeasurementStationIds"
+					           Variant="Variant.Outlined"
+					           Margin="Margin.Dense"
+					           Class="m-0" Disabled="@(!IsActive)"
+					           ToStringFunc="id => _allStations!.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
+
+						@foreach (var station in _allStations!)
+						{
+							<MudSelectItem T="Guid" Value="@station.Id">
+								@station.Code - @station.Location @station.City
+							</MudSelectItem>
+						}
+					</MudSelect>
+
+					<MudTooltip Delay="400"
+					            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
+						<MudButton Variant="Variant.Filled"
+						           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+						           Size="Size.Small"
+						           Color="Color.Primary"
+						           Class="px-4"
+						           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
+							Lijst bijwerken
+						</MudButton>
+					</MudTooltip>
+				</MudStack>
+			}
+			else if (_selectedOption == "Nieuw")
+			{
+
+			}
+		</MudPaper>
+	</MudOverlay>
+	
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
 			           Color="Color.Error"
-			           OnClick="ShowCloseConfirmationAsync"
+			           OnClick="@ShowCloseConfirmationAsync"
 			           Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
 			           Color="Color.Success"
-			           OnClick="ShowStartConfirmationAsync"
+			           OnClick="@ShowStartConfirmationAsync"
 			           Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
@@ -38,14 +87,14 @@ else
 			<MudDrawerHeader>Acties</MudDrawerHeader>
 			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
 			           Color="Color.Error"
-			           OnClick="ShowCloseConfirmationAsync"
+			           OnClick="@ShowCloseConfirmationAsync"
 			           Disabled="@(_project?.Status == Status.Afgesloten)">
 				Project afsluiten
 			</MudButton>
 
 			<MudButton StartIcon="@Icons.Material.Filled.Check"
 			           Color="Color.Success"
-			           OnClick="ShowStartConfirmationAsync"
+			           OnClick="@ShowStartConfirmationAsync"
 			           Disabled="@(_project?.Status == Status.Actief)">
 				Project opstarten
 			</MudButton>
@@ -109,6 +158,8 @@ else
 							Color="Color.Primary"
 							AriaLabel="@(IsActive ? "Project bewerken" : "Afgesloten project")"/>
 					</MudTooltip>
+					
+					<MudButton OnClick="@OpenOverlay">Lijst bewerken</MudButton>
 
 					@* chip only shown on desktop *@
 
@@ -159,7 +210,7 @@ else
 
 					<MudItem xs="12">
 						<MudText Typo="Typo.subtitle2">Lijst meetstations</MudText>
-						<MeasurementStations ProjectId="ProjectId" IsActive="IsActive"/>
+						<MeasurementStations MeasurementStationsFromProject="@_stationsFromProject"/>
 					</MudItem>
 				</MudGrid>
 			</MudPaper>
