@@ -307,9 +307,10 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	}
 
 
-	public async Task<Result<List<MaintObjIndexDto>>> GetMaintObjsAsync(
+	public async Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(
 		Guid stationId,
-		CancellationToken ct = default) {
+		CancellationToken ct = default)
+	{
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
 			.AnyAsync(s => s.Id == stationId, ct);
@@ -333,25 +334,28 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 				MaintObjType =
 					Enum.TryParse<Rise.Shared.MaintObjects.MaintObjType>(
-							m.MaintObjType?.Code, true, out var typeByCode)
+						m.MaintObjType?.Code, true, out var typeByCode)
 						? typeByCode
 						: Enum.TryParse<Rise.Shared.MaintObjects.MaintObjType>(
-								m.MaintObjType?.Name, true, out var typeByName)
+							m.MaintObjType?.Name, true, out var typeByName)
 							? typeByName
 							: default,
 
 				MaintObjStatus =
 					Enum.TryParse<Rise.Shared.MaintObjects.MaintObjStatus>(
-							m.MaintObjStatus.ToString(), true, out var status)
+						m.MaintObjStatus.ToString(), true, out var status)
 						? status
 						: default,
 
 				Location = m.Location?.Name ?? string.Empty
 			})
 			.ToList();
-
-		return Result.Success(maintObjs);
+		
+		return Result.Success(new MeasurementStationResponse.MaintObjList {
+			MaintObjects = maintObjs
+		});
 	}
+
 
 	public async Task<Result> UpdateMaintObjsAsync(
 		MeasurementStationRequest.UpdateMaintObjects req,

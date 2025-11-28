@@ -57,10 +57,11 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 		return result!;
 	}
 
-	public async Task<Result<List<MaintObjDto.Index>>> GetMaintObjsAsync(
+	public async Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(
 		Guid stationId,
-		CancellationToken ctx = default) {
-		return (await httpClient.GetFromJsonAsync<Result<List<MaintObjDto.Index>>>(
+		CancellationToken ctx = default)
+	{
+		return (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.MaintObjList>>(
 			$"/api/stations/{stationId}/maintobjs", ctx))!;
 	}
 

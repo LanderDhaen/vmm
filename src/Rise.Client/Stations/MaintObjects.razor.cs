@@ -25,11 +25,13 @@ public partial class MaintObjects {
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		var maintObjsFromStation = await StationService.GetMaintObjsAsync(StationId);
+		Result<MeasurementStationResponse.MaintObjList> maintObjsFromStation =
+			await StationService.GetMaintObjsAsync(StationId);
+
 		var allMaintObjs = await MaintObjService.GetIndexAsync(new QueryRequest.SkipTake());
 
 		if (maintObjsFromStation.IsSuccess && maintObjsFromStation.Value is not null) {
-			_maintObjsFromStation = maintObjsFromStation.Value;
+			_maintObjsFromStation = maintObjsFromStation.Value.MaintObjects;
 		} else {
 			_maintObjsFromStation = new List<MaintObjDto.Index>();
 
@@ -68,7 +70,6 @@ public partial class MaintObjects {
 
 		Model.MaintObjIds = _currentStationMaintObjIds.ToList();
 		Model.MeasurementStationId = StationId;
-
 	}
 
 	protected string GetSelectedMaintObjText(List<string?>? selectedValues) {
@@ -113,10 +114,12 @@ public partial class MaintObjects {
 
 		if (_result.IsSuccess) {
 			Snackbar.Add("Apparaten succesvol bijgewerkt!", Severity.Success);
+			
+			Result<MeasurementStationResponse.MaintObjList> refreshed =
+				await StationService.GetMaintObjsAsync(StationId);
 
-			var refreshed = await StationService.GetMaintObjsAsync(StationId);
 			if (refreshed.IsSuccess && refreshed.Value is not null) {
-				_maintObjsFromStation = refreshed.Value;
+				_maintObjsFromStation = refreshed.Value.MaintObjects;
 				_currentStationMaintObjIds = _maintObjsFromStation.Select(m => m.Id).ToList();
 
 				Model.MaintObjIds = _currentStationMaintObjIds.ToList();

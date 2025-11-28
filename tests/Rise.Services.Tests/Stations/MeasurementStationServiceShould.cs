@@ -575,12 +575,9 @@ public class MeasurementStationServiceShould {
 		connection.Close();
 	}
 
-	// ---------------------------
-	// ✅ MaintObjects tests added
-	// ---------------------------
-
 	[Fact]
-	public async Task GetMaintObjsAsync_ShouldReturnOnlyMaintObjsFromStation() {
+	public async Task GetMaintObjsAsync_ShouldReturnOnlyMaintObjsFromStation()
+	{
 		ApplicationDbContext db = CreateDbContext(out _, out _, out Location loc);
 		MeasurementStationService service = new(db);
 
@@ -602,13 +599,19 @@ public class MeasurementStationServiceShould {
 		db.Set<DomainMaintObj>().AddRange(m1, m2, m3);
 		await db.SaveChangesAsync();
 
-		Result<List<MaintObjDto.Index>> result = await service.GetMaintObjsAsync(s1.Id);
+		// ✅ new return type
+		Result<MeasurementStationResponse.MaintObjList> result =
+			await service.GetMaintObjsAsync(s1.Id);
 
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
-		Assert.Equal(2, result.Value!.Count);
-		Assert.All(result.Value!, dto => Assert.Contains(dto.Id, new[] { m1.Id, m2.Id }));
+
+		var items = result.Value!.MaintObjects.ToList();
+
+		Assert.Equal(2, items.Count);
+		Assert.All(items, dto => Assert.Contains(dto.Id, new[] { m1.Id, m2.Id }));
 	}
+
 
 	[Fact]
 	public async Task UpdateMaintObjsAsync_ShouldAssignAndUnassignCorrectly() {

@@ -24,7 +24,7 @@ public interface IMeasurementStationService {
 
 	Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req, CancellationToken ctx = default);
 
-	Task<Result<List<MaintObjDto.Index>>> GetMaintObjsAsync(Guid stationId, CancellationToken ctx = default);
+	Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(Guid stationId, CancellationToken ct = default);
 
 	Task<Result> UpdateMaintObjsAsync(MeasurementStationRequest.UpdateMaintObjects req, CancellationToken ctx = default);
 }
