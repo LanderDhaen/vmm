@@ -243,7 +243,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
-	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
 		CancellationToken ctx = default) {
 		bool exists = await dbContext.Projects
@@ -268,7 +268,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(stations);
+		return Result.Success(new ProjectResponse.MeasurementStations() {
+			MeasurementStationsFromProject = stations
+		});
 	}
 
 	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,

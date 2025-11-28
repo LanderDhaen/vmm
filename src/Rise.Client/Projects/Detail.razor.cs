@@ -51,7 +51,7 @@ public partial class Detail {
 
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
-		Result<List<MeasurementStationDto.Index>> stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
+		Result<ProjectResponse.MeasurementStations> stationsFromProject = await ProjectService.GetStationsAsync(ProjectId);
 
 		// --- Project detail ---
 		if (detail.IsSuccess) {
@@ -81,7 +81,7 @@ public partial class Detail {
 		
 		// --- Stations for this project ---
 		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
-			_stationsFromProject = stationsFromProject.Value;
+			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
 			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
 		} else {
 			_stationsFromProject = new List<MeasurementStationDto.Index>();
@@ -203,10 +203,10 @@ public partial class Detail {
 			_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
-				Result<List<MeasurementStationDto.Index>> stationsResult =
+				Result<ProjectResponse.MeasurementStations> stationsResult =
 					await ProjectService.GetStationsAsync(ProjectId);
 				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
-					_stationsFromProject = stationsResult.Value;
+					_stationsFromProject = stationsResult.Value.MeasurementStationsFromProject;
 				}
 
 				_visible = false;
