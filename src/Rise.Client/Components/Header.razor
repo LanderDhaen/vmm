@@ -1,4 +1,4 @@
-<div class="d-flex pa-4">
+<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
 	@if (!string.IsNullOrEmpty(Icon))
 	{
 		<MudIconButton
@@ -8,5 +8,5 @@
 			Color="Color.Primary"
 			Class="pl-0"/>
 	}
-	<MudText Typo="Typo.h3" Style="font-weight: 800">@Title</MudText>
-</div>
+	<MudText Typo="Typo.h3"><b>@Title</b></MudText>
+</MudStack>
