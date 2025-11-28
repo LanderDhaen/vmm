@@ -16,7 +16,7 @@ public abstract class HistoryEntity {
 	/// </summary>
 	public Guid Id { get; protected set; }
 
-	public ValidityRange ValidityRange { get; init; }
+	public ValidityRange ValidityRange { get; init; } = default!;
 
 	public override bool Equals(object? obj) {
 		if (obj is not HistoryEntity other) {
@@ -59,6 +59,10 @@ public abstract class HistoryEntity {
 	}
 
 	public override string ToString() {
+		if (ValidityRange is null) {
+			return "(onbekend)";
+		}
+
 		return $"({ValidityRange.ValidFrom} - {ValidityRange.ValidTo})";
 	}
 }
