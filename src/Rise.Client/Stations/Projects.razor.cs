@@ -9,11 +9,11 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Projects {
-	private IEnumerable<ProjectDto.Index> _projectsFromStation;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 
-	[Parameter] public Guid StationId { get; set; }
-	[Inject] public required IMeasurementStationService StationService { get; set; }
-	[Inject] public required NavigationManager Navigation { get; set; }
+	[Parameter] public Guid StationId { get; init; }
+	[Inject] public required IMeasurementStationService StationService { get; init; }
+	[Inject] public required NavigationManager NavigationManager { get; init; }
 
 	protected override async Task OnInitializedAsync() {
 		Result<MeasurementStationResponse.ProjectList> result = await StationService.GetProjectsAsync(StationId);
@@ -22,15 +22,10 @@ public partial class Projects {
 			_projectsFromStation = result.Value.Projects;
 		}
 	}
-
-	private void OnProjectRowClick(TableRowClickEventArgs<ProjectDto.Index> args) {
-		Navigation.NavigateTo($"/projects/{args.Item.Id}");
+	
+	private void NavigateToProject(Guid projectId) {
+		NavigationManager.NavigateTo($"/projects/{projectId}");
 	}
-
-	private void OnProjectCardClick(ProjectDto.Index project) {
-		Navigation.NavigateTo($"/projects/{project.Id}");
-	}
-
 	private static Color DefineColor(Status status) {
 		return status == Status.Actief ? Color.Success : Color.Error;
 	}

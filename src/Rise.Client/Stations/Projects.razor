@@ -1,4 +1,6 @@
 @using Rise.Shared.Projects
+@using Rise.Client.Components.Projects;
+
 <PageTitle>Project Details</PageTitle>
 
 @if (_projectsFromStation is null)
@@ -22,7 +24,7 @@ else
 			</MudButton>
 		</MudStack>
 
-		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="OnProjectRowClick">
+		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
@@ -54,29 +56,11 @@ else
 			               Color="Color.Primary"/>
 		</MudStack>
 
-		<MudGrid Spacing="6">
-			@foreach (var p in _projectsFromStation)
+		<MudGrid Spacing="4">
+			@foreach (var item in _projectsFromStation)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnProjectCardClick(p))">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
-									<MudStack Spacing="0">
-										<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@p.Code</b>
-										</MudText>
-										<MudText Typo="Typo.h6">@p.Name</MudText>
-									</MudStack>
-								</MudStack>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText><b>Startdatum:</b> @p.StartDate</MudText>
-							<MudText Typo="Typo.caption"><b>Einddatum:</b> @p.EndDate</MudText>
-							<MudText Typo="Typo.caption"><b>Meetnet:</b> @p.MeasurementNetwork</MudText>
-							<MudText Typo="Typo.caption"><b>Zone:</b> @p.Zone</MudText>
-						</MudCardContent>
-					</MudCard>
+					<ProjectCard Project="item" />
 				</MudItem>
 			}
 		</MudGrid>

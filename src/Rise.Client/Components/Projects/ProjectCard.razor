@@ -1,0 +1,22 @@
+<MudItem xs="12">
+	<MudCard Elevation="2"
+	         Class="rounded-lg"
+	         @onclick="() => NavigateToProject(Project.Id)">
+		<MudCardHeader>
+			<CardHeaderContent>
+				<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
+				          Justify="Justify.SpaceBetween">
+					<MudText Typo="Typo.h6" Color="Color.Primary">@Project.Code</MudText>
+					<MudBadge Color="@(ProjectUtility.DefineStatusColor(Project.Status))" Dot="true"></MudBadge>
+				</MudStack>
+				<MudText Typo="Typo.h6">@Project.Name</MudText>
+			</CardHeaderContent>
+		</MudCardHeader>
+		<MudCardContent Class="pt-0">
+			<MudText><b>Start datum:</b> @Project.StartDate</MudText>
+			<MudText><b>Eind datum:</b> @Project.EndDate</MudText>
+			<MudText><b>Meetnet:</b> @Project.MeasurementNetwork</MudText>
+			<MudText><b>Zone:</b> @Project.Zone</MudText>
+		</MudCardContent>
+	</MudCard>
+</MudItem>
