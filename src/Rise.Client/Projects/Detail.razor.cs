@@ -94,7 +94,7 @@ public partial class Detail {
 		Model.ProjectId = ProjectId;
 	}
 	
-	private async void OpenOverlay() {
+	private async Task OpenOverlay() {
 		_visible = true;
 		
 		if (_allStations is null || !_allStations.Any()) {
@@ -199,20 +199,21 @@ public partial class Detail {
 
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
-		} else {
-			_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
-			if (_result.IsSuccess) {
-				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
-				Result<ProjectResponse.MeasurementStations> stationsResult =
-					await ProjectService.GetStationsAsync(ProjectId);
-				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
-					_stationsFromProject = stationsResult.Value.MeasurementStationsFromProject;
-				}
-
-				_visible = false;
-			} else {
-				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+			return;
+		} 
+		
+		_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
+		if (_result.IsSuccess) {
+			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
+			Result<ProjectResponse.MeasurementStations> stationsResult =
+				await ProjectService.GetStationsAsync(ProjectId);
+			if (stationsResult.IsSuccess && stationsResult.Value is not null) {
+				_stationsFromProject = stationsResult.Value.MeasurementStationsFromProject;
 			}
+
+			_visible = false;
+		} else {
+			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
 		}
 	}
 }

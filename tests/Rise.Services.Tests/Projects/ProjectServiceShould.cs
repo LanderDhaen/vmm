@@ -402,12 +402,12 @@ public class ProjectServiceShould {
 
 		ProjectService service = new(db, null!);
 
-		Result<List<MeasurementStationDto.Index>> result = await service.GetStationsAsync(project.Id);
+		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(project.Id);
 
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
-		Assert.Single(result.Value);
-		Assert.Equal("ST-001", result.Value![0].Code);
+		Assert.Single(result.Value.MeasurementStationsFromProject);
+		Assert.Equal("ST-001", result.Value!.MeasurementStationsFromProject.First().Code);
 
 		connection.Close();
 	}
@@ -419,7 +419,7 @@ public class ProjectServiceShould {
 
 		Guid nonExistentId = Guid.NewGuid();
 
-		Result<List<MeasurementStationDto.Index>> result = await service.GetStationsAsync(nonExistentId);
+		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(nonExistentId);
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 
