@@ -10,6 +10,7 @@ public class Location : Entity {
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private Location() {
+		// kept empty because inline initializers satisfy the compiler's nullability checks
 	}
 
 	public Location(string name, Address address, Coordinate coordinate, bool isStockLocation = false) {
@@ -29,7 +30,7 @@ public class Location : Entity {
 	///     Address and link it to the location.
 	///     <see cref="LocationConfiguration" />
 	/// </summary>
-	public Address Address { get; init; }
+	public Address Address { get; init; } = default!;
 
 	/// <summary>
 	///     The coordinate is immutable and owned by the <see cref="Location" />. If you want to change the coordinate, create
