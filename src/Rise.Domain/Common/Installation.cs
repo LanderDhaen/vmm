@@ -21,6 +21,6 @@ public sealed class Installation : ValueObject {
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return InstalledAt;
-		yield return RemovedAt ?? default(DateTime?);
+		yield return RemovedAt.HasValue ? (object)RemovedAt.Value : (object)DBNull.Value;
 	}
 }
