@@ -47,8 +47,9 @@ else
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent>
-					<MudText><b>Geïnstalleerd: </b>@(StationUtility.FormatInstalledAt(_station.InstalledAt))</MudText>
-					<MudText><b>Verwijderd: </b>@(StationUtility.FormatRemovedAt(_station.RemovedAt))</MudText>
+					<MudText><b>Geïnstalleerd:</b> @(StationUtility.FormatInstalledAt(_station.InstalledAt))</MudText>
+					<MudText><b>Verwijderd:</b> @(StationUtility.FormatRemovedAt(_station.RemovedAt))</MudText>
+					<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
@@ -72,11 +73,9 @@ else
 					</CardHeaderContent>
 				</MudCardHeader>
 				<MudCardContent>
-					<MudText><b>Adres: </b>@LocationUtility.FormatAddress(_station.Location.AddressLine1, _station.Location.AddressLine2, _station.Location.City, _station.Location.PostalCode, _station.Location.Country)</MudText>
-					<MudStack Row="true" Justify="Justify.FlexStart" Spacing="4">
-						<MudText><b>Breedtegraad: </b>@_station.Location.X</MudText>
-						<MudText><b>Lengtegraad: </b>@_station.Location.Y</MudText>
-					</MudStack>
+					<MudText><b>Adres:</b> @LocationUtility.FormatAddress(_station.Location.AddressLine1, _station.Location.AddressLine2, _station.Location.City, _station.Location.PostalCode, _station.Location.Country)</MudText>
+					<MudText><b>Breedtegraad:</b> @_station.Location.X</MudText>
+					<MudText><b>Lengtegraad:</b> @_station.Location.Y</MudText>
 				</MudCardContent>
 			</MudCard>
 		</MudItem>
