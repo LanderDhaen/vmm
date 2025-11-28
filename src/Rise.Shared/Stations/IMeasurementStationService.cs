@@ -1,4 +1,5 @@
 using Rise.Shared.Common;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 
 namespace Rise.Shared.Stations;
@@ -22,4 +23,8 @@ public interface IMeasurementStationService {
 		CancellationToken ctx = default);
 
 	Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req, CancellationToken ctx = default);
+
+	Task<Result<List<MaintObjDto.Index>>> GetMaintObjsAsync(Guid stationId, CancellationToken ctx = default);
+
+	Task<Result> UpdateMaintObjsAsync(MeasurementStationRequest.UpdateMaintObjects req, CancellationToken ctx = default);
 }

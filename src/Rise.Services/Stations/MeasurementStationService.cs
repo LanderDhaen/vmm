@@ -6,9 +6,11 @@ using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Shared.Common;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using MaintObjIndexDto = Rise.Shared.MaintObjects.MaintObjDto.Index;
 using SharedStatus = Rise.Shared.Projects.Status;
 
 namespace Rise.Services.Stations;
@@ -296,6 +298,90 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		station.Projects.Add(newProject);
 
 		await dbContext.SaveChangesAsync(ct);
+		return Result.Success();
+	}
+
+
+	public async Task<Result<List<MaintObjIndexDto>>> GetMaintObjsAsync(
+		Guid stationId,
+		CancellationToken ct = default) {
+		bool exists = await dbContext.MeasurementStations
+			.AsNoTracking()
+			.AnyAsync(s => s.Id == stationId, ct);
+
+		if (!exists) {
+			return Result.NotFound("Meetstation niet gevonden.");
+		}
+
+		var entities = await dbContext.MaintObjects
+			.AsNoTracking()
+			.Include(m => m.Location)
+			.Include(m => m.MaintObjType)
+			.Where(m => m.Station != null && m.Station.Id == stationId)
+			.ToListAsync(ct);
+
+		List<MaintObjIndexDto> maintObjs = entities
+			.Select(m => new MaintObjIndexDto {
+				Id = m.Id,
+				Name = m.Name,
+				SerialNumber = m.SerialNumber,
+
+				MaintObjType =
+					Enum.TryParse<Rise.Shared.MaintObjects.MaintObjType>(
+							m.MaintObjType?.Code, true, out var typeByCode)
+						? typeByCode
+						: Enum.TryParse<Rise.Shared.MaintObjects.MaintObjType>(
+								m.MaintObjType?.Name, true, out var typeByName)
+							? typeByName
+							: default,
+
+				MaintObjStatus =
+					Enum.TryParse<Rise.Shared.MaintObjects.MaintObjStatus>(
+							m.MaintObjStatus.ToString(), true, out var status)
+						? status
+						: default,
+
+				Location = m.Location?.Name ?? string.Empty
+			})
+			.ToList();
+
+		return Result.Success(maintObjs);
+	}
+
+	public async Task<Result> UpdateMaintObjsAsync(
+		MeasurementStationRequest.UpdateMaintObjects req,
+		CancellationToken ct = default) {
+		MeasurementStation? measurementStation = await dbContext.MeasurementStations
+			.Include(s => s.MaintObjects)
+			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ct);
+
+		if (measurementStation is null) {
+			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
+		}
+
+		var maintObjs = await dbContext.MaintObjects
+			.Include(m => m.Station)
+			.Where(m => req.MaintObjIds.Contains(m.Id))
+			.ToListAsync(ct);
+
+		if (maintObjs.Count != req.MaintObjIds.Count()) {
+			return Result.Error("Een of meerdere apparaten zijn niet gevonden.");
+		}
+
+		foreach (var current in measurementStation.MaintObjects.ToList()) {
+			if (!req.MaintObjIds.Contains(current.Id)) {
+				current.UnassignFromStation();
+			}
+		}
+
+		foreach (var mo in maintObjs) {
+			if (mo.Station is null || mo.Station.Id != measurementStation.Id) {
+				mo.AssignToStation(measurementStation);
+			}
+		}
+
+		await dbContext.SaveChangesAsync(ct);
+
 		return Result.Success();
 	}
 }

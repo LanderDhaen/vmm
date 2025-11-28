@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 
 using Rise.Shared.Common;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -51,6 +52,24 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 		CancellationToken ctx = default) {
 		HttpResponseMessage response =
 			await httpClient.PutAsJsonAsync($"/api/stations/{req.MeasurementStationId}/projects", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
+
+	public async Task<Result<List<MaintObjDto.Index>>> GetMaintObjsAsync(
+		Guid stationId,
+		CancellationToken ctx = default) {
+		return (await httpClient.GetFromJsonAsync<Result<List<MaintObjDto.Index>>>(
+			$"/api/stations/{stationId}/maintobjs", ctx))!;
+	}
+
+	public async Task<Result> UpdateMaintObjsAsync(
+		MeasurementStationRequest.UpdateMaintObjects req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync(
+				$"/api/stations/{req.MeasurementStationId}/maintobjs", req, ctx);
 
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
