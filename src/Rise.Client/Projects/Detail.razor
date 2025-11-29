@@ -1,5 +1,6 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Shared.Projects
+@using Rise.Shared.Stations
 @inject NavigationManager Navigation
 @attribute [Authorize]
 
@@ -13,9 +14,14 @@
 }
 else
 {
-	<MudOverlay @bind-Visible="_visible" DarkBackground AutoClose="true">
-		<MudPaper Class="pa-6 mx-auto" Style="width: 90vh; height: 50vh;">
-			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
+	<MudOverlay @bind-Visible="_visible" DarkBackground>
+		<MudPaper Class="pa-6 mx-auto">
+			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+				<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
+				<MudIconButton Icon="@Icons.Material.Filled.Close"
+				               Size="Size.Medium"
+				               OnClick="@(() => _visible = false)"/>
+			</MudStack>
 
 			<MudRadioGroup @bind-Value="_selectedOption">
 				<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
@@ -25,23 +31,17 @@ else
 			@if (_selectedOption == "Bestaand")
 			{
 				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-					<MudSelect T="Guid"
-					           Label="Meetstations toevoegen"
-					           MultiSelection="true"
-					           @bind-SelectedValues="Model.MeasurementStationIds"
-					           Variant="Variant.Outlined"
-					           Margin="Margin.Dense"
-					           Class="m-0" Disabled="@(!IsActive)"
-					           ToStringFunc="id => _allStations!.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-						@foreach (var station in _allStations!)
-						{
-							<MudSelectItem T="Guid" Value="@station.Id">
-								@station.Code - @station.Location @station.City
-							</MudSelectItem>
-						}
-					</MudSelect>
-
+					<MudTextField T="string"
+					              InputType="InputType.Search"
+					              Label="Zoek"
+					              Class="m-0"
+					              Variant="Variant.Outlined"
+					              DebounceInterval="300"
+					              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+					              @bind-Value="_searchTerm"
+					              Margin="Margin.Dense"
+					              Adornment="Adornment.End"
+					              AdornmentIcon="@Icons.Material.Filled.Search"/>
 					<MudTooltip Delay="400"
 					            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
 						<MudButton Variant="Variant.Filled"
@@ -54,6 +54,24 @@ else
 						</MudButton>
 					</MudTooltip>
 				</MudStack>
+
+				<MudTable @ref="_table" T="MeasurementStationDto.Index" Items="@_allStations" MultiSelection="true"
+				          SelectionChangeable="true" Hover="true"
+				          @bind-SelectedItems="_stationsFromProject" SelectOnRowClick="false" CustomHeader="true"
+				          Virtualize="true" FixedHeader="true">
+					<HeaderContent>
+						<MudTHeadRow>
+							<MudTh Class="mud-theme-primary">#</MudTh>
+							<MudTh Class="mud-theme-primary">Locatie</MudTh>
+							<MudTh Class="mud-theme-primary">Gemeente</MudTh>
+						</MudTHeadRow>
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd DataLabel="#">@context.Code</MudTd>
+						<MudTd DataLabel="Locatie">@context.Location</MudTd>
+						<MudTd DataLabel="Gemeente">@context.City</MudTd>
+					</RowTemplate>
+				</MudTable>
 			}
 			else if (_selectedOption == "Nieuw")
 			{
@@ -125,7 +143,7 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">@_project.Code - @_project.Name</MudText>
+									         Color="Color.Primary">@_project.Code</MudText>
 									<MudButton Variant="Variant.Text"
 									           StartIcon="@Icons.Material.Filled.Edit"
 									           Size="Size.Small"
@@ -135,6 +153,7 @@ else
 										Aanpassen
 									</MudButton>
 								</MudStack>
+								<MudText Typo="Typo.subtitle2">@_project.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
@@ -145,8 +164,8 @@ else
 				</MudItem>
 
 				@* Meetnet en zone *@
-				<MudItem xs="12" md="6">
-					<MudCard Elevation="2" Class="rounded-lg">
+				<MudItem xs="12" md="6" Class="d-flex">
+					<MudCard Elevation="2" Class="rounded-lg flex-grow-1">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
@@ -170,26 +189,39 @@ else
 
 				@* Measurement stations table *@
 				<MudItem xs="12">
-					<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-						<MudTextField T="string"
-						              InputType="InputType.Search"
-						              Label="Zoek"
-						              Class="m-0"
-						              Variant="Variant.Outlined"
-						              DebounceInterval="300"
-						              OnDebounceIntervalElapsed="HandleIntervalElapsed"
-						              @bind-Value="_searchTerm"
-						              Margin="Margin.Dense"/>
-						<MudButton Variant="Variant.Filled"
-						           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-						           Size="Size.Small"
-						           Color="Color.Primary"
-						           Class="px-4"
-						           OnClick="@OpenOverlay">
-							Lijst bijwerken
-						</MudButton>
-					</MudStack>
-					<MeasurementStations MeasurementStationsFromProject="_stationsFromProject"/>
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">Lijst meetstations
+									</MudText>
+									<MudButton Variant="Variant.Filled"
+									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@OpenOverlay">
+										Lijst bijwerken
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudTextField T="string"
+							              InputType="InputType.Search"
+							              Label="Zoek"
+							              Class="m-0"
+							              Variant="Variant.Outlined"
+							              DebounceInterval="300"
+							              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+							              @bind-Value="_searchTerm"
+							              Margin="Margin.Dense"
+							              Adornment="Adornment.End"
+							              AdornmentIcon="@Icons.Material.Filled.Search"/>
+							<MeasurementStations Stations="_stationsFromProject"/>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
 
 			</MudGrid>

@@ -2,7 +2,7 @@
 @using Rise.Shared.Stations
 <PageTitle>Project Details</PageTitle>
 
-@if (MeasurementStationsFromProject is null)
+@if (Stations is null)
 {
 	<MudContainer Class="d-flex justify-center align-center">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
@@ -12,7 +12,7 @@ else
 {
 	@* Desktop view *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudTable T="MeasurementStationDto.Index" Items="MeasurementStationsFromProject" CustomHeader="true"
+		<MudTable T="MeasurementStationDto.Index" Items="Stations" CustomHeader="true"
 		          OnRowClick="OnStationRowClick">
 			<HeaderContent>
 				<MudTHeadRow>
@@ -36,7 +36,7 @@ else
 	@* Mobile view *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
 		<MudGrid Spacing="6">
-			@foreach (var p in MeasurementStationsFromProject)
+			@foreach (var p in Stations)
 			{
 				<MudItem xs="12">
 					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnStationCardClick(p))">

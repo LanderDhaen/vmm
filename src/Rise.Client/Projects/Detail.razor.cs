@@ -24,10 +24,12 @@ public partial class Detail {
 
 	// Radio button
 	private string _selectedOption = "Bestaand";
+	
+	private MudTable<MeasurementStationDto.Index> _table;
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
-	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
+	private HashSet<MeasurementStationDto.Index>? _stationsFromProject;
 	private IEnumerable<MeasurementStationDto.Index>? _allStations = new List<MeasurementStationDto.Index>();
 	private Result? _result;
 	private CancellationTokenSource _cancellationTokenSource = new();
@@ -101,7 +103,7 @@ public partial class Detail {
 			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
 			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
 		} else {
-			_stationsFromProject = new List<MeasurementStationDto.Index>();
+			_stationsFromProject = new HashSet<MeasurementStationDto.Index>();
 
 			string message = stationsFromProject.Errors != null
 				? string.Join(Environment.NewLine, stationsFromProject.Errors)

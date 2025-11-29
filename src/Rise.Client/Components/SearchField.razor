@@ -1,0 +1,11 @@
+<MudTextField T="string"
+              InputType="InputType.Search"
+              Label="Zoek"
+              Class="m-0"
+              Variant="Variant.Outlined"
+              DebounceInterval="300"
+              OnDebounceIntervalElapsed="@OnSearchInternal"
+              @bind-Value="Value"
+              Margin="Margin.Dense"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Material.Filled.Search"/>

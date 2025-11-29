@@ -7,7 +7,7 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Projects;
 
 public partial class MeasurementStations {
-	[Parameter] public IEnumerable<MeasurementStationDto.Index>? MeasurementStationsFromProject { get; set; }
+	[Parameter] public IEnumerable<MeasurementStationDto.Index>? Stations { get; set; }
 
 	[Inject] public required NavigationManager Navigation { get; set; }
 
@@ -17,9 +17,5 @@ public partial class MeasurementStations {
 
 	private void OnStationCardClick(MeasurementStationDto.Index station) {
 		Navigation.NavigateTo($"/stations/{station.Id}");
-	}
-
-	private static string FormatDate(DateTime? dt) {
-		return dt is null ? "-" : dt.Value.ToShortDateString();
 	}
 }
