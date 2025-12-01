@@ -90,36 +90,32 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 	}
 
-	private static FilterSpec? ParseFilterSpec(object? rawValue)
-{
-    if (rawValue == null)
-        return null;
+	private static FilterSpec? ParseFilterSpec(object? rawValue) {
+		if (rawValue == null)
+			return null;
 
-    try
-    {
-        if (!(rawValue is JsonElement je))
-            return new FilterSpec(null, rawValue.ToString());
+		try {
+			if (!(rawValue is JsonElement je))
+				return new FilterSpec(null, rawValue.ToString());
 
-        if (je.ValueKind != JsonValueKind.Object)
-            // simple string/number/array
-            return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
+			if (je.ValueKind != JsonValueKind.Object)
+				// simple string/number/array
+				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
 
-        string? op = null;
-        string? val = null;
+			string? op = null;
+			string? val = null;
 
-        if (je.TryGetProperty("Operator", out var opProp))
-            op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
+			if (je.TryGetProperty("Operator", out var opProp))
+				op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
 
-        if (je.TryGetProperty("Value", out var vProp))
-            val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
+			if (je.TryGetProperty("Value", out var vProp))
+				val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
 
-        return new FilterSpec(op, val);
-    }
-    catch
-    {
-        return null;
-    }
-}
+			return new FilterSpec(op, val);
+		} catch {
+			return null;
+		}
+	}
 
 	private static bool TryParseDateOnlySimple(string? raw, out DateOnly d) {
 		d = default;

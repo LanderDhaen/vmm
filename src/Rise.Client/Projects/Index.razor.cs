@@ -59,6 +59,7 @@ namespace Rise.Client.Projects {
 
 		HeaderService.Set("Projecten");
 
+
 		await LoadAllSelectOptionsAsync();
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
