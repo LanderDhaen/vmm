@@ -73,66 +73,66 @@ else
 				</div>
 
 				@* //details grid *@
-				<MudGrid Class="p-2">
+				<MudGrid Class="pa-2">
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Serienummer</MudText>
-						<MudTextField T="string" @bind-Value="_maintObj.SerialNumber" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_maintObj.SerialNumber" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Naam</MudText>
-						<MudTextField T="string" @bind-Value="_maintObj.Name" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_maintObj.Name" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Type</MudText>
 						<MudTextField T="MaintObjType" @bind-Value="_maintObj.MaintObjType" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Merk</MudText>
 						<MudTextField T="string" @bind-Value="_maintObj.Brand" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Meetstation</MudText>
 						<MudTextField T="string" Value="@_maintObj?.MeasurementStationCode" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
-						<MudTextField T="string" @bind-Value="_maintObj.Location" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_maintObj.Location" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Stockage</MudText>
-						<MudTextField T="bool" @bind-Value="_maintObj.IsInStock" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="bool" @bind-Value="_maintObj.IsInStock" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Volgende onderhoud</MudText>
 						<MudTextField T="DateTime?" @bind-Value="_maintObj.NextMaintenanceDate" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Volgende kalibratie</MudText>
 						<MudTextField T="DateTime?" @bind-Value="_maintObj.NextCalibrationDate" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-						<MudTextField T="DateTime?" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.InstalledAt" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="6" sm="3">
 						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="DateTime?" @bind-Value="_maintObj.RemovedAt" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 				</MudGrid>
