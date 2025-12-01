@@ -30,7 +30,7 @@ public class Project : Entity {
 
 	public string Name { get; private set; } = string.Empty;
 	public string Code { get; private set; } = string.Empty;
-	public DateRange DateRange { get; private set; } = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
+	public DateRange DateRange { get; private set; } = new(DateOnly.FromDateTime(DateTime.UtcNow));
 	public Status Status { get; private set; } = Status.Actief;
 
 	// Relations

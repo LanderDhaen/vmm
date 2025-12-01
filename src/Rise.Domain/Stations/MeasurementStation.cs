@@ -100,7 +100,6 @@ public class MeasurementStationHistory : HistoryEntity {
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private MeasurementStationHistory() {
-
 		Installation = default!;
 		Location = default!;
 	}

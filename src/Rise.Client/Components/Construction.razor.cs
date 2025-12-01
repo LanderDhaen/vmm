@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Components;
 namespace Rise.Client.Components;
 
 public partial class Construction : ComponentBase {
-	void GoHome()
-	{
+	private void GoHome() {
 		Navigation.NavigateTo("/");
 	}
 }
