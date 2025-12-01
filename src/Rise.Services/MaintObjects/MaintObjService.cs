@@ -30,14 +30,35 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
-			switch (req.OrderBy) {
-			// TODO: sorting
-			default:
-				query = desc
-					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
-					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
-				break;
-			}
+			query = req.OrderBy switch {
+				nameof(MaintObj.SerialNumber)
+					=> desc
+						? query.OrderByDescending(d => d.SerialNumber)
+						: query.OrderBy(d => d.SerialNumber),
+
+				nameof(MaintObj.Name)
+					=> desc
+						? query.OrderByDescending(d => d.Name)
+						: query.OrderBy(d => d.Name),
+
+				nameof(MaintObj.MaintObjType)
+					=> desc
+						? query.OrderByDescending(d => d.MaintObjType!.Code)
+						: query.OrderBy(d => d.MaintObjType!.Code),
+
+
+				nameof(MaintObj.MaintObjStatus)
+					=> desc
+						? query.OrderByDescending(d => d.MaintObjStatus)
+						: query.OrderBy(d => d.MaintObjStatus),
+
+				nameof(MaintObj.Location)
+					=> desc
+						? query.OrderByDescending(d => d.Location!.Name)
+						: query.OrderBy(d => d.Location!.Name),
+
+				_ => query.OrderBy(d => d.Id)
+			};
 		} else {
 			query = query.OrderBy(d => d.Id);
 		}
@@ -66,7 +87,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
 			if (mo.MaintObjTypeCode is not null &&
-				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
 			}
 

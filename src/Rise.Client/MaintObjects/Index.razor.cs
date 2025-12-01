@@ -54,7 +54,7 @@ public partial class Index {
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting?.SortBy ?? "Name",
+			OrderBy = sorting?.SortBy ?? "SerialNumber",
 			OrderDescending = sorting?.Descending ?? false
 		};
 
