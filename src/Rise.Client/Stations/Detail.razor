@@ -12,7 +12,7 @@
 else
 {
 	<!-- ===== Desktop ===== -->
-	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
+	<div class="d-flex justify-space-between py-2 align-center" role="tablist" aria-label="Station tabs">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="async () => await SetTabAsync(0)">
 			@_tabs[0]
@@ -38,7 +38,7 @@ else
 	{
 		case 0:
 			<MudPaper Class="pa-4">
-				<div class="d-flex align-center m-2">
+				<div class="d-flex align-center ma-2">
 					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
 					<MudIconButton Icon="@Icons.Material.Filled.Edit"
 					               Color="Color.Primary"

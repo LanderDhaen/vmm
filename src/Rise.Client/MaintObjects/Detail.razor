@@ -13,7 +13,7 @@
 else
 {
 	// ====== Tabs ======
-	<div class="d-flex justify-space-between m-4 align-center" role="tablist" aria-label="Project tabs">
+	<div class="d-flex justify-space-between py-2 align-center" role="tablist" aria-label="Project tabs">
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			@onclick="() => SetTab(0)">
@@ -42,7 +42,7 @@ else
 		case 0:
 			<MudPaper Class="pa-4">
 
-				<div class="d-flex align-center m-2">
+				<div class="d-flex align-center ma-2">
 					@* name: mobile uses a Badge, desktop uses plain Text *@
 					<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
 						<MudBadge Dot="true" Color="@DefineColor(_maintObj.MaintObjStatus)" Origin="Origin.CenterLeft">
