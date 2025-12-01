@@ -253,7 +253,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (!exists) {
 			return Result.NotFound($"Project met Id '{projectId}' was niet gevonden.");
 		}
-		
+
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations
 			.AsNoTracking()
 			.AsQueryable();

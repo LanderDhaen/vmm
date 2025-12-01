@@ -38,7 +38,7 @@ public partial class UpdateStationListOverlay {
 		// Delete any unsaved changes
 		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? new List<Guid>();
 		StateHasChanged();
-    
+
 		await VisibleChanged.InvokeAsync(false);
 	}
 
@@ -85,7 +85,7 @@ public partial class UpdateStationListOverlay {
 			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
 			return;
 		}
-		
+
 		_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
 		if (_result.IsSuccess) {
 			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);

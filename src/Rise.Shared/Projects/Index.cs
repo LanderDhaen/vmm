@@ -14,7 +14,7 @@ public static partial class ProjectResponse {
 	public class Detail {
 		public required ProjectDto.Detail Project { get; set; }
 	}
-	
+
 	public class MeasurementStations {
 		public IEnumerable<MeasurementStationDto.Index> MeasurementStationsFromProject { get; set; } = [];
 	}

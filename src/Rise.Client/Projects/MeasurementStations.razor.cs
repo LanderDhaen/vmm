@@ -11,13 +11,13 @@ namespace Rise.Client.Projects;
 public partial class MeasurementStations {
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
-	
+
 	[Parameter] public Guid ProjectId { get; set; }
 	[Parameter] public IEnumerable<MeasurementStationDto.Index>? Stations { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager Navigation { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
-	
+
 	private async Task GetStationsAsync() {
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
@@ -42,7 +42,7 @@ public partial class MeasurementStations {
 			Snackbar.Add(message, Severity.Warning);
 		}
 	}
-	
+
 	private async Task UpdateSearch(string searchTerm) {
 		_searchTerm = searchTerm;
 		await GetStationsAsync();
