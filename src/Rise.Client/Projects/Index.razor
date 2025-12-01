@@ -5,7 +5,7 @@
 
 @* Desktop view *@
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
 		              Class="my-0"
@@ -144,7 +144,7 @@
 	</MudGrid>
 </MudHidden>
 
-@* Drawer for sorting on mobile *@
+@* Sort drawer (mobile) *@
 @if (_mobileSortOptionsOpen)
 {
 	<MudDrawer Anchor="Anchor.Bottom"
