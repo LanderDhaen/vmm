@@ -56,8 +56,8 @@ else
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd DataLabel="#">@context.Code</MudTd>
-				<MudTd DataLabel="Geïnstalleerd op">@context.InstalledAt</MudTd>
-				<MudTd DataLabel="Verwijderd op">@context.RemovedAt</MudTd>
+				<MudTd DataLabel="Geïnstalleerd">@StationUtility.ToShortInstalledAt(context.InstalledAt)</MudTd>
+				<MudTd DataLabel="Verwijderd">@StationUtility.ToShortRemovedAt(context.RemovedAt)</MudTd>
 				<MudTd DataLabel="Locatie">@context.Location</MudTd>
 				<MudTd DataLabel="Gemeente">@context.City</MudTd>
 			</RowTemplate>
@@ -110,8 +110,8 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @FormatDate(p.InstalledAt)</MudText>
-							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @FormatDate(p.RemovedAt)</MudText>
+							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @StationUtility.ToLongInstalledAt(p.InstalledAt)</MudText>
+							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @StationUtility.ToLongRemovedAt(p.RemovedAt)</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
