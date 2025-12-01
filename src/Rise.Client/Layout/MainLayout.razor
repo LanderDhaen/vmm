@@ -66,10 +66,11 @@
 
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="py-4 pl-4">
+		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-4">
 			<Header Title="@HeaderService.State.Title" Icon="@HeaderService.State.Icon"
 			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)" />
-			<MudIconButton Class="p-0" Icon="@Icons.Material.Filled.Menu"
+			<MudIconButton Icon="@Icons.Material.Filled.Menu"
+			               Class="pr-0"
 			               Size="Size.Large"
 			               Color="Color.Primary"
 			               OnClick="@ToggleDrawer"/>
