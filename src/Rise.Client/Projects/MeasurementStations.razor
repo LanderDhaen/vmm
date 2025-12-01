@@ -97,7 +97,7 @@ else
 			@foreach (var p in _stationsFromProject)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnStationCardClick(p))">
+					<MudCard Elevation="2" Class="rounded-lg" onclick="@(() => OnStationCardClick(p))">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
