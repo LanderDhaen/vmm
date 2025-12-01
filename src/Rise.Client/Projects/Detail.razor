@@ -53,7 +53,7 @@ else
 	</MudHidden>
 
 	// ====== Tabs ======
-	<div class="d-flex justify-space-between m-4 align-center" role="tablist" aria-label="Project tabs">
+	<div class="d-flex justify-space-between py-2 align-center" role="tablist" aria-label="Project tabs">
 		<MudText
 			Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			@onclick="() => SetTab(0)">
@@ -84,9 +84,9 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudPaper Class="p-4">
+			<MudPaper Class="pa-4">
 
-				<div class="d-flex align-center m-2">
+				<div class="d-flex align-center ma-2">
 					@* name: mobile uses a Badge, desktop uses plain Text *@
 					<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
 						<MudBadge Dot="true" Color="BadgeColor" Origin="Origin.CenterLeft">
@@ -121,36 +121,36 @@ else
 				</div>
 
 				@* details grid *@
-				<MudGrid Class="p-2">
+				<MudGrid Class="pa-2">
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
-						<MudTextField T="string" @bind-Value="_project.Code" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_project.Code" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Naam</MudText>
-						<MudTextField T="string" @bind-Value="_project.Name" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_project.Name" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Start datum</MudText>
-						<MudTextField T="DateOnly" @bind-Value="_project.StartDate" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="DateOnly" @bind-Value="_project.StartDate" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Eind datum</MudText>
-						<MudTextField T="DateOnly?" @bind-Value="_project.EndDate" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="DateOnly?" @bind-Value="_project.EndDate" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
 						<MudTextField T="string" @bind-Value="_project.MeasurementNetwork.Name" ReadOnly="true"
-						              Class="p-2"/>
+						              Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Zone</MudText>
-						<MudTextField T="string" @bind-Value="_project.Zone" ReadOnly="true" Class="p-2"/>
+						<MudTextField T="string" @bind-Value="_project.Zone" ReadOnly="true" Class="pa-2"/>
 					</MudItem>
 
 					<MudItem xs="12">

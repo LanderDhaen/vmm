@@ -12,7 +12,7 @@
 else
 {
 	<!-- ===== Desktop ===== -->
-	<div class="d-flex justify-space-between m-2 align-center" role="tablist" aria-label="Station tabs">
+	<div class="d-flex justify-space-between py-2 align-center" role="tablist" aria-label="Station tabs">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="async () => await SetTabAsync(0)">
 			@_tabs[0]
@@ -37,8 +37,8 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudPaper Class="p-4">
-				<div class="d-flex align-center m-2">
+			<MudPaper Class="pa-4">
+				<div class="d-flex align-center ma-2">
 					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
 					<MudTooltip Delay="400" Placement="Placement.Right" Text="Meetstation bewerken">
 						<MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -47,33 +47,33 @@ else
 					</MudTooltip>
 				</div>
 
-				<MudGrid Class="p-2">
+				<MudGrid Class="pa-2">
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-						<MudPaper Class="p-2">@FormatDate(_station.InstalledAt)</MudPaper>
+						<MudPaper Class="pa-2">@FormatDate(_station.InstalledAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-						<MudPaper Class="p-2">@FormatDate(_station.RemovedAt)</MudPaper>
+						<MudPaper Class="pa-2">@FormatDate(_station.RemovedAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
-						<MudPaper Class="p-2">@_station.Location</MudPaper>
+						<MudPaper Class="pa-2">@_station.Location</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Gemeente</MudText>
-						<MudPaper Class="p-2">@_station.City</MudPaper>
+						<MudPaper Class="pa-2">@_station.City</MudPaper>
 					</MudItem>
 				</MudGrid>
 			</MudPaper>
 			break;
 
 		case 1:
-			<MudText Typo="Typo.body1" Class="m-4">[Lijst van apparaten]</MudText>
+			<MudText Typo="Typo.body1">[Lijst van apparaten]</MudText>
 			break;
 
 		case 2:
