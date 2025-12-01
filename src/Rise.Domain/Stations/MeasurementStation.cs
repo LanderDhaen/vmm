@@ -9,7 +9,7 @@ namespace Rise.Domain.Stations;
 /// </summary>
 public class MeasurementStation : Entity {
 	// history list (single consistent name)
-	private readonly List<MeasurementStationHistory> _measurementStationHistories = new();
+	private readonly List<MeasurementStationHistory> _measurementStationHistories = [];
 
 	// EF Core requires a parameterless ctor. Keep it but properties are initialized inline.
 	private MeasurementStation() { }
@@ -22,8 +22,8 @@ public class MeasurementStation : Entity {
 
 	// Properties - inline initializers satisfy the nullability checker for the parameterless ctor
 	public string Code { get; private set; } = string.Empty;
-	public Installation Installation { get; private set; } = default!;
-	public Location Location { get; private set; } = default!;
+	public Installation Installation { get; private set; } = null!;
+	public Location Location { get; private set; } = null!;
 
 	// Relations
 	public ICollection<Project> Projects { get; } = new List<Project>();
@@ -37,10 +37,10 @@ public class MeasurementStation : Entity {
 	public void UpdateProjectList(List<Project> projects) {
 		List<Project> closedProjectsNotAlreadyLinked = projects
 			.Where(p => p.Status == Status.Afgesloten &&
-						Projects.All(existing => existing.Id != p.Id))
+			            Projects.All(existing => existing.Id != p.Id))
 			.ToList();
 
-		if (closedProjectsNotAlreadyLinked.Any()) {
+		if (closedProjectsNotAlreadyLinked.Count != 0) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt of gekoppeld.");
 		}
 
@@ -100,8 +100,8 @@ public class MeasurementStationHistory : HistoryEntity {
 	///     Entity Framework Core Constructor
 	/// </summary>
 	private MeasurementStationHistory() {
-		Installation = default!;
-		Location = default!;
+		Installation = null!;
+		Location = null!;
 	}
 
 	public MeasurementStationHistory(Installation installation, Location location, ValidityRange validityRange) {

@@ -21,7 +21,7 @@ public class MaintObj : Entity {
 	public string Name { get; private set; } = string.Empty;
 	public string SerialNumber { get; private set; } = string.Empty;
 	public string? Brand { get; private set; }
-	public MaintObjType MaintObjType { get; private set; } = default!;
+	public MaintObjType MaintObjType { get; private set; } = null!;
 	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactief;
 	public Installation? Installation { get; private set; }
 	public bool IsInStock { get; private set; } = true;

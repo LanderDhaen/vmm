@@ -13,16 +13,16 @@ public class DateRange : ValueObject {
 
 		StartDate = startDate;
 
-		if (endDate != null && endDate < startDate) {
+		if (endDate < startDate) {
 			throw new ArgumentException("End date cannot be before start date");
 		}
 
 		EndDate = endDate;
 	}
 
-	public DateOnly StartDate { get; init; }
+	public DateOnly StartDate { get; }
 
-	public DateOnly? EndDate { get; init; }
+	public DateOnly? EndDate { get; }
 
 	protected override IEnumerable<object> GetEqualityComponents() {
 		yield return StartDate;

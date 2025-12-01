@@ -35,7 +35,7 @@ public class Project : Entity {
 
 	// Relations
 
-	public MeasurementNetwork MeasurementNetwork { get; private set; } = default!;
+	public MeasurementNetwork MeasurementNetwork { get; private set; } = null!;
 
 	public ICollection<MeasurementStation> Stations { get; } =
 		new List<MeasurementStation>();
