@@ -8,7 +8,6 @@ using MudBlazor.Translations;
 
 using Rise.Client;
 using Rise.Client.Identity;
-using Rise.Client.Layout;
 using Rise.Client.Locations;
 using Rise.Client.Networks;
 using Rise.Client.Projects;
