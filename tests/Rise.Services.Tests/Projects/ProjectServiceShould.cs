@@ -11,6 +11,7 @@ using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
+using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -402,7 +403,7 @@ public class ProjectServiceShould {
 
 		ProjectService service = new(db, null!);
 
-		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(project.Id);
+		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(project.Id, new QueryRequest.Search());
 
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
@@ -419,7 +420,7 @@ public class ProjectServiceShould {
 
 		Guid nonExistentId = Guid.NewGuid();
 
-		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(nonExistentId);
+		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(nonExistentId, new QueryRequest.Search());
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 
