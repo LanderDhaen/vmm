@@ -197,8 +197,6 @@ namespace Rise.Client.Projects {
 
 	private void NavigateToProject(Guid projectId) => NavigationManager.NavigateTo($"/projects/{projectId}");
 	private void NavigateToCreate() => NavigationManager.NavigateTo("/projects/create");
-	private Color DefineColor(Status status) => status == Status.Actief ? Color.Success : Color.Error;
-
 	private async Task ClearFilters() {
 		_filterStatus = null;
 		_filterZone = null;
