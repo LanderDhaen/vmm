@@ -45,7 +45,7 @@ else
 				<div class="d-flex align-center ma-2">
 					@* name: mobile uses a Badge, desktop uses plain Text *@
 					<MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-						<MudBadge Dot="true" Color="@DefineColor(_maintObj.MaintObjStatus)" Origin="Origin.CenterLeft">
+						<MudBadge Dot="true" Color="@MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus)" Origin="Origin.CenterLeft">
 							<MudText Class="pl-4" Typo="Typo.h5">@_maintObj.Name</MudText>
 						</MudBadge>
 					</MudHidden>
@@ -56,7 +56,7 @@ else
 
 					<MudHidden Breakpoint="Breakpoint.Xs">
 						<MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
-						         Color="@DefineColor(_maintObj.MaintObjStatus)">@_maintObj.MaintObjStatus
+						         Color="@MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus)">@_maintObj.MaintObjStatus
 						</MudChip>
 					</MudHidden>
 
