@@ -1,9 +1,9 @@
 @page "/construction"
 @inject NavigationManager Navigation
 
-<MudGrid Justify="Justify.Center" AlignItems="AlignItems.Center" Style="min-height:60vh;">
+<MudGrid Justify="Justify.Center" Style="min-height:60vh;">
 	<MudItem xs="12" sm="8" md="6" lg="4">
-		<MudPaper Elevation="4" Class="d-flex flex-column align-center justify-center pa-6">
+		<MudPaper Elevation="4" Class="pa-6 d-flex flex-column align-center">
 			<MudIcon Icon="@Icons.Material.Filled.Construction" Color="Color.Warning" Style="font-size:5rem"/>
 			<MudText Typo="Typo.h4" Class="mt-2">Onder constructie</MudText>
 			<MudText Typo="Typo.subtitle1" Class="mt-1 mb-4">Deze sectie is momenteel onder constructie. Kom snel terug.
@@ -12,12 +12,3 @@
 		</MudPaper>
 	</MudItem>
 </MudGrid>
-
-@code {
-
-	void GoHome()
-	{
-		Navigation.NavigateTo("/");
-	}
-
-}
