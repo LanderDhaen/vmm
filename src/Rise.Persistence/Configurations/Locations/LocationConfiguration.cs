@@ -26,9 +26,7 @@ internal class LocationConfiguration : EntityConfiguration<Location> {
 
 		builder.OwnsOne(x => x.Coordinate, c => {
 			c.Property(x => x.X).IsRequired().HasColumnName(nameof(Coordinate.X)).HasPrecision(18, 6);
-			;
 			c.Property(x => x.Y).IsRequired().HasColumnName(nameof(Coordinate.Y)).HasPrecision(18, 6);
-			;
 		}).Navigation(x => x.Coordinate).IsRequired();
 
 		builder.Property(x => x.IsStockLocation).IsRequired();

@@ -102,10 +102,10 @@ public class DbSeeder(
 			return;
 		}
 
-		List<Zone> zones = new() {
-			new Zone("West", "ASTA"),
-			new Zone("Oost", "HSTA")
-		};
+		List<Zone> zones = [
+			new("West", "ASTA"),
+			new("Oost", "HSTA")
+		];
 
 		dbContext.Zones.AddRange(zones);
 		await dbContext.SaveChangesAsync();
@@ -117,20 +117,20 @@ public class DbSeeder(
 		}
 
 		List<Zone> zones = await dbContext.Zones.ToListAsync();
-		if (!zones.Any()) {
+		if (zones.Count == 0) {
 			return;
 		}
 
-		List<MeasurementNetwork> measurementNetworks = new() {
-			new MeasurementNetwork("Conductiviteitmeetnet West", zones[0]),
-			new MeasurementNetwork("Multiparameter West", zones[0]),
-			new MeasurementNetwork("Nitraatmeetnet West", zones[0]),
-			new MeasurementNetwork("Overstortmeetnet West", zones[0]),
-			new MeasurementNetwork("Conductiviteitmeetnet Oost", zones[1]),
-			new MeasurementNetwork("Multiparametermeetnet Oost", zones[1]),
-			new MeasurementNetwork("Nitraatmeetnet Oost", zones[1]),
-			new MeasurementNetwork("Overstortmeetnet Oost", zones[1])
-		};
+		List<MeasurementNetwork> measurementNetworks = [
+			new("Conductiviteitmeetnet West", zones[0]),
+			new("Multiparameter West", zones[0]),
+			new("Nitraatmeetnet West", zones[0]),
+			new("Overstortmeetnet West", zones[0]),
+			new("Conductiviteitmeetnet Oost", zones[1]),
+			new("Multiparametermeetnet Oost", zones[1]),
+			new("Nitraatmeetnet Oost", zones[1]),
+			new("Overstortmeetnet Oost", zones[1])
+		];
 
 		dbContext.MeasurementNetworks.AddRange(measurementNetworks);
 		await dbContext.SaveChangesAsync();
@@ -142,47 +142,47 @@ public class DbSeeder(
 			return;
 		}
 
-		List<Address> addresses = new() {
-			new Address(null, null, "Brussel", "1020"),
-			new Address("Meersstraat 5", "Bus 2", "Harlbeke", "8530"),
-			new Address("Duiklaan", null, "Gent", "9000"),
-			new Address("Vaartstraat", null, "Aalst", "9300"),
-			new Address(null, null, "Breda", "4811", "NL"),
-			new Address("N9", null, "Aalst", "9300"),
+		List<Address> addresses = [
+			new(null, null, "Brussel", "1020"),
+			new("Meersstraat 5", "Bus 2", "Harlbeke", "8530"),
+			new("Duiklaan", null, "Gent", "9000"),
+			new("Vaartstraat", null, "Aalst", "9300"),
+			new(null, null, "Breda", "4811", "NL"),
+			new("N9", null, "Aalst", "9300"),
 
 			// Stock
 
-			new Address("Industrielaan 15", null, "Aalst", "9320"),
-			new Address("Industrieweg 124", null, "Gent", "9040")
-		};
+			new("Industrielaan 15", null, "Aalst", "9320"),
+			new("Industrieweg 124", null, "Gent", "9040")
+		];
 
-		List<Coordinate> coordinates = new() {
-			new Coordinate(50.88486, 4.36695),
-			new Coordinate(50.84326, 3.32974),
-			new Coordinate(51.04535, 3.68276),
-			new Coordinate(50.94093, 4.04293),
-			new Coordinate(51.60512, 4.75128),
-			new Coordinate(50.93499, 4.04801),
-
-			// Stock
-
-			new Coordinate(50.91215, 4.03795),
-			new Coordinate(51.09013, 3.68663)
-		};
-
-		List<Location> locations = new() {
-			new Location("Koninklijk Domein van Laken", addresses[0], coordinates[0]),
-			new Location("Provinciedomein De Gavers", addresses[1], coordinates[1]),
-			new Location("Duikplaats Blaarmeersen", addresses[2], coordinates[2]),
-			new Location("Sint-Annabrug", addresses[3], coordinates[3]),
-			new Location("Emerput", addresses[4], coordinates[4]),
-			new Location("Zeebergbrug", addresses[5], coordinates[5]),
+		List<Coordinate> coordinates = [
+			new(50.88486, 4.36695),
+			new(50.84326, 3.32974),
+			new(51.04535, 3.68276),
+			new(50.94093, 4.04293),
+			new(51.60512, 4.75128),
+			new(50.93499, 4.04801),
 
 			// Stock
 
-			new Location("Stock Aalst", addresses[6], coordinates[6], true),
-			new Location("Stock Gent", addresses[7], coordinates[7], true)
-		};
+			new(50.91215, 4.03795),
+			new(51.09013, 3.68663)
+		];
+
+		List<Location> locations = [
+			new("Koninklijk Domein van Laken", addresses[0], coordinates[0]),
+			new("Provinciedomein De Gavers", addresses[1], coordinates[1]),
+			new("Duikplaats Blaarmeersen", addresses[2], coordinates[2]),
+			new("Sint-Annabrug", addresses[3], coordinates[3]),
+			new("Emerput", addresses[4], coordinates[4]),
+			new("Zeebergbrug", addresses[5], coordinates[5]),
+
+			// Stock
+
+			new("Stock Aalst", addresses[6], coordinates[6], true),
+			new("Stock Gent", addresses[7], coordinates[7], true)
+		];
 
 		dbContext.Locations.AddRange(locations);
 		await dbContext.SaveChangesAsync();
@@ -194,31 +194,31 @@ public class DbSeeder(
 		}
 
 		List<MeasurementNetwork> networks = await dbContext.MeasurementNetworks.ToListAsync();
-		if (!networks.Any()) {
+		if (networks.Count == 0) {
 			return;
 		}
 
 		// Initialise as projects without endDate to allow easier history seeding
 
-		List<DateRange> dateRanges = new() {
-			new DateRange(new DateOnly(2025, 1, 15)),
-			new DateRange(new DateOnly(2025, 2, 1)),
-			new DateRange(new DateOnly(2025, 3, 10)),
-			new DateRange(new DateOnly(2025, 4, 5)),
-			new DateRange(new DateOnly(2025, 5, 12)),
-			new DateRange(new DateOnly(2025, 5, 12)),
-			new DateRange(new DateOnly(2025, 4, 6))
-		};
+		List<DateRange> dateRanges = [
+			new(new DateOnly(2025, 1, 15)),
+			new(new DateOnly(2025, 2, 1)),
+			new(new DateOnly(2025, 3, 10)),
+			new(new DateOnly(2025, 4, 5)),
+			new(new DateOnly(2025, 5, 12)),
+			new(new DateOnly(2025, 5, 12)),
+			new(new DateOnly(2025, 4, 6))
+		];
 
-		List<Project> projects = new() {
-			new Project("Conductiviteitsmonitoring Koninklijk Domein", "2025-001", dateRanges[0], networks[0]),
-			new Project("Multiparameteranalyse Gavers", "2025-002", dateRanges[1], networks[1]),
-			new Project("Nitraatobservatie Blaarmeersen", "2025-003", dateRanges[2], networks[2]),
-			new Project("Overstortdetectie Aalst", "2025-004", dateRanges[3], networks[3]),
-			new Project("Conductiviteitsmonitoring Aalst", "2025-005", dateRanges[4], networks[4]),
-			new Project("Multiparameteranalyse", "2025-006", dateRanges[5], networks[5]),
-			new Project("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0])
-		};
+		List<Project> projects = [
+			new("Conductiviteitsmonitoring Koninklijk Domein", "2025-001", dateRanges[0], networks[0]),
+			new("Multiparameteranalyse Gavers", "2025-002", dateRanges[1], networks[1]),
+			new("Nitraatobservatie Blaarmeersen", "2025-003", dateRanges[2], networks[2]),
+			new("Overstortdetectie Aalst", "2025-004", dateRanges[3], networks[3]),
+			new("Conductiviteitsmonitoring Aalst", "2025-005", dateRanges[4], networks[4]),
+			new("Multiparameteranalyse", "2025-006", dateRanges[5], networks[5]),
+			new("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0])
+		];
 
 
 		dbContext.Projects.AddRange(projects);
@@ -233,7 +233,7 @@ public class DbSeeder(
 		List<Project> projects = await dbContext.Projects.Include(p => p.DateRange).Include(p => p.MeasurementNetwork)
 			.ToListAsync();
 
-		List<DateOnly?> endDates = new() {
+		List<DateOnly?> endDates = [
 			new DateOnly(2025, 6, 30),
 			new DateOnly(2025, 8, 15),
 			new DateOnly(2025, 9, 25),
@@ -241,7 +241,7 @@ public class DbSeeder(
 			new DateOnly(2025, 12, 31),
 			null,
 			null
-		};
+		];
 
 		int i = 0;
 
@@ -282,23 +282,23 @@ public class DbSeeder(
 
 		// Initialise as stations without removedAt to allow easier history seeding
 
-		List<Installation> installations = new() {
-			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
-			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
-			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
-			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
-			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
-			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
-		};
+		List<Installation> installations = [
+			new(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new(new DateTime(2025, 4, 5, 3, 24, 59)),
+			new(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new(new DateTime(2025, 5, 12, 1, 1, 1))
+		];
 
-		List<MeasurementStation> stations = new() {
-			new MeasurementStation("STN-001", locations[0], installations[0]),
-			new MeasurementStation("STN-002", locations[1], installations[1]),
-			new MeasurementStation("STN-003", locations[2], installations[2]),
-			new MeasurementStation("STN-004", locations[3], installations[3]),
-			new MeasurementStation("STN-005", locations[4], installations[4]),
-			new MeasurementStation("STN-006", locations[5], installations[5])
-		};
+		List<MeasurementStation> stations = [
+			new("STN-001", locations[0], installations[0]),
+			new("STN-002", locations[1], installations[1]),
+			new("STN-003", locations[2], installations[2]),
+			new("STN-004", locations[3], installations[3]),
+			new("STN-005", locations[4], installations[4]),
+			new("STN-006", locations[5], installations[5])
+		];
 
 		// Add projects to stations
 
@@ -322,16 +322,16 @@ public class DbSeeder(
 			await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
 		List<Location> locations = await dbContext.Locations.ToListAsync();
 
-		List<DateTime?> removedAts = new() {
+		List<DateTime?> removedAts = [
 			new DateTime(2025, 6, 30, 5, 12, 30),
 			new DateTime(2025, 8, 15, 12, 40, 19),
 			new DateTime(2025, 9, 25, 16, 1, 21),
 			null,
 			new DateTime(2025, 12, 31, 9, 1, 1),
 			null
-		};
+		];
 
-		Location DummyLocation =
+		Location dummyLocation =
 			new("Zwartehoekbrug", new Address("", "", "Aalst", "9300"), new Coordinate(50.95, 4.03));
 
 		int i = 0;
@@ -342,7 +342,7 @@ public class DbSeeder(
 
 			// Move the location
 
-			station.MoveTo(DummyLocation);
+			station.MoveTo(dummyLocation);
 
 			// Move the installed at
 
@@ -374,7 +374,7 @@ public class DbSeeder(
 			return;
 		}
 
-		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Any()
+		List<MeasurementStation> stations = dbContext.MeasurementStations.Local.Count != 0
 			? dbContext.MeasurementStations.Local.ToList()
 			: await dbContext.MeasurementStations.ToListAsync();
 
@@ -382,14 +382,14 @@ public class DbSeeder(
 			? dbContext.Locations.Local.Where(l => l.IsStockLocation).ToList()
 			: await dbContext.Locations.Where(l => l.IsStockLocation).ToListAsync();
 
-		List<Installation> installations = new() {
-			new Installation(new DateTime(2025, 1, 15, 12, 20, 25)),
-			new Installation(new DateTime(2025, 2, 1, 14, 3, 16)),
-			new Installation(new DateTime(2025, 3, 10, 9, 24, 1)),
-			new Installation(new DateTime(2025, 4, 5, 3, 24, 59)),
-			new Installation(new DateTime(2025, 5, 12, 23, 50, 40)),
-			new Installation(new DateTime(2025, 5, 12, 1, 1, 1))
-		};
+		List<Installation> installations = [
+			new(new DateTime(2025, 1, 15, 12, 20, 25)),
+			new(new DateTime(2025, 2, 1, 14, 3, 16)),
+			new(new DateTime(2025, 3, 10, 9, 24, 1)),
+			new(new DateTime(2025, 4, 5, 3, 24, 59)),
+			new(new DateTime(2025, 5, 12, 23, 50, 40)),
+			new(new DateTime(2025, 5, 12, 1, 1, 1))
+		];
 
 		// Fetch an existing technician or create a seed technician
 		Technician? technician = await dbContext.Technicians.FirstOrDefaultAsync();
@@ -400,32 +400,36 @@ public class DbSeeder(
 		}
 
 
-		List<MaintObjType> types = dbContext.MaintObjTypes.Local.Any()
+		List<MaintObjType> types = dbContext.MaintObjTypes.Local.Count != 0
 			? dbContext.MaintObjTypes.Local.ToList()
 			: await dbContext.MaintObjTypes.ToListAsync();
 
-		List<MaintObj> maintObjects = new();
+		List<MaintObj> maintObjects = [];
 
 		// Create a random generator to get consistent seed data across runs
 		Random rnd = new(12345);
 
-		if (stations.Any()) {
+		if (stations.Count != 0) {
 			for (int i = 0; i < stations.Count; i++) {
 				MeasurementStation station = stations[i];
 				Installation installation = installations[i % installations.Count];
 
-				List<MaintObj> objsForStation = new() {
+				List<MaintObj> objsForStation = [
 					CreateMaintObj(station, "Sonde", "SN", types.First(t => t.Code == "Sonde"), "Aquatroll",
 						installation),
+
 					CreateMaintObj(station, "Logger", "LG", types.First(t => t.Code == "Logger"), "Campbell",
 						installation),
+
 					CreateMaintObj(station, "Modem", "MD", types.First(t => t.Code == "Modem"), "Centerion",
 						installation),
+
 					CreateMaintObj(station, "SIM", "SI", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE",
 						installation),
+
 					CreateMaintObj(station, "Voeding", "VO", types.First(t => t.Code == "Voeding"), "Kyocera",
 						installation)
-				};
+				];
 
 				objsForStation.ForEach(mo => {
 					mo.AssignToStation(station);
@@ -437,7 +441,7 @@ public class DbSeeder(
 		}
 
 		maintObjects.AddRange(CreateStockItems(types, stockLocations));
-		if (!stations.Any() && !maintObjects.Any()) {
+		if (stations.Count == 0 && maintObjects.Count == 0) {
 			maintObjects.AddRange(CreateLegacyItems(types, stockLocations));
 		}
 
@@ -450,11 +454,12 @@ public class DbSeeder(
 		await dbContext.SaveChangesAsync();
 	}
 
-	private MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix, MaintObjType maintObjType,
+	private static MaintObj CreateMaintObj(MeasurementStation station, string name, string prefix,
+		MaintObjType maintObjType,
 		string brand, Installation installation) {
 		return new MaintObj(
 			$"{station.Code}-{name}",
-			$"{prefix}-{Guid.NewGuid().ToString().Substring(0, 8)}",
+			$"{prefix}-{Guid.NewGuid().ToString()[..8]}",
 			maintObjType,
 			brand,
 			new Installation(installation.InstalledAt, installation.RemovedAt),
@@ -463,32 +468,40 @@ public class DbSeeder(
 		);
 	}
 
-	private List<MaintObj> CreateStockItems(List<MaintObjType> types, List<Location> stockLocations) {
-		return new List<MaintObj> {
-			new("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true,
+	private static List<MaintObj> CreateStockItems(List<MaintObjType> types, List<Location> stockLocations) {
+		return [
+			new MaintObj("Stock-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true,
 				stockLocations[0]),
-			new("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true,
+
+			new MaintObj("Stock-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true,
 				stockLocations[0]),
-			new("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
+
+			new MaintObj("Stock-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
 				stockLocations[1]),
-			new("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
+
+			new MaintObj("Stock-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
 				stockLocations[1]),
-			new("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
+
+			new MaintObj("Stock-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
 				stockLocations[1])
-		};
+		];
 	}
 
-	private List<MaintObj> CreateLegacyItems(List<MaintObjType> types, List<Location> stockLocations) {
-		return new List<MaintObj> {
-			new("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true, stockLocations[0]),
-			new("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true, stockLocations[0]),
-			new("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
+	private static List<MaintObj> CreateLegacyItems(List<MaintObjType> types, List<Location> stockLocations) {
+		return [
+			new MaintObj("W-Sonde", "567927", types.First(t => t.Code == "Sonde"), "Aquatroll", null, true,
+				stockLocations[0]),
+			new MaintObj("W-Logger", "31045", types.First(t => t.Code == "Logger"), "Campbell", null, true,
+				stockLocations[0]),
+			new MaintObj("W-Modem", "354990101102816", types.First(t => t.Code == "Modem"), "Centerion", null, true,
 				stockLocations[1]),
-			new("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
+
+			new MaintObj("W-SIM", "2100267739177", types.First(t => t.Code == "Sim"), "002.APN.VMM.BE", null, true,
 				stockLocations[1]),
-			new("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
+
+			new MaintObj("W-Voeding", "03Y90D0134", types.First(t => t.Code == "Voeding"), "Kyocera", null, true,
 				stockLocations[2])
-		};
+		];
 	}
 
 	// Helper to pick a random status with weighted probabilities

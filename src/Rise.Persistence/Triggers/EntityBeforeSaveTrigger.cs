@@ -29,6 +29,8 @@ public class EntityBeforeSaveTrigger(ApplicationDbContext dbContext) : IBeforeSa
 			entity.UpdatedAt = currentTime;
 			dbContext.Entry(entity).State = EntityState.Modified;
 			break;
+		default:
+			throw new ArgumentOutOfRangeException();
 		}
 
 		return Task.CompletedTask;

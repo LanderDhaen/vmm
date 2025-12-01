@@ -5,7 +5,7 @@ using Rise.Domain.Projects;
 namespace Rise.Persistence.Configurations.Projects;
 
 /// <summary>
-///     Specific configuration for <see cref="Product" />.
+///   Configuration for the Technician entity.
 /// </summary>
 internal class TechnicianConfiguration : EntityConfiguration<Technician> {
 	public override void Configure(EntityTypeBuilder<Technician> builder) {
