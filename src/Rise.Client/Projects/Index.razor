@@ -230,7 +230,7 @@
             </MudSelect>
 
             <MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork" ValueChanged="@(async (string? val) 
-            => { _filterMeasurementNetwork = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterMeetnet" 
+            => { _filterMeasurementNetwork = val; await ApplyOrReloadOnChangeAsync(); })" ValueExpression="() => _filterMeasurementNetwork" 
             Dense="true" Clearable="true" Placeholder="Selecteer...">
                 @foreach (var m in _measurementNetworks)
                 {
@@ -239,12 +239,22 @@
             </MudSelect>
 
             <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate" DateChanged="@(async (DateTime? val) 
-            => { _filterStartDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterStartDate" 
+            => { 
+                _filterStartDate = val; 
+
+                // Als er een einddatum bestaat die vóór of gelijk is aan de nieuwe startdatum, legen we de einddatum 
+                if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value) {
+                    _filterEndDate = null;
+                }
+
+                await ApplyOrReloadOnChangeAsync(); 
+            })" DateExpression="() => _filterStartDate" 
             DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
             <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate" DateChanged="@(async (DateTime? val) 
             => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })" DateExpression="() => _filterEndDate" 
-            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+            DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"
+            MinDate="_filterStartDate?.AddDays(1)" />
 
             <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
                 <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
@@ -252,4 +262,4 @@
 
         </MudStack>
     </MudDrawer>
-}
+};
