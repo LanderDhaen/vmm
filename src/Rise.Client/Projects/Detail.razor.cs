@@ -37,7 +37,6 @@ public partial class Detail {
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
-	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
 	private void SetTab(int index) {

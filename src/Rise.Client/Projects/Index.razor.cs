@@ -14,6 +14,7 @@ public partial class Index {
 		("Name", "Naam"),
 		("StartDate", "Startdatum"),
 		("EndDate", "Einddatum"),
+		("Status",  "Status"),
 		("MeasurementNetwork", "Meetnet"),
 		("Zone", "Zone"),
 		("Status", "Status")
@@ -130,11 +131,5 @@ public partial class Index {
 
 	private void NavigateToCreate() {
 		NavigationManager.NavigateTo("/projects/create");
-	}
-
-	// Other
-
-	private Color DefineColor(Status status) {
-		return status == Status.Actief ? Color.Success : Color.Error;
 	}
 }
