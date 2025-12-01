@@ -40,10 +40,11 @@ else
 			<MudPaper Class="p-4">
 				<div class="d-flex align-center m-2">
 					<MudText Class="pr-2" Typo="Typo.h5">@_station.Code</MudText>
-					<MudIconButton Icon="@Icons.Material.Filled.Edit"
-					               Color="Color.Primary"
-					               Href="@($"/stations/edit/{_station.Id}")"
-					               Title="Bewerken"/>
+					<MudTooltip Delay="400" Placement="Placement.Right" Text="Meetstation bewerken">
+						<MudIconButton Icon="@Icons.Material.Filled.Edit"
+						               Color="Color.Primary"
+						               Href="@($"/stations/edit/{_station.Id}")"/>
+					</MudTooltip>
 				</div>
 
 				<MudGrid Class="p-2">
