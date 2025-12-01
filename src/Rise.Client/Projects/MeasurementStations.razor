@@ -19,7 +19,7 @@ else
 			           @bind-SelectedValues="Model.MeasurementStationIds"
 			           Variant="Variant.Outlined"
 			           Margin="Margin.Dense"
-			           Class="m-0" Disabled="@(!IsActive)"
+			           Class="ma-0" Disabled="@(!IsActive)"
 			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
 
 				@foreach (var station in _allStations)
@@ -75,7 +75,7 @@ else
 			           @bind-SelectedValues="Model.MeasurementStationIds"
 			           Variant="Variant.Outlined"
 			           Margin="Margin.Dense"
-			           Class="m-0" Disabled="@(!IsActive)"
+			           Class="ma-0" Disabled="@(!IsActive)"
 			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
 
 				@foreach (var station in _allStations)
