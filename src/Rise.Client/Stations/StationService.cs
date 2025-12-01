@@ -24,9 +24,11 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 			$"/api/stations/{stationId}", ctx))!;
 	}
 
-	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId, CancellationToken ctx = default) {
-
-		Result<MeasurementStationResponse.History>? result = await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.History>>($"/api/stations/{stationId}/history", ctx);
+	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
+		CancellationToken ctx = default) {
+		Result<MeasurementStationResponse.History>? result =
+			await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.History>>(
+				$"/api/stations/{stationId}/history", ctx);
 		return result!;
 	}
 

@@ -5,7 +5,6 @@ namespace Rise.Domain.Locations;
 /// </summary>
 public class Location : Entity {
 	private string _name = string.Empty;
-	private bool _isStockLocation;
 
 	/// <summary>
 	///     Entity Framework Core Constructor
@@ -40,10 +39,7 @@ public class Location : Entity {
 	/// </summary>
 	public Coordinate Coordinate { get; init; } = default!;
 
-	public bool IsStockLocation {
-		get => _isStockLocation;
-		set => _isStockLocation = value;
-	}
+	public bool IsStockLocation { get; set; }
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

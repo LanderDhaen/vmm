@@ -17,7 +17,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
 		QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
-
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
 
 		// Filtering (MSSQL handles casing)
@@ -125,7 +124,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {
-
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
 
 		MeasurementStationDto.History? measurementStation = await query
@@ -146,7 +144,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 						Location = h.Location.Name,
 						City = h.Location.Address.City,
 						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo,
+						ValidTo = h.ValidityRange.ValidTo
 					}).ToList()
 			})
 			.FirstOrDefaultAsync(ct);
@@ -234,11 +232,35 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success(projects);
 	}
 
+	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,
+		CancellationToken ctx = default) {
+		MeasurementStation? measurementStation = await dbContext.MeasurementStations
+			.Include(p => p.Projects)
+			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ctx);
+
+		if (measurementStation is null) {
+			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
+		}
+
+		List<Project> projects = await dbContext.Projects
+			.Where(p => req.ProjectIds.Contains(p.Id))
+			.ToListAsync(ctx);
+
+		if (projects.Count != req.ProjectIds.Count()) {
+			return Result.Error("Een of meerdere projecten zijn niet gevonden.");
+		}
+
+		measurementStation.UpdateProjectList(projects);
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
+
 	public async Task<Result> UpdateAsync(
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-
 		// TODO: Potentially refactoring this to match project editing flow
 
 
@@ -274,32 +296,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		station.Projects.Add(newProject);
 
 		await dbContext.SaveChangesAsync(ct);
-		return Result.Success();
-	}
-
-	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,
-		CancellationToken ctx = default) {
-
-		MeasurementStation? measurementStation = await dbContext.MeasurementStations
-			.Include(p => p.Projects)
-			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ctx);
-
-		if (measurementStation is null) {
-			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
-		}
-
-		List<Project> projects = await dbContext.Projects
-			.Where(p => req.ProjectIds.Contains(p.Id))
-			.ToListAsync(ctx);
-
-		if (projects.Count != req.ProjectIds.Count()) {
-			return Result.Error("Een of meerdere projecten zijn niet gevonden.");
-		}
-
-		measurementStation.UpdateProjectList(projects);
-
-		await dbContext.SaveChangesAsync(ctx);
-
 		return Result.Success();
 	}
 }

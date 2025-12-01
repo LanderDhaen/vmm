@@ -8,7 +8,6 @@ namespace Rise.Domain.Stations;
 ///     A measurement station is something that owns multiple devices.
 /// </summary>
 public class MeasurementStation : Entity {
-
 	private readonly List<MeasurementStationHistory> _measurementStationHistories = [];
 
 	private MeasurementStation() { }
@@ -33,12 +32,13 @@ public class MeasurementStation : Entity {
 	public ICollection<MaintObj> MaintObjects { get; } = new List<MaintObj>();
 
 
-	public IReadOnlyCollection<MeasurementStationHistory> MeasurementStationHistories => _measurementStationHistories.AsReadOnly();
+	public IReadOnlyCollection<MeasurementStationHistory> MeasurementStationHistories =>
+		_measurementStationHistories.AsReadOnly();
 
 	// Functions
 
 	public void UpdateProjectList(List<Project> projects) {
-		var closedProjectsNotAlreadyLinked = projects
+		List<Project> closedProjectsNotAlreadyLinked = projects
 			.Where(p => p.Status == Status.Afgesloten &&
 						Projects.All(existing => existing.Id != p.Id))
 			.ToList();
@@ -64,7 +64,6 @@ public class MeasurementStation : Entity {
 
 
 	public void MoveTo(Location location) {
-
 		// Check if the values are the same as the old values
 
 		if (location.Equals(Location)) {
@@ -74,7 +73,8 @@ public class MeasurementStation : Entity {
 		// Create history object using the old values
 
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		MeasurementStationHistory measurementStationHistory = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
+		MeasurementStationHistory measurementStationHistory =
+			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values
@@ -83,7 +83,6 @@ public class MeasurementStation : Entity {
 	}
 
 	public void UpdateInstallation(Installation installation) {
-
 		// Check if the values are the same as the old values
 
 		if (installation.Equals(Installation)) {
@@ -93,7 +92,8 @@ public class MeasurementStation : Entity {
 		// Create history object using the old values
 
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		MeasurementStationHistory measurementStationHistory = new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
+		MeasurementStationHistory measurementStationHistory =
+			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values

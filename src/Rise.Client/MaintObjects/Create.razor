@@ -5,13 +5,13 @@
 	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 		<MudCardContent>
 			<MudGrid>
-				
+
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Serienummer</MudText>
 					<MudTextField @bind-Value="Model.SerialNumber" For="@(() => Model.SerialNumber)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Serienummer"/>
 				</MudItem>
-				
+
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Naam</MudText>
 					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"

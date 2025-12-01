@@ -7,7 +7,7 @@ window.pickMap = {
 		}).addTo(map);
 
 		let marker = L.marker([lat, lng]).addTo(map);
-		
+
 		L.Control.geocoder({
 			defaultMarkGeocode: false,
 			placeholder: "Zoek een plaats of adres...",
@@ -20,13 +20,13 @@ window.pickMap = {
 
 				map.setView([newLat, newLng], 16);
 				marker.setLatLng([newLat, newLng]);
-				
+
 				dotnetRef.invokeMethodAsync("OnMapClicked", newLat, newLng);
 			})
 			.addTo(map);
-		
+
 		map.on("click", function (e) {
-			const { lat, lng } = e.latlng;
+			const {lat, lng} = e.latlng;
 			marker.setLatLng([lat, lng]);
 			dotnetRef.invokeMethodAsync("OnMapClicked", lat, lng);
 		});

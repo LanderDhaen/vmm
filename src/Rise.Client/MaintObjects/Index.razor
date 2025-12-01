@@ -5,10 +5,10 @@
 
 @* Desktop view *@
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
 		<MudTextField T="string"
 		              Label="Zoek"
-		              Class="m-0"
+		              Class="my-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -41,14 +41,16 @@
 	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#"
+			                HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-						<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(DefineColor(context.Item.MaintObjStatus))">
-							@context.Item.MaintObjStatus
-						</MudChip>
+					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+					         Color="@(DefineColor(context.Item.MaintObjStatus))">
+						@context.Item.MaintObjStatus
+					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
@@ -66,10 +68,10 @@
 @* Mobile view *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
 		<MudTextField T="string"
 		              Label="Zoek"
-		              Class="m-0"
+		              Class="my-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"

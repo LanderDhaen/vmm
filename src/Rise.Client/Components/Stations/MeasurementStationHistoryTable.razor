@@ -2,7 +2,8 @@
 @* Desktop view with full ValidityRange *@
 
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudTable T="MeasurementStationHistoryDto.Index" Items="MeasurementStation.MeasurementStationHistories" CustomHeader="true">
+	<MudTable T="MeasurementStationHistoryDto.Index" Items="MeasurementStation.MeasurementStationHistories"
+	          CustomHeader="true">
 		<HeaderContent>
 			<MudTHeadRow>
 				<MudTh Class="mud-theme-primary">Geldig van</MudTh>
@@ -43,8 +44,10 @@
 				<MudCardHeader>
 					<CardHeaderContent>
 						<MudStack Row="true" Justify="Justify.SpaceBetween">
-							<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b></MudText>
-							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig project</MudChip>
+							<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b>
+							</MudText>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig project
+							</MudChip>
 						</MudStack>
 					</CardHeaderContent>
 				</MudCardHeader>
@@ -63,7 +66,8 @@
 					<MudCardHeader>
 						<CardHeaderContent>
 							<MudStack Row="true" AlignItems="AlignItems.Start" Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b></MudText>
+								<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@MeasurementStation.Code</b>
+								</MudText>
 								<MudChip T="string" Variant="Variant.Outlined"
 								         Color="Color.Primary">@h.ValidFrom</MudChip>
 							</MudStack>

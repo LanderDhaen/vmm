@@ -10,6 +10,12 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Projects;
 
 public partial class Detail {
+	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
+	private readonly Result? _result;
+	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
+
+	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
+
 	// ====== Tabs ======
 	private readonly List<string> _tabs = new() {
 		"Informatie",
