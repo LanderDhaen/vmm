@@ -22,30 +22,18 @@ public partial class Detail {
 	// Overlay
 	private bool _visible;
 
-	// Radio button
-	private string _selectedOption = "Bestaand";
-	
-	private MudTable<MeasurementStationDto.Index> _table;
-
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
-	private HashSet<MeasurementStationDto.Index>? _stationsFromProject;
-	private IEnumerable<MeasurementStationDto.Index>? _allStations = new List<MeasurementStationDto.Index>();
-	private Result? _result;
-	private CancellationTokenSource _cancellationTokenSource = new();
-	private string _searchTerm = string.Empty;
+	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 
 	private int _selectedTab;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
-	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
-	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
-	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 
 	private async Task SetTabAsync(int index) {
@@ -82,28 +70,17 @@ public partial class Detail {
 		}
 
 		await GetStationsAsync();
-
-		Model.ProjectId = ProjectId;
 	}
 
 	private async Task GetStationsAsync() {
-		_cancellationTokenSource.Cancel();
-		_cancellationTokenSource.Dispose();
-		_cancellationTokenSource = new CancellationTokenSource();
-
-		QueryRequest.Search request = new() {
-			SearchTerm = _searchTerm
-		};
-
 		Result<ProjectResponse.MeasurementStations> stationsFromProject =
-			await ProjectService.GetStationsAsync(ProjectId, request, _cancellationTokenSource.Token);
+			await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
 
 		// --- Stations for this project ---
 		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
 			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
-			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
 		} else {
-			_stationsFromProject = new HashSet<MeasurementStationDto.Index>();
+			_stationsFromProject = new List<MeasurementStationDto.Index>();
 
 			string message = stationsFromProject.Errors != null
 				? string.Join(Environment.NewLine, stationsFromProject.Errors)
@@ -112,27 +89,8 @@ public partial class Detail {
 		}
 	}
 
-	private async Task HandleIntervalElapsed() {
-		await GetStationsAsync();
-	}
-
 	private async Task OpenOverlay() {
 		_visible = true;
-
-		if (_allStations is null || !_allStations.Any()) {
-			Result<MeasurementStationResponse.Index> allStations =
-				await StationService.GetIndexAsync(new QueryRequest.SkipTake());
-
-			// --- Load in all stations for select ---
-			if (allStations.IsSuccess && allStations.Value is not null) {
-				_allStations = allStations.Value.Stations;
-			} else {
-				string message = allStations.Errors != null
-					? string.Join(Environment.NewLine, allStations.Errors)
-					: "Kon meetstations niet laden.";
-				Snackbar.Add(message, Severity.Warning);
-			}
-		}
 	}
 
 	private async Task Close() {
@@ -216,27 +174,8 @@ public partial class Detail {
 		}
 	}
 
-	private async Task UpdateMeasurementStations() {
-		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
-			_stationsFromProject?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
-
-		if (!selectionChanged) {
-			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
-			return;
-		}
-
-		_result = await ProjectService.UpdateMeasurementStationsAsync(Model);
-		if (_result.IsSuccess) {
-			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
-			Result<ProjectResponse.MeasurementStations> stationsResult =
-				await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
-			if (stationsResult.IsSuccess && stationsResult.Value is not null) {
-				_stationsFromProject = stationsResult.Value.MeasurementStationsFromProject;
-			}
-
-			_visible = false;
-		} else {
-			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
-		}
+	private async Task RefreshStations() {
+		await GetStationsAsync();
+		StateHasChanged();
 	}
 }

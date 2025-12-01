@@ -267,7 +267,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			);
 		}
 
-		HashSet<MeasurementStationDto.Index> stations = await query
+		List<MeasurementStationDto.Index> stations = await query
 			.Where(s => s.Projects.Any(p => p.Id == projectId))
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
@@ -278,7 +278,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				City = s.Location.Address.City,
 				ProjectsCount = s.Projects.Count()
 			})
-			.ToHashSetAsync(ctx);
+			.ToListAsync(ctx);
 
 		return Result.Success(new ProjectResponse.MeasurementStations() {
 			MeasurementStationsFromProject = stations

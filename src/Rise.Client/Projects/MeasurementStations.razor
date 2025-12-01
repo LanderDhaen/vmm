@@ -1,5 +1,6 @@
 @using Rise.Client.Utilities
 @using Rise.Shared.Stations
+@using Rise.Client.Components
 <PageTitle>Project Details</PageTitle>
 
 @if (Stations is null)
@@ -10,6 +11,8 @@
 }
 else
 {
+	<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
+	             Label="Zoek meetstation"></SearchField>
 	@* Desktop view *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudTable T="MeasurementStationDto.Index" Items="Stations" CustomHeader="true"

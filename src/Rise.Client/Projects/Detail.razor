@@ -1,6 +1,5 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Shared.Projects
-@using Rise.Shared.Stations
 @inject NavigationManager Navigation
 @attribute [Authorize]
 
@@ -14,70 +13,8 @@
 }
 else
 {
-	<MudOverlay @bind-Visible="_visible" DarkBackground>
-		<MudPaper Class="pa-6 mx-auto">
-			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-				<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
-				<MudIconButton Icon="@Icons.Material.Filled.Close"
-				               Size="Size.Medium"
-				               OnClick="@(() => _visible = false)"/>
-			</MudStack>
-
-			<MudRadioGroup @bind-Value="_selectedOption">
-				<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
-				<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
-			</MudRadioGroup>
-
-			@if (_selectedOption == "Bestaand")
-			{
-				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-					<MudTextField T="string"
-					              InputType="InputType.Search"
-					              Label="Zoek"
-					              Class="m-0"
-					              Variant="Variant.Outlined"
-					              DebounceInterval="300"
-					              OnDebounceIntervalElapsed="HandleIntervalElapsed"
-					              @bind-Value="_searchTerm"
-					              Margin="Margin.Dense"
-					              Adornment="Adornment.End"
-					              AdornmentIcon="@Icons.Material.Filled.Search"/>
-					<MudTooltip Delay="400"
-					            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
-						<MudButton Variant="Variant.Filled"
-						           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-						           Size="Size.Small"
-						           Color="Color.Primary"
-						           Class="px-4"
-						           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
-							Lijst bijwerken
-						</MudButton>
-					</MudTooltip>
-				</MudStack>
-
-				<MudTable @ref="_table" T="MeasurementStationDto.Index" Items="@_allStations" MultiSelection="true"
-				          SelectionChangeable="true" Hover="true"
-				          @bind-SelectedItems="_stationsFromProject" SelectOnRowClick="false" CustomHeader="true"
-				          Virtualize="true" FixedHeader="true">
-					<HeaderContent>
-						<MudTHeadRow>
-							<MudTh Class="mud-theme-primary">#</MudTh>
-							<MudTh Class="mud-theme-primary">Locatie</MudTh>
-							<MudTh Class="mud-theme-primary">Gemeente</MudTh>
-						</MudTHeadRow>
-					</HeaderContent>
-					<RowTemplate>
-						<MudTd DataLabel="#">@context.Code</MudTd>
-						<MudTd DataLabel="Locatie">@context.Location</MudTd>
-						<MudTd DataLabel="Gemeente">@context.City</MudTd>
-					</RowTemplate>
-				</MudTable>
-			}
-			else if (_selectedOption == "Nieuw")
-			{
-			}
-		</MudPaper>
-	</MudOverlay>
+	<UpdateStationListOverlay @bind-Visible="_visible" ProjectId="ProjectId" Stations="_stationsFromProject"
+	                          OnStationsUpdated="@RefreshStations"></UpdateStationListOverlay>
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
@@ -144,14 +81,18 @@ else
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">@_project.Code</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.Edit"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           Href="@($"/projects/edit/{ProjectId}")">
-										Aanpassen
-									</MudButton>
+									<MudTooltip Delay="400"
+									            Text="@(IsActive ? "Meetnet wijzigen" : "Afgesloten project kan niet bewerkt worden")">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.Edit"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           Href="@($"/projects/edit/{ProjectId}")"
+										           Disabled="@(!IsActive)">
+											Aanpassen
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 								<MudText Typo="Typo.subtitle2">@_project.Name</MudText>
 							</CardHeaderContent>
@@ -171,13 +112,17 @@ else
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">@_project.MeasurementNetwork.Name</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.MyLocation"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4">
-										Wijzigen
-									</MudButton>
+									<MudTooltip Delay="400"
+									            Text="@(IsActive ? "Meetnet wijzigen" : "Afgesloten project kan niet bewerkt worden")">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.MyLocation"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           Disabled="@(!IsActive)">
+											Wijzigen
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
@@ -196,30 +141,23 @@ else
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">Lijst meetstations
 									</MudText>
-									<MudButton Variant="Variant.Filled"
-									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           OnClick="@OpenOverlay">
-										Lijst bijwerken
-									</MudButton>
+									<MudTooltip Delay="400"
+									            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
+										<MudButton Variant="Variant.Filled"
+										           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@OpenOverlay"
+										           Disabled="@(!IsActive)">
+											Lijst bijwerken
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
-							<MudTextField T="string"
-							              InputType="InputType.Search"
-							              Label="Zoek"
-							              Class="m-0"
-							              Variant="Variant.Outlined"
-							              DebounceInterval="300"
-							              OnDebounceIntervalElapsed="HandleIntervalElapsed"
-							              @bind-Value="_searchTerm"
-							              Margin="Margin.Dense"
-							              Adornment="Adornment.End"
-							              AdornmentIcon="@Icons.Material.Filled.Search"/>
-							<MeasurementStations Stations="_stationsFromProject"/>
+							<MeasurementStations ProjectId="ProjectId" Stations="_stationsFromProject"/>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

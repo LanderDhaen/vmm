@@ -6,6 +6,6 @@ namespace Rise.Shared.Projects;
 public static partial class ProjectRequest {
 	public class UpdateMeasurementStations {
 		public Guid ProjectId { get; set; }
-		public IEnumerable<Guid> MeasurementStationIds { get; set; } = new List<Guid>();
+		public List<Guid> MeasurementStationIds { get; set; } = new();
 	}
 }

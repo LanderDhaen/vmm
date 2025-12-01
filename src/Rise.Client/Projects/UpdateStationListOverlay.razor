@@ -1,0 +1,56 @@
+@using Rise.Client.Components
+@using Rise.Shared.Stations
+<MudOverlay @bind-Visible="Visible" DarkBackground>
+	<MudPaper Class="pa-6 mx-auto">
+		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
+			<MudIconButton Icon="@Icons.Material.Filled.Close"
+			               Size="Size.Medium"
+			               OnClick="@CloseOverlay"
+			/>
+		</MudStack>
+
+		<MudRadioGroup @bind-Value="_selectedOption">
+			<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
+			<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
+		</MudRadioGroup>
+
+		@switch (_selectedOption)
+		{
+			case "Bestaand":
+				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+					<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
+					             Label="Zoek meetstation"></SearchField>
+					<MudButton Variant="Variant.Filled"
+					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+					           Size="Size.Small"
+					           Color="Color.Primary"
+					           Class="px-4"
+					           OnClick="@UpdateMeasurementStations">
+						Lijst bijwerken
+					</MudButton>
+				</MudStack>
+
+				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true">
+					<HeaderContent>
+						<MudTHeadRow>
+							<MudTh Class="mud-theme-primary"></MudTh>
+							<MudTh Class="mud-theme-primary">#</MudTh>
+							<MudTh Class="mud-theme-primary">Locatie</MudTh>
+							<MudTh Class="mud-theme-primary">Gemeente</MudTh>
+						</MudTHeadRow>
+					</HeaderContent>
+					<RowTemplate>
+						<MudCheckBox Value="@Model.MeasurementStationIds.Contains(context.Id)"
+						             ValueChanged="@((bool value) => OnCheckboxChanged(context.Id, value))"/>
+						<MudTd DataLabel="#">@context.Code</MudTd>
+						<MudTd DataLabel="Locatie">@context.Location</MudTd>
+						<MudTd DataLabel="Gemeente">@context.City</MudTd>
+					</RowTemplate>
+				</MudTable>
+				break;
+			case "Nieuw":
+					break;
+		}
+	</MudPaper>
+</MudOverlay>

@@ -16,7 +16,7 @@ public static partial class ProjectResponse {
 	}
 	
 	public class MeasurementStations {
-		public HashSet<MeasurementStationDto.Index> MeasurementStationsFromProject { get; set; } = [];
+		public IEnumerable<MeasurementStationDto.Index> MeasurementStationsFromProject { get; set; } = [];
 	}
 
 	public class History {
