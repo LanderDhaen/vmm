@@ -18,7 +18,7 @@ public partial class Projects {
 
 
 	private MeasurementStationRequest.UpdateProjects Model { get; } = new();
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required NavigationManager Navigation { get; set; }
@@ -28,7 +28,7 @@ public partial class Projects {
 		Result<ProjectResponse.Index> allProjects = await ProjectService.GetIndexAsync(new QueryRequest.SkipTake());
 
 		// --- Projects from this station ---
-		if (projectsFromStation.IsSuccess && projectsFromStation.Value is not null) {
+		if (projectsFromStation is { IsSuccess: true, Value: not null }) {
 			_projectsFromStation = projectsFromStation.Value;
 			Model.ProjectIds = _projectsFromStation.Select(s => s.Id).ToList();
 		} else {
@@ -43,7 +43,7 @@ public partial class Projects {
 		}
 
 		// --- All projects that can be added to the station ---
-		if (allProjects.IsSuccess && allProjects.Value is not null) {
+		if (allProjects is { IsSuccess: true, Value: not null }) {
 			_allProjects = allProjects.Value.Projects;
 		} else {
 			if (!allProjects.IsSuccess) {
@@ -58,7 +58,9 @@ public partial class Projects {
 	}
 
 	private void OnProjectRowClick(TableRowClickEventArgs<ProjectDto.Index> args) {
-		Navigation.NavigateTo($"/projects/{args.Item.Id}");
+		if (args.Item != null) {
+			Navigation.NavigateTo($"/projects/{args.Item.Id}");
+		}
 	}
 
 	private void OnProjectCardClick(ProjectDto.Index project) {
@@ -67,7 +69,7 @@ public partial class Projects {
 
 	private async Task UpdateProjects() {
 		bool selectionChanged = !Model.ProjectIds.SequenceEqual(
-			_projectsFromStation?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
+			_projectsFromStation?.Select(s => s.Id) ?? []);
 
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 project selecteren.", Severity.Error);
@@ -76,7 +78,7 @@ public partial class Projects {
 			if (_result.IsSuccess) {
 				Snackbar.Add("Projecten succesvol bijgewerkt!", Severity.Success);
 				Result<List<ProjectDto.Index>> projectsResult = await StationService.GetProjectsAsync(StationId);
-				if (projectsResult.IsSuccess && projectsResult.Value is not null) {
+				if (projectsResult is { IsSuccess: true, Value: not null }) {
 					_projectsFromStation = projectsResult.Value;
 					await TabChanged.InvokeAsync($"Projecten ({_projectsFromStation.Count()})");
 				}

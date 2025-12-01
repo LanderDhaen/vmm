@@ -44,7 +44,7 @@ else
 						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId"
 						           For="@(() => Model.MeasurementNetworkId)"
 						           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
-							@foreach (var network in _networks)
+							@foreach (var network in _networks!)
 							{
 								<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
 							}

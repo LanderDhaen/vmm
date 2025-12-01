@@ -24,8 +24,11 @@ public partial class Create {
 	private MaintObjRequest.Create Model { get; } = new();
 
 	protected override async Task OnInitializedAsync() {
-		QueryRequest.SkipTake request = new();
-		request.Filters["isStockLocation"] = true;
+		QueryRequest.SkipTake request = new() {
+			Filters = {
+				["isStockLocation"] = true
+			}
+		};
 
 		// var query = new QueryRequest.SkipTake();
 		// query.Filters.Add("IsStockLocation", "true");

@@ -57,7 +57,7 @@ public partial class Index {
 	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 		SortDefinition<ProjectDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
 			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0,
-				null)); // Can't seem to have no sort function here
+				null!)); // Can't seem to have no sort function here
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
@@ -79,7 +79,7 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetProjectsMobileAsync() {
-		_cancellationTokenSource.Cancel();
+		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
 
@@ -134,7 +134,7 @@ public partial class Index {
 
 	// Other
 
-	private Color DefineColor(Status status) {
+	private static Color DefineColor(Status status) {
 		return status == Status.Actief ? Color.Success : Color.Error;
 	}
 }

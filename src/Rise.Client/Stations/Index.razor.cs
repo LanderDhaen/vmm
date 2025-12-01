@@ -56,9 +56,9 @@ public partial class Index {
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+		SortDefinition<MeasurementStationDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
 			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0,
-				null)); // Can't seem to have no sort function here
+				null!)); // Can't seem to have no sort function here
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,

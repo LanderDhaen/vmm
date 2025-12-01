@@ -16,11 +16,11 @@ public partial class Detail {
 	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
 
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Info",
 		"Meetstations",
 		"Historiek"
-	};
+	];
 
 	// Drawer
 	private bool _open;
@@ -35,8 +35,8 @@ public partial class Detail {
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
-	[Inject] private IDialogService DialogService { get; set; } = default!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
 	private Color BadgeColor => _project?.Status == Status.Actief ? Color.Success : Color.Error;
 	private bool IsActive => _project?.Status == Status.Actief;
 

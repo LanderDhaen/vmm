@@ -8,7 +8,7 @@ using Rise.Shared.Identity.Accounts;
 namespace Rise.Client.Identity;
 
 public partial class Login {
-	private readonly AccountRequest.Login Model = new();
+	private readonly AccountRequest.Login _model = new();
 	private Result _result = new();
 
 	[SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
@@ -34,7 +34,7 @@ public partial class Login {
 	}
 
 	public async Task LoginUser() {
-		_result = await AccountManager.LoginAsync(Model.Email!, Model.Password!);
+		_result = await AccountManager.LoginAsync(_model.Email!, _model.Password!);
 
 		if (_result.IsSuccess) {
 			if (!string.IsNullOrWhiteSpace(ReturnUrl)) {

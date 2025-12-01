@@ -40,24 +40,24 @@
 
 				<MudItem xs="12">
 					<MudPaper Elevation="3" Class="pa-6">
-						<EditForm Model="Model" OnValidSubmit="LoginUser">
+						<EditForm Model="_model" OnValidSubmit="LoginUser">
 							<FluentValidationValidator/>
 
 							<MudStack Spacing="3">
-								<MudTextField @bind-Value="Model.Email"
+								<MudTextField @bind-Value="_model.Email"
 								              Label="E-mail"
 								              Variant="Variant.Outlined"
 								              Required="true"
-								              For="() => Model.Email"
+								              For="() => _model.Email"
 								              Adornment="Adornment.Start"
 								              AdornmentIcon="@Icons.Material.Filled.Email"
 								              InputType="InputType.Email"/>
 
-								<MudTextField @bind-Value="Model.Password"
+								<MudTextField @bind-Value="_model.Password"
 								              Label="Wachtwoord"
 								              Variant="Variant.Outlined"
 								              Required="true"
-								              For="() => Model.Password"
+								              For="() => _model.Password"
 								              Adornment="Adornment.Start"
 								              AdornmentIcon="@Icons.Material.Filled.Lock"
 								              InputType="InputType.Password"/>

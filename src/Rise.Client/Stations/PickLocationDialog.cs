@@ -7,7 +7,7 @@ namespace Rise.Client.Stations;
 
 public partial class PickLocationDialog {
 	private CoordinateResult? _picked;
-	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
 
 	[Parameter] public double InitialX { get; set; }
 	[Parameter] public double InitialY { get; set; }

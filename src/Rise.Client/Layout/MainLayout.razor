@@ -68,7 +68,7 @@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-4">
 			<Header Title="@HeaderService.State.Title" Icon="@HeaderService.State.Icon"
-			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)" />
+			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)"></Header>
 			<MudIconButton Icon="@Icons.Material.Filled.Menu"
 			               Class="pr-0"
 			               Size="Size.Large"

@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Components.Routing;
 
 using MudBlazor;
 
-namespace Rise.Client.Layout;
+namespace Rise.Client.Components;
 
 // Code-behind for ActionsDrawer. Detects drawer close by intercepting the bound open value.
 public partial class ActionsDrawer : ComponentBase, IDisposable {
 	// Backing field used to store the true value without triggering the setter logic.
-	private bool __openBackingField;
+	private bool _openBackingField;
 	[Inject] protected NavigationManager NavigationManager { get; set; } = null!;
 
 	// Parent -> child Open parameter (supports @bind-Open from parent)
@@ -22,20 +22,20 @@ public partial class ActionsDrawer : ComponentBase, IDisposable {
 	// Using a property lets us intercept changes: when the drawer closes (set to false)
 	// we can run our close logic (propagate OpenChanged, call OnClose, update UI).
 	private bool _open {
-		get => __openBackingField;
+		get => _openBackingField;
 		set {
 			// If value didn't change, nothing to do
-			if (__openBackingField == value) {
+			if (_openBackingField == value) {
 				return;
 			}
 
 			// Update backing field
-			__openBackingField = value;
+			_openBackingField = value;
 
 			// If drawer was closed, run the close handler.
 			// We intentionally do not await here to keep setter synchronous;
 			// instead we fire-and-forget the async handler.
-			if (!__openBackingField) {
+			if (!_openBackingField) {
 				_ = HandleCloseAsync();
 			}
 		}
@@ -58,7 +58,7 @@ public partial class ActionsDrawer : ComponentBase, IDisposable {
 		// Subscribe to navigation changes so button text stays relevant
 		NavigationManager.LocationChanged += OnLocationChanged;
 		// Ensure our internal backing field matches initial parameter value
-		__openBackingField = Open;
+		_openBackingField = Open;
 	}
 
 	protected override void OnParametersSet() {
@@ -66,8 +66,8 @@ public partial class ActionsDrawer : ComponentBase, IDisposable {
 		// (do NOT set the property _open here because that would trigger the setter logic).
 		// This keeps the internal state in sync with the parent without treating parent-driven
 		// updates as "close" events that need to be re-propagated.
-		if (__openBackingField != Open) {
-			__openBackingField = Open;
+		if (_openBackingField != Open) {
+			_openBackingField = Open;
 		}
 	}
 
@@ -99,7 +99,7 @@ public partial class ActionsDrawer : ComponentBase, IDisposable {
 	// It performs the same propagate-and-notify logic you had before.
 	private async Task HandleCloseAsync() {
 		// Ensure the internal backing field is false
-		__openBackingField = false;
+		_openBackingField = false;
 
 		// Propagate two-way binding change to the parent if it provided a delegate.
 		if (OpenChanged.HasDelegate) {

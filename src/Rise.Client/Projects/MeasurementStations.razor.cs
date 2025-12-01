@@ -19,7 +19,7 @@ public partial class MeasurementStations {
 
 
 	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required NavigationManager Navigation { get; set; }
@@ -31,7 +31,7 @@ public partial class MeasurementStations {
 			await StationService.GetIndexAsync(new QueryRequest.SkipTake());
 
 		// --- Stations for this project ---
-		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
+		if (stationsFromProject is { IsSuccess: true, Value: not null }) {
 			_stationsFromProject = stationsFromProject.Value;
 			Model.MeasurementStationIds = _stationsFromProject.Select(s => s.Id).ToList();
 		} else {
@@ -46,7 +46,7 @@ public partial class MeasurementStations {
 		}
 
 		// --- All stations that can be added to the project ---
-		if (allStations.IsSuccess && allStations.Value is not null) {
+		if (allStations is { IsSuccess: true, Value: not null }) {
 			_allStations = allStations.Value.Stations;
 		} else {
 			if (!allStations.IsSuccess) {
@@ -84,7 +84,7 @@ public partial class MeasurementStations {
 				Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
 				Result<List<MeasurementStationDto.Index>> stationsResult =
 					await ProjectService.GetStationsAsync(ProjectId);
-				if (stationsResult.IsSuccess && stationsResult.Value is not null) {
+				if (stationsResult is { IsSuccess: true, Value: not null }) {
 					_stationsFromProject = stationsResult.Value;
 					await TabChanged.InvokeAsync($"Meetstations ({_stationsFromProject.Count()})");
 				}

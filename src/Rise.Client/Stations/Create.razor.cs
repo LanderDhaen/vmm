@@ -76,22 +76,24 @@ public partial class Create {
 
 	private void OnLocationSelected() {
 		if (Model.LocationId.HasValue) {
-			LocationDto.Index selected = _locations.FirstOrDefault(x => x.Id == Model.LocationId.Value);
+			if (_locations != null) {
+				LocationDto.Index? selected = _locations.FirstOrDefault(x => x.Id == Model.LocationId.Value);
 
-			if (selected == null) {
-				return;
+				if (selected == null) {
+					return;
+				}
+
+				Model.Location = new LocationRequest.Create {
+					Name = selected.Name,
+					Addressline1 = selected.Address.AddressLine1,
+					Addressline2 = selected.Address.AddressLine2,
+					City = selected.Address.City,
+					PostalCode = selected.Address.PostalCode,
+					CountryIso = selected.Address.CountryIso,
+					X = selected.Coordinate.X,
+					Y = selected.Coordinate.Y
+				};
 			}
-
-			Model.Location = new LocationRequest.Create {
-				Name = selected.Name,
-				Addressline1 = selected.Address.AddressLine1,
-				Addressline2 = selected.Address.AddressLine2,
-				City = selected.Address.City,
-				PostalCode = selected.Address.PostalCode,
-				CountryIso = selected.Address.CountryIso,
-				X = selected.Coordinate.X,
-				Y = selected.Coordinate.Y
-			};
 		} else {
 			Model.Location = new LocationRequest.Create();
 		}
@@ -110,11 +112,7 @@ public partial class Create {
 	private string BuildString(Guid? id) {
 		LocationDto.Index? location = _locations.FirstOrDefault(x => x.Id == id);
 
-		if (location is null) {
-			return string.Empty;
-		}
-
-		return $"{location.Name} ({location.Address.City})";
+		return location is null ? string.Empty : $"{location.Name} ({location.Address.City})";
 	}
 
 	private async Task OpenMapDialog() {
@@ -133,7 +131,7 @@ public partial class Create {
 			FullWidth = true
 		};
 
-		IDialogReference dialog = DialogService.Show<PickLocationDialog>(
+		IDialogReference dialog = await DialogService.ShowAsync<PickLocationDialog>(
 			"Kies meetstation locatie",
 			parameters,
 			options
@@ -141,7 +139,7 @@ public partial class Create {
 
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled && result.Data is CoordinateResult c) {
+		if (result is { Canceled: false, Data: CoordinateResult c }) {
 			Model.Location.X = c.X;
 			Model.Location.Y = c.Y;
 		}

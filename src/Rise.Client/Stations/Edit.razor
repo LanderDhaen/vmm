@@ -3,15 +3,15 @@
 
 <PageTitle>Meetstation bewerken</PageTitle>
 
-@if (Model is null)
+@if (_model is null)
 {
 	<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
 }
 else
 {
 	<MudCard>
-		<MudForm Model="@Model"
-		         @ref="form"
+		<MudForm Model="@_model"
+		         @ref="_form"
 		         Validation="FieldValidator"
 		         ValidationDelay="0">
 
@@ -19,8 +19,8 @@ else
 				<MudGrid>
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Code</MudText>
-						<MudTextField @bind-Value="Model.Code"
-						              For="@(() => Model.Code)"
+						<MudTextField @bind-Value="_model.Code"
+						              For="@(() => _model.Code)"
 						              Counter="64"
 						              MaxLength="64"
 						              Immediate="true"
@@ -30,16 +30,16 @@ else
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-						<MudDatePicker @bind-Date="Model.InstalledAt"
-						               For="@(() => Model.InstalledAt)"
+						<MudDatePicker @bind-Date="_model.InstalledAt"
+						               For="@(() => _model.InstalledAt)"
 						               DateFormat="dd/MM/yyyy"
 						               Variant="Variant.Outlined"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Verwijderd op</MudText>
-						<MudDatePicker @bind-Date="Model.RemovedAt"
-						               For="@(() => Model.RemovedAt)"
+						<MudDatePicker @bind-Date="_model.RemovedAt"
+						               For="@(() => _model.RemovedAt)"
 						               DateFormat="dd/MM/yyyy"
 						               Variant="Variant.Outlined"/>
 					</MudItem>
@@ -47,8 +47,8 @@ else
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Locatie</MudText>
 						<MudSelect T="Guid"
-						           @bind-Value="Model.LocationId"
-						           For="@(() => Model.LocationId)"
+						           @bind-Value="_model.LocationId"
+						           For="@(() => _model.LocationId)"
 						           Placeholder="Selecteer een locatie"
 						           Clearable="false"
 						           Variant="Variant.Outlined">

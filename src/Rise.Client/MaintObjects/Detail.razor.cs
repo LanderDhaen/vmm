@@ -9,10 +9,10 @@ namespace Rise.Client.MaintObjects;
 
 public partial class Detail {
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Info",
 		"Historiek"
-	};
+	];
 
 	// ====== Main ======
 	private MaintObjDto.Detail? _maintObj;
@@ -69,7 +69,7 @@ public partial class Detail {
 	}
 
 	// Other
-	private Color DefineColor(MaintObjStatus status) {
+	private static Color DefineColor(MaintObjStatus status) {
 		return status switch {
 			MaintObjStatus.Actief => Color.Success,
 			MaintObjStatus.Inactief => Color.Error,

@@ -46,7 +46,7 @@ public partial class Detail {
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
-			new BreadcrumbItem($"{_station.Code}", null, true)
+			new BreadcrumbItem($"{_station?.Code}", null, true)
 		);
 
 		// set header
