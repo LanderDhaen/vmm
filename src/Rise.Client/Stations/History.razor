@@ -1,4 +1,3 @@
-@using Rise.Client.Components.Stations
 <PageTitle>Station Details</PageTitle>
 
 @if (_measurementStation is null)
@@ -8,34 +7,70 @@
 	</MudContainer>
 }
 else
-{
-	<MudToolBar Class="justify-start gap-3" Gutters="false">
-		<MudButton Variant="Variant.Filled"
-		           Class="px-4"
-		           Size="Size.Small"
-		           StartIcon="@(Icons.Material.Filled.Timeline)"
-		           Color="Color.Primary"
-		           OnClick="@(() => DisplayTable = false)"
-		           Disabled="@(!DisplayTable)">
-			Tijdslijn
-		</MudButton>
-		<MudButton Variant="Variant.Filled"
-		           Class="px-4"
-		           Size="Size.Small"
-		           StartIcon="@(Icons.Material.Filled.TableRows)"
-		           Color="Color.Primary"
-		           OnClick="@(() => DisplayTable = true)"
-		           Disabled="DisplayTable">
-			Tabel
-		</MudButton>
-	</MudToolBar>
+@* Desktop view with full ValidityRange *@
 
-	@if (DisplayTable)
-	{
-		<MeasurementStationHistoryTable MeasurementStation="_measurementStation"/>
-	}
-	else
-	{
-		<MeasurementStationHistoryTimeline MeasurementStation="_measurementStation"/>
-	}
-}
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudTimeline>
+		<MudTimelineItem Color="Color.Primary">
+			<ItemOpposite>
+				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
+			</ItemOpposite>
+			<ItemContent>
+				<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
+				<MudText>Geïnstalleerd: @_measurementStation.InstalledAt</MudText>
+				<MudText>Verwijderd: @_measurementStation.RemovedAt</MudText>
+				<MudText>Locatie: @_measurementStation.Location</MudText>
+				<MudText>Stad: @_measurementStation.City</MudText>
+			</ItemContent>
+		</MudTimelineItem>
+
+		@foreach (var h in _measurementStation.MeasurementStationHistories)
+		{
+			<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+				<ItemOpposite>
+					<MudChip T="string" Variant="Variant.Outlined"
+					         Color="Color.Primary">@h.ValidFrom - @h.ValidTo</MudChip>
+				</ItemOpposite>
+
+				<ItemContent>
+					<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
+					<MudText>Geïnstalleerd: @h.InstalledAt</MudText>
+					<MudText>Verwijderd: @h.RemovedAt</MudText>
+					<MudText>Locatie: @h.Location</MudText>
+					<MudText>Stad: @h.City</MudText>
+				</ItemContent>
+			</MudTimelineItem>
+		}
+	</MudTimeline>
+</MudHidden>
+
+@* Mobile view with only ValidFrom *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudTimeline TimelinePosition="TimelinePosition.Left">
+		<MudTimelineItem Color="Color.Primary">
+			<ItemContent>
+				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
+				<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
+				<MudText>Geïnstalleerd: @_measurementStation.InstalledAt</MudText>
+				<MudText>Verwijderd: @_measurementStation.RemovedAt</MudText>
+				<MudText>Locatie: @_measurementStation.Location</MudText>
+				<MudText>Stad: @_measurementStation.City</MudText>
+			</ItemContent>
+		</MudTimelineItem>
+
+		@foreach (var h in _measurementStation.MeasurementStationHistories)
+		{
+			<MudTimelineItem Color="Color.Primary">
+				<ItemContent>
+					<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@h.ValidFrom</MudChip>
+					<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
+					<MudText>Geïnstalleerd: @h.InstalledAt</MudText>
+					<MudText>Verwijderd: @h.RemovedAt</MudText>
+					<MudText>Locatie: @h.Location</MudText>
+					<MudText>Stad: @h.City</MudText>
+				</ItemContent>
+			</MudTimelineItem>
+		}
+	</MudTimeline>
+</MudHidden>

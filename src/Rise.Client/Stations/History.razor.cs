@@ -9,7 +9,7 @@ public partial class History {
 
 	[Parameter] public Guid MeasurementStationId { get; set; }
 	[Inject] public required IMeasurementStationService MeasurementStationService { get; set; }
-	private bool DisplayTable { get; set; }
+	
 
 	protected override async Task OnInitializedAsync() {
 		Result<MeasurementStationResponse.History> result =
@@ -18,5 +18,26 @@ public partial class History {
 		if (result.IsSuccess) {
 			_measurementStation = result.Value.MeasurementStation;
 		}
+	}
+
+	private string CompareHistories(MeasurementStationHistoryDto.Index? prev, MeasurementStationHistoryDto.Index next) {
+
+		if (prev is null) {
+			return "";
+		}
+		
+		if (!prev.Location.Equals(next.Location)) {
+			return $"Meetstation verplaatst van {prev.Location} naar {next.Location}";
+		}
+
+		if (!prev.InstalledAt.Equals(next.InstalledAt)) {
+			return $"Installeren van meetstation gewijzigd van {prev.InstalledAt} naar {next.InstalledAt}";
+		}
+
+		if (!prev.RemovedAt.Equals(next.RemovedAt)) {
+			return $"Verwijderen van meetstation gewijzigd van {prev.InstalledAt} naar {next.RemovedAt}";
+		}
+		
+		return "";
 	}
 }
