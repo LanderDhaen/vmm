@@ -125,6 +125,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+		
+		// TODO: Add the current values as an entry inside the list
 
 		MeasurementStationDto.History? measurementStation = await query
 			.Where(s => s.Id == stationId)
