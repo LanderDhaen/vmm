@@ -15,7 +15,7 @@
 		              DebounceInterval="300"
 		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
 		              @bind-Value="_searchTerm"
-									FullWidth="true"
+		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -51,7 +51,8 @@
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(ProjectUtility.DefineStatusColor(context.Item.Status))">
+					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+					         Color="@(ProjectUtility.DefineStatusColor(context.Item.Status))">
 						@context.Item.Status
 					</MudChip>
 				</CellTemplate>
@@ -126,7 +127,7 @@
 								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
 								          Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-									<MudBadge Color="@(ProjectUtility.DefineStatusColor(item.Status))" Dot="true" />
+									<MudBadge Color="@(ProjectUtility.DefineStatusColor(item.Status))" Dot="true"/>
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>
@@ -196,72 +197,73 @@
 @* Filter drawer (adaptive anchor: right on large screens, bottom on xs) *@
 @if (_filterOptionsOpen)
 {
-    <MudDrawer Anchor="@_filterDrawerAnchor"
-               Variant="DrawerVariant.Temporary"
-               Elevation="8"
-               @bind-Open="_filterOptionsOpen"
-               Class="@GetFilterDrawerClass()">
+	<MudDrawer Anchor="@_filterDrawerAnchor"
+	           Variant="DrawerVariant.Temporary"
+	           Elevation="8"
+	           @bind-Open="_filterOptionsOpen"
+	           Class="@GetFilterDrawerClass()">
 
-        <MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
+		<MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
 
-        <MudStack Spacing="3" Class="mt-2">
-            <MudDivider/>
+		<MudStack Spacing="3" Class="mt-2">
+			<MudDivider/>
 
-            <MudSelect T="Status?"
-                       Label="Status"
-                       Value="_filterStatus"
-                       ValueChanged="@(async (Status? val) => await UpdateFilterAsync<Status?>(v => _filterStatus = v, val))"
-                       ValueExpression="() => _filterStatus"
-                       Dense="true"
-                       Clearable="true">
-                @foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
-                {
-                    <MudSelectItem T="Status?" Value="@( (Status?) s )">@s</MudSelectItem>
-                }
-            </MudSelect>
+			<MudSelect T="Status?"
+			           Label="Status"
+			           Value="_filterStatus"
+			           ValueChanged="@(val => UpdateFilterAsync<Status?>(v => _filterStatus = v, val))"
+			           ValueExpression="() => _filterStatus"
+			           Dense="true"
+			           Clearable="true">
+				@foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
+				{
+					<MudSelectItem T="Status?" Value="@((Status?)s)">@s</MudSelectItem>
+				}
+			</MudSelect>
 
-            <MudSelect T="string" Label="Zone" Value="_filterZone"
-                       ValueChanged="@(async (string? val) => await UpdateFilterAsync<string?>(v => _filterZone = v, val))"
-                       ValueExpression="() => _filterZone"
-                       Dense="true" Clearable="true" Placeholder="Selecteer...">
-                @foreach (var z in _zones)
-                {
-                    <MudSelectItem T="string" Value="@z">@z</MudSelectItem>
-                }
-            </MudSelect>
+			<MudSelect T="string" Label="Zone" Value="_filterZone"
+			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterZone = v, val))"
+			           ValueExpression="() => _filterZone"
+			           Dense="true" Clearable="true" Placeholder="Selecteer...">
+				@foreach (var z in _zones)
+				{
+					<MudSelectItem T="string" Value="@z">@z</MudSelectItem>
+				}
+			</MudSelect>
 
-            <MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork"
-                       ValueChanged="@(async (string? val) => await UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"
-                       ValueExpression="() => _filterMeasurementNetwork"
-                       Dense="true" Clearable="true" Placeholder="Selecteer...">
-                @foreach (var m in _measurementNetworks)
-                {
-                    <MudSelectItem T="string" Value="@m">@m</MudSelectItem>
-                }
-            </MudSelect>
+			<MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork"
+			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"
+			           ValueExpression="() => _filterMeasurementNetwork"
+			           Dense="true" Clearable="true" Placeholder="Selecteer...">
+				@foreach (var m in _measurementNetworks)
+				{
+					<MudSelectItem T="string" Value="@m">@m</MudSelectItem>
+				}
+			</MudSelect>
 
-            <MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate"
-                DateChanged="@(async (DateTime? val) => await UpdateFilterAsync<DateTime?>(v =>
-                {
-                    _filterStartDate = v;
-                    if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value)
-                    {
-                        _filterEndDate = null;
-                    }
-                }, val))"
-                DateExpression="() => _filterStartDate"
-                DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+			<MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate"
+			               DateChanged="@(val => UpdateFilterAsync<DateTime?>(v =>
+			                            {
+				                            _filterStartDate = v;
+				                            if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value)
+				                            {
+					                            _filterEndDate = null;
+				                            }
+			                            }, val))"
+			               DateExpression="() => _filterStartDate"
+			               DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
 
-            <MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate"
-                DateChanged="@(async (DateTime? val) => await UpdateFilterAsync<DateTime?>(v => _filterEndDate = v, val))"
-                DateExpression="() => _filterEndDate"
-                DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"
-                MinDate="_filterStartDate?.AddDays(1)" />
+			<MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate"
+			               DateChanged="@(val => UpdateFilterAsync<DateTime?>(v => _filterEndDate = v, val))"
+			               DateExpression="() => _filterEndDate"
+			               DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"
+			               MinDate="_filterStartDate?.AddDays(1)"/>
 
-            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
-            </MudStack>
+			<MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
+				<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
+			</MudStack>
 
-        </MudStack>
-    </MudDrawer>
+		</MudStack>
+	</MudDrawer>
 }
+
