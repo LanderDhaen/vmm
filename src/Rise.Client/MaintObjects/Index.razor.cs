@@ -106,14 +106,4 @@ public partial class Index {
 	private void NavigateToCreate() {
 		NavigationManager.NavigateTo("/maintobjects/create");
 	}
-
-	// Other
-	private Color DefineColor(MaintObjStatus status) {
-		return status switch {
-			MaintObjStatus.Actief => Color.Success,
-			MaintObjStatus.Inactief => Color.Error,
-			MaintObjStatus.Defect => Color.Warning,
-			_ => Color.Default
-		};
-	}
 }
