@@ -60,7 +60,7 @@ public static class QueryRequest {
 			var parts = new List<string>
 			{
 					$"skip={Skip}",
-					$"take={Take}",
+					$"take={Take}"
 				};
 
 			if (!string.IsNullOrWhiteSpace(OrderBy))
@@ -73,7 +73,7 @@ public static class QueryRequest {
 
 			// If there are filters, serialize the dictionary as JSON and add as `filters=<json>`
 			if (!string.IsNullOrWhiteSpace(SearchTerm)) parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm)}"); // If there are no filters, return early to reduce nesting 
-			if (!Filters.Any()) return string.Join("&", parts); // Use default options; values may be primitives or JsonElement boxed as object 
+			if (Filters.Count == 0) return string.Join("&", parts); // Use default options; values may be primitives or JsonElement boxed as object 
 			string json = JsonSerializer.Serialize(Filters); parts.Add($"filters={Uri.EscapeDataString(json)}");
 
 			return string.Join("&", parts);
