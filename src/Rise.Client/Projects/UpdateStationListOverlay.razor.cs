@@ -16,6 +16,16 @@ public partial class UpdateStationListOverlay {
 	private Result? _result;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
+	
+	// Form
+	private readonly MeasurementStationRequest.Create.Validator _validator = new();
+	private Result<MeasurementStationResponse.Create>? _createResult;
+	private MudForm _form;
+	
+	private MeasurementStationRequest.Create CreateModel { get; } = new() {
+		IsNewLocation = false
+	};
+
 
 	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
 
@@ -99,6 +109,22 @@ public partial class UpdateStationListOverlay {
 			await CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+		}
+	}
+	
+	private async Task CreateProjectAsync() {
+		await _form.Validate();
+
+		if (_form.IsValid) {
+			CreateModel.ProjectId = ProjectId;
+			_createResult = await StationService.CreateAsync(CreateModel);
+			if (_createResult.IsSuccess) {
+				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
+				await OnStationsUpdated.InvokeAsync();
+				await CloseOverlay();
+			} else {
+				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
+			}
 		}
 	}
 }

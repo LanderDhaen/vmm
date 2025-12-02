@@ -11,27 +11,20 @@ namespace Rise.Client.Stations;
 
 public partial class Create {
 	private readonly MeasurementStationRequest.Create.Validator _validator = new();
-	private IEnumerable<LocationDto.Index>? _locations;
 	private Result<MeasurementStationResponse.Create>? _result;
-	private string _searchText = string.Empty;
-	private MudForm form;
+	private MudForm _form;
 
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] public required IMeasurementStationService StationService { get; set; }
-	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
-	[Inject] private IDialogService DialogService { get; set; } = default!;
 
 	private MeasurementStationRequest.Create Model { get; } = new() {
 		IsNewLocation = false
 	};
 
 	protected override async Task OnInitializedAsync() {
-		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
-		_locations = result.Value.Locations;
-
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
@@ -50,9 +43,9 @@ public partial class Create {
 	}
 
 	private async Task CreateProjectAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (form.IsValid) {
+		if (_form.IsValid) {
 			_result = await StationService.CreateAsync(Model);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
@@ -61,89 +54,6 @@ public partial class Create {
 			} else {
 				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
 			}
-		}
-	}
-
-	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
-		if (string.IsNullOrEmpty(value)) {
-			return _locations.Select(x => (Guid?)x.Id);
-		}
-
-		return _locations
-			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-			.Select(x => (Guid?)x.Id);
-	}
-
-	private void OnLocationSelected() {
-		if (Model.LocationId.HasValue) {
-			LocationDto.Index selected = _locations.FirstOrDefault(x => x.Id == Model.LocationId.Value);
-
-			if (selected == null) {
-				return;
-			}
-
-			Model.Location = new LocationRequest.Create {
-				Name = selected.Name,
-				Addressline1 = selected.Address.AddressLine1,
-				Addressline2 = selected.Address.AddressLine2,
-				City = selected.Address.City,
-				PostalCode = selected.Address.PostalCode,
-				CountryIso = selected.Address.CountryIso,
-				X = selected.Coordinate.X,
-				Y = selected.Coordinate.Y
-			};
-		} else {
-			Model.Location = new LocationRequest.Create();
-		}
-
-		Model.IsNewLocation = false;
-	}
-
-	private void AddNewLocation() {
-		Model.IsNewLocation = true;
-		Model.LocationId = null;
-		Model.Location = new LocationRequest.Create {
-			Name = _searchText
-		};
-	}
-
-	private string BuildString(Guid? id) {
-		LocationDto.Index? location = _locations.FirstOrDefault(x => x.Id == id);
-
-		if (location is null) {
-			return string.Empty;
-		}
-
-		return $"{location.Name} ({location.Address.City})";
-	}
-
-	private async Task OpenMapDialog() {
-		if (!Model.IsNewLocation || Model.Location is null) {
-			return;
-		}
-
-		DialogParameters parameters = new() {
-			["InitialX"] = Model.Location.X,
-			["InitialY"] = Model.Location.Y
-		};
-
-		DialogOptions options = new() {
-			CloseButton = true,
-			MaxWidth = MaxWidth.Medium,
-			FullWidth = true
-		};
-
-		IDialogReference dialog = DialogService.Show<PickLocationDialog>(
-			"Kies meetstation locatie",
-			parameters,
-			options
-		);
-
-		DialogResult? result = await dialog.Result;
-
-		if (!result.Canceled && result.Data is CoordinateResult c) {
-			Model.Location.X = c.X;
-			Model.Location.Y = c.Y;
 		}
 	}
 }

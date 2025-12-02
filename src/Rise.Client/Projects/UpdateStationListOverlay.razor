@@ -1,7 +1,9 @@
 @using Rise.Client.Components
 @using Rise.Shared.Stations
+@using Rise.Client.Components.Stations
+
 <MudOverlay @bind-Visible="Visible" DarkBackground>
-	<MudPaper Class="pa-6 mx-auto">
+	<MudPaper Class="pa-6 mx-auto overflow-y-scroll" Style="width: 90vh; height: 70vh">
 		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
 			<MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -31,7 +33,8 @@
 					</MudButton>
 				</MudStack>
 
-				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true">
+				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true"
+				          FixedHeader="true" Height="400px">
 					<HeaderContent>
 						<MudTHeadRow>
 							<MudTh Class="mud-theme-primary"></MudTh>
@@ -50,7 +53,16 @@
 				</MudTable>
 				break;
 			case "Nieuw":
-					break;
+				<MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
+					<CreateStationForm Model="CreateModel"></CreateStationForm>
+				</MudForm>
+				<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
+					<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateProjectAsync">Opslaan
+					</MudButton>
+					<MudButton OnClick="@CloseOverlay" Variant="Variant.Outlined" Color="Color.Primary">Annuleren
+					</MudButton>
+				</MudCardActions>
+				break;
 		}
 	</MudPaper>
 </MudOverlay>
