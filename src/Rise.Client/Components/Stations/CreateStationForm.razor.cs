@@ -12,18 +12,18 @@ namespace Rise.Client.Components.Stations;
 public partial class CreateStationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
 	private string _searchText = string.Empty;
-	
+
 	[Parameter] public required MeasurementStationRequest.Create Model { get; set; }
 	[Parameter] public required MudForm Form { get; set; }
-	
+
 	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] private IDialogService DialogService { get; set; } = default!;
-	
+
 	protected override async Task OnInitializedAsync() {
 		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
 		_locations = result.Value.Locations;
 	}
-	
+
 	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
 		if (string.IsNullOrEmpty(value)) {
 			return _locations.Select(x => (Guid?)x.Id);

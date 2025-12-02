@@ -15,7 +15,7 @@ public static partial class MeasurementStationRequest {
 
 		// Installation
 		public DateTime? InstalledAt { get; set; }
-		
+
 		// Project -> to link the station to a project upon creation
 		public Guid? ProjectId { get; set; } = Guid.Empty;
 

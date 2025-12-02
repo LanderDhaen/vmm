@@ -188,7 +188,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			location,
 			new Installation(installedAt)
 		);
-		
+
 		if (request.ProjectId != Guid.Empty) {
 			Project project = await dbContext.Projects
 				.SingleOrDefaultAsync(x => x.Id == request.ProjectId, ct);
@@ -196,8 +196,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			if (project is null) {
 				return Result.NotFound("Project niet gevonden.");
 			}
-			
-			station.UpdateProjectList(new List<Project>{project});
+
+			station.UpdateProjectList(new List<Project> { project });
 		}
 
 		dbContext.MeasurementStations.Add(station);
