@@ -19,7 +19,7 @@ public partial class MeasurementStations {
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 
 	private async Task GetStationsAsync() {
-		_cancellationTokenSource.Cancel();
+		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
 
@@ -31,7 +31,7 @@ public partial class MeasurementStations {
 			await ProjectService.GetStationsAsync(ProjectId, request, _cancellationTokenSource.Token);
 
 		// --- Stations for this project ---
-		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
+		if (stationsFromProject is { IsSuccess: true, Value: not null }) {
 			Stations = stationsFromProject.Value.MeasurementStationsFromProject;
 		} else {
 			Stations = new HashSet<MeasurementStationDto.Index>();
@@ -49,7 +49,7 @@ public partial class MeasurementStations {
 	}
 
 	private void OnStationRowClick(TableRowClickEventArgs<MeasurementStationDto.Index> args) {
-		Navigation.NavigateTo($"/stations/{args.Item.Id}");
+		Navigation.NavigateTo($"/stations/{args.Item!.Id}");
 	}
 
 	private void OnStationCardClick(MeasurementStationDto.Index station) {

@@ -30,13 +30,13 @@ public partial class UpdateStationListOverlay {
 
 	protected override async Task OnInitializedAsync() {
 		Model.ProjectId = ProjectId;
-		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? new List<Guid>();
+		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
 		await GetAllStationsAsync();
 	}
 
 	private async Task CloseOverlay() {
 		// Delete any unsaved changes
-		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? new List<Guid>();
+		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
 		StateHasChanged();
 
 		await VisibleChanged.InvokeAsync(false);
@@ -55,7 +55,7 @@ public partial class UpdateStationListOverlay {
 	}
 
 	private async Task GetAllStationsAsync() {
-		_cancellationTokenSource.Cancel();
+		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
 
@@ -67,7 +67,7 @@ public partial class UpdateStationListOverlay {
 			await StationService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		// --- Load in all stations for select ---
-		if (allStations.IsSuccess && allStations.Value is not null) {
+		if (allStations is { IsSuccess: true, Value: not null }) {
 			_allStations = allStations.Value.Stations;
 		} else {
 			string message = allStations.Errors != null
@@ -79,7 +79,7 @@ public partial class UpdateStationListOverlay {
 
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
-			Stations?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
+			Stations?.Select(s => s.Id) ?? []);
 
 		if (!selectionChanged) {
 			Snackbar.Add("Je moet minstens 1 meetstation selecteren.", Severity.Error);
@@ -91,7 +91,7 @@ public partial class UpdateStationListOverlay {
 			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
 			Result<ProjectResponse.MeasurementStations> stationsResult =
 				await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
-			if (stationsResult.IsSuccess && stationsResult.Value is not null) {
+			if (stationsResult is { IsSuccess: true, Value: not null }) {
 				Stations = stationsResult.Value.MeasurementStationsFromProject;
 			}
 

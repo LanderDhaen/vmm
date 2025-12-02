@@ -11,10 +11,7 @@ namespace Rise.Client.Projects;
 
 public partial class Detail {
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
-		"Informatie",
-		"Historiek"
-	};
+	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 
 	// Drawer
 	private bool _open;
@@ -77,7 +74,7 @@ public partial class Detail {
 			await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
 
 		// --- Stations for this project ---
-		if (stationsFromProject.IsSuccess && stationsFromProject.Value is not null) {
+		if (stationsFromProject is { IsSuccess: true, Value: not null }) {
 			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
 		} else {
 			_stationsFromProject = new List<MeasurementStationDto.Index>();
