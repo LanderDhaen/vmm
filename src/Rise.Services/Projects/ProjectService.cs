@@ -95,7 +95,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return null;
 
 		try {
-			if (!(rawValue is JsonElement je))
+			if (rawValue is not JsonElement je)
 				return new FilterSpec(null, rawValue.ToString());
 
 			if (je.ValueKind != JsonValueKind.Object)
@@ -140,7 +140,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{t}%"));
 		}
 
-		if (req.Filters != null && req.Filters.Any()) {
+		if (req.Filters != null && req.Filters.Count != 0) {
 			var temp = req.Filters
 				.Select(kv => (Key: kv.Key, Spec: ParseFilterSpec(kv.Value)))
 				.Where(x => x.Spec != null)
@@ -157,14 +157,12 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				switch (key) {
 				case "MeasurementNetwork": {
 						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
-						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Name.ToLower() == t);
-						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
+						query = opNorm == "Equal" ? query.Where(p => p.MeasurementNetwork.Name.ToLower() == t) : query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Zone": {
 						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
-						if (opNorm == "Equal") query = query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t);
-						else query = query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
+						query = opNorm == "Equal" ? query.Where(p => p.MeasurementNetwork.Zone.Name.ToLower() == t) : query.Where(p => EF.Functions.Like(p.MeasurementNetwork.Zone.Name.ToLower(), $"%{t}%"));
 						break;
 					}
 				case "Status": {
@@ -178,9 +176,11 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.StartDate == default);
 						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
-								if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.StartDate >= d);
-								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.StartDate <= d);
-								else query = query.Where(p => p.DateRange.StartDate == d);
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p => p.DateRange.StartDate >= d),
+									"LessThanOrEqual" => query.Where(p => p.DateRange.StartDate <= d),
+									_ => query.Where(p => p.DateRange.StartDate == d)
+								};
 							}
 						}
 						break;
@@ -189,9 +189,13 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 						if (opNorm == "IsEmpty") query = query.Where(p => p.DateRange.EndDate == null);
 						else {
 							if (TryParseDateOnlySimple(raw, out var d)) {
-								if (opNorm == "GreaterThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate >= d);
-								else if (opNorm == "LessThanOrEqual") query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate <= d);
-								else query = query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate == d);
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p =>
+										p.DateRange.EndDate != null && p.DateRange.EndDate >= d),
+									"LessThanOrEqual" => query.Where(p =>
+										p.DateRange.EndDate != null && p.DateRange.EndDate <= d),
+									_ => query.Where(p => p.DateRange.EndDate != null && p.DateRange.EndDate == d)
+								};
 							}
 						}
 						break;
@@ -204,23 +208,23 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
-			switch (req.OrderBy) {
-			case nameof(DateRange.StartDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.StartDate) : query.OrderBy(p => p.DateRange.StartDate);
-				break;
-			case nameof(DateRange.EndDate):
-				query = desc ? query.OrderByDescending(p => p.DateRange.EndDate) : query.OrderBy(p => p.DateRange.EndDate);
-				break;
-			case nameof(MeasurementNetwork):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Name) : query.OrderBy(p => p.MeasurementNetwork.Name);
-				break;
-			case nameof(Zone):
-				query = desc ? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name) : query.OrderBy(p => p.MeasurementNetwork.Zone.Name);
-				break;
-			default:
-				query = desc ? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy)) : query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
-				break;
-			}
+			query = req.OrderBy switch {
+				nameof(DateRange.StartDate) => desc
+					? query.OrderByDescending(p => p.DateRange.StartDate)
+					: query.OrderBy(p => p.DateRange.StartDate),
+				nameof(DateRange.EndDate) => desc
+					? query.OrderByDescending(p => p.DateRange.EndDate)
+					: query.OrderBy(p => p.DateRange.EndDate),
+				nameof(MeasurementNetwork) => desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Name),
+				nameof(Zone) => desc
+					? query.OrderByDescending(p => p.MeasurementNetwork.Zone.Name)
+					: query.OrderBy(p => p.MeasurementNetwork.Zone.Name),
+				_ => desc
+					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
+					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy))
+			};
 		} else {
 			query = query.OrderBy(p => p.Id);
 		}
