@@ -1,3 +1,4 @@
+@using Rise.Shared.Stations
 <PageTitle>Station Details</PageTitle>
 
 @if (_measurementStation is null)
@@ -7,70 +8,61 @@
 	</MudContainer>
 }
 else
-@* Desktop view with full ValidityRange *@
-
-<MudHidden Breakpoint="Breakpoint.Xs">
+{
 	<MudTimeline>
-		<MudTimelineItem Color="Color.Primary">
-			<ItemOpposite>
-				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
-			</ItemOpposite>
-			<ItemContent>
-				<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
-				<MudText>Geïnstalleerd: @_measurementStation.InstalledAt</MudText>
-				<MudText>Verwijderd: @_measurementStation.RemovedAt</MudText>
-				<MudText>Locatie: @_measurementStation.Location</MudText>
-				<MudText>Stad: @_measurementStation.City</MudText>
-			</ItemContent>
-		</MudTimelineItem>
+		@{
+			var histories = _measurementStation.MeasurementStationHistories;
 
-		@foreach (var h in _measurementStation.MeasurementStationHistories)
-		{
-			<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-				<ItemOpposite>
-					<MudChip T="string" Variant="Variant.Outlined"
-					         Color="Color.Primary">@h.ValidFrom - @h.ValidTo</MudChip>
-				</ItemOpposite>
+			for (var i = 0; i < histories.Count - 1; i++)
+			{
+				var curr = histories[i];
+				var prev = histories[i + 1];  
 
-				<ItemContent>
-					<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
-					<MudText>Geïnstalleerd: @h.InstalledAt</MudText>
-					<MudText>Verwijderd: @h.RemovedAt</MudText>
-					<MudText>Locatie: @h.Location</MudText>
-					<MudText>Stad: @h.City</MudText>
-				</ItemContent>
-			</MudTimelineItem>
+				if (!prev.Location.Equals(curr.Location))
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(curr.ValidFrom)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<MudText Typo="Typo.h6">Meetstation verplaatst</MudText>
+							<MudText>
+								van <b>@prev.Location @prev.City</b> naar <b>@curr.Location @curr.City</b>
+							</MudText>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+
+				if (!prev.InstalledAt.Equals(curr.InstalledAt))
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(curr.ValidFrom)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<MudText Typo="Typo.h6">Installatiedatum aangepast</MudText>
+							<MudText>
+								van <b>@StationUtility.ToShortInstalledAt(prev.InstalledAt)</b> naar <b>@StationUtility.ToShortInstalledAt(curr.InstalledAt)</b>
+							</MudText>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+
+				if (!prev.RemovedAt.Equals(curr.RemovedAt))
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(curr.ValidFrom)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<MudText Typo="Typo.h6">Verwijderingsdatum aangepast</MudText>
+							<MudText>
+								van <b>@StationUtility.ToShortRemovedAt(prev.RemovedAt)</b> naar <b>@StationUtility.ToShortRemovedAt(curr.RemovedAt)</b>
+							</MudText>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+			}
 		}
 	</MudTimeline>
-</MudHidden>
-
-@* Mobile view with only ValidFrom *@
-
-<MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudTimeline TimelinePosition="TimelinePosition.Left">
-		<MudTimelineItem Color="Color.Primary">
-			<ItemContent>
-				<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">Huidig meetstation</MudChip>
-				<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
-				<MudText>Geïnstalleerd: @_measurementStation.InstalledAt</MudText>
-				<MudText>Verwijderd: @_measurementStation.RemovedAt</MudText>
-				<MudText>Locatie: @_measurementStation.Location</MudText>
-				<MudText>Stad: @_measurementStation.City</MudText>
-			</ItemContent>
-		</MudTimelineItem>
-
-		@foreach (var h in _measurementStation.MeasurementStationHistories)
-		{
-			<MudTimelineItem Color="Color.Primary">
-				<ItemContent>
-					<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@h.ValidFrom</MudChip>
-					<MudText Typo="Typo.h6">@_measurementStation.Code</MudText>
-					<MudText>Geïnstalleerd: @h.InstalledAt</MudText>
-					<MudText>Verwijderd: @h.RemovedAt</MudText>
-					<MudText>Locatie: @h.Location</MudText>
-					<MudText>Stad: @h.City</MudText>
-				</ItemContent>
-			</MudTimelineItem>
-		}
-	</MudTimeline>
-</MudHidden>
+}
