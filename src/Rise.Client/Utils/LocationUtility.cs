@@ -3,8 +3,7 @@ namespace Rise.Client.Utils;
 /// <summary>
 /// Provides helper methods to format and display information about a location.
 /// </summary>
-public static class LocationUtility
-{
+public static class LocationUtility {
 	/// <summary>
 	/// Formats an address from individual components.
 	/// </summary>
