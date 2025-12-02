@@ -68,10 +68,6 @@ public partial class MeasurementStations {
 		Navigation.NavigateTo($"/stations/{station.Id}");
 	}
 
-	private static string FormatDate(DateTime? dt) {
-		return dt is null ? "-" : dt.Value.ToShortDateString();
-	}
-
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
 			_stationsFromProject?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());

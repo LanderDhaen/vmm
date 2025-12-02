@@ -50,12 +50,12 @@ else
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Geïnstalleerd</MudText>
-						<MudPaper Class="pa-2">@FormatDate(_station.InstalledAt)</MudPaper>
+						<MudPaper Class="pa-2">@StationUtility.ToLongInstalledAt(_station.InstalledAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Verwijderd</MudText>
-						<MudPaper Class="pa-2">@FormatDate(_station.RemovedAt)</MudPaper>
+						<MudPaper Class="pa-2">@StationUtility.ToLongRemovedAt(_station.RemovedAt)</MudPaper>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">

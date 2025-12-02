@@ -85,8 +85,4 @@ public partial class Projects {
 			}
 		}
 	}
-
-	private static Color DefineColor(Status status) {
-		return status == Status.Actief ? Color.Success : Color.Error;
-	}
 }
