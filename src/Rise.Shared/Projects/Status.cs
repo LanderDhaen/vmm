@@ -9,6 +9,5 @@ public static partial class ProjectRequest {
 
 public enum Status {
 	Actief,
-	Afgesloten,
-	Gepauzeerd
+	Afgesloten
 }
