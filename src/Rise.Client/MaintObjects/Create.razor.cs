@@ -74,7 +74,7 @@ public partial class Create {
 		var existsResult = await MaintObjService.GetBySerialAsync(serial);
 
 		if (existsResult.IsSuccess) {
-			NavigationManager.NavigateTo($"/maintobjects/details/{existsResult.Value.Id}");
+			NavigationManager.NavigateTo($"/maintObjects/{existsResult.Value.Id}");
 			return;
 		}
 
