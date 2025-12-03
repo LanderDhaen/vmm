@@ -125,7 +125,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			var t = req.SearchTerm.Trim().ToLowerInvariant();
 			query = query.Where(p =>
 				EF.Functions.Like(p.Code, $"%{t}%") ||
-				EF.Functions.Like(p.Name, $"%{t}%") ||
+				p.Name.Contains(t)||
 				EF.Functions.Like(p.MeasurementNetwork.Name, $"%{t}%") ||
 				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{t}%"));
 		}
