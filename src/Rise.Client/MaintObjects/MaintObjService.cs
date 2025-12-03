@@ -36,8 +36,7 @@ public class MaintObjService(HttpClient httpClient) : IMaintObjService {
 
 	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(
 		string serialNumber,
-		CancellationToken ct = default)
-	{
+		CancellationToken ct = default) {
 		var response = await httpClient.GetAsync(
 			$"/api/maintobjects/by-serial/{Uri.EscapeDataString(serialNumber)}",
 			ct);
