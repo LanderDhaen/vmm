@@ -10,8 +10,6 @@
 }
 else
 {
-	<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
-	             Label="Zoek meetstation"></SearchField>
 	@* Desktop view *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudTable T="MeasurementStationDto.Index" Items="Stations" CustomHeader="true"

@@ -18,18 +18,8 @@
 		@switch (_selectedOption)
 		{
 			case "Bestaand":
-				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-					<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
-					             Label="Zoek meetstation"></SearchField>
-					<MudButton Variant="Variant.Filled"
-					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-					           Size="Size.Small"
-					           Color="Color.Primary"
-					           Class="px-4"
-					           OnClick="@UpdateMeasurementStations">
-						Lijst bijwerken
-					</MudButton>
-				</MudStack>
+				<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
+				             Label="Zoek meetstation"></SearchField>
 
 				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true">
 					<HeaderContent>
@@ -48,6 +38,18 @@
 						<MudTd DataLabel="Gemeente">@context.City</MudTd>
 					</RowTemplate>
 				</MudTable>
+
+				<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="py-4">
+					<MudButton Variant="Variant.Filled"
+					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+					           Size="Size.Small"
+					           Color="Color.Primary"
+					           OnClick="@UpdateMeasurementStations">
+						Opslaan
+					</MudButton>
+					<MudButton OnClick="@CloseOverlay" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">Annuleren
+					</MudButton>
+				</MudStack>
 				break;
 			case "Nieuw":
 					break;
