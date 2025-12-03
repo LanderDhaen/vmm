@@ -36,7 +36,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
 			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId, cancellationToken: ctx);
 
-		if (measurementNetwork == null) {
+		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
