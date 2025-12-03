@@ -38,7 +38,7 @@ public partial class UpdateStationListOverlay {
 		// Delete any unsaved changes
 		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
 		StateHasChanged();
-		
+
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
