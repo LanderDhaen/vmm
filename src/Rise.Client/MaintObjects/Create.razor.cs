@@ -61,11 +61,28 @@ public partial class Create {
 		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
 		var result = await dialog.Result;
 
-		if (!result.Canceled && result.Data is string decoded) {
-			Model.SerialNumber = decoded.Trim();
-			StateHasChanged();
+		if (result.Canceled || result.Data is not string decoded)
+			return;
+
+		var serial = decoded.Trim();
+
+		if (string.IsNullOrWhiteSpace(serial)) {
+			Snackbar.Add("Onleesbare code: geen serienummer gevonden.", Severity.Error);
+			return;
 		}
+
+		var existsResult = await MaintObjService.GetBySerialAsync(serial);
+
+		if (existsResult.IsSuccess) {
+			NavigationManager.NavigateTo($"/maintobjects/details/{existsResult.Value.Id}");
+			return;
+		}
+
+		Model.SerialNumber = serial;
+		Snackbar.Add("Serienummer ingevuld via scan.", Severity.Success);
+		StateHasChanged();
 	}
+
 
 	private async Task CreateMaintObjAsync() {
 		await form.Validate();

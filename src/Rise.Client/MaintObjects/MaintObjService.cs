@@ -33,4 +33,13 @@ public class MaintObjService(HttpClient httpClient) : IMaintObjService {
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
+
+	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber,
+		CancellationToken ct = default) {
+		var result = await httpClient.GetFromJsonAsync<Result<MaintObjResponse.BySerial>>(
+			$"/api/maintobjects/by-serial/{Uri.EscapeDataString(serialNumber)}",
+			ct);
+
+		return result ?? Result.NotFound();
+	}
 }
