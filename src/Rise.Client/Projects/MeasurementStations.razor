@@ -1,7 +1,8 @@
 @using Rise.Shared.Stations
+@using Rise.Client.Components
 <PageTitle>Project Details</PageTitle>
 
-@if (_stationsFromProject is null)
+@if (Stations is null)
 {
 	<MudContainer Class="d-flex justify-center align-center">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
@@ -10,40 +11,8 @@
 else
 {
 	@* Desktop view *@
-
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Meetstations toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.MeasurementStationIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           Class="ma-0" Disabled="@(!IsActive)"
-			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var station in _allStations)
-				{
-					<MudSelectItem T="Guid" Value="@station.Id">
-						@station.Code - @station.Location @station.City
-					</MudSelectItem>
-				}
-			</MudSelect>
-
-			<MudTooltip Delay="400"
-			            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
-				<MudButton Variant="Variant.Filled"
-				           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-				           Size="Size.Small"
-				           Color="Color.Primary"
-				           Class="px-4"
-				           OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)">
-					Lijst bijwerken
-				</MudButton>
-			</MudTooltip>
-		</MudStack>
-
-		<MudTable T="MeasurementStationDto.Index" Items="_stationsFromProject" CustomHeader="true"
+		<MudTable T="MeasurementStationDto.Index" Items="Stations" CustomHeader="true"
 		          OnRowClick="OnStationRowClick">
 			<HeaderContent>
 				<MudTHeadRow>
@@ -56,8 +25,8 @@ else
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd DataLabel="#">@context.Code</MudTd>
-				<MudTd DataLabel="Geïnstalleerd">@StationUtility.ToShortInstalledAt(context.InstalledAt)</MudTd>
-				<MudTd DataLabel="Verwijderd">@StationUtility.ToShortRemovedAt(context.RemovedAt)</MudTd>
+				<MudTd DataLabel="Geïnstalleerd op">@(StationUtility.ToLongInstalledAt(context.InstalledAt))</MudTd>
+				<MudTd DataLabel="Verwijderd op">@(StationUtility.ToLongRemovedAt(context.RemovedAt))</MudTd>
 				<MudTd DataLabel="Locatie">@context.Location</MudTd>
 				<MudTd DataLabel="Gemeente">@context.City</MudTd>
 			</RowTemplate>
@@ -65,36 +34,9 @@ else
 	</MudHidden>
 
 	@* Mobile view *@
-
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Meetstations toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.MeasurementStationIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           Class="ma-0" Disabled="@(!IsActive)"
-			           ToStringFunc="id => _allStations.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var station in _allStations)
-				{
-					<MudSelectItem T="Guid" Value="@station.Id">
-						@station.Code - @station.Location @station.City
-					</MudSelectItem>
-				}
-			</MudSelect>
-
-			<MudIconButton Variant="Variant.Filled"
-			               Icon="@Icons.Material.Filled.PlaylistAdd"
-			               Size="Size.Small"
-			               Color="Color.Primary"
-			               OnClick="@UpdateMeasurementStations" Disabled="@(!IsActive)"/>
-		</MudStack>
-
 		<MudGrid Spacing="6">
-			@foreach (var p in _stationsFromProject)
+			@foreach (var p in Stations)
 			{
 				<MudItem xs="12">
 					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnStationCardClick(p))">
@@ -110,8 +52,8 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @StationUtility.ToLongInstalledAt(p.InstalledAt)</MudText>
-							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @StationUtility.ToLongRemovedAt(p.RemovedAt)</MudText>
+							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @(StationUtility.ToLongInstalledAt(p.InstalledAt))</MudText>
+							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @(StationUtility.ToLongRemovedAt(p.RemovedAt))</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

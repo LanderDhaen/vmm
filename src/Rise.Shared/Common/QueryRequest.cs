@@ -105,4 +105,20 @@ public static class QueryRequest {
 		/// </summary>
 		public Dictionary<string, object?> Filters { get; set; } = new();
 	}
+	/// <summary>
+	///     Represents a request model to handle searching scenarios.
+	/// </summary>
+	public class Search {
+		/// <summary>
+		///     Gets or sets the term used for searching, enabling filtering of results based on text matches
+		///     in relevant fields such as names or descriptions.
+		/// </summary>
+		public string SearchTerm { get; set; } = string.Empty;
+		/// <summary>
+		///     Converts the current search term (if present) into a URL query string
+		/// </summary>
+		public string AsQuery() {
+			return string.IsNullOrWhiteSpace(SearchTerm) ? "" : $"&searchTerm={SearchTerm}";
+		}
+	}
 }

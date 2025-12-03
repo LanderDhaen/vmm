@@ -3,32 +3,26 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 using Rise.Client.Services;
+using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Client.Projects;
 
 public partial class Detail {
-	private readonly IEnumerable<MeasurementStationDto.Index>? _allStations;
-	private readonly Result? _result;
-	private readonly List<MeasurementStationDto.Index>? _stationsFromProject;
-
-	private readonly MudDataGrid<MeasurementStationDto.Index>? _stationsGrid;
-
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
-		"Info",
-		"Meetstations",
-		"Historiek"
-	};
+	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 
 	// Drawer
 	private bool _open;
 
+	// Overlay
+	private readonly bool _visible;
+
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
+	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 
-	private string? _remarks;
 	private int _selectedTab;
 
 	[Parameter] public Guid ProjectId { get; set; }
@@ -39,7 +33,7 @@ public partial class Detail {
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 	private bool IsActive => _project?.Status == Status.Actief;
 
-	private void SetTab(int index) {
+	private async Task SetTabAsync(int index) {
 		_selectedTab = index;
 	}
 
@@ -49,7 +43,6 @@ public partial class Detail {
 		// --- Project detail ---
 		if (detail.IsSuccess) {
 			_project = detail.Value.Project;
-			_tabs[1] = $"Meetstations ({detail.Value.TotalMeasurementStationCount})";
 
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
@@ -72,6 +65,31 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
+
+		await GetStationsAsync();
+	}
+
+	private async Task GetStationsAsync() {
+		Result<ProjectResponse.MeasurementStations> stationsFromProject =
+			await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
+
+		// --- Stations for this project ---
+		if (stationsFromProject is { IsSuccess: true, Value: not null }) {
+			_stationsFromProject = stationsFromProject.Value.MeasurementStationsFromProject;
+		} else {
+			_stationsFromProject = new List<MeasurementStationDto.Index>();
+
+			string message = stationsFromProject.Errors != null
+				? string.Join(Environment.NewLine, stationsFromProject.Errors)
+				: "Kon meetstations niet laden.";
+			Snackbar.Add(message, Severity.Warning);
+		}
+	}
+
+	private Task OpenDialogAsync() {
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+
+		return DialogService.ShowAsync<UpdateStationListOverlay>("Simple Dialog", options);
 	}
 
 	private async Task Close() {
@@ -155,8 +173,8 @@ public partial class Detail {
 		}
 	}
 
-	private void OnTabChange(string newValue) {
-		_tabs[1] = newValue;
+	private async Task RefreshStations() {
+		await GetStationsAsync();
 		StateHasChanged();
 	}
 }
