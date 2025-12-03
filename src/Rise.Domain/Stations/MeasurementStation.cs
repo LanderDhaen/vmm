@@ -102,10 +102,12 @@ public class MeasurementStation : Entity {
 	}
 
 	public List<MeasurementStationModification> GetModifications() {
-
+		
 		var modifications = new List<MeasurementStationModification>();
 		
-		// TODO: Compare current values to first entry
+		// Add current state as the first history entry
+		
+		_measurementStationHistories.Insert(0, new MeasurementStationHistory(Installation, Location, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
 		
 		for (var i = 0; i < _measurementStationHistories.Count - 1; i++) {
 			
