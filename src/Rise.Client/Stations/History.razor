@@ -1,7 +1,7 @@
 @using Rise.Shared.Stations
 <PageTitle>Station Details</PageTitle>
 
-@if (_measurementStation is null)
+@if (_modifications is null)
 {
 	<MudContainer Class="d-flex justify-center align-center">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
@@ -11,109 +11,51 @@ else
 {
 <MudTimeline>
     @{
-        var histories = _measurementStation.MeasurementStationHistories;
-        
-        
-		// Latest change compared to current values
-        // TODO: Clean this up & make the items reusable
-        
-        if (histories.Count > 0)
-        {
-            var latestHistory = histories[0];
-
-            if (!latestHistory.Location.Equals(_measurementStation.Location))
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(latestHistory.ValidTo)</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Meetstation verplaatst</MudText>
-                        <MudText>
-                            van <b>@latestHistory.Location @latestHistory.City</b> naar <b>@_measurementStation.Location @_measurementStation.City</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-
-            if (!latestHistory.InstalledAt.Equals(_measurementStation.InstalledAt))
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(latestHistory.ValidTo)</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Installatiedatum aangepast</MudText>
-                        <MudText>
-                            van <b>@StationUtility.ToShortInstalledAt(latestHistory.InstalledAt)</b> naar <b>@StationUtility.ToShortInstalledAt(_measurementStation.InstalledAt)</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-
-            if (!latestHistory.RemovedAt.Equals(_measurementStation.RemovedAt))
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(latestHistory.ValidTo)</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Verwijderingsdatum aangepast</MudText>
-                        <MudText>
-                            van <b>@StationUtility.ToShortRemovedAt(latestHistory.RemovedAt)</b> naar <b>@StationUtility.ToShortRemovedAt(_measurementStation.RemovedAt)</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-        }
         
         // Comparing history entries
-        
-        for (var i = 0; i < histories.Count - 1; i++)
-        {
-            var curr = histories[i];
-            var prev = histories[i + 1];
 
-            if (!prev.Location.Equals(curr.Location))
+        foreach (var modification in _modifications)
+        {
+            if (modification.ModificationType == ModificationType.LocationChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(prev.ValidTo)</MudChip>
+	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
                     </ItemOpposite>
                     <ItemContent>
                         <MudText Typo="Typo.h6">Meetstation verplaatst</MudText>
                         <MudText>
-                            van <b>@prev.Location @prev.City</b> naar <b>@curr.Location @curr.City</b>
+                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>
             }
 
-            if (!prev.InstalledAt.Equals(curr.InstalledAt))
+            if (modification.ModificationType == ModificationType.InstalledAtChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(prev.ValidTo)</MudChip>
+	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
                     </ItemOpposite>
                     <ItemContent>
                         <MudText Typo="Typo.h6">Installatiedatum aangepast</MudText>
                         <MudText>
-                            van <b>@StationUtility.ToShortInstalledAt(prev.InstalledAt)</b> naar <b>@StationUtility.ToShortInstalledAt(curr.InstalledAt)</b>
+                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>
             }
 
-            if (!prev.RemovedAt.Equals(curr.RemovedAt))
+            if (modification.ModificationType == ModificationType.RemovedAtChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>
-                        <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidTo(prev.ValidTo)</MudChip>
+                        <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
                     </ItemOpposite>
                     <ItemContent>
                         <MudText Typo="Typo.h6">Verwijderingsdatum aangepast</MudText>
                         <MudText>
-                            van <b>@StationUtility.ToShortRemovedAt(prev.RemovedAt)</b> naar <b>@StationUtility.ToShortRemovedAt(curr.RemovedAt)</b>
+                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>

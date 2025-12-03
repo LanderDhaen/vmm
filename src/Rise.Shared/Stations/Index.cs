@@ -14,6 +14,6 @@ public static partial class MeasurementStationResponse {
 	}
 
 	public class History {
-		public required MeasurementStationDto.History MeasurementStation { get; init; }
+		public List<MeasurementStationHistoryDto.Modification> Modifications { get; set; } = [];
 	}
 }

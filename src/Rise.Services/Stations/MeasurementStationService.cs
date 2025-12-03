@@ -9,6 +9,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using ModificationType = Rise.Shared.Stations.ModificationType;
 using SharedStatus = Rise.Shared.Projects.Status;
 
 namespace Rise.Services.Stations;
@@ -124,39 +125,37 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {
-		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
-		
-		// TODO: Add the current values as an entry inside the list
 
-		MeasurementStationDto.History? measurementStation = await query
-			.Where(s => s.Id == stationId)
-			.Select(s => new MeasurementStationDto.History {
-				Id = s.Id,
-				Code = s.Code,
-				InstalledAt = s.Installation.InstalledAt,
-				RemovedAt = s.Installation.RemovedAt,
-				Location = s.Location.Name,
-				City = s.Location.Address.City,
-				MeasurementStationHistories = s.MeasurementStationHistories
-					.OrderByDescending(h => h.ValidityRange.ValidTo)
-					.Select(h => new MeasurementStationHistoryDto.Index {
-						Id = h.Id,
-						InstalledAt = h.Installation.InstalledAt,
-						RemovedAt = h.Installation.RemovedAt,
-						Location = h.Location.Name,
-						City = h.Location.Address.City,
-						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo
-					}).ToList()
-			})
-			.FirstOrDefaultAsync(ct);
+		MeasurementStation? measurementStation =
+			await dbContext.MeasurementStations
+				.AsNoTracking()
+				.Include(s => s.MeasurementStationHistories)
+				.ThenInclude(h => h.Location)
+				.Include(s => s.MeasurementStationHistories)
+				.ThenInclude(h => h.Installation)
+				.Include(s => s.MeasurementStationHistories.OrderByDescending(h => h.ValidityRange.ValidFrom))
+				.SingleOrDefaultAsync(s => s.Id == stationId, ct);
+
 
 		if (measurementStation is null) {
 			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
+		var modifications = new List<MeasurementStationHistoryDto.Modification>();
+		
+		// TODO: 
+		
+		foreach (var m in measurementStation.GetModifications()) {	
+			modifications.Add(new MeasurementStationHistoryDto.Modification {
+				ModificationType = (ModificationType)m.ModificationType,
+				ModifiedAt = m.ModifiedAt,
+				PreviousValue = m.PreviousValue,
+				CurrentValue = m.CurrentValue,
+			});
+		}
+
 		return Result.Success(new MeasurementStationResponse.History {
-			MeasurementStation = measurementStation
+			Modifications = modifications
 		});
 	}
 

@@ -4,7 +4,7 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class History {
-	private MeasurementStationDto.History? _measurementStation;
+	private List<MeasurementStationHistoryDto.Modification>? _modifications;
 	
 	[Parameter] public Guid MeasurementStationId { get; set; }
 	[Inject] public required IMeasurementStationService MeasurementStationService { get; set; }
@@ -15,7 +15,7 @@ public partial class History {
 			await MeasurementStationService.GetHistoryAsync(MeasurementStationId);
 
 		if (result.IsSuccess) {
-			_measurementStation = result.Value.MeasurementStation;
+			_modifications = result.Value.Modifications;
 		}
 	}
 }

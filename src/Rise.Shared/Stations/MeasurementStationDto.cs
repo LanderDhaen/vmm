@@ -44,4 +44,11 @@ public static class MeasurementStationHistoryDto {
 		public required DateTime ValidFrom { get; init; }
 		public required DateTime ValidTo { get; init; }
 	}
+
+	public class Modification {
+		public required ModificationType ModificationType { get; init; }
+		public DateTime ModifiedAt { get; init; }
+		public string PreviousValue { get; init; }
+		public string CurrentValue { get; init; }
+	}
 }
