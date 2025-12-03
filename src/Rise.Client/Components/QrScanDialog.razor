@@ -1,0 +1,22 @@
+@inherits QrScanDialogBase
+
+<MudDialog>
+	<DialogContent>
+		<div id="qr-reader" style="width:100%;"></div>
+
+		<MudText Typo="Typo.body2" Class="mt-2">
+			Point your camera at the QR code.
+		</MudText>
+
+		@if (!string.IsNullOrWhiteSpace(Error))
+		{
+			<MudAlert Severity="Severity.Error" Class="mt-2">
+				@Error
+			</MudAlert>
+		}
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton OnClick="Cancel">Cancel</MudButton>
+	</DialogActions>
+</MudDialog>
