@@ -240,6 +240,32 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success(new ProjectResponse.Index { Projects = projects, TotalCount = totalCount });
 	}
 
+	public async Task<Result<ProjectResponse.SelectOptions>> GetSelectOptionsAsync(CancellationToken ctx = default) {
+		List<MeasurementNetworkDto.Index> measurementNetworkDtos = await dbContext.MeasurementNetworks
+			.AsNoTracking()
+			.Include(mn => mn.Zone)
+			.OrderBy(mn => mn.Name)
+			.Select(mn => new MeasurementNetworkDto.Index {
+				Id = mn.Id,
+				Name = mn.Name,
+				Zone = mn.Zone.Name
+			})
+			.ToListAsync(ctx);
+
+		List<string> zones = await dbContext.Zones
+			.AsNoTracking()
+			.OrderBy(z => z.Name)
+			.Select(z => z.Name)
+			.ToListAsync(ctx);
+
+		var dto = new ProjectResponse.SelectOptions {
+			MeasurementNetworks = measurementNetworkDtos,
+			Zones = zones
+		};
+
+		return Result.Success(dto);
+	}
+
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
