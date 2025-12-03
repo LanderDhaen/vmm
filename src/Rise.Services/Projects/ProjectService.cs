@@ -80,16 +80,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
-	private sealed class FilterSpec {
-		public string? Operator { get; }
-		public string? Value { get; }
-
-		public FilterSpec(string? op, string? val) {
-			Operator = op;
-			Value = val;
-		}
-	}
-
 	private static FilterSpec? ParseFilterSpec(object? rawValue) {
 		if (rawValue == null)
 			return null;
