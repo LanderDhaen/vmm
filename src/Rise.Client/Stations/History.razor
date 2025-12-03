@@ -1,4 +1,4 @@
-@using Rise.Shared.Stations
+@using Rise.Client.Components
 <PageTitle>Station Details</PageTitle>
 
 @if (_modifications is null)
@@ -9,59 +9,14 @@
 }
 else
 {
-<MudTimeline>
-    @{
-        
-        // Comparing history entries
-
-        foreach (var modification in _modifications)
-        {
-            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.LocationChanged)
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Meetstation verplaatst</MudText>
-                        <MudText>
-                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-
-            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.InstalledAtChanged)
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-	                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Installatiedatum aangepast</MudText>
-                        <MudText>
-                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-
-            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.RemovedAtChanged)
-            {
-                <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
-                    <ItemOpposite>
-                        <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@modification.ModifiedAt</MudChip>
-                    </ItemOpposite>
-                    <ItemContent>
-                        <MudText Typo="Typo.h6">Verwijderingsdatum aangepast</MudText>
-                        <MudText>
-                            van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-        }
-    }
-</MudTimeline>
-
+	<MudTimeline>
+		@{
+			foreach (var modification in _modifications) {
+				<TimeLineItem Title="@(DefineTitle(modification.MeasurementStationModificationType))"
+				              ModifiedAt="modification.ModifiedAt"
+				              CurrentValue=@modification.CurrentValue
+				              PreviousValue="@modification.PreviousValue"/>
+			}
+		}
+	</MudTimeline>
 }
