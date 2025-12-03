@@ -26,10 +26,10 @@ public class WorkOrder : Entity {
 	public DateRange? DateRange { get; private set; }
 
 	// Relations
-	
+
 	public MaintObj MaintObj { get; private set; }
 	public Technician? Technician { get; private set; }
-	
+
 	// Functions
 	public void AssignTechnician(Technician technician) {
 		Technician = technician;

@@ -23,13 +23,13 @@ internal class WorkOrderConfiguration : EntityConfiguration<WorkOrder> {
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange);
-		
+
 		// Relations
 
 		builder.HasOne(x => x.MaintObj)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
-		
+
 		builder.HasOne(x => x.Technician)
 			.WithMany()
 			.OnDelete(DeleteBehavior.Restrict);
