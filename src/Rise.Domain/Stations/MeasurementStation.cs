@@ -104,7 +104,9 @@ public class MeasurementStation : Entity {
 	public List<MeasurementStationModification> GetModifications() {
 
 		var modifications = new List<MeasurementStationModification>();
-
+		
+		// TODO: Compare current values to first entry
+		
 		for (var i = 0; i < _measurementStationHistories.Count - 1; i++) {
 			
 			var curr = _measurementStationHistories[i];

@@ -4,10 +4,10 @@ namespace Rise.Domain.Stations;
 /// </summary>
 public class MeasurementStationModification {
 	public MeasurementStationModification(MeasurementStationModificationType changeType, DateTime modifiedAt, string previousValue, string currentValue) {
-		MeasurementStationModificationType = changeType;
-		ModifiedAt = modifiedAt;
-		PreviousValue = previousValue;
-		CurrentValue = currentValue;
+		MeasurementStationModificationType = Guard.Against.Null(changeType);
+		ModifiedAt = Guard.Against.Null(modifiedAt);
+		PreviousValue = Guard.Against.NullOrWhiteSpace(previousValue);
+		CurrentValue = Guard.Against.NullOrWhiteSpace(currentValue);
 	}
 	
 	public MeasurementStationModificationType MeasurementStationModificationType { get; init; }

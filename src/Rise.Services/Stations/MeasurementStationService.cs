@@ -129,6 +129,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		MeasurementStation? measurementStation =
 			await dbContext.MeasurementStations
 				.AsNoTracking()
+				.Include(s => s.Location)
+				.Include(s => s.Installation)
 				.Include(s => s.MeasurementStationHistories)
 				.ThenInclude(h => h.Location)
 				.Include(s => s.MeasurementStationHistories)
@@ -141,12 +143,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
-		var modifications = new List<MeasurementStationHistoryDto.Modification>();
+		var modifications = new List<MeasurementStationDto.Modification>();
 		
 		// TODO: 
 		
 		foreach (var m in measurementStation.GetModifications()) {	
-			modifications.Add(new MeasurementStationHistoryDto.Modification {
+			modifications.Add(new MeasurementStationDto.Modification {
 				MeasurementStationModificationType = (MeasurementStationModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
