@@ -16,7 +16,7 @@ else
 
         foreach (var modification in _modifications)
         {
-            if (modification.ModificationType == ModificationType.LocationChanged)
+            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.LocationChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>
@@ -31,7 +31,7 @@ else
                 </MudTimelineItem>
             }
 
-            if (modification.ModificationType == ModificationType.InstalledAtChanged)
+            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.InstalledAtChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>
@@ -46,7 +46,7 @@ else
                 </MudTimelineItem>
             }
 
-            if (modification.ModificationType == ModificationType.RemovedAtChanged)
+            if (modification.MeasurementStationModificationType == MeasurementStationModificationType.RemovedAtChanged)
             {
                 <MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
                     <ItemOpposite>

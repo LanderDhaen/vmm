@@ -9,7 +9,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
-using ModificationType = Rise.Shared.Stations.ModificationType;
+using MeasurementStationModificationType = Rise.Shared.Stations.MeasurementStationModificationType;
 using SharedStatus = Rise.Shared.Projects.Status;
 
 namespace Rise.Services.Stations;
@@ -147,7 +147,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		
 		foreach (var m in measurementStation.GetModifications()) {	
 			modifications.Add(new MeasurementStationHistoryDto.Modification {
-				ModificationType = (ModificationType)m.ModificationType,
+				MeasurementStationModificationType = (MeasurementStationModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
 				CurrentValue = m.CurrentValue,

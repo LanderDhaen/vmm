@@ -104,37 +104,15 @@ public class MeasurementStation : Entity {
 	public List<MeasurementStationModification> GetModifications() {
 
 		var modifications = new List<MeasurementStationModification>();
-		
-		// TODO: Add current value
 
 		for (var i = 0; i < _measurementStationHistories.Count - 1; i++) {
 			
 			var curr = _measurementStationHistories[i];
 			var prev = _measurementStationHistories[i + 1];
 
-			if (!prev.Location.Equals(curr.Location)) {
-				modifications.Add(new MeasurementStationModification(
-					ModificationType.LocationChanged,
-					curr.ValidityRange.ValidFrom,
-					prev.Location.Name,
-					curr.Location.Name));
-			}
-
-			if (!prev.Installation.InstalledAt.Equals(curr.Installation.InstalledAt)) {
-				modifications.Add(new MeasurementStationModification(
-					ModificationType.InstalledAtChanged,
-					curr.ValidityRange.ValidFrom,
-					prev.Installation.InstalledAt.ToString(),
-					curr.Installation.InstalledAt.ToString()));
-			}
-
-			if (!prev.Installation.RemovedAt.Equals(curr.Installation.RemovedAt)) {
-				modifications.Add(new MeasurementStationModification(
-					ModificationType.RemovedAtChanged,
-					curr.ValidityRange.ValidFrom,
-					prev.Installation.RemovedAt?.ToString() ?? "-",
-					curr.Installation.RemovedAt?.ToString() ?? "-"));
-			}
+			var modification = MeasurementStationModificationFactory.Create(curr, prev);
+			
+			modifications.Add(modification);
 		}
 		
 		return modifications;
@@ -143,7 +121,7 @@ public class MeasurementStation : Entity {
 }
 
 /// <summary>
-///     A measurement station history is something that holds changes made to a measurement station.
+///     A measurement station history is something that holds a past state of a measurement station.
 /// </summary>
 public class MeasurementStationHistory : HistoryEntity {
 	/// <summary>
@@ -160,24 +138,4 @@ public class MeasurementStationHistory : HistoryEntity {
 	public Installation Installation { get; init; }
 
 	public Location Location { get; init; }
-}
-
-public enum ModificationType {
-	LocationChanged,
-	InstalledAtChanged,
-	RemovedAtChanged
-}
-
-public class MeasurementStationModification {
-	public MeasurementStationModification(ModificationType changeType, DateTime modifiedAt, string previousValue, string currentValue) {
-		ModificationType = changeType;
-		ModifiedAt = modifiedAt;
-		PreviousValue = previousValue;
-		CurrentValue = currentValue;
-	}
-	
-	public ModificationType ModificationType { get; init; }
-	public DateTime ModifiedAt { get; init; }
-	public string PreviousValue { get; init; }
-	public string CurrentValue { get; init; }
 }

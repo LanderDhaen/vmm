@@ -46,7 +46,7 @@ public static class MeasurementStationHistoryDto {
 	}
 
 	public class Modification {
-		public required ModificationType ModificationType { get; init; }
+		public required MeasurementStationModificationType MeasurementStationModificationType { get; init; }
 		public DateTime ModifiedAt { get; init; }
 		public string PreviousValue { get; init; }
 		public string CurrentValue { get; init; }
