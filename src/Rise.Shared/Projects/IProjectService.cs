@@ -38,5 +38,5 @@ public interface IProjectService {
 		Guid projectId,
 		CancellationToken ctx = default
 	);
-		Task<Result<ProjectResponse.SelectOptions>> GetSelectOptionsAsync(CancellationToken ctx = default);
+	Task<Result<ProjectResponse.SelectOptions>> GetSelectOptionsAsync(CancellationToken ctx = default);
 }
