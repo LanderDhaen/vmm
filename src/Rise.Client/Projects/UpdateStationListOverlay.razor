@@ -1,7 +1,7 @@
 @using Rise.Client.Components
 @using Rise.Shared.Stations
-<MudOverlay @bind-Visible="Visible" DarkBackground>
-	<MudPaper Class="pa-6 mx-auto">
+<MudDialog>
+	<TitleContent>
 		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
 			<MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -9,7 +9,10 @@
 			               OnClick="@CloseOverlay"
 			/>
 		</MudStack>
+	</TitleContent>
 
+
+	<DialogContent>
 		<MudRadioGroup @bind-Value="_selectedOption">
 			<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
 			<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
@@ -47,12 +50,13 @@
 					           OnClick="@UpdateMeasurementStations">
 						Opslaan
 					</MudButton>
-					<MudButton OnClick="@CloseOverlay" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">Annuleren
+					<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">
+						Annuleren
 					</MudButton>
 				</MudStack>
 				break;
 			case "Nieuw":
 					break;
 		}
-	</MudPaper>
-</MudOverlay>
+	</DialogContent>
+</MudDialog>

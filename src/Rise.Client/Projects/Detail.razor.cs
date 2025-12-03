@@ -85,9 +85,12 @@ public partial class Detail {
 			Snackbar.Add(message, Severity.Warning);
 		}
 	}
+	
+	private Task OpenDialogAsync()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-	private async Task OpenOverlay() {
-		_visible = true;
+		return DialogService.ShowAsync<UpdateStationListOverlay>("Simple Dialog", options);
 	}
 
 	private async Task Close() {

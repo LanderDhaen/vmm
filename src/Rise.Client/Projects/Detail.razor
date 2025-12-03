@@ -12,7 +12,7 @@
 }
 else
 {
-	<UpdateStationListOverlay @bind-Visible="_visible" ProjectId="ProjectId" Stations="_stationsFromProject"
+	<UpdateStationListOverlay ProjectId="ProjectId" Stations="_stationsFromProject"
 	                          OnStationsUpdated="@RefreshStations"></UpdateStationListOverlay>
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
@@ -147,7 +147,7 @@ else
 										           Size="Size.Small"
 										           Color="Color.Primary"
 										           Class="px-4"
-										           OnClick="@OpenOverlay"
+										           OnClick="@OpenDialogAsync"
 										           Disabled="@(!IsActive)">
 											Aanpassen
 										</MudButton>
