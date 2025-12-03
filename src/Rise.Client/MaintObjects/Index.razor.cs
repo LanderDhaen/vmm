@@ -49,13 +49,15 @@ public partial class Index {
 	// Desktop
 
 	private async Task<GridData<MaintObjDto.Index>> GetMaintObjectsAsync(GridState<MaintObjDto.Index> state) {
-		SortDefinition<MaintObjDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
+		SortDefinition<MaintObjDto.Index> sorting =
+			state.SortDefinitions.FirstOrDefault(
+				new SortDefinition<MaintObjDto.Index>(_activeSorting, _activeSortingDesc, 0, null));
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting?.SortBy ?? "SerialNumber",
-			OrderDescending = sorting?.Descending ?? false
+			OrderBy = sorting.SortBy,
+			OrderDescending = sorting.Descending
 		};
 
 		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request);
