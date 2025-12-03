@@ -16,4 +16,8 @@ public static partial class ProjectResponse {
 	public class History {
 		public required ProjectDto.History Project { get; set; }
 	}
+	public class SelectOptions {
+		public required IReadOnlyList<Networks.MeasurementNetworkDto.Index> MeasurementNetworks { get; set; }
+		public required IReadOnlyList<string> Zones { get; set; }
+	}
 }
