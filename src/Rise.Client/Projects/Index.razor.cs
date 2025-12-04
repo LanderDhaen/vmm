@@ -175,10 +175,20 @@ namespace Rise.Client.Projects {
 		}
 
 		private void ToggleSortingDrawer() => _mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+
 		private async Task ToggleFiltersDrawer() {
 			var bp = await ViewportService.GetCurrentBreakpointAsync();
 			_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
-			_filterOptionsOpen = !_filterOptionsOpen;
+			bool willOpen = !_filterOptionsOpen;
+			if (willOpen) {
+				try {
+					await LoadAllSelectOptionsAsync();
+				} catch {
+					_zones = new List<string>();
+					_measurementNetworks = new List<string>();
+				}
+			}
+			_filterOptionsOpen = willOpen;
 		}
 
 		private async Task SortMobileAsync(string orderBy, bool descending) {
@@ -203,6 +213,8 @@ namespace Rise.Client.Projects {
 				await after();
 			else
 				await ApplyOrReloadOnChangeAsync();
+			_filterOptionsOpen = false;
+			StateHasChanged();
 		}
 
 		private async Task ClearFilters() {
