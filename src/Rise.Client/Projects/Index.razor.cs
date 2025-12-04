@@ -46,10 +46,11 @@ namespace Rise.Client.Projects {
 		private DateTime? _filterEndDate;
 		private List<string> _zones = new();
 		private List<string> _measurementNetworks = new();
+		private bool _loadingSelectOptions;
 
 		[Inject] public required IProjectService ProjectService { get; init; }
 		[Inject] public required INetworkService NetworkService { get; init; }
-		[Inject] public required INetworkService ZoneService { get; init; }
+		[Inject] public required IZoneService ZoneService { get; init; }
 		[Inject] public required NavigationManager NavigationManager { get; init; }
 		[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 		[Inject] public required HeaderService HeaderService { get; init; }
@@ -62,9 +63,6 @@ namespace Rise.Client.Projects {
 			);
 
 			HeaderService.Set("Projecten");
-
-
-			await LoadAllSelectOptionsAsync();
 
 			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 			if (breakpoint == Breakpoint.Xs) {
@@ -104,38 +102,36 @@ namespace Rise.Client.Projects {
 			if (_filterEndDate.HasValue)
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
-
-		private void UpdateSelectOptions(IEnumerable<ProjectDto.Index> projects) {
-			_zones = projects
-				.Select(p => p.Zone ?? string.Empty)
-				.Where(s => !string.IsNullOrWhiteSpace(s))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-				.ToList();
-
-			_measurementNetworks = projects
-				.Select(p => p.MeasurementNetwork ?? string.Empty)
-				.Where(s => !string.IsNullOrWhiteSpace(s))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-				.ToList();
-		}
-
-		private async Task LoadAllSelectOptionsAsync() {
+		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
 			try {
-				var request = new QueryRequest.SkipTake {
-					Skip = 0,
-					Take = 10000,
-					OrderBy = "Name",
-					OrderDescending = false,
-					SearchTerm = string.Empty
-				};
-				var result = await ProjectService.GetIndexAsync(request);
-				var projects = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
-				UpdateSelectOptions(projects);
-			} catch {
+				_loadingSelectOptions = true;
+
+				var result = await ProjectService.GetSelectOptionsAsync(ct);
+
+				var networks = result?.Value?.MeasurementNetworks ?? Enumerable.Empty<MeasurementNetworkDto.Index>();
+
+				_measurementNetworks = networks
+					.Select(n => n.Name ?? string.Empty)
+					.Where(s => !string.IsNullOrWhiteSpace(s))
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+					.ToList();
+
+				var zones = result?.Value?.Zones ?? Enumerable.Empty<ZoneDto.Index>();
+				_zones = zones
+					.Select(z => z.Name ?? string.Empty)
+					.Where(s => !string.IsNullOrWhiteSpace(s))
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+					.ToList();
+			} catch (OperationCanceledException) {
+        
+      } catch {
 				_zones = new List<string>();
 				_measurementNetworks = new List<string>();
+			} finally {
+				_loadingSelectOptions = false;
+				StateHasChanged();
 			}
 		}
 
