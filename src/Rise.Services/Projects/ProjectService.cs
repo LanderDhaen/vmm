@@ -125,10 +125,10 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
 			var t = req.SearchTerm.Trim().ToLowerInvariant();
 			query = query.Where(p =>
-				EF.Functions.Like(p.Code, $"%{t}%") ||
+				p.Code.Contains(t) ||
 				p.Name.Contains(t) ||
-				EF.Functions.Like(p.MeasurementNetwork.Name, $"%{t}%") ||
-				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{t}%"));
+				p.MeasurementNetwork.Name.Contains(t)||
+				p.MeasurementNetwork.Zone.Name.Contains(t));
 		}
 
 		if (req.Filters != null && req.Filters.Count != 0) {
