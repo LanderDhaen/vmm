@@ -17,6 +17,8 @@ else
 	                          OnStationsUpdated="@RefreshStations"></UpdateStationListDialog>
 	
 	<UpdateMeasurementNetworkDialog></UpdateMeasurementNetworkDialog>
+	
+	<EditFormDialog></EditFormDialog>
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
@@ -90,7 +92,7 @@ else
 										           Size="Size.Small"
 										           Color="Color.Primary"
 										           Class="px-4"
-										           Href="@($"/projects/edit/{ProjectId}")"
+										           OnClick="@OpenEditFormDialogAsync"
 										           Disabled="@(!IsActive)">
 											Aanpassen
 										</MudButton>

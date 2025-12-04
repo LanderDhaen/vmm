@@ -105,7 +105,23 @@ public partial class Detail {
 		};
 		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Simple Dialog", parameters, options);
+		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			await RefreshProjectDetail();
+		}
+	}
+	
+	private async Task OpenEditFormDialogAsync() {
+		var parameters = new DialogParameters<EditFormDialog> { 
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.Project, _project }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, CloseButton = true };
+
+		var dialog = await DialogService.ShowAsync<EditFormDialog>("Project bewerken", parameters, options);
 		var result = await dialog.Result;
 
 		if (!result.Canceled)

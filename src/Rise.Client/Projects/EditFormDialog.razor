@@ -1,0 +1,49 @@
+<MudDialog>
+	<TitleContent>
+		<MudText Typo="Typo.h6">Project aanpassen</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
+			<MudGrid>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Referentienummer</MudText>
+					<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Start datum</MudText>
+					<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)"
+					               DateFormat="dd/MM/yyyy"
+					               Variant="Variant.Outlined"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Eind datum</MudText>
+					<MudDatePicker @bind-Date="Model.EndDate" For="@(() => Model.EndDate)" DateFormat="dd/MM/yyyy"
+					               Variant="Variant.Outlined"/>
+				</MudItem>
+			</MudGrid>
+		</MudForm>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@EditProjectAsync">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+		           Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
+</MudDialog>
