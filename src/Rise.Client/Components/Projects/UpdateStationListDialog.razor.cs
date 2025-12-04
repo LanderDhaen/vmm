@@ -6,9 +6,9 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
-namespace Rise.Client.Projects;
+namespace Rise.Client.Components.Projects;
 
-public partial class UpdateStationListOverlay {
+public partial class UpdateStationListDialog {
 	// Radio button
 	private string _selectedOption = "Bestaand";
 

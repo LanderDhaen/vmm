@@ -8,8 +8,8 @@ using Rise.Shared.Projects;
 
 namespace Rise.Client.Components.Projects;
 
-public partial class UpdateMeasurementNetwork {
-	private readonly ProjectRequest.Edit.Validator _validator = new();
+public partial class UpdateMeasurementNetworkDialog {
+	private readonly ProjectRequest.UpdateMeasurementNetwork.Validator _validator = new();
 	private IEnumerable<MeasurementNetworkDto.Index>? _networks;
 	private Result? _result;
 	private MudForm form;
@@ -25,12 +25,10 @@ public partial class UpdateMeasurementNetwork {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
 		_networks = result.Value.measurementsNetworks;
 		
-		if (result.IsSuccess) {
-			Model = new ProjectRequest.UpdateMeasurementNetwork() {
-				ProjectId = ProjectId,
-				MeasurementNetworkId = MeasurementNetworkId
-			};
-		}
+		Model = new ProjectRequest.UpdateMeasurementNetwork() {
+			ProjectId = ProjectId,
+			MeasurementNetworkId = MeasurementNetworkId
+		};
 	}
 
 	private void Cancel() => MudDialog.Cancel();

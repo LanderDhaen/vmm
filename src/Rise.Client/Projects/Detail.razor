@@ -13,10 +13,10 @@
 }
 else
 {
-	<UpdateStationListOverlay ProjectId="ProjectId" Stations="_stationsFromProject"
-	                          OnStationsUpdated="@RefreshStations"></UpdateStationListOverlay>
+	<UpdateStationListDialog ProjectId="ProjectId" Stations="_stationsFromProject"
+	                          OnStationsUpdated="@RefreshStations"></UpdateStationListDialog>
 	
-	<UpdateMeasurementNetwork ProjectId="ProjectId" MeasurementNetworkId="_project.MeasurementNetwork.Id"></UpdateMeasurementNetwork>
+	<UpdateMeasurementNetworkDialog></UpdateMeasurementNetworkDialog>
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">

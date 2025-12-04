@@ -39,12 +39,10 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
+		await GetProjectDetail();
+		await GetStationsAsync();
 
-		// --- Project detail ---
-		if (detail.IsSuccess) {
-			_project = detail.Value.Project;
-
+		if (_project is not null) {
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
 				new BreadcrumbItem("Projecten", "/projects"),
@@ -60,14 +58,7 @@ public partial class Detail {
 					return Task.CompletedTask;
 				}
 			);
-		} else {
-			string message = detail.Errors != null
-				? string.Join(Environment.NewLine, detail.Errors)
-				: "Er is een fout opgetreden.";
-			Snackbar.Add(message, Severity.Error);
 		}
-
-		await GetStationsAsync();
 	}
 
 	private async Task GetStationsAsync() {
@@ -87,16 +78,40 @@ public partial class Detail {
 		}
 	}
 
+	private async Task GetProjectDetail() {
+		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
+		
+		// --- Project detail ---
+		if (detail.IsSuccess) {
+			_project = detail.Value.Project;
+		} else {
+			string message = detail.Errors != null
+				? string.Join(Environment.NewLine, detail.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
 	private Task OpenDialogAsync() {
 		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-		return DialogService.ShowAsync<UpdateStationListOverlay>("Simple Dialog", options);
+		return DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", options);
 	}
-	
-	private Task OpenUpdateMeasurementDialogAsync() {
+
+	private async Task OpenUpdateMeasurementDialogAsync() {
+		var parameters = new DialogParameters<UpdateMeasurementNetworkDialog> { 
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.MeasurementNetworkId, _project!.MeasurementNetwork.Id }
+		};
 		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, CloseButton = true };
 
-		return DialogService.ShowAsync<UpdateMeasurementNetwork>("Simple Dialog", options);
+		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Simple Dialog", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled)
+		{
+			await RefreshProjectDetail();
+		}
 	}
 
 	private async Task Close() {
@@ -182,6 +197,11 @@ public partial class Detail {
 
 	private async Task RefreshStations() {
 		await GetStationsAsync();
+		StateHasChanged();
+	}
+	
+	private async Task RefreshProjectDetail() {
+		await GetProjectDetail();
 		StateHasChanged();
 	}
 }
