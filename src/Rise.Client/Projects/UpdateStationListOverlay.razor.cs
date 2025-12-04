@@ -126,7 +126,7 @@ public partial class UpdateStationListOverlay {
 			_createResult = await StationService.CreateAsync(CreateModel);
 			if (_createResult.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
-				
+
 				CloseOverlay();
 			} else {
 				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
