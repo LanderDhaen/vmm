@@ -3,8 +3,16 @@ using Rise.Domain.Projects;
 
 namespace Rise.Domain.WorkOrders;
 
+/// <summary>
+///     A work order is something that holds a task for a technician on a maintenance object
+/// </summary>
 public class WorkOrder : Entity {
+	
 	// Constructors
+
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
 	private WorkOrder() { }
 
 	public WorkOrder(string name, string description, Priority priority, MaintObj maintObj, Technician? technician = null) {
@@ -21,8 +29,8 @@ public class WorkOrder : Entity {
 
 	public string Name { get; private set; }
 	public string Description { get; private set; }
-	public WorkOrderStatus Status { get; private set; } = WorkOrderStatus.Onvoltooid;
-	public Priority Priority { get; private set; } = Priority.Normaal;
+	public WorkOrderStatus Status { get; private set; } = WorkOrderStatus.Pending;
+	public Priority Priority { get; private set; } = Priority.Normal;
 	public DateRange? DateRange { get; private set; }
 
 	// Relations
@@ -33,12 +41,12 @@ public class WorkOrder : Entity {
 	// Functions
 	public void AssignTechnician(Technician technician) {
 		Technician = technician;
-		Status = WorkOrderStatus.InUitvoering;
+		Status = WorkOrderStatus.InProgress;
 		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
 	}
 
 	public void MarkAsCompleted() {
-		Status = WorkOrderStatus.Voltooid;
+		Status = WorkOrderStatus.Completed;
 		DateRange = new DateRange(DateRange!.StartDate, DateOnly.FromDateTime(DateTime.UtcNow));
 	}
 }
