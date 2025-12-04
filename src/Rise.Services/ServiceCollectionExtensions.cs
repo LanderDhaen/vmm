@@ -3,14 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Rise.Persistence;
 using Rise.Services.Locations;
 using Rise.Services.Networks;
-using Rise.Shared.Zones;
 using Rise.Services.Projects;
 using Rise.Services.Stations;
+using Rise.Services.Zones;
 using Rise.Shared.Locations;
 using Rise.Shared.Networks;
-using Rise.Services.Zones;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
+using Rise.Shared.Zones;
 
 namespace Rise.Services;
 
