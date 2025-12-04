@@ -48,6 +48,8 @@ namespace Rise.Client.Projects {
 		private List<string> _measurementNetworks = new();
 
 		[Inject] public required IProjectService ProjectService { get; init; }
+		[Inject] public required INetworkService NetworkService { get; init; }
+		[Inject] public required INetworkService ZoneService { get; init; }
 		[Inject] public required NavigationManager NavigationManager { get; init; }
 		[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 		[Inject] public required HeaderService HeaderService { get; init; }
