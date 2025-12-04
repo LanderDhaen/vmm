@@ -10,6 +10,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
+using Rise.Shared.Zones;
 
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
@@ -251,16 +252,21 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 				Zone = mn.Zone.Name
 			})
 			.ToListAsync(ctx);
+		List<ZoneDto.Index> zoneDtos = await dbContext.Zones
+.AsNoTracking()
+.OrderBy(z => z.Name)
+.Select(z => new ZoneDto.Index {
+	Id = z.Id,
+	Name = z.Name,
 
-		List<string> zones = await dbContext.Zones
-			.AsNoTracking()
-			.OrderBy(z => z.Name)
-			.Select(z => z.Name)
-			.ToListAsync(ctx);
+})
+.ToListAsync(ctx);
+
+
 
 		var dto = new ProjectResponse.SelectOptions {
 			MeasurementNetworks = measurementNetworkDtos,
-			Zones = zones
+			Zones = zoneDtos
 		};
 
 		return Result.Success(dto);
