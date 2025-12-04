@@ -1,9 +1,6 @@
 using System.Globalization;
-
 using Microsoft.AspNetCore.Components;
-
 using MudBlazor;
-
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
@@ -35,6 +32,8 @@ namespace Rise.Client.Projects {
 		private Anchor _filterDrawerAnchor = Anchor.Right;
 
 		private CancellationTokenSource _cancellationTokenSource = new();
+
+		private CancellationTokenSource _selectCancellationTokenSource = new();
 
 		private MudDataGrid<ProjectDto.Index>? _grid;
 
@@ -177,7 +176,6 @@ namespace Rise.Client.Projects {
 			else if (_grid != null)
 				await _grid.ReloadServerData();
 
-			// drawer blijft open na het wissen van filters
 			StateHasChanged();
 		}
 		private async Task ApplyOrReloadOnChangeAsync() {
@@ -197,34 +195,44 @@ namespace Rise.Client.Projects {
 
 
 		private async Task HandleZoneSelectOpen() {
-			if (_zones != null)
-				return;
+			try {
+				_selectCancellationTokenSource.Cancel();
+			} catch { }
+			_selectCancellationTokenSource.Dispose();
+			_selectCancellationTokenSource = new CancellationTokenSource();
+
+			_zones = null;
+			StateHasChanged();
 
 			try {
 				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
-				var ct = _cancellationTokenSource.Token;
+				var ct = _selectCancellationTokenSource.Token;
 				var zoneResult = await ZoneService.GetIndexAsync(reqAll, ct);
 				_zones = zoneResult.Value.zones;
 			} catch (OperationCanceledException) {
-				// negeren
 			} catch (Exception) {
 				_zones = Enumerable.Empty<ZoneDto.Index>();
 			} finally {
 				StateHasChanged();
 			}
 		}
-
 		private async Task HandleNetworkSelectOpen() {
-			if (_measurementNetworks != null)
-				return;
+			try {
+				_selectCancellationTokenSource.Cancel();
+			} catch { }
+			_selectCancellationTokenSource.Dispose();
+			_selectCancellationTokenSource = new CancellationTokenSource();
+
+			_measurementNetworks = null;
+			StateHasChanged();
 
 			try {
 				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
-				var ct = _cancellationTokenSource.Token;
+				var ct = _selectCancellationTokenSource.Token;
 				var networkResult = await NetworkService.GetIndexAsync(reqAll, ct);
 				_measurementNetworks = networkResult.Value.measurementsNetworks;
 			} catch (OperationCanceledException) {
-
+				// negeren
 			} catch (Exception) {
 				_measurementNetworks = Enumerable.Empty<MeasurementNetworkDto.Index>();
 			} finally {
