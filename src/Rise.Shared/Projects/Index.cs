@@ -18,6 +18,6 @@ public static partial class ProjectResponse {
 	}
 	public class SelectOptions {
 		public required IReadOnlyList<Networks.MeasurementNetworkDto.Index> MeasurementNetworks { get; set; }
-		public required IReadOnlyList<string> Zones { get; set; }
+		public required IReadOnlyList<Zones.ZoneDto.Index> Zones { get; set; }
 	}
 }
