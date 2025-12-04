@@ -253,16 +253,13 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			})
 			.ToListAsync(ctx);
 		List<ZoneDto.Index> zoneDtos = await dbContext.Zones
-.AsNoTracking()
-.OrderBy(z => z.Name)
-.Select(z => new ZoneDto.Index {
-	Id = z.Id,
-	Name = z.Name,
-
-})
-.ToListAsync(ctx);
-
-
+	  .AsNoTracking()
+	  .OrderBy(z => z.Name)
+	  .Select(z => new ZoneDto.Index {
+		  Id = z.Id,
+		  Name = z.Name,
+	  })
+	  .ToListAsync(ctx);
 
 		var dto = new ProjectResponse.SelectOptions {
 			MeasurementNetworks = measurementNetworkDtos,
