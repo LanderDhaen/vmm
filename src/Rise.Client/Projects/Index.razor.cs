@@ -46,7 +46,6 @@ namespace Rise.Client.Projects {
 		private DateTime? _filterEndDate;
 		private IEnumerable<ZoneDto.Index>? _zones;
 		private IEnumerable<MeasurementNetworkDto.Index>? _measurementNetworks;
-		private bool _loadingSelectOptions;
 
 		[Inject] public required IProjectService ProjectService { get; init; }
 		[Inject] public required INetworkService NetworkService { get; init; }
@@ -88,6 +87,7 @@ namespace Rise.Client.Projects {
 			if (_filterEndDate.HasValue)
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
+		
 		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
 			var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
 				
@@ -105,7 +105,7 @@ namespace Rise.Client.Projects {
 				Take = state.PageSize,
 				OrderBy = sorting?.SortBy ?? _activeSorting,
 				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+				SearchTerm = _searchTerm.Trim()
 			};
 
 			ApplyDrawerFilters(request, useContainsForText: false);
