@@ -224,19 +224,43 @@
 
 			<MudSelect T="string" Label="Zone" Value="_filterZone"
 			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterZone = v, val))"
-			           Dense="true" Clearable="true" Placeholder="Selecteer...">
-				@foreach (var z in _zones)
+			           Dense="true" Clearable="true" Placeholder="Selecteer..."
+			           OnOpen="HandleZoneSelectOpen">
+				@if (_zones == null)
 				{
-					<MudSelectItem T="string" Value="@z.Name">@z.Name</MudSelectItem>
+					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
+				}
+				else if (!_zones.Any())
+				{
+					<MudSelectItem T="string" Disabled="true">Geen zones</MudSelectItem>
+				}
+				else
+				{
+					@foreach (var z in _zones)
+					{
+						<MudSelectItem T="string" Value="@z.Name">@z.Name</MudSelectItem>
+					}
 				}
 			</MudSelect>
 
 			<MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork"
 			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"			           
-			           Dense="true" Clearable="true" Placeholder="Selecteer...">
-				@foreach (var m in _measurementNetworks)
+			           Dense="true" Clearable="true" Placeholder="Selecteer..."
+			           OnOpen="HandleNetworkSelectOpen">
+				@if (_measurementNetworks == null)
 				{
-					<MudSelectItem T="string" Value="@m.Name">@m.Name</MudSelectItem>
+					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
+				}
+				else if (!_measurementNetworks.Any())
+				{
+					<MudSelectItem T="string" Disabled="true">Geen meetnetten</MudSelectItem>
+				}
+				else
+				{
+					@foreach (var m in _measurementNetworks)
+					{
+						<MudSelectItem T="string" Value="@m.Name">@m.Name</MudSelectItem>
+					}
 				}
 			</MudSelect>
 
@@ -262,4 +286,4 @@
 
 		</MudStack>
 	</MudDrawer>
-};
+}
