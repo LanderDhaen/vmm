@@ -78,13 +78,13 @@ namespace Rise.Client.Projects {
 				Take = state.PageSize,
 				OrderBy = sorting?.SortBy ?? _activeSorting,
 				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+				SearchTerm =  _searchTerm.Trim()
 			};
-			request.Filters ??= new Dictionary<string, object?>();
+			request.Filters = new Dictionary<string, object?>();
 			return request;
 		}
 		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
-			request.Filters ??= new Dictionary<string, object?>();
+			request.Filters = new Dictionary<string, object?>();
 
 			if (_filterStatus.HasValue)
 				request.Filters["Status"] = new { Operator = "Equals", Value = _filterStatus.Value.ToString() };
@@ -143,7 +143,6 @@ namespace Rise.Client.Projects {
 			ApplyDrawerFilters(request, useContainsForText: false);
 
 			var result = await ProjectService.GetIndexAsync(request);
-			_ = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
 
 			var total = result?.Value?.TotalCount ?? 0;
 
@@ -163,7 +162,7 @@ namespace Rise.Client.Projects {
 				Take = 10,
 				OrderBy = _activeSorting,
 				OrderDescending = _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+				SearchTerm =  _searchTerm.Trim()
 			};
 			request.Filters ??= new Dictionary<string, object?>();
 
