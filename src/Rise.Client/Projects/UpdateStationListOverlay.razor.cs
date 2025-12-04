@@ -123,7 +123,7 @@ public partial class UpdateStationListOverlay {
 			if (_createResult.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
 				await OnStationsUpdated.InvokeAsync();
-				await CloseOverlay();
+				CloseOverlay();
 			} else {
 				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
 			}
