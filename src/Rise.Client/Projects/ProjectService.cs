@@ -23,7 +23,6 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 	}
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req, CancellationToken ctx = default) {
-		// AsQuery() bevat nu ook filters JSON (indien aanwezig)
 		Result<ProjectResponse.Index>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
 		return result!;
@@ -58,6 +57,11 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
 				$"/api/projects/{projectId}/stations",
 				ctx);
+		return result!;
+	}
+	public async Task<Result<ProjectResponse.SelectOptions>> GetSelectOptionsAsync(CancellationToken ctx = default) {
+		Result<ProjectResponse.SelectOptions>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.SelectOptions>>("/api/projects/select-options", ctx);
 		return result!;
 	}
 }
