@@ -44,4 +44,9 @@ public interface IProjectService {
 		ProjectRequest.UpdateMeasurementStations req,
 		CancellationToken ctx = default
 	);
+	
+	Task<Result> UpdateMeasurementNetworkAsync(
+		ProjectRequest.UpdateMeasurementNetwork req,
+		CancellationToken ctx = default
+	);
 }

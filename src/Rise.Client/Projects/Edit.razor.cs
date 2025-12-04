@@ -11,22 +11,17 @@ namespace Rise.Client.Projects;
 
 public partial class Edit {
 	private readonly ProjectRequest.Edit.Validator _validator = new();
-	private IEnumerable<MeasurementNetworkDto.Index>? _networks;
 	private Result? _result;
 	private MudForm form;
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
-	[Inject] public required INetworkService NetworkService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	private ProjectRequest.Edit Model { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
-		_networks = result.Value.measurementsNetworks;
-
 		Result<ProjectResponse.Detail> project = await ProjectService.GetDetailAsync(ProjectId);
 
 		if (project.IsSuccess) {
@@ -41,7 +36,6 @@ public partial class Edit {
 				EndDate = project.Value.Project.EndDate is { } endDate
 					? new DateTime(endDate.Year, endDate.Month, endDate.Day)
 					: null,
-				MeasurementNetworkId = project.Value.Project.MeasurementNetwork.Id
 			};
 		}
 

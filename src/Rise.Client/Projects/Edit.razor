@@ -38,18 +38,6 @@ else
 						<MudDatePicker @bind-Date="Model.EndDate" For="@(() => Model.EndDate)" DateFormat="dd/MM/yyyy"
 						               Variant="Variant.Outlined"/>
 					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Meetnet</MudText>
-						<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId"
-						           For="@(() => Model.MeasurementNetworkId)"
-						           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
-							@foreach (var network in _networks)
-							{
-								<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
-							}
-						</MudSelect>
-					</MudItem>
 				</MudGrid>
 			</MudCardContent>
 		</MudForm>

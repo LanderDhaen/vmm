@@ -17,7 +17,6 @@ public static partial class ProjectRequest {
 		public required string Code { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
-		public Guid? MeasurementNetworkId { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {
@@ -34,8 +33,6 @@ public static partial class ProjectRequest {
 				RuleFor(x => x.EndDate)
 					.Must((model, endDate) => !endDate.HasValue || endDate.Value > model.StartDate)
 					.WithMessage("Einddatum moet na de startdatum liggen.");
-				RuleFor(x => x.MeasurementNetworkId)
-					.NotNull().WithMessage("Je moet een meetnet selecteren.");
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {

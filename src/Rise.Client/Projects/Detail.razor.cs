@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components.Projects;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
@@ -90,6 +91,12 @@ public partial class Detail {
 		var options = new DialogOptions { CloseOnEscapeKey = true };
 
 		return DialogService.ShowAsync<UpdateStationListOverlay>("Simple Dialog", options);
+	}
+	
+	private Task OpenUpdateMeasurementDialogAsync() {
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, CloseButton = true };
+
+		return DialogService.ShowAsync<UpdateMeasurementNetwork>("Simple Dialog", options);
 	}
 
 	private async Task Close() {

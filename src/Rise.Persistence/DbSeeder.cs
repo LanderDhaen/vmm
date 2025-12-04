@@ -250,19 +250,17 @@ public class DbSeeder(
 
 			// Move the start date
 
-			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate),
-				project.MeasurementNetwork);
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate.AddDays(1), dateRange.EndDate));
 			await dbContext.SaveChangesAsync();
 
 			// Revert change
 
-			project.Edit(project.Name, project.Code, dateRange, project.MeasurementNetwork);
+			project.Edit(project.Name, project.Code, dateRange);
 			await dbContext.SaveChangesAsync();
 
 			// Add the end date
 
-			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]),
-				project.MeasurementNetwork);
+			project.Edit(project.Name, project.Code, new DateRange(dateRange.StartDate, endDates[i]));
 			await dbContext.SaveChangesAsync();
 
 			// Update the counter

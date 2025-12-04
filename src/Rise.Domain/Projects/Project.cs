@@ -64,16 +64,29 @@ public class Project : Entity {
 		measurementStationsToRemove.ForEach(m => Stations.Remove(m));
 	}
 
-	public void Edit(string name, string code, DateRange dateRange, MeasurementNetwork measurementNetwork) {
+	public void Edit(string name, string code, DateRange dateRange) {
 		if (Status == Status.Afgesloten) {
 			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
 		}
 
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		Code = Guard.Against.NullOrWhiteSpace(code);
-		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 
 		UpdateDateRange(dateRange);
+	}
+
+	public void UpdateMeasurementNetwork(MeasurementNetwork measurementNetwork) {
+		// Check if the project is closed
+		if (Status == Status.Afgesloten) {
+			throw new InvalidOperationException("Afgesloten projecten kunnen niet worden bewerkt.");
+		}
+
+		// Check if the values are the same as the old values
+		if (measurementNetwork.Equals(MeasurementNetwork)) {
+			return;
+		}
+
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 	}
 
 	private void UpdateDateRange(DateRange dateRange) {

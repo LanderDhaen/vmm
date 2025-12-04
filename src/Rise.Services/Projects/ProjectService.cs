@@ -34,7 +34,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
 			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
 
-		if (measurementNetwork == null) {
+		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
@@ -64,14 +64,32 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		DateOnly startdate = DateOnly.FromDateTime(req.StartDate!.Value);
 		DateOnly? enddate = req.EndDate.HasValue ? DateOnly.FromDateTime(req.EndDate.Value) : null;
+
+		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate));
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
+
+	public async Task<Result> UpdateMeasurementNetworkAsync(
+		ProjectRequest.UpdateMeasurementNetwork req,
+		CancellationToken ctx = default) {
+		Project? project = await dbContext.Projects
+			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
+		}
+
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
 			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId);
 
-		if (measurementNetwork == null) {
+		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
-		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate), measurementNetwork);
+		project.UpdateMeasurementNetwork(measurementNetwork);
 
 		await dbContext.SaveChangesAsync(ctx);
 

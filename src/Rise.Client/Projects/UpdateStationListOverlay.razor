@@ -56,7 +56,19 @@
 				</MudStack>
 				break;
 			case "Nieuw":
-					break;
+				break;
 		}
 	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@UpdateMeasurementStations">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
 </MudDialog>
