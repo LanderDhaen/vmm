@@ -10,14 +10,14 @@ public partial class EditFormDialog {
 	private readonly ProjectRequest.Edit.Validator _validator = new();
 	private Result? _result;
 	private MudForm form;
-	
+
 	[Parameter] public Guid ProjectId { get; set; }
 	[Parameter] public ProjectDto.Detail Project { get; set; }
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	private ProjectRequest.Edit Model { get; set; }
-	
+
 	protected override async Task OnInitializedAsync() {
 		if (Project is not null) {
 			Model = new ProjectRequest.Edit {
@@ -36,7 +36,7 @@ public partial class EditFormDialog {
 	}
 
 	private void Cancel() => MudDialog.Cancel();
-	
+
 	private async Task EditProjectAsync() {
 		await form.Validate();
 

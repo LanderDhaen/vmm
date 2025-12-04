@@ -80,7 +80,7 @@ public partial class Detail {
 
 	private async Task GetProjectDetail() {
 		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
-		
+
 		// --- Project detail ---
 		if (detail.IsSuccess) {
 			_project = detail.Value.Project;
@@ -99,7 +99,7 @@ public partial class Detail {
 	}
 
 	private async Task OpenUpdateMeasurementDialogAsync() {
-		var parameters = new DialogParameters<UpdateMeasurementNetworkDialog> { 
+		var parameters = new DialogParameters<UpdateMeasurementNetworkDialog> {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.MeasurementNetworkId, _project!.MeasurementNetwork.Id }
 		};
@@ -108,14 +108,13 @@ public partial class Detail {
 		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
 		var result = await dialog.Result;
 
-		if (!result.Canceled)
-		{
+		if (!result.Canceled) {
 			await RefreshProjectDetail();
 		}
 	}
-	
+
 	private async Task OpenEditFormDialogAsync() {
-		var parameters = new DialogParameters<EditFormDialog> { 
+		var parameters = new DialogParameters<EditFormDialog> {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.Project, _project }
 		};
@@ -124,8 +123,7 @@ public partial class Detail {
 		var dialog = await DialogService.ShowAsync<EditFormDialog>("Project bewerken", parameters, options);
 		var result = await dialog.Result;
 
-		if (!result.Canceled)
-		{
+		if (!result.Canceled) {
 			await RefreshProjectDetail();
 		}
 	}
@@ -215,7 +213,7 @@ public partial class Detail {
 		await GetStationsAsync();
 		StateHasChanged();
 	}
-	
+
 	private async Task RefreshProjectDetail() {
 		await GetProjectDetail();
 		StateHasChanged();
