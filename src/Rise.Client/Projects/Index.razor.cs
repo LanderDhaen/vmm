@@ -46,7 +46,6 @@ namespace Rise.Client.Projects {
 		private DateTime? _filterEndDate;
 		private List<string> _zones = new();
 		private List<string> _measurementNetworks = new();
-		private bool _loadingSelectOptions;
 
 		[Inject] public required IProjectService ProjectService { get; init; }
 		[Inject] public required INetworkService NetworkService { get; init; }
@@ -103,7 +102,7 @@ namespace Rise.Client.Projects {
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
 		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
-			_loadingSelectOptions = true;
+
 			try {
 				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
 
@@ -134,7 +133,6 @@ namespace Rise.Client.Projects {
 				_zones = new List<string>();
 				_measurementNetworks = new List<string>();
 			} finally {
-				_loadingSelectOptions = false;
 				StateHasChanged();
 			}
 		}
