@@ -29,7 +29,7 @@ internal class DictionaryMudLocalizer : MudLocalizer {
 	public override LocalizedString this[string key] {
 		get {
 			var currentCulture = Thread.CurrentThread.CurrentUICulture.Parent.TwoLetterISOLanguageName;
-			if (currentCulture.Equals("be", StringComparison.InvariantCultureIgnoreCase)
+			if (currentCulture.Equals("nl-BE", StringComparison.InvariantCultureIgnoreCase)
 				&& _localization.TryGetValue(key, out var res)) {
 				return new(key, res);
 			} else {
