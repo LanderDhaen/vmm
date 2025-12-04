@@ -6,7 +6,9 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.Common;
+using Rise.Shared.Networks;
 using Rise.Shared.Projects;
+using Rise.Shared.Zones;
 
 namespace Rise.Client.Projects {
 	public partial class Index {
