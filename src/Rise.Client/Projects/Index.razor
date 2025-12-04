@@ -230,10 +230,6 @@
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
 				}
-				else if (!_zones.Any())
-				{
-					<MudSelectItem T="string" Disabled="true">Geen zones</MudSelectItem>
-				}
 				else
 				{
 					@foreach (var z in _zones)
@@ -250,10 +246,6 @@
 				@if (_measurementNetworks == null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
-				}
-				else if (!_measurementNetworks.Any())
-				{
-					<MudSelectItem T="string" Disabled="true">Geen meetnetten</MudSelectItem>
 				}
 				else
 				{
