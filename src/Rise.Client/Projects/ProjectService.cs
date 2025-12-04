@@ -59,9 +59,14 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 				ctx);
 		return result!;
 	}
-	public async Task<Result<ProjectResponse.SelectOptions>> GetSelectOptionsAsync(CancellationToken ctx = default) {
-		Result<ProjectResponse.SelectOptions>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.SelectOptions>>("/api/projects/select-options", ctx);
+	public async Task<Result<ProjectResponse.ZoneSelectOptions>> GetZoneSelectOptionsAsync(CancellationToken ctx = default) {
+		Result<ProjectResponse.ZoneSelectOptions>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.ZoneSelectOptions>>("/api/projects/zones", ctx);
+		return result!;
+	}
+	public async Task<Result<ProjectResponse.NetworkSelectOptions>> GetNetworkSelectOptionsAsync(CancellationToken ctx = default) {
+		Result<ProjectResponse.NetworkSelectOptions>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.NetworkSelectOptions>>("/api/projects/measurementnetworks", ctx);
 		return result!;
 	}
 }
