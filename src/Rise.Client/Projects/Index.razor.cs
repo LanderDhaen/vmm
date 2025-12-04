@@ -128,7 +128,7 @@ namespace Rise.Client.Projects {
 				Take = 10,
 				OrderBy = _activeSorting,
 				OrderDescending = _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+				SearchTerm =  _searchTerm.Trim()
 			};
 
 			ApplyDrawerFilters(request, useContainsForText: true);
