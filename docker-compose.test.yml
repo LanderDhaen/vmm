@@ -1,0 +1,26 @@
+services:
+    mssql-test:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: test-vmm-mssql
+        environment:
+            # Use an env var when running locally/CI. Defaults to the example password if not set.
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=${SA_PASSWORD:-Your_password123}
+            - MSSQL_PID=Developer
+        ports:
+            # bind host 1434 -> container 1433 to avoid conflicts with local SQL Server
+            - "1434:1433"
+        healthcheck:
+            # Use CMD-SHELL and expand the SA_PASSWORD environment variable from the container
+            test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -P \"$${SA_PASSWORD:-Your_password123}\" -Q \"SELECT 1\" >/dev/null 2>&1" ]
+            interval: 10s
+            timeout: 5s
+            retries: 30
+        restart: unless-stopped
+
+# Notes:
+# - Replace the default password before using this in CI or share it with team members.
+# - The healthcheck uses sqlcmd which is available in the official image.
+# - On macOS/Windows you can set SA_PASSWORD env var before running docker-compose, e.g.:
+#     export SA_PASSWORD="ChangeMeStrong!"
+#     docker compose -f docker-compose.test.yml up -d

@@ -28,6 +28,13 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 
+		<!-- Added packages for SQL Server / configuration in tests -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10"/>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.6"/>
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.10"/>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.10"/>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10" PrivateAssets="all"/>
+
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,6 +44,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Rise.Services\Rise.Services.csproj"/>
+		<!-- Add a reference to the Persistence project so tests can run migrations and construct ApplicationDbContext -->
+		<ProjectReference Include="..\..\src\Rise.Persistence\Rise.Persistence.csproj"/>
 	</ItemGroup>
 
 </Project>
