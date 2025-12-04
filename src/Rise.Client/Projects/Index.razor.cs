@@ -145,8 +145,7 @@ namespace Rise.Client.Projects {
 			ApplyDrawerFilters(request, useContainsForText: false);
 
 			var result = await ProjectService.GetIndexAsync(request);
-
-			var projects = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
+			_ = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
 
 			var total = result?.Value?.TotalCount ?? 0;
 
