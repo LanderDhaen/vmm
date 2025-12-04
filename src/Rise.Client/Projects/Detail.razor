@@ -12,7 +12,7 @@
 }
 else
 {
-	<UpdateStationListOverlay @bind-Visible="_visible" ProjectId="ProjectId" Stations="_stationsFromProject"
+	<UpdateStationListOverlay ProjectId="ProjectId" Stations="_stationsFromProject"
 	                          OnStationsUpdated="@RefreshStations"></UpdateStationListOverlay>
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
@@ -138,18 +138,18 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">Lijst meetstations
+									         Color="Color.Primary">Meetstations
 									</MudText>
 									<MudTooltip Delay="400"
 									            Text="@(IsActive ? "Lijst van meetstations bewerken" : "Afgesloten project kan niet bewerkt worden")">
-										<MudButton Variant="Variant.Filled"
+										<MudButton Variant="Variant.Text"
 										           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 										           Size="Size.Small"
 										           Color="Color.Primary"
 										           Class="px-4"
-										           OnClick="@OpenOverlay"
+										           OnClick="@OpenDialogAsync"
 										           Disabled="@(!IsActive)">
-											Lijst bijwerken
+											Aanpassen
 										</MudButton>
 									</MudTooltip>
 								</MudStack>

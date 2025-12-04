@@ -20,7 +20,12 @@ public partial class Index {
 	private string _activeSorting = "SerialNumber";
 	private bool _activeSortingDesc = true;
 
+	private CancellationTokenSource _cancellationTokenSource = new();
+
+
 	private IEnumerable<MaintObjDto.Index>? _mobileItems;
+	private readonly MudDataGrid<MaintObjDto.Index> _grid;
+
 
 	private bool _mobileSortOptionsOpen;
 
@@ -42,23 +47,26 @@ public partial class Index {
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
 
 		if (breakpoint == Breakpoint.Xs) {
-			await GetMaintObjectsMobileAsync(_activeSorting, _activeSortingDesc);
+			await GetMaintObjectsMobileAsync();
 		}
 	}
 
 	// Desktop
 
 	private async Task<GridData<MaintObjDto.Index>> GetMaintObjectsAsync(GridState<MaintObjDto.Index> state) {
-		SortDefinition<MaintObjDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
+		SortDefinition<MaintObjDto.Index> sorting =
+			state.SortDefinitions.FirstOrDefault(
+				new SortDefinition<MaintObjDto.Index>(_activeSorting, _activeSortingDesc, 0, null));
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = sorting?.SortBy ?? "Name",
-			OrderDescending = sorting?.Descending ?? false
+			OrderBy = sorting.SortBy,
+			OrderDescending = sorting.Descending
 		};
 
-		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request);
+		Result<MaintObjResponse.Index> result =
+			await MaintObjService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		return new GridData<MaintObjDto.Index> {
 			TotalItems = result.Value.TotalCount,
@@ -68,12 +76,16 @@ public partial class Index {
 
 	// Mobile
 
-	private async Task GetMaintObjectsMobileAsync(string orderBy, bool orderDescending) {
+	private async Task GetMaintObjectsMobileAsync() {
+		await _cancellationTokenSource.CancelAsync();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
+
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = orderBy,
-			OrderDescending = orderDescending
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc,
 		};
 
 		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request);
@@ -88,10 +100,10 @@ public partial class Index {
 	}
 
 	private async Task SortMobileAsync(string orderBy, bool descending) {
-		await GetMaintObjectsMobileAsync(orderBy, descending);
-		ToggleSortingDrawer();
 		_activeSorting = orderBy;
 		_activeSortingDesc = descending;
+		await GetMaintObjectsMobileAsync();
+		ToggleSortingDrawer();
 	}
 
 	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)

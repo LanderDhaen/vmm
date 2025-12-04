@@ -29,8 +29,8 @@ public partial class UpdateStationListOverlay {
 
 	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
 
-	[Parameter] public bool Visible { get; set; }
-	[Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+	[CascadingParameter]
+	private IMudDialogInstance MudDialog { get; set; }
 	[Parameter] public Guid ProjectId { get; set; }
 	[Parameter] public EventCallback OnStationsUpdated { get; set; }
 	[Parameter] public IEnumerable<MeasurementStationDto.Index>? Stations { get; set; }
@@ -44,13 +44,15 @@ public partial class UpdateStationListOverlay {
 		await GetAllStationsAsync();
 	}
 
-	private async Task CloseOverlay() {
+	private void CloseOverlay() {
 		// Delete any unsaved changes
 		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
 		StateHasChanged();
 
-		await VisibleChanged.InvokeAsync(false);
+		MudDialog.Close(DialogResult.Ok(true));
 	}
+
+	private void Cancel() => MudDialog.Cancel();
 
 	private async Task UpdateSearch(string searchTerm) {
 		_searchTerm = searchTerm;
@@ -106,7 +108,7 @@ public partial class UpdateStationListOverlay {
 			}
 
 			await OnStationsUpdated.InvokeAsync();
-			await CloseOverlay();
+			CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
 		}

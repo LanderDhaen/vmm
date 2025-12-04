@@ -17,7 +17,7 @@ public partial class Detail {
 	private bool _open;
 
 	// Overlay
-	private bool _visible;
+	private readonly bool _visible;
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
@@ -86,8 +86,10 @@ public partial class Detail {
 		}
 	}
 
-	private async Task OpenOverlay() {
-		_visible = true;
+	private Task OpenDialogAsync() {
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+
+		return DialogService.ShowAsync<UpdateStationListOverlay>("Simple Dialog", options);
 	}
 
 	private async Task Close() {

@@ -1,9 +1,7 @@
 @using Rise.Client.Components
 @using Rise.Shared.Stations
-@using Rise.Client.Components.Stations
-
-<MudOverlay @bind-Visible="Visible" DarkBackground>
-	<MudPaper Class="pa-6 mx-auto overflow-y-scroll" Style="width: 90vh; height: 70vh">
+<MudDialog>
+	<TitleContent>
 		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
 			<MudIconButton Icon="@Icons.Material.Filled.Close"
@@ -11,7 +9,10 @@
 			               OnClick="@CloseOverlay"
 			/>
 		</MudStack>
+	</TitleContent>
 
+
+	<DialogContent>
 		<MudRadioGroup @bind-Value="_selectedOption">
 			<MudRadio Value="@("Bestaand")">Bestaand meetstation toevoegen of verwijderen</MudRadio>
 			<MudRadio Value="@("Nieuw")">Nieuw meetstation toevoegen</MudRadio>
@@ -20,18 +21,8 @@
 		@switch (_selectedOption)
 		{
 			case "Bestaand":
-				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-					<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
-					             Label="Zoek meetstation"></SearchField>
-					<MudButton Variant="Variant.Filled"
-					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-					           Size="Size.Small"
-					           Color="Color.Primary"
-					           Class="px-4"
-					           OnClick="@UpdateMeasurementStations">
-						Lijst bijwerken
-					</MudButton>
-				</MudStack>
+				<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
+				             Label="Zoek meetstation"></SearchField>
 
 				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true"
 				          FixedHeader="true" Height="400px">
@@ -51,6 +42,19 @@
 						<MudTd DataLabel="Gemeente">@context.City</MudTd>
 					</RowTemplate>
 				</MudTable>
+
+				<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="py-4">
+					<MudButton Variant="Variant.Filled"
+					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+					           Size="Size.Small"
+					           Color="Color.Primary"
+					           OnClick="@UpdateMeasurementStations">
+						Opslaan
+					</MudButton>
+					<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">
+						Annuleren
+					</MudButton>
+				</MudStack>
 				break;
 			case "Nieuw":
 				<MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
@@ -64,5 +68,5 @@
 				</MudCardActions>
 				break;
 		}
-	</MudPaper>
-</MudOverlay>
+	</DialogContent>
+</MudDialog>
