@@ -70,7 +70,7 @@ namespace Rise.Client.Projects {
 					await GetProjectsMobileAsync();
 			}
 		}
-		
+
 		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
 			if (_filterStatus.HasValue)
 				request.Filters["Status"] = new { Operator = "Equals", Value = _filterStatus.Value.ToString() };
@@ -87,16 +87,6 @@ namespace Rise.Client.Projects {
 			if (_filterEndDate.HasValue)
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
-		
-		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
-			var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
-				
-			Result<ZoneResponse.Index> zoneResult = await ZoneService.GetIndexAsync(reqAll, ct);
-			_zones = zoneResult.Value.zones;
-				
-			Result<NetworkResponse.Index> measurementNetworkResult = await NetworkService.GetIndexAsync(reqAll, ct);
-			_measurementNetworks = measurementNetworkResult.Value.measurementsNetworks;
-		}
 
 		private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
 			var sorting = state.SortDefinitions.FirstOrDefault();
@@ -111,7 +101,7 @@ namespace Rise.Client.Projects {
 			ApplyDrawerFilters(request, useContainsForText: false);
 
 			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
-			
+
 			return new GridData<ProjectDto.Index> {
 				TotalItems = result.Value.TotalCount,
 				Items = result.Value.Projects
@@ -128,13 +118,13 @@ namespace Rise.Client.Projects {
 				Take = 10,
 				OrderBy = _activeSorting,
 				OrderDescending = _activeSortingDesc,
-				SearchTerm =  _searchTerm.Trim()
+				SearchTerm = _searchTerm.Trim()
 			};
 
 			ApplyDrawerFilters(request, useContainsForText: true);
 
 			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
-			
+
 			_mobileItems = result.Value.Projects;
 		}
 
@@ -144,10 +134,8 @@ namespace Rise.Client.Projects {
 			var bp = await ViewportService.GetCurrentBreakpointAsync();
 			_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
 			bool willOpen = !_filterOptionsOpen;
-			if (willOpen) {
-				await LoadAllSelectOptionsAsync();
-			}
 			_filterOptionsOpen = willOpen;
+			StateHasChanged();
 		}
 
 		private async Task SortMobileAsync(string orderBy, bool descending) {
@@ -172,7 +160,6 @@ namespace Rise.Client.Projects {
 				await after();
 			else
 				await ApplyOrReloadOnChangeAsync();
-			_filterOptionsOpen = false;
 			StateHasChanged();
 		}
 
@@ -190,7 +177,7 @@ namespace Rise.Client.Projects {
 			else if (_grid != null)
 				await _grid.ReloadServerData();
 
-			_filterOptionsOpen = false;
+			// drawer blijft open na het wissen van filters
 			StateHasChanged();
 		}
 		private async Task ApplyOrReloadOnChangeAsync() {
@@ -207,5 +194,42 @@ namespace Rise.Client.Projects {
 
 		private string GetFilterDrawerClass() =>
 			_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
+
+
+		private async Task HandleZoneSelectOpen() {
+			if (_zones != null)
+				return;
+
+			try {
+				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
+				var ct = _cancellationTokenSource.Token;
+				var zoneResult = await ZoneService.GetIndexAsync(reqAll, ct);
+				_zones = zoneResult.Value.zones;
+			} catch (OperationCanceledException) {
+				// negeren
+			} catch (Exception) {
+				_zones = Enumerable.Empty<ZoneDto.Index>();
+			} finally {
+				StateHasChanged();
+			}
+		}
+
+		private async Task HandleNetworkSelectOpen() {
+			if (_measurementNetworks != null)
+				return;
+
+			try {
+				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
+				var ct = _cancellationTokenSource.Token;
+				var networkResult = await NetworkService.GetIndexAsync(reqAll, ct);
+				_measurementNetworks = networkResult.Value.measurementsNetworks;
+			} catch (OperationCanceledException) {
+
+			} catch (Exception) {
+				_measurementNetworks = Enumerable.Empty<MeasurementNetworkDto.Index>();
+			} finally {
+				StateHasChanged();
+			}
+		}
 	}
 }
