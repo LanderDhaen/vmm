@@ -243,7 +243,6 @@ public class ProjectServiceShould {
 			ProjectId = project.Id,
 			Name = "Updated Project",
 			Code = project.Code,
-			MeasurementNetworkId = project.MeasurementNetwork.Id,
 			StartDate = new DateTime(2025, 1, 1),
 			EndDate = new DateTime(2025, 12, 31)
 		};
@@ -260,7 +259,6 @@ public class ProjectServiceShould {
 		Assert.Equal("EP-001", updated.Code);
 		Assert.Equal(new DateOnly(2025, 1, 1), updated.DateRange.StartDate);
 		Assert.Equal(new DateOnly(2025, 12, 31), updated.DateRange.EndDate);
-		Assert.Equal(measurementNetwork.Id, updated.MeasurementNetwork.Id);
 
 		connection.Close();
 	}
@@ -285,7 +283,6 @@ public class ProjectServiceShould {
 			ProjectId = Guid.NewGuid(),
 			Name = "Updated Project",
 			Code = project.Code,
-			MeasurementNetworkId = project.MeasurementNetwork.Id,
 			StartDate = new DateTime(2025, 1, 1)
 		};
 
@@ -322,7 +319,6 @@ public class ProjectServiceShould {
 			ProjectId = project1.Id,
 			Name = project1.Name,
 			Code = "EP-001",
-			MeasurementNetworkId = project1.MeasurementNetwork.Id,
 			StartDate = new DateTime(2025, 1, 1)
 		};
 
@@ -335,42 +331,6 @@ public class ProjectServiceShould {
 
 		connection.Close();
 	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
-		// Arrange
-		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		Zone zone = new("TestZone", "Z-001");
-		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
-		MeasurementNetwork measurementNetwork1 = new("TestNetwork1", zone);
-		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
-			measurementNetwork);
-
-		db.Zones.Add(zone);
-		db.MeasurementNetworks.Add(measurementNetwork);
-		db.Projects.Add(project);
-		await db.SaveChangesAsync();
-
-		ProjectService service = new(db, null!);
-
-		ProjectRequest.Edit request = new() {
-			ProjectId = project.Id,
-			Name = "Updated Project",
-			Code = project.Code,
-			MeasurementNetworkId = measurementNetwork1.Id,
-			StartDate = new DateTime(2025, 1, 1)
-		};
-
-		// Act
-		Result result = await service.EditAsync(request);
-
-		// Assert
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-		Assert.Equal("Meetnet niet gevonden.", result.Errors.First());
-
-		connection.Close();
-	}
-
 
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
