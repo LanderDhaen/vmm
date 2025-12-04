@@ -103,23 +103,27 @@ namespace Rise.Client.Projects {
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
 		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
+			_loadingSelectOptions = true;
 			try {
-				_loadingSelectOptions = true;
+				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
 
-				var result = await ProjectService.GetSelectOptionsAsync(ct);
+				var zoneTask = ZoneService.GetIndexAsync(reqAll, ct);
+				var networkTask = NetworkService.GetIndexAsync(reqAll, ct);
 
-				var networks = result?.Value?.MeasurementNetworks ?? Enumerable.Empty<MeasurementNetworkDto.Index>();
+				await Task.WhenAll(zoneTask, networkTask);
 
-				_measurementNetworks = networks
-					.Select(n => n.Name ?? string.Empty)
+				var zoneResult = await zoneTask;
+				var networkResult = await networkTask;
+
+				_zones = (zoneResult?.IsSuccess == true ? zoneResult.Value?.zones ?? Enumerable.Empty<ZoneDto.Index>() : Enumerable.Empty<ZoneDto.Index>())
+					.Select(z => z.Name ?? string.Empty)
 					.Where(s => !string.IsNullOrWhiteSpace(s))
 					.Distinct(StringComparer.OrdinalIgnoreCase)
 					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
 					.ToList();
 
-				var zones = result?.Value?.Zones ?? Enumerable.Empty<ZoneDto.Index>();
-				_zones = zones
-					.Select(z => z.Name ?? string.Empty)
+				_measurementNetworks = (networkResult?.IsSuccess == true ? networkResult.Value?.measurementsNetworks ?? Enumerable.Empty<MeasurementNetworkDto.Index>() : Enumerable.Empty<MeasurementNetworkDto.Index>())
+					.Select(n => n.Name ?? string.Empty)
 					.Where(s => !string.IsNullOrWhiteSpace(s))
 					.Distinct(StringComparer.OrdinalIgnoreCase)
 					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
