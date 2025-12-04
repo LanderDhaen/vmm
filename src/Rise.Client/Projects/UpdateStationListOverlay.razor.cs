@@ -44,11 +44,8 @@ public partial class UpdateStationListOverlay {
 		await GetAllStationsAsync();
 	}
 
-	private void CloseOverlay() {
-		// Delete any unsaved changes
-		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
-		StateHasChanged();
-
+	private async Task CloseOverlay() {
+		await OnStationsUpdated.InvokeAsync();
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
@@ -89,6 +86,14 @@ public partial class UpdateStationListOverlay {
 		}
 	}
 
+	private async Task Save() {
+		if (_selectedOption == "Bestaand") {
+			await UpdateMeasurementStations();
+		} else {
+			await CreateProjectAsync();
+		}
+	}
+
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
 			Stations?.Select(s => s.Id) ?? []);
@@ -107,7 +112,6 @@ public partial class UpdateStationListOverlay {
 				Stations = stationsResult.Value.MeasurementStationsFromProject;
 			}
 
-			await OnStationsUpdated.InvokeAsync();
 			CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
@@ -122,7 +126,7 @@ public partial class UpdateStationListOverlay {
 			_createResult = await StationService.CreateAsync(CreateModel);
 			if (_createResult.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
-				await OnStationsUpdated.InvokeAsync();
+				
 				CloseOverlay();
 			} else {
 				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);

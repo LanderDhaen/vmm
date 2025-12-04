@@ -1,17 +1,10 @@
 @using Rise.Client.Components
 @using Rise.Client.Components.Stations
 @using Rise.Shared.Stations
-<MudDialog>
+<MudDialog Style="max-height: 80vh; max-width: 800px">
 	<TitleContent>
-		<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-			<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
-			<MudIconButton Icon="@Icons.Material.Filled.Close"
-			               Size="Size.Medium"
-			               OnClick="@CloseOverlay"
-			/>
-		</MudStack>
+		<MudText Typo="Typo.h5">Lijst meetstations bewerken</MudText>
 	</TitleContent>
-
 
 	<DialogContent>
 		<MudRadioGroup @bind-Value="_selectedOption">
@@ -26,7 +19,7 @@
 				             Label="Zoek meetstation"></SearchField>
 
 				<MudTable T="MeasurementStationDto.Index" Items="@_allStations" Hover="true" CustomHeader="true"
-				          FixedHeader="true" Height="400px">
+				          FixedHeader="true">
 					<HeaderContent>
 						<MudTHeadRow>
 							<MudTh Class="mud-theme-primary"></MudTh>
@@ -43,31 +36,24 @@
 						<MudTd DataLabel="Gemeente">@context.City</MudTd>
 					</RowTemplate>
 				</MudTable>
-
-				<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="py-4">
-					<MudButton Variant="Variant.Filled"
-					           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-					           Size="Size.Small"
-					           Color="Color.Primary"
-					           OnClick="@UpdateMeasurementStations">
-						Opslaan
-					</MudButton>
-					<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">
-						Annuleren
-					</MudButton>
-				</MudStack>
 				break;
 			case "Nieuw":
 				<MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
 					<CreateStationForm Model="CreateModel"></CreateStationForm>
 				</MudForm>
-				<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
-					<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@CreateProjectAsync">Opslaan
-					</MudButton>
-					<MudButton OnClick="@CloseOverlay" Variant="Variant.Outlined" Color="Color.Primary">Annuleren
-					</MudButton>
-				</MudCardActions>
 				break;
 		}
 	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@Save">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
 </MudDialog>
