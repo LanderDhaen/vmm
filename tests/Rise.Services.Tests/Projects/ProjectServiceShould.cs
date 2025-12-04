@@ -17,7 +17,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task EditAsync_Should_Return_NotFound_When_Project_Does_Not_Exist() {
 		// 1. Start MSSQL Testcontainer
-		MsSqlContainer? container = new MsSqlBuilder()
+		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
 			.WithPassword("YourStrong(!)Password")
 			.Build();
 
