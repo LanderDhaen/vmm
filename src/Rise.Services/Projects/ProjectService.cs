@@ -127,7 +127,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			query = query.Where(p =>
 				p.Code.Contains(t) ||
 				p.Name.Contains(t) ||
-				p.MeasurementNetwork.Name.Contains(t)||
+				p.MeasurementNetwork.Name.Contains(t) ||
 				p.MeasurementNetwork.Zone.Name.Contains(t));
 		}
 
