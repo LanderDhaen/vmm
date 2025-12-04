@@ -21,25 +21,23 @@ namespace Rise.Services.Tests.Projects;
 
 public class ProjectServiceShould {
 	// One container for the entire test class
-	private static readonly MsSqlContainer? _container;
-	private static readonly ApplicationDbContext? _dbContext;
+	private static readonly ApplicationDbContext? DbContext;
 	private readonly ProjectService _service;
 
 	static ProjectServiceShould() {
-		_container = new MsSqlBuilder()
+		MsSqlContainer? container = new MsSqlBuilder()
 			.WithImage("mcr.microsoft.com/mssql/server:2022-latest")
 			.WithPassword("YourStrong(!)Password")
 			.Build();
 
-		_container.StartAsync().GetAwaiter().GetResult();
-		// WaitForSqlReadyAsync(_container.GetConnectionString()).GetAwaiter().GetResult();
+		container.StartAsync().GetAwaiter().GetResult();
 
 		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseSqlServer(_container.GetConnectionString())
+			.UseSqlServer(container.GetConnectionString())
 			.Options;
 
-		_dbContext = new ApplicationDbContext(options);
-		_dbContext.Database.Migrate();
+		DbContext = new ApplicationDbContext(options);
+		DbContext.Database.Migrate();
 	}
 
 	public ProjectServiceShould() {
@@ -50,7 +48,7 @@ public class ProjectServiceShould {
 
 		FakeSessionContextProvider session = new(fakeUser);
 
-		_service = new ProjectService(_dbContext!, session);
+		_service = new ProjectService(DbContext!, session);
 	}
 
 	#region CreateAsync Tests
@@ -59,8 +57,8 @@ public class ProjectServiceShould {
 	public async Task CreateAsync_ShouldCreateProject_WhenRequestIsValid() {
 		// Arrange
 		MeasurementNetwork network = new("MN2", new Zone("Zone2", "Z2"));
-		_dbContext!.MeasurementNetworks.Add(network);
-		await _dbContext.SaveChangesAsync();
+		DbContext!.MeasurementNetworks.Add(network);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Create request = new() {
 			Name = "New Project",
@@ -76,7 +74,7 @@ public class ProjectServiceShould {
 		Assert.True(result.IsSuccess);
 		Assert.NotEqual(Guid.Empty, result.Value.ProjectId);
 
-		Project? createdProject = await _dbContext.Projects.FindAsync(result.Value.ProjectId);
+		Project? createdProject = await DbContext.Projects.FindAsync(result.Value.ProjectId);
 		Assert.NotNull(createdProject);
 		Assert.Equal("New Project", createdProject.Name);
 		Assert.Equal("NEWCODE", createdProject.Code);
@@ -95,12 +93,12 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
 		MeasurementNetwork network = new("MN_Detail", new Zone("Zone_Detail", "ZD"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new(
 			"Test Project", "DETAIL_CODE",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
 
@@ -116,11 +114,11 @@ public class ProjectServiceShould {
 	public async Task CreateAsync_ShouldReturnConflict_WhenCodeAlreadyExists() {
 		// Arrange
 		MeasurementNetwork network = new("MN3", new Zone("Zone3", "Z3"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project existingProject = new("Existing Project", "DUPCODE",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(existingProject);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(existingProject);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Create request = new() {
 			Name = "Another Project",
@@ -161,11 +159,11 @@ public class ProjectServiceShould {
 	public async Task EditAsync_ShouldEditProject_WhenRequestIsValid() {
 		// Arrange
 		MeasurementNetwork network = new("MN4", new Zone("Zone4", "Z4"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("Original Name", "ORIGCODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project.Id,
@@ -182,7 +180,7 @@ public class ProjectServiceShould {
 		// Assert
 		Assert.True(result.IsSuccess);
 
-		Project? updatedProject = await _dbContext.Projects.FindAsync(project.Id);
+		Project? updatedProject = await DbContext.Projects.FindAsync(project.Id);
 		Assert.NotNull(updatedProject);
 		Assert.Equal("Updated Name", updatedProject.Name);
 		Assert.Equal("UPDCODE", updatedProject.Code);
@@ -192,8 +190,8 @@ public class ProjectServiceShould {
 	public async Task EditAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
 		MeasurementNetwork network = new("MN5_EditNotFound", new Zone("Zone5", "Z5"));
-		_dbContext!.MeasurementNetworks.Add(network);
-		await _dbContext.SaveChangesAsync();
+		DbContext!.MeasurementNetworks.Add(network);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = Guid.NewGuid(),
@@ -214,13 +212,13 @@ public class ProjectServiceShould {
 	public async Task EditAsync_ShouldReturnConflict_WhenCodeAlreadyExistsForDifferentProject() {
 		// Arrange
 		MeasurementNetwork network = new("MN6_EditConflict", new Zone("Zone6", "Z6"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project1 = new("Project 1", "EDIT_CONFLICT_CODE1", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
 		Project project2 = new("Project 2", "EDIT_CONFLICT_CODE2", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.AddRange(project1, project2);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.AddRange(project1, project2);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project2.Id,
@@ -241,11 +239,11 @@ public class ProjectServiceShould {
 	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkDoesNotExist() {
 		// Arrange
 		MeasurementNetwork network = new("MN7_EditNetNotFound", new Zone("Zone7", "Z7"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("Test Project", "EDIT_NET_NOTFOUND_CODE",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project.Id,
@@ -270,15 +268,15 @@ public class ProjectServiceShould {
 	public async Task GetIndexAsync_ShouldReturnProjects_WithPagination() {
 		// Arrange
 		MeasurementNetwork network = new("MN8_IndexPag", new Zone("Zone8", "Z8"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 
 		for (int i = 1; i <= 5; i++) {
 			Project project = new($"Project {i}", $"INDEX_PAG_CODE{i}",
 				new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-			_dbContext.Projects.Add(project);
+			DbContext.Projects.Add(project);
 		}
 
-		await _dbContext.SaveChangesAsync();
+		await DbContext.SaveChangesAsync();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
@@ -299,13 +297,13 @@ public class ProjectServiceShould {
 	public async Task GetIndexAsync_ShouldFilterBySearchTerm() {
 		// Arrange
 		MeasurementNetwork network = new("MN9_IndexFilter", new Zone("Zone9", "Z9"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project1 = new("Searchable Project", "INDEX_FILTER_SEARCH1",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
 		Project project2 = new("Another Project", "INDEX_FILTER_OTHER1",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.AddRange(project1, project2);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.AddRange(project1, project2);
+		await DbContext.SaveChangesAsync();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
@@ -325,13 +323,13 @@ public class ProjectServiceShould {
 	public async Task GetIndexAsync_ShouldSortByName() {
 		// Arrange
 		MeasurementNetwork network = new("MN10_IndexSort", new Zone("Zone10", "Z10"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project projectA = new("AAA Project", "INDEX_SORT_CODEA", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
 		Project projectZ = new("ZZZ Project", "INDEX_SORT_CODEZ", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.AddRange(projectA, projectZ);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.AddRange(projectA, projectZ);
+		await DbContext.SaveChangesAsync();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
@@ -360,11 +358,11 @@ public class ProjectServiceShould {
 	public async Task GetHistoryAsync_ShouldReturnProjectHistory_WhenProjectExists() {
 		// Arrange
 		MeasurementNetwork network = new("MN11_History", new Zone("Zone11", "Z11"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("History Project", "HISTORY_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		// Act
 		Result<ProjectResponse.History> result = await _service.GetHistoryAsync(project.Id);
@@ -392,11 +390,11 @@ public class ProjectServiceShould {
 	public async Task UpdateStatusAsync_ShouldUpdateStatus_WhenProjectExists() {
 		// Arrange
 		MeasurementNetwork network = new("MN12_Status", new Zone("Zone12", "Z12"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("Status Project", "STATUS_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.UpdateStatus request = new() {
 			ProjectId = project.Id,
@@ -409,7 +407,7 @@ public class ProjectServiceShould {
 		// Assert
 		Assert.True(result.IsSuccess);
 
-		Project? updatedProject = await _dbContext.Projects.FindAsync(project.Id);
+		Project? updatedProject = await DbContext.Projects.FindAsync(project.Id);
 		Assert.NotNull(updatedProject);
 		Assert.Equal(Status.Afgesloten, updatedProject.Status);
 	}
@@ -437,11 +435,11 @@ public class ProjectServiceShould {
 	public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
 		// Arrange
 		MeasurementNetwork network = new("MN13_Stations", new Zone("Zone13", "Z13"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("Station Project", "STATION_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
 			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		QueryRequest.Search request = new() {
 			SearchTerm = ""
@@ -492,11 +490,11 @@ public class ProjectServiceShould {
 	public async Task UpdateMeasurementStationsAsync_ShouldReturnError_WhenMeasurementStationNotFound() {
 		// Arrange
 		MeasurementNetwork network = new("MN14_UpdateStations", new Zone("Zone14", "Z14"));
-		_dbContext!.MeasurementNetworks.Add(network);
+		DbContext!.MeasurementNetworks.Add(network);
 		Project project = new("Update Stations Project", "UPDATE_STATIONS_CODE",
 			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = project.Id,
