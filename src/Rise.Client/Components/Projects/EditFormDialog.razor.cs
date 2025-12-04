@@ -2,11 +2,9 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-using Rise.Shared.Common;
-using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 
-namespace Rise.Client.Projects;
+namespace Rise.Client.Components.Projects;
 
 public partial class EditFormDialog {
 	private readonly ProjectRequest.Edit.Validator _validator = new();
