@@ -214,7 +214,6 @@
 			           Label="Status"
 			           Value="_filterStatus"
 			           ValueChanged="@(val => UpdateFilterAsync<Status?>(v => _filterStatus = v, val))"
-			           ValueExpression="() => _filterStatus"
 			           Dense="true"
 			           Clearable="true">
 				@foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
@@ -225,7 +224,6 @@
 
 			<MudSelect T="string" Label="Zone" Value="_filterZone"
 			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterZone = v, val))"
-			           ValueExpression="() => _filterZone"
 			           Dense="true" Clearable="true" Placeholder="Selecteer...">
 				@foreach (var z in _zones)
 				{
@@ -234,8 +232,7 @@
 			</MudSelect>
 
 			<MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork"
-			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"
-			           ValueExpression="() => _filterMeasurementNetwork"
+			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"			           
 			           Dense="true" Clearable="true" Placeholder="Selecteer...">
 				@foreach (var m in _measurementNetworks)
 				{
@@ -252,13 +249,11 @@
 					                            _filterEndDate = null;
 				                            }
 			                            }, val))"
-			               DateExpression="() => _filterStartDate"
-			               DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
+			                Clearable="true" PickerVariant="PickerVariant.Dialog"/>
 
 			<MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate"
 			               DateChanged="@(val => UpdateFilterAsync<DateTime?>(v => _filterEndDate = v, val))"
-			               DateExpression="() => _filterEndDate"
-			               DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog"
+			               Clearable="true" PickerVariant="PickerVariant.Dialog"
 			               MinDate="_filterStartDate?.AddDays(1)"/>
 
 			<MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
