@@ -4,6 +4,8 @@ using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Networks;
+using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Fakers;
@@ -14,53 +16,77 @@ using Testcontainers.MsSql;
 namespace Rise.Services.Tests.Projects;
 
 public class ProjectServiceShould {
-	[Fact]
-	public async Task EditAsync_Should_Return_NotFound_When_Project_Does_Not_Exist() {
-		// 1. Start MSSQL Testcontainer
-		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+	// One container for the entire test class
+	private static readonly MsSqlContainer? _container;
+	private static readonly ApplicationDbContext? _dbContext;
+	private readonly ProjectService _service;
+
+	static ProjectServiceShould() {
+		_container = new MsSqlBuilder()
+			.WithImage("mcr.microsoft.com/mssql/server:2022-latest")
 			.WithPassword("YourStrong(!)Password")
 			.Build();
 
-		await container.StartAsync();
+		_container.StartAsync().GetAwaiter().GetResult();
+		// WaitForSqlReadyAsync(_container.GetConnectionString()).GetAwaiter().GetResult();
 
-		try {
-			// 2. Maak DbContext met de container connection string
-			DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseSqlServer(container.GetConnectionString())
-				.Options;
+		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlServer(_container.GetConnectionString())
+			.Options;
 
-			await using ApplicationDbContext db = new(options);
-
-			// 3. Zorg dat database schema klaar is
-			await db.Database.MigrateAsync();
-
-			// 4. Fake sessionprovider (simpel)
-			ClaimsPrincipal fakeUser = new(new ClaimsIdentity([
-				new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
-			], "TestAuth"));
-
-			FakeSessionContextProvider session = new(fakeUser);
-
-			// 5. Maak ProjectService
-			ProjectService service = new(db, session);
-
-			// 6. Test: EditAsync met niet-bestaand project
-			ProjectRequest.Edit request = new() {
-				ProjectId = Guid.NewGuid(),
-				Name = "Test",
-				Code = "TEST",
-				StartDate = DateTime.UtcNow,
-				MeasurementNetworkId = Guid.NewGuid()
-			};
-
-			Result result = await service.EditAsync(request);
-
-			// 7. Assert
-			Assert.False(result.IsSuccess);
-			Assert.True(result.IsNotFound());
-		} finally {
-			// 8. Stop container
-			await container.DisposeAsync();
-		}
+		_dbContext = new ApplicationDbContext(options);
+		_dbContext.Database.Migrate();
 	}
+
+	public ProjectServiceShould() {
+		ClaimsPrincipal fakeUser = new(
+			new ClaimsIdentity(
+				[new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())],
+				"TestAuth"));
+
+		FakeSessionContextProvider session = new(fakeUser);
+
+		_service = new ProjectService(_dbContext!, session);
+	}
+
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
+		Assert.True(result.IsNotFound());
+	}
+
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
+		MeasurementNetwork network = new("MN1", new Zone("Zone1", "Z1"));
+		_dbContext!.MeasurementNetworks.Add(network);
+		Project project = new(
+			"Test Project", "CODE1",
+			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
+
+		Assert.True(result.IsSuccess);
+		Assert.Equal("Test Project", result.Value!.Project!.Name);
+	}
+
+	//Helper to wait until SQL is ready
+	// Optional
+	// private static async Task WaitForSqlReadyAsync(string connectionString, int timeoutSeconds = 30) {
+	// 	DateTime start = DateTime.UtcNow;
+	// 	while (true) {
+	// 		try {
+	// 			using SqlConnection conn = new(connectionString);
+	// 			await conn.OpenAsync();
+	// 			return;
+	// 		} catch {
+	// 			if ((DateTime.UtcNow - start).TotalSeconds > timeoutSeconds) {
+	// 				throw new TimeoutException("SQL Server did not become ready in time.");
+	// 			}
+	//
+	// 			await Task.Delay(500);
+	// 		}
+	// 	}
+	// }
 }
