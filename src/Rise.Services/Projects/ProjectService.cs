@@ -241,40 +241,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success(new ProjectResponse.Index { Projects = projects, TotalCount = totalCount });
 	}
 
-	public async Task<Result<ProjectResponse.ZoneSelectOptions>> GetZoneSelectOptionsAsync(CancellationToken ctx = default) {
-		List<ZoneDto.Index> zoneDtos = await dbContext.Zones
-	  .AsNoTracking()
-	  .OrderBy(z => z.Name)
-	  .Select(z => new ZoneDto.Index {
-		  Id = z.Id,
-		  Name = z.Name,
-	  })
-	  .ToListAsync(ctx);
-
-		var dto = new ProjectResponse.ZoneSelectOptions {
-			Zones = zoneDtos
-		};
-		return Result.Success(dto);
-	}
-	public async Task<Result<ProjectResponse.NetworkSelectOptions>> GetNetworkSelectOptionsAsync(CancellationToken ctx = default) {
-		List<MeasurementNetworkDto.Index> measurementNetworkDtos = await dbContext.MeasurementNetworks
-			.AsNoTracking()
-			.Include(mn => mn.Zone)
-			.OrderBy(mn => mn.Name)
-			.Select(mn => new MeasurementNetworkDto.Index {
-				Id = mn.Id,
-				Name = mn.Name,
-				Zone = mn.Zone.Name
-			})
-			.ToListAsync(ctx);
-
-		var dto = new ProjectResponse.NetworkSelectOptions {
-			Networks = measurementNetworkDtos,
-		};
-
-		return Result.Success(dto);
-	}
-
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()

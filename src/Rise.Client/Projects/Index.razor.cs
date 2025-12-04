@@ -44,8 +44,8 @@ namespace Rise.Client.Projects {
 		private string? _filterMeasurementNetwork;
 		private DateTime? _filterStartDate;
 		private DateTime? _filterEndDate;
-		private List<string> _zones = new();
-		private List<string> _measurementNetworks = new();
+		private IEnumerable<ZoneDto.Index>? _zones;
+		private IEnumerable<MeasurementNetworkDto.Index>? _measurementNetworks;
 		private bool _loadingSelectOptions;
 
 		[Inject] public required IProjectService ProjectService { get; init; }
@@ -71,22 +71,8 @@ namespace Rise.Client.Projects {
 					await GetProjectsMobileAsync();
 			}
 		}
-
-		private QueryRequest.SkipTake CreateRequestFromGridState(GridState<ProjectDto.Index> state) {
-			var sorting = state.SortDefinitions.FirstOrDefault();
-			var request = new QueryRequest.SkipTake {
-				Skip = state.Page * state.PageSize,
-				Take = state.PageSize,
-				OrderBy = sorting?.SortBy ?? _activeSorting,
-				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
-				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
-			};
-			request.Filters ??= new Dictionary<string, object?>();
-			return request;
-		}
+		
 		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
-			request.Filters ??= new Dictionary<string, object?>();
-
 			if (_filterStatus.HasValue)
 				request.Filters["Status"] = new { Operator = "Equals", Value = _filterStatus.Value.ToString() };
 
@@ -103,78 +89,53 @@ namespace Rise.Client.Projects {
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
 		}
 		private async Task LoadAllSelectOptionsAsync(CancellationToken ct = default) {
-			_loadingSelectOptions = true;
-			try {
-				var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
-
-				var zoneTask = ZoneService.GetIndexAsync(reqAll, ct);
-				var networkTask = NetworkService.GetIndexAsync(reqAll, ct);
-
-				await Task.WhenAll(zoneTask, networkTask);
-
-				var zoneResult = await zoneTask;
-				var networkResult = await networkTask;
-
-				_zones = (zoneResult?.IsSuccess == true ? zoneResult.Value?.zones ?? Enumerable.Empty<ZoneDto.Index>() : Enumerable.Empty<ZoneDto.Index>())
-					.Select(z => z.Name ?? string.Empty)
-					.Where(s => !string.IsNullOrWhiteSpace(s))
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-					.ToList();
-
-				_measurementNetworks = (networkResult?.IsSuccess == true ? networkResult.Value?.measurementsNetworks ?? Enumerable.Empty<MeasurementNetworkDto.Index>() : Enumerable.Empty<MeasurementNetworkDto.Index>())
-					.Select(n => n.Name ?? string.Empty)
-					.Where(s => !string.IsNullOrWhiteSpace(s))
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-					.ToList();
-			} catch (OperationCanceledException) {
-
-			} catch {
-				_zones = new List<string>();
-				_measurementNetworks = new List<string>();
-			} finally {
-				_loadingSelectOptions = false;
-				StateHasChanged();
-			}
+			var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
+				
+			Result<ZoneResponse.Index> zoneResult = await ZoneService.GetIndexAsync(reqAll, ct);
+			_zones = zoneResult.Value.zones;
+				
+			Result<NetworkResponse.Index> measurementNetworkResult = await NetworkService.GetIndexAsync(reqAll, ct);
+			_measurementNetworks = measurementNetworkResult.Value.measurementsNetworks;
 		}
 
 		private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-			var request = CreateRequestFromGridState(state);
+			var sorting = state.SortDefinitions.FirstOrDefault();
+			QueryRequest.SkipTake request = new() {
+				Skip = state.Page * state.PageSize,
+				Take = state.PageSize,
+				OrderBy = sorting?.SortBy ?? _activeSorting,
+				OrderDescending = sorting?.Descending ?? _activeSortingDesc,
+				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+			};
 
 			ApplyDrawerFilters(request, useContainsForText: false);
 
-			var result = await ProjectService.GetIndexAsync(request);
-			_ = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
-
-			var total = result?.Value?.TotalCount ?? 0;
-
+			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
+			
 			return new GridData<ProjectDto.Index> {
-				TotalItems = total,
-				Items = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>()
+				TotalItems = result.Value.TotalCount,
+				Items = result.Value.Projects
 			};
 		}
 
 		private async Task GetProjectsMobileAsync() {
-			_cancellationTokenSource.Cancel();
+			await _cancellationTokenSource.CancelAsync();
 			_cancellationTokenSource.Dispose();
 			_cancellationTokenSource = new CancellationTokenSource();
 
-			var request = new QueryRequest.SkipTake {
+			QueryRequest.SkipTake request = new() {
 				Skip = 0,
 				Take = 10,
 				OrderBy = _activeSorting,
 				OrderDescending = _activeSortingDesc,
 				SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
 			};
-			request.Filters ??= new Dictionary<string, object?>();
 
 			ApplyDrawerFilters(request, useContainsForText: true);
 
-			var result = await ProjectService.GetIndexAsync(request);
-
-			var projects = result?.Value?.Projects ?? Enumerable.Empty<ProjectDto.Index>();
-			_mobileItems = projects;
+			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
+			
+			_mobileItems = result.Value.Projects;
 		}
 
 		private void ToggleSortingDrawer() => _mobileSortOptionsOpen = !_mobileSortOptionsOpen;
@@ -184,12 +145,7 @@ namespace Rise.Client.Projects {
 			_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
 			bool willOpen = !_filterOptionsOpen;
 			if (willOpen) {
-				try {
-					await LoadAllSelectOptionsAsync();
-				} catch {
-					_zones = new List<string>();
-					_measurementNetworks = new List<string>();
-				}
+				await LoadAllSelectOptionsAsync();
 			}
 			_filterOptionsOpen = willOpen;
 		}

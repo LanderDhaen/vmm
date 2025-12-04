@@ -22,7 +22,8 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req, CancellationToken ctx = default) {
+	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
+		CancellationToken ctx = default) {
 		Result<ProjectResponse.Index>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.Index>>($"/api/projects?{req.AsQuery()}", ctx);
 		return result!;
@@ -57,16 +58,6 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
 				$"/api/projects/{projectId}/stations",
 				ctx);
-		return result!;
-	}
-	public async Task<Result<ProjectResponse.ZoneSelectOptions>> GetZoneSelectOptionsAsync(CancellationToken ctx = default) {
-		Result<ProjectResponse.ZoneSelectOptions>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.ZoneSelectOptions>>("/api/projects/zones", ctx);
-		return result!;
-	}
-	public async Task<Result<ProjectResponse.NetworkSelectOptions>> GetNetworkSelectOptionsAsync(CancellationToken ctx = default) {
-		Result<ProjectResponse.NetworkSelectOptions>? result =
-			await httpClient.GetFromJsonAsync<Result<ProjectResponse.NetworkSelectOptions>>("/api/projects/measurementnetworks", ctx);
 		return result!;
 	}
 }

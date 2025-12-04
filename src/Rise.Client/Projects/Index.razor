@@ -227,7 +227,7 @@
 			           Dense="true" Clearable="true" Placeholder="Selecteer...">
 				@foreach (var z in _zones)
 				{
-					<MudSelectItem T="string" Value="@z">@z</MudSelectItem>
+					<MudSelectItem T="string" Value="@z.Name">@z.Name</MudSelectItem>
 				}
 			</MudSelect>
 
@@ -236,7 +236,7 @@
 			           Dense="true" Clearable="true" Placeholder="Selecteer...">
 				@foreach (var m in _measurementNetworks)
 				{
-					<MudSelectItem T="string" Value="@m">@m</MudSelectItem>
+					<MudSelectItem T="string" Value="@m.Name">@m.Name</MudSelectItem>
 				}
 			</MudSelect>
 

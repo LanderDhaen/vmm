@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AgentMigrationStateService">
+    <option name="pendingSessionIds">
+      <option value="bbf49a93-7674-4573-90f0-a6333159ee83" />
+    </option>
+    <option name="pendingTurns">
+      <map>
+        <entry key="bbf49a93-7674-4573-90f0-a6333159ee83">
+          <value>
+            <set>
+              <option value="fe381da3-cc98-46dc-abb7-650a4641fe66" />
+              <option value="4abffe79-f076-4428-8528-cce1fcaf7ace" />
+              <option value="60242665-7854-42e9-b0f4-9342646e8c93" />
+            </set>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <pendingWorkingSetItems>
+      <entry key="bbf49a93-7674-4573-90f0-a6333159ee83">
+        <set>
+          <option value="file://$PROJECT_DIR$/src/Rise.Client/Projects/Index.razor.cs" />
+        </set>
+      </entry>
+    </pendingWorkingSetItems>
+  </component>
+</project>
