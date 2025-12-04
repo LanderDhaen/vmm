@@ -125,8 +125,8 @@ namespace Rise.Client.Projects {
 					.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
 					.ToList();
 			} catch (OperationCanceledException) {
-        
-      } catch {
+
+			} catch {
 				_zones = new List<string>();
 				_measurementNetworks = new List<string>();
 			} finally {
