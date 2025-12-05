@@ -4,7 +4,6 @@ using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -16,8 +15,7 @@ using Status = Rise.Domain.Projects.Status;
 namespace Rise.Services.Projects;
 
 /// <summary>
-///     Service for projects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
-///     of the application.
+///     Service for projects.
 /// </summary>
 /// <param name="dbContext"></param>
 public class ProjectService(ApplicationDbContext dbContext)

@@ -2,30 +2,25 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Networks;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 
 namespace Rise.Services.Networks;
 
 /// <summary>
-///     Service for measurement networks. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
-///     this layer
+///     Service for measurement networks.
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class NetworkService(ApplicationDbContext dbContext)
 	: INetworkService {
 	public async Task<Result<NetworkResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		IQueryable<MeasurementNetwork> query = dbContext.MeasurementNetworks.AsQueryable();
 
-		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
-			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
-		} else {
-			query = query.OrderBy(p => p.Name);
-		}
+		query = !string.IsNullOrWhiteSpace(request.OrderBy)
+			? query.OrderBy(p => EF.Property<object>(p, request.OrderBy))
+			: query.OrderBy(p => p.Name);
 
 		IQueryable<MeasurementNetwork> page = query
 			.AsNoTracking()

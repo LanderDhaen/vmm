@@ -4,7 +4,6 @@ using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
@@ -14,9 +13,7 @@ using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 namespace Rise.Services.MaintObjects;
 
 /// <summary>
-///     Service for maintenance objects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
-///     this layer
-///     of the application.
+///     Service for maintenance objects.
 /// </summary>
 /// <param name="dbContext"></param>
 public class MaintObjService(ApplicationDbContext dbContext)
