@@ -140,7 +140,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 
 		if (measurementStation is null) {
-			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
+			return Result.NotFound($"Meetstation met Id '{stationId}' was niet gevonden.");
 		}
 
 		List<MeasurementStationDto.Modification> modifications = [];

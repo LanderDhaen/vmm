@@ -34,7 +34,7 @@ namespace Rise.Domain.Stations {
 				);
 			}
 
-			throw new InvalidOperationException("Can't create a modification for these history entries");
+			throw new InvalidOperationException("Niet mogelijk om een modificatie op te stellen voor deze twee historiekrijen");
 		}
 	}
 }
