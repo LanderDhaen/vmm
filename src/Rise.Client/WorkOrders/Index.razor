@@ -41,7 +41,7 @@
 	             SortMode="SortMode.Single"
 	             AllowUnsorted="false"
 	             ShowColumnOptions="false"
-	             >
+	>
 
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
@@ -70,4 +70,78 @@
 		</PagerContent>
 		
 	</MudDataGrid>
+</MudHidden>
+
+@* Mobile view *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="my-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              Disabled="true"
+		              FullWidth="true"
+		              Margin="Margin.Dense"/>
+
+		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               Disabled="true"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               Disabled="true"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.Add"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               Disabled="true"/>
+	</MudStack>
+
+	<MudGrid Spacing="4">
+		@if (_mobilityWorkOrders is null)
+		{
+			<MudItem xs="12">
+				<div>
+					<MudProgressCircular Indeterminate="true"/>
+				</div>
+			</MudItem>
+		}
+		else if (!_mobilityWorkOrders.Any())
+		{
+			<MudItem xs="12">
+				<MudText>Geen projecten</MudText>
+			</MudItem>
+		}
+		else
+		{
+			@foreach (var item in _mobilityWorkOrders)
+			{
+				<MudItem xs="12">
+					<MudCard Elevation="2"
+					         Class="rounded-lg"
+					         >
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
+								          Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.MaintObj</b></MudText>
+									<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(item.Status))">
+										@WorkOrderUtility.TranslateStatus(item.Status)
+									</MudChip>
+								</MudStack>
+								<MudText Typo="Typo.h6">@item.Name</MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="pt-0">
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+			}
+		}
+	</MudGrid>
 </MudHidden>
