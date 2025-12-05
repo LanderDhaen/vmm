@@ -29,8 +29,8 @@ public partial class Index {
 	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
 
 		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 100,
+			Skip = state.Page * state.PageSize,
+			Take = state.PageSize,
 			OrderBy = "Id"
 		};
 
