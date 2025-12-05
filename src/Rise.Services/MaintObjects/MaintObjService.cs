@@ -75,7 +75,7 @@ public class MaintObjService(ApplicationDbContext dbContext)
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
 			if (mo.MaintObjTypeCode is not null &&
-			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
 			}
 
