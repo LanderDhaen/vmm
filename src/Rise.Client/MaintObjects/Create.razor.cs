@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
@@ -14,12 +15,14 @@ public partial class Create {
 	private IEnumerable<LocationDto.Index>? _locations;
 	private Result<MaintObjResponse.Create>? _result;
 	private MudForm form;
+
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
 	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
+	[Inject] public required IDialogService DialogService { get; set; }
 
 	private MaintObjRequest.Create Model { get; } = new();
 
@@ -47,6 +50,39 @@ public partial class Create {
 			}
 		);
 	}
+
+	private async Task OpenQrScanner() {
+		var options = new DialogOptions {
+			CloseButton = true,
+			MaxWidth = MaxWidth.Small,
+			FullWidth = true
+		};
+
+		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		var result = await dialog.Result;
+
+		if (result.Canceled || result.Data is not string decoded)
+			return;
+
+		var serial = decoded.Trim();
+
+		if (string.IsNullOrWhiteSpace(serial)) {
+			Snackbar.Add("Onleesbare code: geen serienummer gevonden.", Severity.Error);
+			return;
+		}
+
+		var existsResult = await MaintObjService.GetBySerialAsync(serial);
+
+		if (existsResult.IsSuccess) {
+			NavigationManager.NavigateTo($"/maintObjects/{existsResult.Value.Id}");
+			return;
+		}
+
+		Model.SerialNumber = serial;
+		Snackbar.Add("Serienummer ingevuld via scan.", Severity.Success);
+		StateHasChanged();
+	}
+
 
 	private async Task CreateMaintObjAsync() {
 		await form.Validate();
