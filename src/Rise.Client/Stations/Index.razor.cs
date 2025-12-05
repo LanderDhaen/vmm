@@ -256,6 +256,16 @@ public partial class Index {
 		}
 		StateHasChanged();
 	}
+	private async Task UpdateFilterAsync<T>(Action<T?> setter, T? value, Func<Task>? after = null) {
+		setter(value);
+		if (after != null)
+			await after();
+		else
+			await ApplyOrReloadOnChangeAsync();
+		StateHasChanged();
+	}
+
+
 	private string GetFilterDrawerClass() =>
-	_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
+		_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
 }
