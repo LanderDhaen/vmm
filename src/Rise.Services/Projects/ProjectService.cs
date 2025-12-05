@@ -20,8 +20,7 @@ namespace Rise.Services.Projects;
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class ProjectService(ApplicationDbContext dbContext)
 	: IProjectService {
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request,
 		CancellationToken ctx = default) {
@@ -182,7 +181,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		};
 
 		return Result.Success(new ProjectResponse.Detail {
-			Project = projectDto,
+			Project = projectDto
 		});
 	}
 
@@ -279,7 +278,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(new ProjectResponse.MeasurementStations() {
+		return Result.Success(new ProjectResponse.MeasurementStations {
 			MeasurementStationsFromProject = stations
 		});
 	}

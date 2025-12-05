@@ -19,8 +19,7 @@ namespace Rise.Services.MaintObjects;
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class MaintObjService(ApplicationDbContext dbContext)
 	: IMaintObjService {
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
@@ -79,7 +78,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			// safe parse of type code to shared enum
 			MaintObjType parsedType = MaintObjType.Sonde;
 			if (mo.MaintObjTypeCode is not null &&
-				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
+			    Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
 				parsedType = tmp;
 			}
 
