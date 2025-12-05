@@ -31,7 +31,7 @@ public static class StationUtility {
 		=> installedAt.ToLocalTime().ToString("dd/MM/yyyy 'om' HH'u'mm");
 
 	/// <summary>
-	/// Formats the removal date and time, if available, in a long format.
+	/// Formats the removal date and time, if available, in a long, human readable format.
 	/// </summary>
 	/// <param name="removedAt">
 	/// The date and time when the station was removed, or <c>null</c> if it has not been removed.
