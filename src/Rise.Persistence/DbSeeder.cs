@@ -300,13 +300,18 @@ public class DbSeeder(
 			new MeasurementStation("STN-006", locations[5], installations[5])
 		};
 
-		// Add projects to stations
+		// Add one corresponding project to each stations 
 
 		stations[0].Projects.Add(projects[0]);
 		stations[1].Projects.Add(projects[1]);
 		stations[2].Projects.Add(projects[2]);
 		stations[3].Projects.Add(projects[3]);
 		stations[4].Projects.Add(projects[4]);
+		stations[5].Projects.Add(projects[5]);
+
+		// Add second project to stations in Aalst
+
+		stations[3].Projects.Add(projects[5]);
 		stations[5].Projects.Add(projects[3]);
 
 		dbContext.MeasurementStations.AddRange(stations);

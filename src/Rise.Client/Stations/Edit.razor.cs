@@ -54,15 +54,19 @@ public partial class Edit {
 
 		Result<MeasurementStationResponse.Detail> detail = await StationService.GetDetailAsync(StationId);
 
-		Result<List<ProjectDto.Index>> linked = await StationService.GetProjectsAsync(StationId);
-		Guid preselectedProjectId = linked.IsSuccess && linked.Value.Any()
-			? linked.Value.First().Id
-			: _projects.FirstOrDefault()?.Id ?? Guid.Empty;
+		Result<MeasurementStationResponse.ProjectList> linked =
+			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
+
+		Guid preselectedProjectId =
+			linked.IsSuccess && linked.Value.Projects.Any()
+				? linked.Value.Projects.First().Id
+				: _projects.FirstOrDefault()?.Id ?? Guid.Empty;
+
 
 		Guid locationId = _locations
 			.FirstOrDefault(l =>
-				string.Equals(l.Name, detail.Value.Station.Location, StringComparison.OrdinalIgnoreCase) &&
-				string.Equals(l.Address.City, detail.Value.Station.City, StringComparison.OrdinalIgnoreCase))
+				string.Equals(l.Name, detail.Value.Station.Location.Name, StringComparison.OrdinalIgnoreCase) &&
+				string.Equals(l.Address.City, detail.Value.Station.Location.City, StringComparison.OrdinalIgnoreCase))
 			?.Id ?? _locations.FirstOrDefault()?.Id ?? Guid.Empty;
 
 		Model = new MeasurementStationRequest.Edit {

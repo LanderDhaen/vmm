@@ -1,4 +1,6 @@
 @using Rise.Shared.Projects
+@using Rise.Client.Components.Projects;
+
 <PageTitle>Project Details</PageTitle>
 
 @if (_projectsFromStation is null)
@@ -13,40 +15,25 @@ else
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Projecten toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.ProjectIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var project in _allProjects)
-				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
-						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Code - @project.Name
-							<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-							         Color="@(ProjectUtility.DefineStatusColor(project.Status))">
-								@project.Status
-							</MudChip>
-						</MudStack>
-					</MudSelectItem>
-				}
-			</MudSelect>
-
+			<MudTextField T="string"
+			              InputType="InputType.Search"
+			              Label="Zoek"
+			              Class="m-0"
+			              Variant="Variant.Outlined"
+			              DebounceInterval="300"
+			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+			              @bind-Value="_searchTerm"
+			              Margin="Margin.Dense"/>
 			<MudButton Variant="Variant.Filled"
 			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 			           Size="Size.Small"
 			           Color="Color.Primary"
-			           Class="px-4"
-			           OnClick="@UpdateProjects"
-			>
-				Lijst bijwerken
+			           Class="px-4">
+				Project toevoegen
 			</MudButton>
 		</MudStack>
 
-		<MudTable T="ProjectDto.Index" Items="_projectsFromStation" CustomHeader="true" OnRowClick="OnProjectRowClick">
+		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="_projectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
@@ -77,56 +64,27 @@ else
 	@* Mobile view *@
 
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-
 		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudSelect T="Guid"
-			           Label="Projecten toevoegen"
-			           MultiSelection="true"
-			           @bind-SelectedValues="Model.ProjectIds"
-			           Variant="Variant.Outlined"
-			           Margin="Margin.Dense"
-			           ToStringFunc="id => _allProjects.FirstOrDefault(x => x.Id == id)?.Code ?? string.Empty">
-
-				@foreach (var project in _allProjects)
-				{
-					<MudSelectItem T="Guid" Value="@project.Id" Disabled="@(project.Status == Status.Afgesloten)">
-						<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-							@project.Name
-							<MudBadge Dot="true" Color="@(ProjectUtility.DefineStatusColor(project.Status))"/>
-						</MudStack>
-					</MudSelectItem>
-				}
-			</MudSelect>
-
+			<MudTextField T="string"
+			              InputType="InputType.Search"
+			              Label="Zoek"
+			              Class="m-0"
+			              Variant="Variant.Outlined"
+			              DebounceInterval="300"
+			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+			              @bind-Value="_searchTerm"
+			              Margin="Margin.Dense"/>
 			<MudIconButton Variant="Variant.Filled"
 			               Icon="@Icons.Material.Filled.PlaylistAdd"
 			               Size="Size.Small"
-			               Color="Color.Primary"
-			               OnClick="@UpdateProjects"/>
+			               Color="Color.Primary"/>
 		</MudStack>
 
-		<MudGrid Spacing="6">
-			@foreach (var p in _projectsFromStation)
+		<MudGrid Spacing="4">
+			@foreach (var item in _projectsFromStation)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg" OnClick="@(() => OnProjectCardClick(p))">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
-								          Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.h6" Color="Color.Primary">@p.Code</MudText>
-									<MudBadge Color="@(ProjectUtility.DefineStatusColor(p.Status))" Dot="true"></MudBadge>
-								</MudStack>
-								<MudText Typo="Typo.h6">@p.Name</MudText>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText><b>Startdatum:</b> @p.StartDate</MudText>
-							<MudText><b>Einddatum:</b> @p.EndDate</MudText>
-							<MudText Typo="Typo.caption"><b>Meetnet:</b> @p.MeasurementNetwork</MudText>
-							<MudText Typo="Typo.caption"><b>Zone:</b> @p.Zone</MudText>
-						</MudCardContent>
-					</MudCard>
+					<ProjectCard Project="item" />
 				</MudItem>
 			}
 		</MudGrid>
