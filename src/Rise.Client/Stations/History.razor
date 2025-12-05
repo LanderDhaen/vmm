@@ -10,7 +10,7 @@
 else
 {
 	<MudBreakpointProvider OnBreakpointChanged="@OnBreakPointChange">
-		<MudTimeline TimelinePosition="_timelinePosition">
+		<MudTimeline TimelinePosition="_timelinePosition" Class="mr-20 m-xs-0">
 			@{
 				foreach (var modification in _modifications) {
 					<TimeLineItem Title="@(DefineTitle(modification.MeasurementStationModificationType))"
