@@ -22,8 +22,8 @@ namespace Rise.Domain.Stations
                 return new MeasurementStationModification(
                     MeasurementStationModificationType.InstalledAtChanged,
                     current.ValidityRange.ValidFrom,
-                    previous.Installation.InstalledAt.ToString(),
-                    current.Installation.InstalledAt.ToString()
+                    previous.Installation.InstalledAt.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm"), // Formatting needs to be done here, because modification needs a string to stay generic
+                    current.Installation.InstalledAt.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm")
                 );
             }
 
@@ -31,8 +31,8 @@ namespace Rise.Domain.Stations
                 return new MeasurementStationModification(
                     MeasurementStationModificationType.RemovedAtChanged,
                     current.ValidityRange.ValidFrom,
-                    previous.Installation.RemovedAt?.ToString() ?? "-",
-                    current.Installation.RemovedAt?.ToString() ?? "-"
+                    previous.Installation.RemovedAt?.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm") ?? "-",
+                    current.Installation.RemovedAt?.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm") ?? "-"
                 );
             }
 

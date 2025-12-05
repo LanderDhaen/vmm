@@ -3,7 +3,7 @@
 <MudHidden Breakpoint="Breakpoint.Xs">
 	<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
 		<ItemOpposite>
-			<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@ModifiedAt</MudChip>
+			<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToShortValidFrom(ModifiedAt)</MudChip>
 		</ItemOpposite>
 		<ItemContent>
 			<MudText Typo="Typo.h6">@Title</MudText>
