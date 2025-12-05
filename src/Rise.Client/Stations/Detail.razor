@@ -51,7 +51,7 @@ else
 						</MudCardHeader>
 						<MudCardContent>
 							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))</MudText>
-							<MudText><b>Verwijderd:</b> @(StationUtility.ToShortRemovedAt(_station.RemovedAt))</MudText>
+							<MudText><b>Verwijderd:</b> @(StationUtility.ToLongRemovedAt(_station.RemovedAt))</MudText>
 							<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
 						</MudCardContent>
 					</MudCard>
