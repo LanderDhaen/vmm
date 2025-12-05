@@ -120,8 +120,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		MaintObj mo = new(request.Name, request.SerialNumber, type,
-			request.Brand, null, true, location);
+		MaintObj mo = new(request.Name, request.SerialNumber, type, request.Brand, location);
 
 		dbContext.MaintObjects.Add(mo);
 
@@ -169,7 +168,6 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Brand = maintObj.Brand,
 			MeasurementStationCode = maintObj.Station?.Code,
 			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
-			IsInStock = maintObj.IsInStock,
 			InstalledAt = installedAtOpt,
 			RemovedAt = maintObj.Installation?.RemovedAt,
 			NextMaintenanceDate = nextMaintenance,

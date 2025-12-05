@@ -51,8 +51,6 @@ public class MaintObjServiceShould {
 			serialNumber: serial,
 			maintObjType: type,
 			brand: "RiseBrand",
-			installation: null,
-			isInStock: true,
 			location: null
 		);
 

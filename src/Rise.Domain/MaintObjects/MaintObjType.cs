@@ -11,11 +11,8 @@ public class MaintObjType : Entity {
 		CalibrationIntervalDays = Guard.Against.NegativeOrZero(calibrationIntervalDays);
 	}
 
-	public string Code { get; private set; } = null!; // unique code, e.g. "Sonde"
-	public string Name { get; private set; } = null!;
+	public string Code { get; private set; } 
+	public string Name { get; private set; }
 	public int MaintenanceIntervalDays { get; private set; }
 	public int CalibrationIntervalDays { get; private set; }
-
-	// Navigation
-	public ICollection<MaintObj> MaintObjects { get; } = new List<MaintObj>();
 }

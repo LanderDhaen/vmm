@@ -31,57 +31,54 @@ public class MaintObjShould {
 	public void BeCreatedWithExpectedDefaults() {
 		MaintObjType type = MakeType();
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", location);
 
 		mo.Name.ShouldBe("Sensor-1");
 		mo.SerialNumber.ShouldBe("SN-123");
 		mo.MaintObjType.ShouldBe(type);
 		mo.Brand.ShouldBe("BrandX");
-		mo.IsInStock.ShouldBeTrue();
 		mo.Location.ShouldBe(location);
 		mo.Station.ShouldBeNull();
-		mo.Technician.ShouldBeNull();
+		mo.LastScannedBy.ShouldBeNull();
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
 	}
 
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
 		MeasurementStation station = MakeStation("STN-100");
 
 		mo.AssignToStation(station);
 
 		mo.Station.ShouldBe(station);
 		mo.Station!.Id.ShouldBe(station.Id);
-		mo.IsInStock.ShouldBeFalse();
 		mo.Location.ShouldBe(station.Location);
 
 		mo.UnassignFromStation();
 
 		mo.Station.ShouldBeNull();
-		mo.IsInStock.ShouldBeTrue();
 	}
 
 	[Fact]
 	public void RecordAndClearTechnician() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
 		Technician tech = MakeTechnician();
 
 		mo.RecordTechnician(tech);
 
-		mo.Technician.ShouldBe(tech);
+		mo.LastScannedBy.ShouldBe(tech);
 
 		mo.ClearTechnician();
 
-		mo.Technician.ShouldBeNull();
+		mo.LastScannedBy.ShouldBeNull();
 	}
 
 	[Fact]
 	public void AllowChangingStatus() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
 
 		mo.SetStatus(MaintObjStatus.Defect);
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Defect);
@@ -93,7 +90,7 @@ public class MaintObjShould {
 	[Fact]
 	public void ConstructorGuardsAgainstInvalidArguments() {
 		Location location = MakeLocation();
-		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MakeType(), null, null, true, location));
-		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MakeType(), null, null, true, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MakeType(), null, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MakeType(), null, location));
 	}
 }
