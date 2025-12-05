@@ -35,16 +35,16 @@ public partial class Index {
 	private DateTime? _filterRemovedAt;
 	private string? _filterLocation;
 	private string? _filterCity;
-	private int? _filterProjectsCount;
+	private List<string>? _locations = null;
+	private List<string>? _cities = null;
 
-	private List<string> _locations = new();
-	private List<string> _cities = new();
-	private List<int> _projectCounts = new() { 0, 1, 2, 3, 4, 5 };
+	private CancellationTokenSource _selectCancellationTokenSource = new();
 
 	private bool _filterOptionsOpen;
 	private Anchor _filterDrawerAnchor = Anchor.Right;
 
 	[Inject] public required IMeasurementStationService StationService { get; init; }
+	[Inject] public required ILocationService LocationService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
