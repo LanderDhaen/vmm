@@ -98,12 +98,36 @@ public class MeasurementStation : Entity {
 
 		// Assign the new values
 
+		UpdatedAt = DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		Installation = installation;
 	}
+
+	public List<MeasurementStationModification> GetModifications() {
+
+		List<MeasurementStationModification> modifications = [];
+
+
+		// Add current state as the first history entry
+
+		_measurementStationHistories.Insert(0, new MeasurementStationHistory(Installation, Location, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
+
+		for (var i = 0; i < _measurementStationHistories.Count - 1; i++) {
+
+			var curr = _measurementStationHistories[i];
+			var prev = _measurementStationHistories[i + 1];
+
+			MeasurementStationModification modification = MeasurementStationModificationFactory.Create(curr, prev);
+
+			modifications.Add(modification);
+		}
+
+		return modifications;
+	}
+
 }
 
 /// <summary>
-///     A measurement station history is something that holds changes made to a measurement station.
+///     A measurement station history is something that holds a past state of a measurement station.
 /// </summary>
 public class MeasurementStationHistory : HistoryEntity {
 	/// <summary>
