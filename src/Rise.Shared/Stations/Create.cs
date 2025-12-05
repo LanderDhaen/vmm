@@ -21,6 +21,10 @@ public static partial class MeasurementStationRequest {
 				RuleFor(x => x.Code)
 					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
 					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
+				RuleFor(x => x.InstalledAt)
+					.NotNull().WithMessage("Installatiedatum mag niet leeg zijn!")
+					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Installatiedatum moet boven 1 januari 2000 liggen.")
+					.LessThan(DateTime.MaxValue).WithMessage("Installatiedatum moet onder het maximum zijn.");
 				RuleFor(x => x)
 					.Must(x => x.LocationId.HasValue || x.IsNewLocation)
 					.WithMessage("Je moet een bestaande locatie selecteren of een nieuwe locatie invullen.")
