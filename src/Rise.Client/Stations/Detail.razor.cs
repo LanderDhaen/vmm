@@ -25,7 +25,7 @@ public partial class Detail {
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 
-	private async Task SetTabAsync(int index) {
+	private void SetTabAsync(int index) {
 		_selectedTab = index;
 	}
 

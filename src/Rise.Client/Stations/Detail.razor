@@ -16,12 +16,12 @@ else
 	
 	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
-		         @onclick="async () => await SetTabAsync(0)">
+		         @onclick="() =>  SetTabAsync(0)">
 			@_tabs[0]
 		</MudText>
 
 		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
-		         @onclick="async () => await SetTabAsync(1)">
+		         @onclick="() => SetTabAsync(1)">
 			@_tabs[1]
 		</MudText>
 	</MudStack>
