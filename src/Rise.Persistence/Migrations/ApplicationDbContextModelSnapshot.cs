@@ -702,6 +702,58 @@ namespace Rise.Persistence.Migrations
                     b.ToTable("MeasurementStationHistory", (string)null);
                 });
 
+            modelBuilder.Entity("Rise.Domain.WorkOrders.WorkOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid>("MaintObjId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TechnicianId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaintObjId");
+
+                    b.HasIndex("TechnicianId");
+
+                    b.ToTable("WorkOrder", (string)null);
+                });
+
             modelBuilder.Entity("MeasurementStationProject", b =>
                 {
                     b.HasOne("Rise.Domain.Projects.Project", null)
@@ -1092,6 +1144,47 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("ValidityRange")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Rise.Domain.WorkOrders.WorkOrder", b =>
+                {
+                    b.HasOne("Rise.Domain.MaintObjects.MaintObj", "MaintObj")
+                        .WithMany()
+                        .HasForeignKey("MaintObjId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.OwnsOne("Rise.Domain.Projects.DateRange", "DateRange", b1 =>
+                        {
+                            b1.Property<Guid>("WorkOrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateOnly?>("EndDate")
+                                .HasColumnType("date")
+                                .HasColumnName("EndDate");
+
+                            b1.Property<DateOnly>("StartDate")
+                                .HasColumnType("date")
+                                .HasColumnName("StartDate");
+
+                            b1.HasKey("WorkOrderId");
+
+                            b1.ToTable("WorkOrder");
+
+                            b1.WithOwner()
+                                .HasForeignKey("WorkOrderId");
+                        });
+
+                    b.Navigation("DateRange");
+
+                    b.Navigation("MaintObj");
+
+                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>

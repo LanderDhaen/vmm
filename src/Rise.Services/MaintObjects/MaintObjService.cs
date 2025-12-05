@@ -30,14 +30,27 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
-			switch (req.OrderBy) {
-			// TODO: sorting
-			default:
-				query = desc
+			query = req.OrderBy switch {
+				nameof(MaintObj.MaintObjType)
+					=> desc
+						? query.OrderByDescending(d => d.MaintObjType!.Code)
+						: query.OrderBy(d => d.MaintObjType!.Code),
+
+
+				nameof(MaintObj.MaintObjStatus)
+					=> desc
+						? query.OrderByDescending(d => d.MaintObjStatus)
+						: query.OrderBy(d => d.MaintObjStatus),
+
+				nameof(MaintObj.Location)
+					=> desc
+						? query.OrderByDescending(d => d.Location!.Name)
+						: query.OrderBy(d => d.Location!.Name),
+
+				_ => desc
 					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
-					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
-				break;
-			}
+					: query.OrderBy(e => EF.Property<object>(e, req.OrderBy))
+			};
 		} else {
 			query = query.OrderBy(d => d.Id);
 		}

@@ -67,13 +67,4 @@ public partial class Detail {
 			Snackbar.Add(message, Severity.Error);
 		}
 	}
-
-	// Other
-	private Color DefineColor(MaintObjStatus status) {
-		return status switch {
-			MaintObjStatus.Actief => Color.Success,
-			MaintObjStatus.Inactief => Color.Error,
-			_ => Color.Warning
-		};
-	}
 }

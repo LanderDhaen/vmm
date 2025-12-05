@@ -51,12 +51,13 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
+		QueryRequest.Search req,
 		CancellationToken ctx = default) {
-		Result<List<MeasurementStationDto.Index>>? result =
-			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
-				$"/api/projects/{projectId}/stations",
+		Result<ProjectResponse.MeasurementStations>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.MeasurementStations>>(
+				$"/api/projects/{projectId}/stations?{req.AsQuery()}",
 				ctx);
 		return result!;
 	}

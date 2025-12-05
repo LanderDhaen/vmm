@@ -158,7 +158,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
-			.Include(p => p.Stations)
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
@@ -184,7 +183,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 
 		return Result.Success(new ProjectResponse.Detail {
 			Project = projectDto,
-			TotalMeasurementStationCount = p.Stations.Count
 		});
 	}
 
@@ -244,8 +242,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		return Result.Success();
 	}
 
-	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
+		QueryRequest.Search req,
 		CancellationToken ctx = default) {
 		bool exists = await dbContext.Projects
 			.AsNoTracking()
@@ -255,8 +254,19 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project met Id '{projectId}' was niet gevonden.");
 		}
 
-		List<MeasurementStationDto.Index> stations = await dbContext.MeasurementStations
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations
 			.AsNoTracking()
+			.AsQueryable();
+
+		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
+			query = query.Where(p =>
+				EF.Functions.Like(p.Code, $"%{req.SearchTerm}%") ||
+				EF.Functions.Like(p.Location.Name, $"%{req.SearchTerm}%") ||
+				EF.Functions.Like(p.Location.Address.City, $"%{req.SearchTerm}%")
+			);
+		}
+
+		List<MeasurementStationDto.Index> stations = await query
 			.Where(s => s.Projects.Any(p => p.Id == projectId))
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
@@ -269,7 +279,9 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(stations);
+		return Result.Success(new ProjectResponse.MeasurementStations() {
+			MeasurementStationsFromProject = stations
+		});
 	}
 
 	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,

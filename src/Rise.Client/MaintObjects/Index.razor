@@ -5,10 +5,10 @@
 
 @* Desktop view *@
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
 		<MudTextField T="string"
 		              Label="Zoek"
-		              Class="m-0"
+		              Class="my-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -48,7 +48,7 @@
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-					         Color="@(DefineColor(context.Item.MaintObjStatus))">
+					         Color="@(MaintObjectUtility.DefineStatusColor(context.Item.MaintObjStatus))">
 						@context.Item.MaintObjStatus
 					</MudChip>
 				</CellTemplate>
@@ -68,10 +68,10 @@
 @* Mobile view *@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
 		<MudTextField T="string"
 		              Label="Zoek"
-		              Class="m-0"
+		              Class="my-0"
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -122,7 +122,7 @@
 								          Class="pr-3">
 									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.SerialNumber</b>
 									</MudText>
-									<MudBadge Color="@(DefineColor(item.MaintObjStatus))" Dot="true"></MudBadge>
+									<MudBadge Color="@(MaintObjectUtility.DefineStatusColor(item.MaintObjStatus))" Dot="true"></MudBadge>
 								</MudStack>
 								<MudText Typo="Typo.h6">@item.Name</MudText>
 							</CardHeaderContent>
@@ -145,7 +145,7 @@
 	           Variant="DrawerVariant.Temporary"
 	           Elevation="8"
 	           @bind-Open="_mobileSortOptionsOpen"
-	           Class="p-4 rounded-lg">
+	           Class="pa-4 rounded-lg">
 
 		<MudText Typo="Typo.h6">Sorteren</MudText>
 
