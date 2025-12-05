@@ -53,8 +53,8 @@ public partial class Edit {
 		_projects = projResult.Value.Projects;
 
 		Result<MeasurementStationResponse.Detail> detail = await StationService.GetDetailAsync(StationId);
-		
-		Result<MeasurementStationResponse.ProjectList> linked = 
+
+		Result<MeasurementStationResponse.ProjectList> linked =
 			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
 
 		Guid preselectedProjectId =

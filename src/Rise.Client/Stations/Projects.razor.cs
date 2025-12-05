@@ -11,11 +11,11 @@ namespace Rise.Client.Stations;
 public partial class Projects {
 
 	private CancellationTokenSource _cancellationTokenSource = new();
-	
+
 	private string _searchTerm = string.Empty;
-	
+
 	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
-	
+
 
 	[Parameter] public Guid StationId { get; init; }
 	[Inject] public required IMeasurementStationService StationService { get; init; }
@@ -26,7 +26,7 @@ public partial class Projects {
 	}
 
 	private async Task GetProjectsAsync() {
-		
+
 		_cancellationTokenSource.Cancel();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
@@ -34,7 +34,7 @@ public partial class Projects {
 		QueryRequest.Search request = new() {
 			SearchTerm = _searchTerm
 		};
-		
+
 		Result<MeasurementStationResponse.ProjectList> result = await StationService.GetProjectsAsync(StationId, request, _cancellationTokenSource.Token);
 
 		if (result.IsSuccess) {
@@ -45,7 +45,7 @@ public partial class Projects {
 	private async Task HandleIntervalElapsed() {
 		await GetProjectsAsync();
 	}
-	
+
 	private void NavigateToProject(Guid projectId) {
 		NavigationManager.NavigateTo($"/projects/{projectId}");
 	}

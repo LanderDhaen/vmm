@@ -100,7 +100,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
-		
+
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
 
 		MeasurementStationDto.Detail? station = await query
@@ -124,14 +124,14 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				ProjectsCount = s.Projects.Count()
 			})
 			.SingleOrDefaultAsync(ct);
-		
+
 		if (station is null) {
 			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
 		return Result.Success(new MeasurementStationResponse.Detail {
 			Station = station
-			
+
 		});
 	}
 
@@ -219,14 +219,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
 		QueryRequest.Search request,
-		CancellationToken ct = default)
-	{
+		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
 			.AnyAsync(s => s.Id == stationId, ct);
 
-		if (!exists)
-		{
+		if (!exists) {
 			return Result.NotFound("Meetstation niet gevonden.");
 		}
 
@@ -246,8 +244,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		List<ProjectDto.Index> projects = await query
 			.Where(p => p.Stations.Any(s => s.Id == stationId))
-			.Select(p => new ProjectDto.Index
-			{
+			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
 				Name = p.Name,
 				Code = p.Code,
@@ -259,8 +256,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			})
 			.ToListAsync(ct);
 
-		return Result.Success(new MeasurementStationResponse.ProjectList
-		{
+		return Result.Success(new MeasurementStationResponse.ProjectList {
 			Projects = projects
 		});
 	}

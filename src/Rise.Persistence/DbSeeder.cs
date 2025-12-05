@@ -308,12 +308,12 @@ public class DbSeeder(
 		stations[3].Projects.Add(projects[3]);
 		stations[4].Projects.Add(projects[4]);
 		stations[5].Projects.Add(projects[5]);
-		
+
 		// Add second project to stations in Aalst
-		
+
 		stations[3].Projects.Add(projects[5]);
 		stations[5].Projects.Add(projects[3]);
-		
+
 		dbContext.MeasurementStations.AddRange(stations);
 		await dbContext.SaveChangesAsync();
 	}

@@ -7,7 +7,7 @@ namespace Rise.Domain.WorkOrders;
 ///     A work order is something that holds a task for a technician on a maintenance object
 /// </summary>
 public class WorkOrder : Entity {
-	
+
 	// Constructors
 
 	/// <summary>

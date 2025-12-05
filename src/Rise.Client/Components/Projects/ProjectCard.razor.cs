@@ -6,7 +6,7 @@ namespace Rise.Client.Components.Projects;
 
 public partial class ProjectCard {
 	[Parameter] public required ProjectDto.Index Project { get; init; }
-	
+
 	[Inject] public required NavigationManager NavigationManager { get; init; }
 
 	private void NavigateToProject(Guid id) {
