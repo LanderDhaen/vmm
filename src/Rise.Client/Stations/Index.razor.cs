@@ -169,45 +169,61 @@ public partial class Index {
 
 		if (!string.IsNullOrWhiteSpace(_filterCity))
 			request.Filters["City"] = new { Operator = useContainsForText ? "Contains" : "Equals", Value = _filterCity!.Trim() };
+	}
 
-		if (_filterProjectsCount.HasValue) {
-			if (_filterProjectsCount.Value >= 5) {
-				request.Filters["ProjectsCount"] = new { Operator = "GreaterThanOrEqual", Value = _filterProjectsCount.Value };
-			} else {
-				request.Filters["ProjectsCount"] = new { Operator = "Equals", Value = _filterProjectsCount.Value };
-			}
+	private async Task HandleLocationSelectOpen() {
+		try {
+			_selectCancellationTokenSource.Cancel();
+		} catch { }
+		_selectCancellationTokenSource.Dispose();
+		_selectCancellationTokenSource = new CancellationTokenSource();
+
+		_locations = null;
+		StateHasChanged();
+
+		try {
+			var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
+			var ct = _selectCancellationTokenSource.Token;
+			var result = await LocationService.GetIndexAsync(reqAll, ct);
+			var locations = result?.Value?.Locations ?? Enumerable.Empty<LocationDto.Index>();
+
+			_locations = locations
+				.Select(l => l.Name ?? string.Empty)
+				.Where(n => !string.IsNullOrWhiteSpace(n))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		} catch (OperationCanceledException) {
+		} finally {
+			StateHasChanged();
 		}
 	}
-	private void UpdateSelectOptions(IEnumerable<MeasurementStationDto.Index> stations) {
-		_locations = stations
-			.Select(s => s.Location ?? string.Empty)
-			.Where(s => !string.IsNullOrWhiteSpace(s))
-			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-			.ToList();
 
-		_cities = stations
-			.Select(s => s.City ?? string.Empty)
-			.Where(s => !string.IsNullOrWhiteSpace(s))
-			.Distinct(StringComparer.OrdinalIgnoreCase)
-			.OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
-			.ToList();
+	private async Task HandleCitySelectOpen() {
+		try {
+			_selectCancellationTokenSource.Cancel();
+		} catch { }
+		_selectCancellationTokenSource.Dispose();
+		_selectCancellationTokenSource = new CancellationTokenSource();
 
-		var counts = stations
-			.Select(s => s.ProjectsCount)
-			.Where(c => c >= 0)
-			.Distinct()
-			.OrderBy(c => c)
-			.ToList();
+		_cities = null; 
+		StateHasChanged();
 
-		if (counts.Any()) {
-			var limited = counts.Where(c => c < 5).ToList();
-			if (counts.Any(c => c >= 5)) {
-				limited.Add(5);
-			}
-			_projectCounts = limited.Distinct().OrderBy(c => c).ToList();
-		} else {
-			_projectCounts = new() { 0, 1, 2, 3, 4, 5 };
+		try {
+			var reqAll = new QueryRequest.SkipTake { Skip = 0, Take = int.MaxValue };
+			var ct = _selectCancellationTokenSource.Token;
+			var result = await LocationService.GetIndexAsync(reqAll, ct);
+			var locations = result.Value.Locations;
+
+			_cities = locations
+				.Select(l => l.Address?.City ?? string.Empty)
+				.Where(c => !string.IsNullOrWhiteSpace(c))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		} catch (OperationCanceledException) {
+		} finally {
+			StateHasChanged();
 		}
 	}
 
