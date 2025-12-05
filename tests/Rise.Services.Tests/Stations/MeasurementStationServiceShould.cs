@@ -351,7 +351,8 @@ public class MeasurementStationServiceShould {
 
 		MeasurementStation? updatedStation =
 			await DbContext.MeasurementStations.Include(s => s.Location)
-				.Include(measurementStation => measurementStation.Installation).FirstOrDefaultAsync(s => s.Id == station.Id);
+				.Include(measurementStation => measurementStation.Installation)
+				.FirstOrDefaultAsync(s => s.Id == station.Id);
 		updatedStation.ShouldNotBeNull();
 		updatedStation.Location.Id.ShouldBe(location2.Id);
 		updatedStation.Installation.RemovedAt.ShouldNotBeNull();
