@@ -6,6 +6,7 @@ using Rise.Domain.MaintObjects;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
+using Rise.Domain.WorkOrders;
 
 using Installation = Rise.Domain.Common.Installation;
 
@@ -31,6 +32,7 @@ public class DbSeeder(
 		await StationsAsync();
 		await MeasurementStationsHistoriesAsync();
 		await MaintObjectsAsync();
+		await WorkOrdersAsync();
 	}
 
 	private async Task RolesAsync() {
@@ -91,8 +93,8 @@ public class DbSeeder(
 		await userManager.AddToRoleAsync(technicianAccount2, "Technician");
 
 		dbContext.Technicians.AddRange(
-			new Technician("Tech 1", "Awesome", technicianAccount1.Id),
-			new Technician("Tech 2", "Less Awesome", technicianAccount2.Id));
+			new Technician("William", "Willems", technicianAccount1.Id),
+			new Technician("Geert", "Gertens", technicianAccount2.Id));
 
 		await dbContext.SaveChangesAsync();
 	}
@@ -502,5 +504,64 @@ public class DbSeeder(
 		return roll < 40 ? MaintObjStatus.Actief
 			: roll < 80 ? MaintObjStatus.Inactief
 			: MaintObjStatus.Defect;
+	}
+
+	private async Task WorkOrdersAsync() {
+		if (dbContext.WorkOrders.Any()) {
+			return;
+		}
+		
+		// 
+		
+		List<MaintObj> maintObjs = await dbContext.MaintObjects.Include(x => x.MaintObjType).ToListAsync();
+		List<WorkOrder> workOrders = [];
+		
+		// Creating workorders
+		
+		foreach (MaintObj maintObj in maintObjs) {
+			if (maintObj.MaintObjStatus == MaintObjStatus.Defect) {
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} vervangen",
+					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} is defect door waterschade",
+					Priority.High, maintObj));
+			}
+			
+			if (maintObj.MaintObjStatus == MaintObjStatus.Actief) {
+				
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} onderhouden",
+					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} moet onderhouden worden volgens onderhoudsplan",
+					Priority.Normal, maintObj));
+				
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} kalibreren",
+					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} moet gekalibreerd worden volgens onderhoudsplan",
+					Priority.Normal, maintObj));
+			}
+
+			if (maintObj.MaintObjStatus == MaintObjStatus.Inactief) {
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} plaatsen",
+					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} is geleverd en kan geplaatst worden",
+					Priority.Low, maintObj));
+			}
+		}
+		
+		// Assigning every second and third work order, finishing every third work order
+
+		int i = 0;
+		
+		List<Technician> technicians = await dbContext.Technicians.ToListAsync();
+		
+		foreach (WorkOrder workOrder in workOrders) {
+			if (i % 2 == 0) {
+				workOrder.AssignTechnician(technicians[0]);
+			} 
+
+			if (i % 3 == 0) {
+				workOrder.AssignTechnician(technicians[1]);
+				workOrder.MarkAsCompleted();
+			}
+			i++;
+		}
+		
+		dbContext.WorkOrders.AddRange(workOrders);
+		await dbContext.SaveChangesAsync();
 	}
 }
