@@ -144,10 +144,10 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		}
 
 		var modifications = new List<MeasurementStationDto.Modification>();
-		
+
 		// TODO: 
-		
-		foreach (var m in measurementStation.GetModifications()) {	
+
+		foreach (var m in measurementStation.GetModifications()) {
 			modifications.Add(new MeasurementStationDto.Modification {
 				MeasurementStationModificationType = (MeasurementStationModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
@@ -264,7 +264,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-		
+
 		MeasurementStation? station = await dbContext.MeasurementStations
 			.Include(s => s.Installation)
 			.Include(s => s.Location).ThenInclude(l => l.Address)

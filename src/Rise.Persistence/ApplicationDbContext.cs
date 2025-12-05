@@ -43,9 +43,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 		base.OnModelCreating(modelBuilder);
 		// Applying all types of IEntityTypeConfiguration in the Persistence project.
 		modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-		
+
 		// Ignoring classes used for mapping
-		
+
 		modelBuilder.Ignore<MeasurementStationModification>();
 	}
 }

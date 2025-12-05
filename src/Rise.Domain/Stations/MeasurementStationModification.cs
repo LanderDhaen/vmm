@@ -9,7 +9,7 @@ public class MeasurementStationModification {
 		PreviousValue = Guard.Against.NullOrWhiteSpace(previousValue);
 		CurrentValue = Guard.Against.NullOrWhiteSpace(currentValue);
 	}
-	
+
 	public MeasurementStationModificationType MeasurementStationModificationType { get; init; }
 	public DateTime ModifiedAt { get; init; }
 	public string PreviousValue { get; init; }

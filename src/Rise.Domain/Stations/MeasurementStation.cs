@@ -40,7 +40,7 @@ public class MeasurementStation : Entity {
 	public void UpdateProjectList(List<Project> projects) {
 		List<Project> closedProjectsNotAlreadyLinked = projects
 			.Where(p => p.Status == Status.Afgesloten &&
-			            Projects.All(existing => existing.Id != p.Id))
+						Projects.All(existing => existing.Id != p.Id))
 			.ToList();
 
 		if (closedProjectsNotAlreadyLinked.Any()) {
@@ -97,29 +97,29 @@ public class MeasurementStation : Entity {
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values
-		
-		UpdatedAt =  DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
+
+		UpdatedAt = DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		Installation = installation;
 	}
 
 	public List<MeasurementStationModification> GetModifications() {
-		
+
 		var modifications = new List<MeasurementStationModification>();
-		
+
 		// Add current state as the first history entry
-		
+
 		_measurementStationHistories.Insert(0, new MeasurementStationHistory(Installation, Location, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
-		
+
 		for (var i = 0; i < _measurementStationHistories.Count - 1; i++) {
-			
+
 			var curr = _measurementStationHistories[i];
 			var prev = _measurementStationHistories[i + 1];
 
 			var modification = MeasurementStationModificationFactory.Create(curr, prev);
-			
+
 			modifications.Add(modification);
 		}
-		
+
 		return modifications;
 	}
 
