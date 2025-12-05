@@ -6,9 +6,9 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
-namespace Rise.Client.Projects;
+namespace Rise.Client.Components.Projects;
 
-public partial class UpdateStationListOverlay {
+public partial class UpdateStationListDialog {
 	// Radio button
 	private string _selectedOption = "Bestaand";
 
@@ -32,7 +32,6 @@ public partial class UpdateStationListOverlay {
 	[CascadingParameter]
 	private IMudDialogInstance MudDialog { get; set; }
 	[Parameter] public Guid ProjectId { get; set; }
-	[Parameter] public EventCallback OnStationsUpdated { get; set; }
 	[Parameter] public IEnumerable<MeasurementStationDto.Index>? Stations { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -44,8 +43,7 @@ public partial class UpdateStationListOverlay {
 		await GetAllStationsAsync();
 	}
 
-	private async Task CloseOverlay() {
-		await OnStationsUpdated.InvokeAsync();
+	private void CloseOverlay() {
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 

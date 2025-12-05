@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components.Projects;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
@@ -38,12 +39,10 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
+		await GetProjectDetail();
+		await GetStationsAsync();
 
-		// --- Project detail ---
-		if (detail.IsSuccess) {
-			_project = detail.Value.Project;
-
+		if (_project is not null) {
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
 				new BreadcrumbItem("Projecten", "/projects"),
@@ -59,14 +58,7 @@ public partial class Detail {
 					return Task.CompletedTask;
 				}
 			);
-		} else {
-			string message = detail.Errors != null
-				? string.Join(Environment.NewLine, detail.Errors)
-				: "Er is een fout opgetreden.";
-			Snackbar.Add(message, Severity.Error);
 		}
-
-		await GetStationsAsync();
 	}
 
 	private async Task GetStationsAsync() {
@@ -86,10 +78,63 @@ public partial class Detail {
 		}
 	}
 
-	private Task OpenDialogAsync() {
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullScreen = true };
+	private async Task GetProjectDetail() {
+		Result<ProjectResponse.Detail> detail = await ProjectService.GetDetailAsync(ProjectId);
 
-		return DialogService.ShowAsync<UpdateStationListOverlay>("", options);
+		// --- Project detail ---
+		if (detail.IsSuccess) {
+			_project = detail.Value.Project;
+		} else {
+			string message = detail.Errors != null
+				? string.Join(Environment.NewLine, detail.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
+	private async Task OpenDialogAsync() {
+		var parameters = new DialogParameters<UpdateStationListDialog> {
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.Stations, _stationsFromProject }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true };
+
+		var dialog = await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshStations();
+		}
+	}
+
+	private async Task OpenUpdateMeasurementDialogAsync() {
+		var parameters = new DialogParameters<UpdateMeasurementNetworkDialog> {
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.MeasurementNetworkId, _project!.MeasurementNetwork.Id }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshProjectDetail();
+		}
+	}
+
+	private async Task OpenEditFormDialogAsync() {
+		var parameters = new DialogParameters<EditFormDialog> {
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.Project, _project }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		var dialog = await DialogService.ShowAsync<EditFormDialog>("Project bewerken", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshProjectDetail();
+		}
 	}
 
 	private async Task Close() {
@@ -175,6 +220,11 @@ public partial class Detail {
 
 	private async Task RefreshStations() {
 		await GetStationsAsync();
+		StateHasChanged();
+	}
+
+	private async Task RefreshProjectDetail() {
+		await GetProjectDetail();
 		StateHasChanged();
 	}
 }

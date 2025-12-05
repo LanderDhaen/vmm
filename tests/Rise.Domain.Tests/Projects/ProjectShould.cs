@@ -96,8 +96,7 @@ public class ProjectShould {
 		project.Status.ShouldBe(Status.Afgesloten);
 
 		Should.Throw<InvalidOperationException>(() =>
-			project.Edit("New Name", "NEWCODE", new DateRange(DateOnly.FromDateTime(DateTime.UtcNow)),
-				DummyMeasurementNetwork)
+			project.Edit("New Name", "NEWCODE", new DateRange(DateOnly.FromDateTime(DateTime.UtcNow)))
 		);
 	}
 
