@@ -144,19 +144,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 							query = query.Where(s => EF.Functions.Like(s.Location.Address.City.ToLower(), $"%{t}%"));
 						break;
 					}
-				case "ProjectsCount": {
-						if (!string.IsNullOrWhiteSpace(raw) && int.TryParse(raw.Trim().Trim('"'), out var n)) {
-							if (opNorm == "Equals" || opNorm == "Equal")
-								query = query.Where(s => s.Projects.Count() == n);
-							else if (opNorm == "LessThanOrEqual")
-								query = query.Where(s => s.Projects.Count() <= n);
-							else if (opNorm == "GreaterThan")
-								query = query.Where(s => s.Projects.Count() > n);
-							else
-								query = query.Where(s => s.Projects.Count() >= n);
-						}
-						break;
-					}
 				}
 			}
 		}
