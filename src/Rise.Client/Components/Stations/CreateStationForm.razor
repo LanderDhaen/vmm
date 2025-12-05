@@ -5,13 +5,12 @@
 				<MudText Color="Color.Error" Inline="true">*</MudText>
 			</MudText>
 			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
-			              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"
-			              Class="mt-0 mb-0"/>
+			              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
 		</MudItem>
 
 		<MudItem xs="12" sm="6">
 			<MudText Typo="Typo.subtitle2">Installatie datum
-				<MudText Typo="Typo.caption">(Optioneel)</MudText>
+				<MudText Color="Color.Error" Inline="true">*</MudText>s
 			</MudText>
 			<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
 			               DateFormat="dd/MM/yyyy"
@@ -114,7 +113,8 @@
 						<MudTextField @bind-Value="Model.Location!.X" For="@(() => Model.Location!.X)"
 						              Disabled="!Model.IsNewLocation"
 						              Immediate="true" Variant="Variant.Outlined"
-						              Placeholder="X-coordinaat"/>
+						              Placeholder="X-coordinaat"
+						              HelperText="Bv. 51,015400"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
@@ -124,7 +124,8 @@
 						<MudTextField @bind-Value="Model.Location!.Y" For="@(() => Model.Location!.Y)"
 						              Disabled="!Model.IsNewLocation"
 						              Immediate="true" Variant="Variant.Outlined"
-						              Placeholder="Y-coordinaat"/>
+						              Placeholder="Y-coordinaat"
+						              HelperText="Bv. 4,034147"/>
 					</MudItem>
 
 					<MudItem xs="12">
