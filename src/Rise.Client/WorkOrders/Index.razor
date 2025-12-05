@@ -1,0 +1,49 @@
+@page "/workorders"
+@using Rise.Client.Components
+@using Rise.Shared.WorkOrders
+<PageTitle>Werkbonnen</PageTitle>
+
+@* Desktop view *@
+
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="pb-6">
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@Icons.Material.Filled.FilterAlt"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           Disabled="true">
+			Filteren
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           Disabled="true">
+			Project
+		</MudButton>
+	</MudStack>
+
+	<MudDataGrid T="WorkOrderDto.Index"
+	             ServerData="GetWorkOrdersAsync"
+	             RowsPerPage="10"
+	             Striped="true"
+	             Hover="true"
+	             SortMode="SortMode.Single"
+	             AllowUnsorted="false"
+	             ShowColumnOptions="false"
+	             >
+
+		<Columns>
+			<PropertyColumn Property="x => x.CreatedAt" Title="Aangemaakt op" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary" />
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+		</Columns>
+		
+	</MudDataGrid>
+</MudHidden>

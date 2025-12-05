@@ -15,14 +15,11 @@ public class WorkOrder : Entity {
 	/// </summary>
 	private WorkOrder() { }
 
-	public WorkOrder(string name, string description, Priority priority, MaintObj maintObj, Technician? technician = null) {
+	public WorkOrder(string name, string description, Priority priority, MaintObj maintObj) {
 		Name = Guard.Against.NullOrEmpty(name);
 		Description = Guard.Against.NullOrEmpty(description);
 		Priority = priority;
 		MaintObj = Guard.Against.Null(maintObj);
-		if (technician is not null) {
-			AssignTechnician(technician);
-		}
 	}
 
 	// Properties
