@@ -86,18 +86,56 @@ public static class WorkOrderUtility
         };
 
     /// <summary>
-    /// Converts a creation date to long readable text.
+    /// Formats the created at date and time in a long, human-readable format.
     /// </summary>
-    /// <param name="createdAt">The creation date.</param>
-    /// <returns>A human-friendly formatted date string.</returns>
+    /// <param name="createdAt">The date and time when the work order was created.</param>
+    /// <returns>
+    /// A string formatted as <c>d MMMM yyyy 'om' HH'u'mm</c>.
+    /// </returns>
+    /// <example>
+    /// 27 november 2025 om 14u30
+    /// </example>
     public static string ToLongCreatedAt(DateTime createdAt)
         => createdAt.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm");
 
     /// <summary>
-    /// Converts a creation date to a short readable format.
+    /// Formats the created at date and time in a short format.
     /// </summary>
-    /// <param name="createdAt">The creation date.</param>
-    /// <returns>A compact formatted date string.</returns>
+    /// <param name="createdAt">The date and time when the work order was created.</param>
+    /// <returns>
+    /// A string formatted as <c>dd/MM/yyyy 'om' HH'u'mm</c>.
+    /// </returns>
+    /// <example>
+    /// 27/11/2025 om 14u30
+    /// </example>
     public static string ToShortCreatedAt(DateTime createdAt)
         => createdAt.ToLocalTime().ToString("dd/MM/yyyy 'om' HH'u'mm");
+    
+    /// <summary>
+    /// Formats the start date, if available, in a long, human-readable format.
+    /// </summary>
+    /// <param name="startDate">The date when the work order was claimed by a technician.</param>
+    /// <returns>
+    /// A string formatted as <c>d MMMM yyyy</c>.
+    /// </returns>
+    /// <example>
+    /// 27 november 2025
+    /// </example>
+    public static string ToLongStartDate(DateOnly? startDate)
+	    => startDate?.ToString("d MMMM yyyy") ?? "-";
+    
+    /// <summary>
+    /// Formats the end date, if available, in a short format.
+    /// </summary>
+    /// <param name="endDate">
+    /// The date when the work order was completed/canceled, or <c>null</c> if it is still in progress.
+    /// </param>
+    /// <returns>
+    /// A string formatted as <c>dd/MM/yyyy</c>, or <c>-</c> if <paramref name="endDate"/> is <c>null</c>.
+    /// </returns>
+    /// <example>
+    /// 15/01/2026
+    /// </example>
+    public static string ToLongEndDate(DateOnly? endDate)
+	    => endDate?.ToString("d MMMM yyyy") ?? "-";
 }
