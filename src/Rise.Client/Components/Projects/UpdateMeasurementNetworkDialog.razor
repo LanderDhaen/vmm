@@ -15,7 +15,8 @@
 				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
 				<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId"
 				           For="@(() => Model.MeasurementNetworkId)"
-				           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined">
+				           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined"
+				           Style="width: 60vh">
 					@foreach (var network in _networks)
 					{
 						<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
@@ -27,7 +28,7 @@
 
 	<DialogActions>
 		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+		           StartIcon="@Icons.Material.Filled.Save"
 		           Size="Size.Small"
 		           Color="Color.Primary"
 		           OnClick="@UpdateMeasurementNetworkAsync">
