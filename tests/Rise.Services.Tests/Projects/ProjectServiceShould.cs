@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +6,6 @@ using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Persistence;
 using Rise.Services.Projects;
-using Rise.Services.Tests.Fakers;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
 
@@ -22,7 +19,7 @@ namespace Rise.Services.Tests.Projects;
 public class ProjectServiceShould {
 	// One container for the entire test class
 	private static readonly ApplicationDbContext? DbContext;
-	private readonly ProjectService _service;
+	private readonly ProjectService _service = new(DbContext!);
 
 	static ProjectServiceShould() {
 		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
@@ -36,17 +33,6 @@ public class ProjectServiceShould {
 
 		DbContext = new ApplicationDbContext(options);
 		DbContext.Database.Migrate();
-	}
-
-	public ProjectServiceShould() {
-		ClaimsPrincipal fakeUser = new(
-			new ClaimsIdentity(
-				[new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())],
-				"TestAuth"));
-
-		FakeSessionContextProvider session = new(fakeUser);
-
-		_service = new ProjectService(DbContext!, session);
 	}
 
 	#region CreateAsync Tests

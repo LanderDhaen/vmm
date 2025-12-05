@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +6,6 @@ using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.MaintObjects;
-using Rise.Services.Tests.Fakers;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
@@ -22,7 +19,7 @@ namespace Rise.Services.Tests.MaintObjects;
 public class MaintObjServiceShould {
 	// One container for the entire test class
 	private static readonly ApplicationDbContext? DbContext;
-	private readonly MaintObjService _service;
+	private readonly MaintObjService _service = new(DbContext!);
 
 	static MaintObjServiceShould() {
 		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
@@ -35,17 +32,6 @@ public class MaintObjServiceShould {
 
 		DbContext = new ApplicationDbContext(options);
 		DbContext.Database.Migrate();
-	}
-
-	public MaintObjServiceShould() {
-		ClaimsPrincipal fakeUser = new(
-			new ClaimsIdentity(
-				[new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())],
-				"TestAuth"));
-
-		FakeSessionContextProvider session = new(fakeUser);
-
-		_service = new MaintObjService(DbContext!, session);
 	}
 
 	#region Helper Methods
