@@ -119,8 +119,10 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (type is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-
-		MaintObj mo = new(request.Name, request.SerialNumber, type, request.Brand, location);
+		
+		// TODO: Update the form (edit and create)
+		
+		MaintObj mo = new(request.Name, request.SerialNumber, Domain.MaintObjects.MaintObjType.Battery , type, request.Brand, location);
 
 		dbContext.MaintObjects.Add(mo);
 

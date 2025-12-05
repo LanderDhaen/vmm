@@ -31,7 +31,7 @@ public class MaintObjShould {
 	public void BeCreatedWithExpectedDefaults() {
 		MaintObjPlan plan = MakeType();
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", plan, "BrandX", location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, plan, "BrandX", location);
 
 		mo.Name.ShouldBe("Sensor-1");
 		mo.SerialNumber.ShouldBe("SN-123");
@@ -46,7 +46,7 @@ public class MaintObjShould {
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor , MakeType(), null, location);
 		MeasurementStation station = MakeStation("STN-100");
 
 		mo.AssignToStation(station);
@@ -63,7 +63,7 @@ public class MaintObjShould {
 	[Fact]
 	public void RecordAndClearTechnician() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor,MakeType(), null, location);
 		Technician tech = MakeTechnician();
 
 		mo.RecordTechnician(tech);
@@ -78,7 +78,7 @@ public class MaintObjShould {
 	[Fact]
 	public void AllowChangingStatus() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 
 		mo.SetStatus(MaintObjStatus.Defect);
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Defect);
@@ -90,7 +90,7 @@ public class MaintObjShould {
 	[Fact]
 	public void ConstructorGuardsAgainstInvalidArguments() {
 		Location location = MakeLocation();
-		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MakeType(), null, location));
-		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MakeType(), null, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MaintObjType.Sensor, MakeType(), null, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MaintObjType.Sensor, MakeType(), null, location));
 	}
 }

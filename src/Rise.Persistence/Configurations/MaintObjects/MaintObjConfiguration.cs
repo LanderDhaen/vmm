@@ -14,6 +14,7 @@ internal class MaintObjConfiguration : EntityConfiguration<MaintObj> {
 		builder.Property(x => x.Name).IsRequired().HasMaxLength(256);
 		builder.Property(x => x.SerialNumber).IsRequired().HasMaxLength(256);
 		builder.Property(x => x.Brand).HasMaxLength(256);
+		builder.Property(x => x.MaintObjType).IsRequired();
 		builder.Property(x => x.MaintObjStatus).IsRequired();
 		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt).IsRequired().HasColumnName(nameof(Installation.InstalledAt));

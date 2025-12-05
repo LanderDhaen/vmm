@@ -9,6 +9,8 @@ using Rise.Services.MaintObjects;
 using Rise.Services.Tests.Common;
 using Rise.Shared.MaintObjects;
 
+using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
+
 namespace Rise.Services.Tests.MaintObjects;
 
 public class MaintObjServiceShould {
@@ -49,6 +51,7 @@ public class MaintObjServiceShould {
 		var mo = new MaintObj(
 			name: "Test Device",
 			serialNumber: serial,
+			MaintObjType.Sensor,
 			maintObjPlan: type,
 			brand: "RiseBrand",
 			location: null
