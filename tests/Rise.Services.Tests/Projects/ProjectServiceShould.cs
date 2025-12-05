@@ -25,9 +25,7 @@ public class ProjectServiceShould {
 	private readonly ProjectService _service;
 
 	static ProjectServiceShould() {
-		MsSqlContainer? container = new MsSqlBuilder()
-			.WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-			.WithPassword("YourStrong(!)Password")
+		MsSqlContainer? container = new MsSqlBuilder().WithPassword("test@1234")
 			.Build();
 
 		container.StartAsync().GetAwaiter().GetResult();
