@@ -133,6 +133,7 @@ public partial class Index {
 		var bp = await ViewportService.GetCurrentBreakpointAsync();
 		_filterDrawerAnchor = bp == Breakpoint.Xs ? Anchor.Bottom : Anchor.Right;
 		_filterOptionsOpen = !_filterOptionsOpen;
+		StateHasChanged();
 	}
 
 	private async Task HandleDesktopIntervalElapsed() {
