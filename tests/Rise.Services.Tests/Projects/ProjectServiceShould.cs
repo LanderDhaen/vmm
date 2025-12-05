@@ -25,8 +25,8 @@ public class ProjectServiceShould {
 	private readonly ProjectService _service;
 
 	static ProjectServiceShould() {
-		MsSqlContainer? container = new MsSqlBuilder().WithPassword("test@1234")
-			.Build();
+		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
+
 
 		container.StartAsync().GetAwaiter().GetResult();
 
@@ -101,7 +101,7 @@ public class ProjectServiceShould {
 		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
 
 		Assert.True(result.IsSuccess);
-		Assert.Equal("Test Project", result.Value!.Project!.Name);
+		Assert.Equal("Test Project", result.Value!.Project.Name);
 	}
 
 	#endregion

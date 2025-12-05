@@ -25,8 +25,7 @@ public class MaintObjServiceShould {
 	private readonly MaintObjService _service;
 
 	static MaintObjServiceShould() {
-		MsSqlContainer? container = new MsSqlBuilder().WithPassword("test@1234")
-			.Build();
+		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
 
 		container.StartAsync().GetAwaiter().GetResult();
 
