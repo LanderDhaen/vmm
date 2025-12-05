@@ -361,7 +361,7 @@ public class MeasurementStationServiceShould {
 		MeasurementStation reloaded = await db.MeasurementStations
 			.Include(x => x.Installation)
 			.SingleAsync(s => s.Id == station.Id);
-		
+
 		Assert.Equal(newInstalled, reloaded.Installation.InstalledAt);
 		Assert.Equal(newRemoved, reloaded.Installation.RemovedAt);
 	}

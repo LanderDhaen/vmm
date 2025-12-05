@@ -17,14 +17,14 @@ namespace Rise.Client.Stations;
 public partial class Edit {
 	private readonly MeasurementStationRequest.Edit.Validator _validator = new();
 	private MudForm form = default!;
-	
+
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private IMeasurementStationService StationService { get; set; } = default!;
 	[Inject] private NavigationManager Nav { get; set; } = default!;
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
-	
+
 	private MeasurementStationRequest.Edit Model { get; set; } = new();
 
 	protected override async Task OnInitializedAsync() {

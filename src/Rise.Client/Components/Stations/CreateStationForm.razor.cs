@@ -11,7 +11,7 @@ namespace Rise.Client.Components.Stations;
 
 public partial class CreateStationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
-	private string _searchText = string.Empty;
+	private readonly string _searchText = string.Empty;
 
 	[Parameter] public required MeasurementStationRequest.Create Model { get; set; }
 	[Parameter] public required MudForm Form { get; set; }

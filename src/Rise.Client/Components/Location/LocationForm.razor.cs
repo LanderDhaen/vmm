@@ -12,7 +12,7 @@ namespace Rise.Client.Components.Location;
 public partial class LocationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
 	private string _searchText = string.Empty;
-	
+
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public ILocationRequest Model { get; set; }
 	[Inject] private ILocationService LocationService { get; set; } = default!;
