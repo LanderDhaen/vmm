@@ -475,7 +475,7 @@ public class ProjectServiceShould : IAsyncLifetime {
 		// Arrange
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = Guid.NewGuid(),
-			MeasurementStationIds = new List<Guid>()
+			MeasurementStationIds = []
 		};
 
 		// Act
@@ -497,14 +497,14 @@ public class ProjectServiceShould : IAsyncLifetime {
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = project.Id,
-			MeasurementStationIds = new List<Guid> { Guid.NewGuid() } // Non-existent station
+			MeasurementStationIds = [Guid.NewGuid()] // Non-existent station
 		};
 
 		// Act
 		Result result = await _service.UpdateMeasurementStationsAsync(request);
 
 		// Assert
-		Assert.True(result.Status == ResultStatus.Error);
+		Assert.Equal(ResultStatus.Error, result.Status);
 	}
 
 	#endregion
