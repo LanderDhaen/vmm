@@ -92,10 +92,19 @@ public partial class Detail {
 		}
 	}
 
-	private Task OpenDialogAsync() {
+	private async Task OpenDialogAsync() {
+		var parameters = new DialogParameters<UpdateStationListDialog> {
+			{ x => x.ProjectId, ProjectId },
+			{ x => x.Stations, _stationsFromProject }
+		};
 		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-		return DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", options);
+		var dialog = await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshStations();
+		}
 	}
 
 	private async Task OpenUpdateMeasurementDialogAsync() {
