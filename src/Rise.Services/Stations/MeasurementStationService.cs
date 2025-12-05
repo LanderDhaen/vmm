@@ -180,7 +180,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				return Result.NotFound("Locatie niet gevonden.");
 			}
 		}
-		
+
 		MeasurementStation station = new(
 			request.Code,
 			location,
