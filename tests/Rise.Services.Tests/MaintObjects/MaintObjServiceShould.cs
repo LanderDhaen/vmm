@@ -1,6 +1,7 @@
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
@@ -16,10 +17,12 @@ using SharedMaintObjType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Tests.MaintObjects;
 
-public class MaintObjServiceShould {
+public class MaintObjServiceShould : IAsyncLifetime {
 	// One container for the entire test class
 	private static readonly ApplicationDbContext? DbContext;
 	private readonly MaintObjService _service = new(DbContext!);
+	private IDbContextTransaction? _transaction;
+
 
 	static MaintObjServiceShould() {
 		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
@@ -32,6 +35,19 @@ public class MaintObjServiceShould {
 
 		DbContext = new ApplicationDbContext(options);
 		DbContext.Database.Migrate();
+	}
+
+	public async Task InitializeAsync() {
+		// Start a transaction before each test
+		_transaction = await DbContext!.Database.BeginTransactionAsync();
+	}
+
+	public async Task DisposeAsync() {
+		// Rollback the transaction after each test to clean up
+		if (_transaction != null) {
+			await _transaction.RollbackAsync();
+			await _transaction.DisposeAsync();
+		}
 	}
 
 	#region Helper Methods

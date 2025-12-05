@@ -1,6 +1,7 @@
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
@@ -16,10 +17,11 @@ using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Tests.Projects;
 
-public class ProjectServiceShould {
+public class ProjectServiceShould : IAsyncLifetime {
 	// One container for the entire test class
 	private static readonly ApplicationDbContext? DbContext;
 	private readonly ProjectService _service = new(DbContext!);
+	private IDbContextTransaction? _transaction;
 
 	static ProjectServiceShould() {
 		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
@@ -33,6 +35,19 @@ public class ProjectServiceShould {
 
 		DbContext = new ApplicationDbContext(options);
 		DbContext.Database.Migrate();
+	}
+
+	public async Task InitializeAsync() {
+		// Start a transaction before each test
+		_transaction = await DbContext!.Database.BeginTransactionAsync();
+	}
+
+	public async Task DisposeAsync() {
+		// Rollback the transaction after each test to clean up
+		if (_transaction != null) {
+			await _transaction.RollbackAsync();
+			await _transaction.DisposeAsync();
+		}
 	}
 
 	#region CreateAsync Tests
@@ -66,33 +81,7 @@ public class ProjectServiceShould {
 
 	#endregion
 
-	#region DetailAsync Tests
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
-		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
-		MeasurementNetwork network = new("MN_Detail", new Zone("Zone_Detail", "ZD"));
-		DbContext!.MeasurementNetworks.Add(network);
-		Project project = new(
-			"Test Project", "DETAIL_CODE",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		DbContext.Projects.Add(project);
-		await DbContext.SaveChangesAsync();
-
-		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
-
-		Assert.True(result.IsSuccess);
-		Assert.Equal("Test Project", result.Value!.Project.Name);
-	}
-
-	#endregion
-
-	#region CreateAsync Tests
+	#region CreateAsync Conflict & NotFound Tests
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnConflict_WhenCodeAlreadyExists() {
@@ -133,6 +122,32 @@ public class ProjectServiceShould {
 
 		// Assert
 		Assert.True(result.IsNotFound());
+	}
+
+	#endregion
+
+	#region DetailAsync Tests
+
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
+		Assert.True(result.IsNotFound());
+	}
+
+	[Fact]
+	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
+		MeasurementNetwork network = new("MN_Detail", new Zone("Zone_Detail", "ZD"));
+		DbContext!.MeasurementNetworks.Add(network);
+		Project project = new(
+			"Test Project", "DETAIL_CODE",
+			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
+		DbContext.Projects.Add(project);
+		await DbContext.SaveChangesAsync();
+
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
+
+		Assert.True(result.IsSuccess);
+		Assert.Equal("Test Project", result.Value!.Project.Name);
 	}
 
 	#endregion
