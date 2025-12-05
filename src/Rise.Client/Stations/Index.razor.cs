@@ -75,15 +75,13 @@ public partial class Index {
 		request.Filters ??= new Dictionary<string, object?>();
 		return request;
 	}
-
-	// Central fetch-method (one place for server-communication and select-option updates)
 	private async Task<GridData<MeasurementStationDto.Index>> FetchStationsAsync(QueryRequest.SkipTake request, bool useContainsForText) {
 		ApplyDrawerFilters(request, useContainsForText);
 
 		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
 		var stations = result?.Value?.Stations ?? Enumerable.Empty<MeasurementStationDto.Index>();
-		UpdateSelectOptions(stations);
+
 
 		var total = result?.Value?.TotalCount ?? 0;
 
@@ -233,7 +231,6 @@ public partial class Index {
 		_filterRemovedAt = null;
 		_filterLocation = null;
 		_filterCity = null;
-		_filterProjectsCount = null;
 
 		var bp = await ViewportService.GetCurrentBreakpointAsync();
 
