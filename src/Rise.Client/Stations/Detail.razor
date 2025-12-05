@@ -26,67 +26,77 @@ else
 		</MudText>
 	</MudStack>
 	
-	<MudGrid Spacing="4" Class="mt-4">
-	
-		@* Details *@
-		
-		<MudItem xs="12" md="6">
-			<MudCard Elevation="2" Class="rounded-lg">
-				<MudCardHeader>
-					<CardHeaderContent>
-						<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-							<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Code</MudText>
-							<MudButton Variant="Variant.Text"
-							           StartIcon="@Icons.Material.Filled.Edit"
-							           Size="Size.Small"
-							           Color="Color.Primary"
-							           Class="px-4">
-								Aanpassen
-							</MudButton>
-						</MudStack>
-					</CardHeaderContent>
-				</MudCardHeader>
-				<MudCardContent>
-					<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))</MudText>
-					<MudText><b>Verwijderd:</b> @(StationUtility.ToShortRemovedAt(_station.RemovedAt))</MudText>
-					<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
-				</MudCardContent>
-			</MudCard>
-		</MudItem>
-		
-		@* Location *@
-		
-		<MudItem xs="12" md="6">
-			<MudCard Elevation="2" Class="rounded-lg">
-				<MudCardHeader>
-					<CardHeaderContent>
-						<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-							<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Location.Name</MudText>
-							<MudButton Variant="Variant.Text"
-							           StartIcon="@Icons.Material.Filled.MyLocation"
-							           Size="Size.Small"
-							           Color="Color.Primary"
-							           Class="px-4">
-								Verplaatsen
-							</MudButton>
-						</MudStack>
-					</CardHeaderContent>
-				</MudCardHeader>
-				<MudCardContent>
-					<MudText><b>Adres:</b> @LocationUtility.FormatAddress(_station.Location.AddressLine1, _station.Location.AddressLine2, _station.Location.City, _station.Location.PostalCode, _station.Location.Country)</MudText>
-					<MudText><b>Breedtegraad:</b> @_station.Location.X</MudText>
-					<MudText><b>Lengtegraad:</b> @_station.Location.Y</MudText>
-				</MudCardContent>
-			</MudCard>
-		</MudItem>
-		
-		@* TODO: MaintObj table *@
-		
-		@* Projects table *@
-		
-		<MudItem xs="12">
-			<Projects StationId="_station.Id" />
-		</MudItem>
-		
-	</MudGrid>
+	@switch (_selectedTab)
+	{
+		case 0:
+			<MudGrid Spacing="4" Class="mt-4">
+
+				@* Details *@
+
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Code</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.Edit"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))</MudText>
+							<MudText><b>Verwijderd:</b> @(StationUtility.ToShortRemovedAt(_station.RemovedAt))</MudText>
+							<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* Location *@
+
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Location.Name</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.MyLocation"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4">
+										Verplaatsen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Adres:</b> @LocationUtility.FormatAddress(_station.Location.AddressLine1, _station.Location.AddressLine2, _station.Location.City, _station.Location.PostalCode, _station.Location.Country)</MudText>
+							<MudText><b>Breedtegraad:</b> @_station.Location.X</MudText>
+							<MudText><b>Lengtegraad:</b> @_station.Location.Y</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* TODO: MaintObj table *@
+
+				@* Projects table *@
+
+				<MudItem xs="12">
+					<Projects StationId="_station.Id"/>
+				</MudItem>
+
+			</MudGrid>
+
+			break;
+
+		case 1:
+			<History MeasurementStationId="StationId"/>
+			break;
+	}
 }

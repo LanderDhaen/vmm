@@ -57,9 +57,4 @@ public partial class Detail {
 			}
 		);
 	}
-
-	private void OnTabChange(string newValue) {
-		_tabs[1] = newValue;
-		StateHasChanged();
-	}
 }
