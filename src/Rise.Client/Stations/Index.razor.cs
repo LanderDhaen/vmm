@@ -6,8 +6,8 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.Common;
-using Rise.Shared.Stations;
 using Rise.Shared.Locations;
+using Rise.Shared.Stations;
 
 namespace Rise.Client.Stations;
 
@@ -206,7 +206,7 @@ public partial class Index {
 		_selectCancellationTokenSource.Dispose();
 		_selectCancellationTokenSource = new CancellationTokenSource();
 
-		_cities = null; 
+		_cities = null;
 		StateHasChanged();
 
 		try {
