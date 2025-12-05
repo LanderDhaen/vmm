@@ -11,6 +11,8 @@ public partial class History {
 	[Parameter] public Guid MeasurementStationId { get; set; }
 	[Inject] public required IMeasurementStationService MeasurementStationService { get; set; }
 	
+	private TimelinePosition _timelinePosition;
+	
 
 	protected override async Task OnInitializedAsync() {
 		Result<MeasurementStationResponse.History> result =
@@ -20,6 +22,9 @@ public partial class History {
 			_modifications = result.Value.Modifications;
 		}
 	}
+
+	private void OnBreakPointChange(Breakpoint breakpoint) => _timelinePosition = breakpoint == Breakpoint.Xs ? TimelinePosition.Left : TimelinePosition.Alternate;
+	
 	
 	private static string DefineTitle(MeasurementStationModificationType modificationType)
 	{

@@ -9,14 +9,16 @@
 }
 else
 {
-	<MudTimeline>
-		@{
-			foreach (var modification in _modifications) {
-				<TimeLineItem Title="@(DefineTitle(modification.MeasurementStationModificationType))"
-				              ModifiedAt="modification.ModifiedAt"
-				              CurrentValue=@modification.CurrentValue
-				              PreviousValue="@modification.PreviousValue"/>
+	<MudBreakpointProvider OnBreakpointChanged="@OnBreakPointChange">
+		<MudTimeline TimelinePosition="_timelinePosition">
+			@{
+				foreach (var modification in _modifications) {
+					<TimeLineItem Title="@(DefineTitle(modification.MeasurementStationModificationType))"
+					              ModifiedAt="modification.ModifiedAt"
+					              CurrentValue=@modification.CurrentValue
+					              PreviousValue="@modification.PreviousValue"/>
+				}
 			}
-		}
-	</MudTimeline>
+		</MudTimeline>
+	</MudBreakpointProvider>
 }
