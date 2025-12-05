@@ -7,6 +7,7 @@ using MudBlazor;
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Stations;
+using Rise.Shared.Locations;
 
 namespace Rise.Client.Stations;
 
