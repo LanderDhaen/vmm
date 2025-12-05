@@ -66,13 +66,8 @@ public class MaintObjShould {
 		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor,MakeType(), null, location);
 		Technician tech = MakeTechnician();
 
-		mo.RecordTechnician(tech);
-
+		mo.ScanBy(tech);
 		mo.LastScannedBy.ShouldBe(tech);
-
-		mo.ClearTechnician();
-
-		mo.LastScannedBy.ShouldBeNull();
 	}
 
 	[Fact]

@@ -42,13 +42,10 @@ public class MaintObj : Entity {
 		Station = null;
 	}
 
-	public void RecordTechnician(Technician technician) {
+	public void ScanBy(Technician technician) {
 		LastScannedBy = Guard.Against.Null(technician);
 	}
-
-	public void ClearTechnician() {
-		LastScannedBy = null;
-	}
+	
 
 	public void SetStatus(MaintObjStatus status) {
 		MaintObjStatus = status;
