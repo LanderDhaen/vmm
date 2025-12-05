@@ -31,6 +31,7 @@ public class DbSeeder(
 		await ProjectHistoriesAsync();
 		await StationsAsync();
 		await MeasurementStationsHistoriesAsync();
+		await MaintObjectPlansAsync();
 		await MaintObjectsAsync();
 		await WorkOrdersAsync();
 	}
@@ -146,7 +147,7 @@ public class DbSeeder(
 
 		List<Address> addresses = new() {
 			new Address(null, null, "Brussel", "1020"),
-			new Address("Meersstraat 5", "Bus 2", "Harlbeke", "8530"),
+			new Address("Meersstraat 5", "Bus 2", "Harelbeke", "8530"),
 			new Address("Duiklaan", null, "Gent", "9000"),
 			new Address("Vaartstraat", null, "Aalst", "9300"),
 			new Address(null, null, "Breda", "4811", "NL"),
@@ -155,7 +156,8 @@ public class DbSeeder(
 			// Stock
 
 			new Address("Industrielaan 15", null, "Aalst", "9320"),
-			new Address("Industrieweg 124", null, "Gent", "9040")
+			new Address("Industrieweg 124", null, "Gent", "9040"),
+			new Address("Olieweg 70", null, "Antwerpen", "2020")
 		};
 
 		List<Coordinate> coordinates = new() {
@@ -169,7 +171,8 @@ public class DbSeeder(
 			// Stock
 
 			new Coordinate(50.91215, 4.03795),
-			new Coordinate(51.09013, 3.68663)
+			new Coordinate(51.09013, 3.68663),
+			new Coordinate(51.19292, 4.36380)
 		};
 
 		List<Location> locations = new() {
@@ -183,7 +186,8 @@ public class DbSeeder(
 			// Stock
 
 			new Location("Stock Aalst", addresses[6], coordinates[6], true),
-			new Location("Stock Gent", addresses[7], coordinates[7], true)
+			new Location("Stock Gent", addresses[7], coordinates[7], true),
+			new Location("Stock Antwerpen", addresses[8], coordinates[8], true),
 		};
 
 		dbContext.Locations.AddRange(locations);
@@ -219,7 +223,7 @@ public class DbSeeder(
 			new Project("Overstortdetectie Aalst", "2025-004", dateRanges[3], networks[3]),
 			new Project("Conductiviteitsmonitoring Aalst", "2025-005", dateRanges[4], networks[4]),
 			new Project("Multiparameteranalyse", "2025-006", dateRanges[5], networks[5]),
-			new Project("Conductivitetiesmonitoring Aalst", "2025-007", dateRanges[6], networks[0])
+			new Project("Conductiviteitsmonitoring Aalst", "2025-007", dateRanges[6], networks[0])
 		};
 
 
@@ -379,10 +383,88 @@ public class DbSeeder(
 		}
 	}
 
+	private async Task MaintObjectPlansAsync() {
+		if (dbContext.MaintObjPlans.Any()) {
+			return;
+		}
+
+		List<MaintObjPlan> maintObjPlans = new() {
+			new MaintObjPlan("Korter", 7, 28),
+			new MaintObjPlan("Standaard", 14, 56),
+			new MaintObjPlan("Langer", 21, 84)
+		};
+		
+		dbContext.MaintObjPlans.AddRange(maintObjPlans);
+		await dbContext.SaveChangesAsync();
+	}
+
 	private async Task MaintObjectsAsync() {
 		if (dbContext.MaintObjects.Any()) {
 			return;
 		}
+
+		List<MaintObjPlan> plans = await dbContext.MaintObjPlans.ToListAsync();
+		List<Location> stockLocations = await dbContext.Locations.Where(x => x.IsStockLocation).ToListAsync();
+		
+		// Adding devices to one of the stations in Aalst
+		
+		List<MaintObj> maintObjsAalst = new()
+		{
+			new MaintObj("BT1000", "48291", MaintObjType.Battery, plans[0], null, stockLocations[0]),
+			new MaintObj("CR3000", "24365", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[0]), // Matches one of the provided barcodes
+			new MaintObj("SA5000", "16308", MaintObjType.Sensor, plans[2], "In-Situ", stockLocations[0]),
+			new MaintObj("SM1200", "72459", MaintObjType.Sim, plans[0], null, stockLocations[0]),
+			new MaintObj("CT9300", "59142", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[0]),
+		};
+
+		MeasurementStation stationAalst = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Zeebergbrug").FirstAsync();
+		
+		foreach (MaintObj maintObj in maintObjsAalst) {
+			maintObj.AssignToStation(stationAalst);
+			if (maintObj.MaintObjType == MaintObjType.Battery ||  maintObj.MaintObjType == MaintObjType.Logger) {
+				maintObj.SetStatus(MaintObjStatus.Broken);
+			}
+		}
+		
+		dbContext.MaintObjects.AddRange(maintObjsAalst);
+		
+		// Adding devices to one of the stations in Gent
+
+		List<MaintObj> maintObjsGent = new() {
+			new MaintObj("BT1000", "80613", MaintObjType.Battery, plans[0], null, stockLocations[1]),
+			new MaintObj("CR3000", "27486", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[1]),
+			new MaintObj("SA5000", "91837", MaintObjType.Sensor, plans[2], "In-Situ", stockLocations[1]),
+			new MaintObj("SM1200", "34527", MaintObjType.Sim, plans[0], null, stockLocations[1]),
+			new MaintObj("CT9300", "76094", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[1]),
+		};
+		
+		MeasurementStation stationGent = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Duikplaats Blaarmeersen").FirstAsync();
+		
+		foreach (MaintObj maintObj in maintObjsGent) {
+			maintObj.AssignToStation(stationGent);
+			if (maintObj.MaintObjType == MaintObjType.Modem) {
+				maintObj.SetStatus(MaintObjStatus.Broken);
+			}
+		}
+		
+		dbContext.MaintObjects.AddRange(maintObjsGent);
+		
+		// Adding devices to the stock in Antwerpen
+
+		List<MaintObj> maintObjsAntwerpen = new() {
+			new MaintObj("BT1000", "15248", MaintObjType.Battery, plans[0], null, stockLocations[2]),
+			new MaintObj("CR3000", "68973", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[2]),
+			new MaintObj("SA5000", "43105", MaintObjType.Sensor, plans[2], "In-Situ", stockLocations[2]),
+			new MaintObj("SM1200", "87962", MaintObjType.Sim, plans[0], null, stockLocations[2]),
+			new MaintObj("CT9300", "50736", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[2]),
+		};
+		
+		dbContext.MaintObjects.AddRange(maintObjsAntwerpen);
+		
+		// Saving changes
+		
+		await dbContext.SaveChangesAsync();
+		
 	}
 
 	private async Task WorkOrdersAsync() {
@@ -398,13 +480,13 @@ public class DbSeeder(
 		// Creating workorders
 
 		foreach (MaintObj maintObj in maintObjs) {
-			if (maintObj.MaintObjStatus == MaintObjStatus.Defect) {
+			if (maintObj.MaintObjStatus == MaintObjStatus.Broken) {
 				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} vervangen",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is defect door waterschade",
 					Priority.High, maintObj));
 			}
 
-			if (maintObj.MaintObjStatus == MaintObjStatus.Actief) {
+			if (maintObj.MaintObjStatus == MaintObjStatus.Active) {
 
 				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} onderhouden",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet onderhouden worden volgens onderhoudsplan",
@@ -415,7 +497,7 @@ public class DbSeeder(
 					Priority.Normal, maintObj));
 			}
 
-			if (maintObj.MaintObjStatus == MaintObjStatus.Inactief) {
+			if (maintObj.MaintObjStatus == MaintObjStatus.Inactive) {
 				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} plaatsen",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is geleverd en kan geplaatst worden",
 					Priority.Low, maintObj));

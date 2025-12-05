@@ -45,7 +45,7 @@ public class MaintObjServiceShould {
 	public async Task GetBySerialAsync_ShouldReturnMaintObj_WhenSerialExists() {
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
-		var type = await db.MaintObjTypes.FirstAsync();
+		var type = await db.MaintObjPlans.FirstAsync();
 
 		var serial = $"ABC-{Guid.NewGuid():N}";
 		var mo = new MaintObj(

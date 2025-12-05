@@ -1,3 +1,5 @@
+using System.Data;
+
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
@@ -21,7 +23,7 @@ public class MaintObj : Entity {
 	public string? Brand { get; private set; }
 	
 	public MaintObjType MaintObjType { get; private set; }
-	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactief;
+	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactive;
 	public MaintObjPlan MaintObjPlan { get; private set; }
 	public Installation? Installation { get; private set; }
 
@@ -33,6 +35,7 @@ public class MaintObj : Entity {
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
 		Location = station.Location;
+		SetStatus(MaintObjStatus.Active);
 	}
 
 	public void UnassignFromStation() {

@@ -113,7 +113,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjPlans
 			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
@@ -199,7 +199,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjPlans
 			.FirstOrDefaultAsync(s => s.Name == req.MaintObjType.ToString(), ctx);
 
 		if (type is null) {

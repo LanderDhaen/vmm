@@ -40,7 +40,7 @@ public class MaintObjShould {
 		mo.Location.ShouldBe(location);
 		mo.Station.ShouldBeNull();
 		mo.LastScannedBy.ShouldBeNull();
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactive);
 	}
 
 	[Fact]
@@ -80,11 +80,11 @@ public class MaintObjShould {
 		Location location = MakeLocation();
 		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 
-		mo.SetStatus(MaintObjStatus.Defect);
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Defect);
+		mo.SetStatus(MaintObjStatus.Broken);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Broken);
 
-		mo.SetStatus(MaintObjStatus.Inactief);
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
+		mo.SetStatus(MaintObjStatus.Inactive);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactive);
 	}
 
 	[Fact]
