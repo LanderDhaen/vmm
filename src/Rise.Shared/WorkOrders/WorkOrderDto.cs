@@ -9,13 +9,12 @@ public static class WorkOrderDto {
 	/// </summary>
 	public class Index {
 		public required Guid Id { get; init; }
-		public required string Name { get; init; }
-		public required string Description { get; init; }
-		public required WorkOrderStatus Status { get; init; }
 		public required Priority Priority { get; init; }
-		public required DateTime CreatedAt { get; init; }
+		public required string Name { get; init; }
+		public required string MaintObj { get; init; }
+		public required string? Technician { get; init; }
+		public required WorkOrderStatus Status { get; init; }
 		public required DateOnly? StartDate { get; init; }
 		public required DateOnly? EndDate { get; init; }
-		public required string? Technician { get; init; }
 	}
 }

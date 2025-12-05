@@ -35,10 +35,9 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 			.Select(p => new WorkOrderDto.Index {
 				Id = p.Id,
 				Name = p.Name,
-				Description = p.Description,
+				MaintObj = p.MaintObj.Name,
 				Status = (SharedStatus)p.Status,
 				Priority = (SharedPriority)p.Priority,
-				CreatedAt = p.CreatedAt,
 				StartDate = p.DateRange != null ? p.DateRange.StartDate : null,
 				EndDate = p.DateRange != null ? p.DateRange.EndDate : null,
 				Technician = !Equals(p.Technician, null) ? p.Technician.FirstName + " " + p.Technician.LastName : null
