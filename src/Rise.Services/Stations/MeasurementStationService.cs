@@ -143,9 +143,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
-		var modifications = new List<MeasurementStationDto.Modification>();
-
-		// TODO: 
+		List<MeasurementStationDto.Modification> modifications = [];
 
 		foreach (var m in measurementStation.GetModifications()) {
 			modifications.Add(new MeasurementStationDto.Modification {
@@ -260,7 +258,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success();
 	}
 
-	public async Task<Result> UpdateAsync(
+	private async Task<Result> UpdateAsync(
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {

@@ -104,7 +104,8 @@ public class MeasurementStation : Entity {
 
 	public List<MeasurementStationModification> GetModifications() {
 
-		var modifications = new List<MeasurementStationModification>();
+		List<MeasurementStationModification> modifications = [];
+
 
 		// Add current state as the first history entry
 
@@ -115,7 +116,7 @@ public class MeasurementStation : Entity {
 			var curr = _measurementStationHistories[i];
 			var prev = _measurementStationHistories[i + 1];
 
-			var modification = MeasurementStationModificationFactory.Create(curr, prev);
+			MeasurementStationModification modification = MeasurementStationModificationFactory.Create(curr, prev);
 
 			modifications.Add(modification);
 		}
