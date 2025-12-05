@@ -25,7 +25,8 @@ public class MaintObjServiceShould : IAsyncLifetime {
 
 
 	static MaintObjServiceShould() {
-		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest").Build();
+		MsSqlContainer? container = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+			.WithPassword("P@ssword123").Build();
 
 		container.StartAsync().GetAwaiter().GetResult();
 
