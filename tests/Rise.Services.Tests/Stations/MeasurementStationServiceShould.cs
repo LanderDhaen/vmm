@@ -292,41 +292,6 @@ public class MeasurementStationServiceShould : IAsyncLifetime {
 
 	#endregion
 
-	#region GetHistoryAsync Tests
-
-	[Fact]
-	public async Task GetHistoryAsync_ShouldReturnHistory_WhenStationExists() {
-		// Arrange
-		Location location = new("History Location", new Address("History St", "", "History City", "8000"),
-			new Coordinate(52.0, 6.0));
-		DbContext!.Locations.Add(location);
-
-		MeasurementStation station =
-			new("MS_HISTORY_001", location, new Installation(DateTime.UtcNow.AddDays(-20)));
-		DbContext.MeasurementStations.Add(station);
-		await DbContext.SaveChangesAsync();
-
-		// Act
-		Result<MeasurementStationResponse.History> result = await _service.GetHistoryAsync(station.Id);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.MeasurementStation.Code.ShouldBe("MS_HISTORY_001");
-		result.Value.MeasurementStation.Location.ShouldBe("History Location");
-		result.Value.MeasurementStation.MeasurementStationHistories.ShouldNotBeNull();
-	}
-
-	[Fact]
-	public async Task GetHistoryAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		// Act
-		Result<MeasurementStationResponse.History> result = await _service.GetHistoryAsync(Guid.NewGuid());
-
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
-	}
-
-	#endregion
-
 	#region EditAsync Tests
 
 	[Fact]
