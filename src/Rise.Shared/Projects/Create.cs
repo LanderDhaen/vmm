@@ -9,7 +9,7 @@ public static partial class ProjectRequest {
 	public class Create {
 		public string Name { get; set; }
 		public string Code { get; set; }
-		public DateTime? StartDate { get; set; } = DateTime.Now;
+		public DateTime? StartDate { get; set; } = DateTime.UtcNow;
 		public Guid? MeasurementNetworkId { get; set; }
 
 		public class Validator : AbstractValidator<Create> {

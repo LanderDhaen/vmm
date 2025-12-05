@@ -14,7 +14,10 @@ public static partial class MeasurementStationRequest {
 		public LocationRequest.Create? Location { get; set; } = new();
 
 		// Installation
-		public DateTime? InstalledAt { get; set; }
+		public DateTime? InstalledAt { get; set; } = DateTime.UtcNow;
+
+		// Project -> to link the station to a project upon creation
+		public Guid? ProjectId { get; set; } = Guid.Empty;
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
