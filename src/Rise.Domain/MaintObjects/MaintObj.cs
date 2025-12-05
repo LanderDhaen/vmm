@@ -7,10 +7,10 @@ namespace Rise.Domain.MaintObjects;
 public class MaintObj : Entity {
 	private MaintObj() { }
 
-	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, string? brand, Location location) {
+	public MaintObj(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand, Location location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
-		MaintObjType = Guard.Against.Null(maintObjType);
+		MaintObjPlan = Guard.Against.Null(maintObjPlan);
 		Brand = brand;
 		Location = Guard.Against.Null(location);
 	}
@@ -18,7 +18,7 @@ public class MaintObj : Entity {
 	public string Name { get; private set; }
 	public string SerialNumber { get; private set; }
 	public string? Brand { get; private set; }
-	public MaintObjType MaintObjType { get; private set; }
+	public MaintObjPlan MaintObjPlan { get; private set; }
 	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactief;
 	public Installation? Installation { get; private set; }
 
@@ -48,11 +48,11 @@ public class MaintObj : Entity {
 		MaintObjStatus = status;
 	}
 
-	public void Edit(string name, string serialNumber, MaintObjType maintObjType, string? brand,
+	public void Edit(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand,
 		Installation installation, Location location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
-		MaintObjType = maintObjType;
+		MaintObjPlan = maintObjPlan;
 		Brand = brand;
 		Installation = installation;
 		Location = location;

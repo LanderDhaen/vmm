@@ -22,7 +22,7 @@ internal class MaintObjConfiguration : EntityConfiguration<MaintObj> {
 		
 		// Relations
 		
-		builder.HasOne(x => x.MaintObjType)
+		builder.HasOne(x => x.MaintObjPlan)
 			.WithMany()
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);

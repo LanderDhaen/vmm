@@ -49,7 +49,7 @@ public class MaintObjServiceShould {
 		var mo = new MaintObj(
 			name: "Test Device",
 			serialNumber: serial,
-			maintObjType: type,
+			maintObjPlan: type,
 			brand: "RiseBrand",
 			location: null
 		);

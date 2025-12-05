@@ -392,32 +392,32 @@ public class DbSeeder(
 
 		// 
 
-		List<MaintObj> maintObjs = await dbContext.MaintObjects.Include(x => x.MaintObjType).ToListAsync();
+		List<MaintObj> maintObjs = await dbContext.MaintObjects.Include(x => x.MaintObjPlan).ToListAsync();
 		List<WorkOrder> workOrders = [];
 
 		// Creating workorders
 
 		foreach (MaintObj maintObj in maintObjs) {
 			if (maintObj.MaintObjStatus == MaintObjStatus.Defect) {
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} vervangen",
-					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} is defect door waterschade",
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} vervangen",
+					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is defect door waterschade",
 					Priority.High, maintObj));
 			}
 
 			if (maintObj.MaintObjStatus == MaintObjStatus.Actief) {
 
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} onderhouden",
-					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} moet onderhouden worden volgens onderhoudsplan",
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} onderhouden",
+					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet onderhouden worden volgens onderhoudsplan",
 					Priority.Normal, maintObj));
 
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} kalibreren",
-					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} moet gekalibreerd worden volgens onderhoudsplan",
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} kalibreren",
+					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet gekalibreerd worden volgens onderhoudsplan",
 					Priority.Normal, maintObj));
 			}
 
 			if (maintObj.MaintObjStatus == MaintObjStatus.Inactief) {
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjType.Code} plaatsen",
-					$"{maintObj.MaintObjType.Code} {maintObj.Name} met serienummer {maintObj.SerialNumber} is geleverd en kan geplaatst worden",
+				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} plaatsen",
+					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is geleverd en kan geplaatst worden",
 					Priority.Low, maintObj));
 			}
 		}

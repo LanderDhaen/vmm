@@ -23,19 +23,19 @@ public class MaintObjShould {
 		return new Technician("John", "Doe", "account-1");
 	}
 
-	private static MaintObjType MakeType(string code = "Sonde", string name = "Sonde") {
-		return new MaintObjType(Guid.NewGuid(), code, name, 30, 180);
+	private static MaintObjPlan MakeType(string code = "Sonde", string name = "Sonde") {
+		return new MaintObjPlan(name, 30, 180);
 	}
 
 	[Fact]
 	public void BeCreatedWithExpectedDefaults() {
-		MaintObjType type = MakeType();
+		MaintObjPlan plan = MakeType();
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", location);
+		MaintObj mo = new("Sensor-1", "SN-123", plan, "BrandX", location);
 
 		mo.Name.ShouldBe("Sensor-1");
 		mo.SerialNumber.ShouldBe("SN-123");
-		mo.MaintObjType.ShouldBe(type);
+		mo.MaintObjPlan.ShouldBe(plan);
 		mo.Brand.ShouldBe("BrandX");
 		mo.Location.ShouldBe(location);
 		mo.Station.ShouldBeNull();

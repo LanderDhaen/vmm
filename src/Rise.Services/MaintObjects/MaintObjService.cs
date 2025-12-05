@@ -31,10 +31,10 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			query = req.OrderBy switch {
-				nameof(MaintObj.MaintObjType)
+				nameof(MaintObj.MaintObjPlan)
 					=> desc
-						? query.OrderByDescending(d => d.MaintObjType!.Code)
-						: query.OrderBy(d => d.MaintObjType!.Code),
+						? query.OrderByDescending(d => d.MaintObjPlan!.Name)
+						: query.OrderBy(d => d.MaintObjPlan!.Name),
 
 
 				nameof(MaintObj.MaintObjStatus)
@@ -57,7 +57,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		IQueryable<MaintObj> page = query
 			.AsNoTracking()
-			.Include(mo => mo.MaintObjType)
+			.Include(mo => mo.MaintObjPlan)
 			.Include(mo => mo.Station)
 			.Include(mo => mo.Location)
 			.Skip(req.Skip)
@@ -68,7 +68,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				mo.Id,
 				mo.Name,
 				mo.SerialNumber,
-				MaintObjTypeCode = mo.MaintObjType != null ? mo.MaintObjType.Code : null,
+				MaintObjTypeCode = mo.MaintObjPlan != null ? mo.MaintObjPlan.Name : null,
 				mo.MaintObjStatus,
 				LocationName = mo.Location != null ? mo.Location.Name :
 					mo.Station != null ? mo.Station.Location.Name : null
@@ -113,7 +113,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjTypes
 			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
@@ -136,7 +136,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		MaintObj? maintObj = await dbContext.MaintObjects
 			.AsNoTracking()
 			.Include(d => d.Station)
-			.Include(d => d.MaintObjType)
+			.Include(d => d.MaintObjPlan)
 			.Include(d => d.Location)
 			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
 
@@ -146,7 +146,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		MaintObjType parsedType = MaintObjType.Sonde;
 
-		if (maintObj.MaintObjType?.Code is { } code && Enum.TryParse(code, out MaintObjType tmp)) {
+		if (maintObj.MaintObjPlan?.Name is { } code && Enum.TryParse(code, out MaintObjType tmp)) {
 			parsedType = tmp;
 		}
 
@@ -154,9 +154,9 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		DateTime? nextMaintenance = null;
 		DateTime? nextCalibration = null;
 
-		if (installedAtOpt is DateTime installedAtValue && maintObj.MaintObjType is not null) {
-			nextMaintenance = installedAtValue.AddDays(maintObj.MaintObjType.MaintenanceIntervalDays);
-			nextCalibration = installedAtValue.AddDays(maintObj.MaintObjType.CalibrationIntervalDays);
+		if (installedAtOpt is DateTime installedAtValue && maintObj.MaintObjPlan is not null) {
+			nextMaintenance = installedAtValue.AddDays(maintObj.MaintObjPlan.MaintenanceIntervalDays);
+			nextCalibration = installedAtValue.AddDays(maintObj.MaintObjPlan.CalibrationIntervalDays);
 		}
 
 		MaintObjDto.Detail dto = new() {
@@ -197,7 +197,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjType? type = await dbContext.MaintObjTypes
+		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjTypes
 			.FirstOrDefaultAsync(s => s.Name == req.MaintObjType.ToString(), ctx);
 
 		if (type is null) {
