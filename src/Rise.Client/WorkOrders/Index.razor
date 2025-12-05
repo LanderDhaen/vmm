@@ -36,11 +36,22 @@
 	             >
 
 		<Columns>
-			<PropertyColumn Property="x => x.CreatedAt" Title="Aangemaakt op" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(context.Item.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(context.Item.Priority))">
+						@WorkOrderUtility.TranslatePriority(context.Item.Priority)
+					</MudChip>
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary" />
+			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(context.Item.Status))">
+						@WorkOrderUtility.TranslateStatus(context.Item.Status)
+					</MudChip>
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 		</Columns>
