@@ -5,7 +5,7 @@ using Rise.Shared.Locations;
 namespace Rise.Shared.Stations;
 
 public static partial class MeasurementStationRequest {
-	public class UpdateLocation {
+	public class UpdateLocation : ILocationRequest {
 		public Guid MeasurementStationId { get; set; }
 		public Guid? LocationId { get; set; }
 		public bool IsNewLocation { get; set; }
