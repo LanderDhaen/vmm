@@ -77,25 +77,25 @@
 // 			projectSvc.GetIndexAsync(Arg.Any<QueryRequest.SkipTake>(), Arg.Any<CancellationToken>())
 // 				.Returns(Task.FromResult(Result.Success(projectsIndex)));
 //
-// 			// Guid stationId = Guid.NewGuid();
+// 			Guid stationId = Guid.NewGuid();
 // 			// MeasurementStationResponse.Detail detail = new() {
 // 			// 	Station = new MeasurementStationDto.Detail {
 // 			// 		Id = stationId,
 // 			// 		Code = "STN-77",
 // 			// 		InstalledAt = new DateTime(2024, 11, 1, 0, 0, 0, DateTimeKind.Utc),
 // 			// 		RemovedAt = null,
-// 			// 		//Location = "Loc A",
+// 			// 		Location = "Loc A",
 // 			// 		ProjectsCount = 1
 // 			// 	}
 // 			// };
 // 			// stationSvc.GetDetailAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
 // 			// 	.Returns(Task.FromResult(Result.Success(detail)));
-// 			//
+//
 // 			// stationSvc.GetProjectsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
 // 			// 	.Returns(Task.FromResult(Result.Success(new List<ProjectDto.Index>())));
-// 			//
-// 			// stationSvc.EditAsync(Arg.Any<MeasurementStationRequest.Edit>(), Arg.Any<CancellationToken>())
-// 			// 	.Returns(Task.FromResult(Result.Success()));
+//
+// 			stationSvc.EditAsync(Arg.Any<MeasurementStationRequest.Edit>(), Arg.Any<CancellationToken>())
+// 				.Returns(Task.FromResult(Result.Success()));
 //
 // 			ctx.Services.AddSingleton(stationSvc);
 // 			ctx.Services.AddSingleton(locationSvc);
