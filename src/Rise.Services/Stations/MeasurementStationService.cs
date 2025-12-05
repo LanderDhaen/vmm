@@ -17,35 +17,26 @@ namespace Rise.Services.Stations;
 
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService {
 
-	// Filtering
-	private sealed class FilterSpec {
-		public string? Operator { get; }
-		public string? Value { get; }
-
-		public FilterSpec(string? op, string? val) {
-			Operator = op;
-			Value = val;
-		}
-	}
-
 	private static FilterSpec? ParseFilterSpec(object? rawValue) {
 		if (rawValue == null) return null;
 
 		try {
-			if (rawValue is JsonElement je) {
-				if (je.ValueKind == JsonValueKind.Object) {
-					string? op = null;
-					string? val = null;
-					if (je.TryGetProperty("Operator", out var opProp))
-						op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
-					if (je.TryGetProperty("Value", out var vProp))
-						val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
-					return new FilterSpec(op, val);
-				}
-				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
-			}
+			if (rawValue is not JsonElement je)
+				return new FilterSpec(null, rawValue.ToString());
 
-			return new FilterSpec(null, rawValue.ToString());
+			if (je.ValueKind != JsonValueKind.Object)
+				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
+
+			string? op = null;
+			string? val = null;
+
+			if (je.TryGetProperty("Operator", out var opProp))
+				op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
+
+			if (je.TryGetProperty("Value", out var vProp))
+				val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
+
+			return new FilterSpec(op, val);
 		} catch {
 			return null;
 		}
