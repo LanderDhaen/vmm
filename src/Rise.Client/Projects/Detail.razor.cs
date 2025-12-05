@@ -87,7 +87,7 @@ public partial class Detail {
 	}
 
 	private Task OpenDialogAsync() {
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullScreen = true};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullScreen = true };
 
 		return DialogService.ShowAsync<UpdateStationListOverlay>("", options);
 	}
