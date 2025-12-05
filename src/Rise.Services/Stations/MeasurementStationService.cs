@@ -65,15 +65,16 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
 			var t = request.SearchTerm.Trim().ToLowerInvariant();
 			query = query.Where(s =>
-				EF.Functions.Like(s.Code, $"%{t}%") ||
-				EF.Functions.Like(s.Location.Name, $"%{t}%") ||
-				EF.Functions.Like(s.Location.Address.Addressline1, $"%{t}%") ||
-				EF.Functions.Like(s.Location.Address.Addressline2, $"%{t}%") ||
-				EF.Functions.Like(s.Location.Address.City, $"%{t}%") ||
-				EF.Functions.Like(s.Location.Address.PostalCode, $"%{t}%")
+				s.Code.Contains(t) ||
+				s.Location.Name.Contains(t) ||
+				s.Location.Address.Addressline1.Contains(t) ||
+				s.Location.Address.Addressline2.Contains(t) ||
+				s.Location.Address.City.Contains(t) ||
+				s.Location.Address.PostalCode.Contains(t)
 			);
 		}
 
+		// filters
 		if (request.Filters != null && request.Filters.Any()) {
 			var temp = request.Filters
 				.Select(kv => (Key: kv.Key, Spec: ParseFilterSpec(kv.Value)))
@@ -200,6 +201,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			TotalCount = totalCount
 		});
 	}
+
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
@@ -402,4 +404,4 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		return Result.Success();
 	}
-}
+};
