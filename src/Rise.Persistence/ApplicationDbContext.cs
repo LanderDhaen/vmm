@@ -30,7 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
 	public DbSet<MaintObj> MaintObjects => Set<MaintObj>();
 	public DbSet<MaintObjType> MaintObjTypes => Set<MaintObjType>();
-	public DbSet<WorkOrder>  WorkOrders => Set<WorkOrder>();
+	public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		// All columns in the database have a maxlength of 4000.

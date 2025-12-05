@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.WorkOrders;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
-using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
-using SharedPriority = Rise.Shared.WorkOrders.Priority;
 
-using Rise.Domain.WorkOrders;
+using SharedPriority = Rise.Shared.WorkOrders.Priority;
+using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.WorkOrders;
 
@@ -18,17 +18,17 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 	public async Task<Result<WorkOrderResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-		
+
 		IQueryable<WorkOrder> query = dbContext.WorkOrders.AsQueryable().AsNoTracking();
-		
+
 		int totalCount = await query.CountAsync(ctx);
-		
+
 		// Paginating
-		
+
 		query = query
 			.Skip(req.Skip)
 			.Take(req.Take);
-		
+
 		// Selecting
 
 		List<WorkOrderDto.Index> workOrders = await query
@@ -48,5 +48,5 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 			TotalCount = totalCount
 		});
 	}
-	
+
 }

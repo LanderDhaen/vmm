@@ -79,7 +79,7 @@ try {
 	builder.Services.AddHttpClient<IMaintObjService, MaintObjService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
-	
+
 	builder.Services.AddHttpClient<IWorkOrderService, WorkOrderService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();

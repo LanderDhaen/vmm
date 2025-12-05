@@ -11,9 +11,9 @@ using Rise.Shared.WorkOrders;
 namespace Rise.Client.WorkOrders;
 
 public partial class Index {
-	
+
 	private IEnumerable<WorkOrderDto.Index>? _mobilityWorkOrders;
-	
+
 	[Inject] public required IWorkOrderService WorkOrderService { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
@@ -22,7 +22,7 @@ public partial class Index {
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Werkbonnen", null, true));
-		
+
 		HeaderService.Set("Werkbonnen");
 
 		Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
@@ -31,7 +31,7 @@ public partial class Index {
 			await GetWorkOrdersMobileAsync();
 		}
 	}
-	
+
 	// Desktop
 
 	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
@@ -50,7 +50,7 @@ public partial class Index {
 			Items = result.Value.WorkOrders
 		};
 	}
-	
+
 	// Mobile
 
 	private async Task GetWorkOrdersMobileAsync() {
@@ -60,8 +60,8 @@ public partial class Index {
 			Take = 10,
 			OrderBy = "Id"
 		};
-		
-		Result <WorkOrderResponse.Index> result =
+
+		Result<WorkOrderResponse.Index> result =
 			await WorkOrderService.GetIndexAsync(request);
 
 		if (result.IsSuccess) {
