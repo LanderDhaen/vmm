@@ -97,7 +97,8 @@ public class MeasurementStation : Entity {
 		_measurementStationHistories.Add(measurementStationHistory);
 
 		// Assign the new values
-
+		
+		UpdatedAt =  DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		Installation = installation;
 	}
 

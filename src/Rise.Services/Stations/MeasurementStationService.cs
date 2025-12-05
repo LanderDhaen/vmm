@@ -264,11 +264,12 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-		// TODO: Potentially refactoring this to match project editing flow
-
-
+		
 		MeasurementStation? station = await dbContext.MeasurementStations
-			.Include(s => s.Location)
+			.Include(s => s.Installation)
+			.Include(s => s.Location).ThenInclude(l => l.Address)
+			.Include(s => s.Location).ThenInclude(l => l.Coordinate)
+
 			.Include(s => s.Projects)
 			.SingleOrDefaultAsync(s => s.Id == id, ct);
 
@@ -278,6 +279,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		DateTime installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
 		station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));
+		await dbContext.SaveChangesAsync(ct);
 
 		if (station.Location.Id != request.LocationId) {
 			Location? newLocation = await dbContext.Set<Location>()
@@ -287,6 +289,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			}
 
 			station.MoveTo(newLocation);
+			await dbContext.SaveChangesAsync(ct);
 		}
 
 		Project? newProject = await dbContext.Set<Project>()

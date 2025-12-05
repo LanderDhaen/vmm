@@ -319,8 +319,11 @@ public class DbSeeder(
 		}
 
 		List<MeasurementStation> stations =
-			await dbContext.MeasurementStations.Include(s => s.Installation).ToListAsync();
-		List<Location> locations = await dbContext.Locations.ToListAsync();
+			await dbContext.MeasurementStations
+				.Include(s => s.Installation)
+				.Include(s => s.Location).ThenInclude(l => l.Address)
+				.Include(s => s.Location).ThenInclude(l => l.Coordinate)
+				.ToListAsync();
 
 		List<DateTime?> removedAts = new() {
 			new DateTime(2025, 6, 30, 5, 12, 30),
