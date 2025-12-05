@@ -9,6 +9,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using MeasurementStationModificationType = Rise.Shared.Stations.MeasurementStationModificationType;
 using SharedStatus = Rise.Shared.Projects.Status;
 
 namespace Rise.Services.Stations;
@@ -128,37 +129,37 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
 		CancellationToken ct = default) {
-		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
 
-		MeasurementStationDto.History? measurementStation = await query
-			.Where(s => s.Id == stationId)
-			.Select(s => new MeasurementStationDto.History {
-				Id = s.Id,
-				Code = s.Code,
-				InstalledAt = s.Installation.InstalledAt,
-				RemovedAt = s.Installation.RemovedAt,
-				Location = s.Location.Name,
-				City = s.Location.Address.City,
-				MeasurementStationHistories = s.MeasurementStationHistories
-					.OrderByDescending(h => h.ValidityRange.ValidTo)
-					.Select(h => new MeasurementStationHistoryDto.Index {
-						Id = h.Id,
-						InstalledAt = h.Installation.InstalledAt,
-						RemovedAt = h.Installation.RemovedAt,
-						Location = h.Location.Name,
-						City = h.Location.Address.City,
-						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo
-					}).ToList()
-			})
-			.FirstOrDefaultAsync(ct);
+		MeasurementStation? measurementStation =
+			await dbContext.MeasurementStations
+				.AsNoTracking()
+				.Include(s => s.Location)
+				.Include(s => s.Installation)
+				.Include(s => s.MeasurementStationHistories)
+				.ThenInclude(h => h.Location)
+				.Include(s => s.MeasurementStationHistories)
+				.ThenInclude(h => h.Installation)
+				.Include(s => s.MeasurementStationHistories.OrderByDescending(h => h.ValidityRange.ValidFrom))
+				.SingleOrDefaultAsync(s => s.Id == stationId, ct);
+
 
 		if (measurementStation is null) {
-			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
+			return Result.NotFound($"Meetstation met Id '{stationId}' was niet gevonden.");
+		}
+
+		List<MeasurementStationDto.Modification> modifications = [];
+
+		foreach (var m in measurementStation.GetModifications()) {
+			modifications.Add(new MeasurementStationDto.Modification {
+				MeasurementStationModificationType = (MeasurementStationModificationType)m.MeasurementStationModificationType,
+				ModifiedAt = m.ModifiedAt,
+				PreviousValue = m.PreviousValue,
+				CurrentValue = m.CurrentValue,
+			});
 		}
 
 		return Result.Success(new MeasurementStationResponse.History {
-			MeasurementStation = measurementStation
+			Modifications = modifications
 		});
 	}
 
@@ -261,15 +262,16 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return Result.Success();
 	}
 
-	public async Task<Result> UpdateAsync(
+	private async Task<Result> UpdateAsync(
 		Guid id,
 		MeasurementStationRequest.Edit request,
 		CancellationToken ct = default) {
-		// TODO: Potentially refactoring this to match project editing flow
-
 
 		MeasurementStation? station = await dbContext.MeasurementStations
-			.Include(s => s.Location)
+			.Include(s => s.Installation)
+			.Include(s => s.Location).ThenInclude(l => l.Address)
+			.Include(s => s.Location).ThenInclude(l => l.Coordinate)
+
 			.Include(s => s.Projects)
 			.SingleOrDefaultAsync(s => s.Id == id, ct);
 
@@ -279,6 +281,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		DateTime installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
 		station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));
+		await dbContext.SaveChangesAsync(ct);
 
 		if (station.Location.Id != request.LocationId) {
 			Location? newLocation = await dbContext.Set<Location>()
@@ -288,6 +291,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			}
 
 			station.MoveTo(newLocation);
+			await dbContext.SaveChangesAsync(ct);
 		}
 
 		Project? newProject = await dbContext.Set<Project>()

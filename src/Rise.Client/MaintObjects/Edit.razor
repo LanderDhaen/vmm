@@ -21,8 +21,14 @@ else
 
 					<MudItem xs="12" sm="6">
 						<MudText Typo="Typo.subtitle2">Serienummer</MudText>
-						<MudTextField @bind-Value="Model.SerialNumber" For="@(() => Model.SerialNumber)"
-						              Immediate="true" Variant="Variant.Outlined" Placeholder="Serienummer"/>
+						<MudTextField @bind-Value="Model.SerialNumber"
+						              For="@(() => Model.SerialNumber)"
+						              Immediate="true"
+						              Variant="Variant.Outlined"
+						              Placeholder="Serienummer"
+						              Adornment="Adornment.End"
+						              AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
+						              OnAdornmentClick="OpenQrScanner"/>
 					</MudItem>
 
 					<MudItem xs="12" sm="6">
