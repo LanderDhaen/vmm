@@ -213,4 +213,32 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		return Result.Success();
 	}
+
+	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber,
+		CancellationToken ct = default) {
+		if (string.IsNullOrWhiteSpace(serialNumber)) {
+			return Result.Invalid(new[]
+			{
+				new ValidationError
+				{
+					Identifier = nameof(serialNumber),
+					ErrorMessage = "Serienummer is verplicht."
+				}
+			});
+		}
+
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.AsNoTracking()
+			.FirstOrDefaultAsync(m => m.SerialNumber == serialNumber, ct);
+
+		if (maintObj is null)
+			return Result.NotFound();
+
+		return Result.Success(new MaintObjResponse.BySerial {
+			Id = maintObj.Id,
+			SerialNumber = maintObj.SerialNumber,
+			Name = maintObj.Name
+		});
+	}
+
 }

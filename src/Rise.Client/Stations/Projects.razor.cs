@@ -9,80 +9,44 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Stations;
 
 public partial class Projects {
-	private IEnumerable<ProjectDto.Index>? _allProjects;
+
+	private CancellationTokenSource _cancellationTokenSource = new();
+
+	private string _searchTerm = string.Empty;
+
 	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
-	private Result? _result;
-
-	[Parameter] public Guid StationId { get; set; }
-	[Parameter] public EventCallback<string> TabChanged { get; set; }
 
 
-	private MeasurementStationRequest.UpdateProjects Model { get; } = new();
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
-	[Inject] public required IProjectService ProjectService { get; set; }
-	[Inject] public required IMeasurementStationService StationService { get; set; }
-	[Inject] public required NavigationManager Navigation { get; set; }
+	[Parameter] public Guid StationId { get; init; }
+	[Inject] public required IMeasurementStationService StationService { get; init; }
+	[Inject] public required NavigationManager NavigationManager { get; init; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<List<ProjectDto.Index>> projectsFromStation = await StationService.GetProjectsAsync(StationId);
-		Result<ProjectResponse.Index> allProjects = await ProjectService.GetIndexAsync(new QueryRequest.SkipTake());
-
-		// --- Projects from this station ---
-		if (projectsFromStation.IsSuccess && projectsFromStation.Value is not null) {
-			_projectsFromStation = projectsFromStation.Value;
-			Model.ProjectIds = _projectsFromStation.Select(s => s.Id).ToList();
-		} else {
-			_projectsFromStation = new List<ProjectDto.Index>();
-
-			if (!projectsFromStation.IsSuccess) {
-				string message = projectsFromStation.Errors != null
-					? string.Join(Environment.NewLine, projectsFromStation.Errors)
-					: "Kon projecten niet laden.";
-				Snackbar.Add(message, Severity.Warning);
-			}
-		}
-
-		// --- All projects that can be added to the station ---
-		if (allProjects.IsSuccess && allProjects.Value is not null) {
-			_allProjects = allProjects.Value.Projects;
-		} else {
-			if (!allProjects.IsSuccess) {
-				string message = allProjects.Errors != null
-					? string.Join(Environment.NewLine, allProjects.Errors)
-					: "Kon projecten niet laden.";
-				Snackbar.Add(message, Severity.Warning);
-			}
-		}
-
-		Model.MeasurementStationId = StationId;
+		await GetProjectsAsync();
 	}
 
-	private void OnProjectRowClick(TableRowClickEventArgs<ProjectDto.Index> args) {
-		Navigation.NavigateTo($"/projects/{args.Item.Id}");
-	}
+	private async Task GetProjectsAsync() {
 
-	private void OnProjectCardClick(ProjectDto.Index project) {
-		Navigation.NavigateTo($"/projects/{project.Id}");
-	}
+		_cancellationTokenSource.Cancel();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
 
-	private async Task UpdateProjects() {
-		bool selectionChanged = !Model.ProjectIds.SequenceEqual(
-			_projectsFromStation?.Select(s => s.Id) ?? Enumerable.Empty<Guid>());
+		QueryRequest.Search request = new() {
+			SearchTerm = _searchTerm
+		};
 
-		if (!selectionChanged) {
-			Snackbar.Add("Je moet minstens 1 project selecteren.", Severity.Error);
-		} else {
-			_result = await StationService.UpdateProjectsAsync(Model);
-			if (_result.IsSuccess) {
-				Snackbar.Add("Projecten succesvol bijgewerkt!", Severity.Success);
-				Result<List<ProjectDto.Index>> projectsResult = await StationService.GetProjectsAsync(StationId);
-				if (projectsResult.IsSuccess && projectsResult.Value is not null) {
-					_projectsFromStation = projectsResult.Value;
-					await TabChanged.InvokeAsync($"Projecten ({_projectsFromStation.Count()})");
-				}
-			} else {
-				Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
-			}
+		Result<MeasurementStationResponse.ProjectList> result = await StationService.GetProjectsAsync(StationId, request, _cancellationTokenSource.Token);
+
+		if (result.IsSuccess) {
+			_projectsFromStation = result.Value.Projects;
 		}
+	}
+
+	private async Task HandleIntervalElapsed() {
+		await GetProjectsAsync();
+	}
+
+	private void NavigateToProject(Guid projectId) {
+		NavigationManager.NavigateTo($"/projects/{projectId}");
 	}
 }

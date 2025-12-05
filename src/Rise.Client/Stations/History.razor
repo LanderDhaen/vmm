@@ -1,7 +1,7 @@
-@using Rise.Client.Components.Stations
+@using Rise.Client.Components
 <PageTitle>Station Details</PageTitle>
 
-@if (_measurementStation is null)
+@if (_modifications is null)
 {
 	<MudContainer Class="d-flex justify-center align-center">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
@@ -9,33 +9,16 @@
 }
 else
 {
-	<MudToolBar Class="justify-start gap-3" Gutters="false">
-		<MudButton Variant="Variant.Filled"
-		           Class="px-4"
-		           Size="Size.Small"
-		           StartIcon="@(Icons.Material.Filled.Timeline)"
-		           Color="Color.Primary"
-		           OnClick="@(() => DisplayTable = false)"
-		           Disabled="@(!DisplayTable)">
-			Tijdslijn
-		</MudButton>
-		<MudButton Variant="Variant.Filled"
-		           Class="px-4"
-		           Size="Size.Small"
-		           StartIcon="@(Icons.Material.Filled.TableRows)"
-		           Color="Color.Primary"
-		           OnClick="@(() => DisplayTable = true)"
-		           Disabled="DisplayTable">
-			Tabel
-		</MudButton>
-	</MudToolBar>
-
-	@if (DisplayTable)
-	{
-		<MeasurementStationHistoryTable MeasurementStation="_measurementStation"/>
-	}
-	else
-	{
-		<MeasurementStationHistoryTimeline MeasurementStation="_measurementStation"/>
-	}
+	<MudBreakpointProvider OnBreakpointChanged="@OnBreakPointChange">
+		<MudTimeline TimelinePosition="_timelinePosition" Class="mr-20 m-xs-0">
+			@{
+				foreach (var modification in _modifications) {
+					<TimeLineItem Title="@(DefineTitle(modification.MeasurementStationModificationType))"
+					              ModifiedAt="modification.ModifiedAt"
+					              CurrentValue=@modification.CurrentValue
+					              PreviousValue="@modification.PreviousValue"/>
+				}
+			}
+		</MudTimeline>
+	</MudBreakpointProvider>
 }

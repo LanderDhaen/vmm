@@ -17,6 +17,16 @@ public partial class UpdateStationListDialog {
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
 
+	// Form
+	private readonly MeasurementStationRequest.Create.Validator _validator = new();
+	private Result<MeasurementStationResponse.Create>? _createResult;
+	private MudForm _form;
+
+	private MeasurementStationRequest.Create CreateModel { get; } = new() {
+		IsNewLocation = false
+	};
+
+
 	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
 
 	[CascadingParameter]
@@ -34,11 +44,8 @@ public partial class UpdateStationListDialog {
 		await GetAllStationsAsync();
 	}
 
-	private void CloseOverlay() {
-		// Delete any unsaved changes
-		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
-		StateHasChanged();
-
+	private async Task CloseOverlay() {
+		await OnStationsUpdated.InvokeAsync();
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
@@ -79,6 +86,14 @@ public partial class UpdateStationListDialog {
 		}
 	}
 
+	private async Task Save() {
+		if (_selectedOption == "Bestaand") {
+			await UpdateMeasurementStations();
+		} else {
+			await CreateProjectAsync();
+		}
+	}
+
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
 			Stations?.Select(s => s.Id) ?? []);
@@ -97,10 +112,25 @@ public partial class UpdateStationListDialog {
 				Stations = stationsResult.Value.MeasurementStationsFromProject;
 			}
 
-			await OnStationsUpdated.InvokeAsync();
 			CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+		}
+	}
+
+	private async Task CreateProjectAsync() {
+		await _form.Validate();
+
+		if (_form.IsValid) {
+			CreateModel.ProjectId = ProjectId;
+			_createResult = await StationService.CreateAsync(CreateModel);
+			if (_createResult.IsSuccess) {
+				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
+
+				CloseOverlay();
+			} else {
+				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
+			}
 		}
 	}
 }

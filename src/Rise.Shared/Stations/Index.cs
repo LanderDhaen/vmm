@@ -1,3 +1,5 @@
+using Rise.Shared.Projects;
+
 namespace Rise.Shared.Stations;
 
 /// <summary>
@@ -13,7 +15,11 @@ public static partial class MeasurementStationResponse {
 		public required MeasurementStationDto.Detail Station { get; set; }
 	}
 
+	public class ProjectList {
+		public required IEnumerable<ProjectDto.Index> Projects { get; set; }
+	}
+
 	public class History {
-		public required MeasurementStationDto.History MeasurementStation { get; init; }
+		public required IEnumerable<MeasurementStationDto.Modification> Modifications { get; init; }
 	}
 }

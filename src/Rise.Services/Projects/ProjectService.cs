@@ -4,7 +4,6 @@ using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
@@ -16,23 +15,21 @@ using Status = Rise.Domain.Projects.Status;
 namespace Rise.Services.Projects;
 
 /// <summary>
-///     Service for projects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
-///     of the application.
+///     Service for projects.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class ProjectService(ApplicationDbContext dbContext)
 	: IProjectService {
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request,
 		CancellationToken ctx = default) {
-		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code, ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", request.Code);
 			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
 		DateOnly startdate = DateOnly.FromDateTime(request.StartDate!.Value);
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
+			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId, ctx);
 
 		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
@@ -57,7 +54,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
 		}
 
-		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId, ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", req.Code);
 			return Result.Conflict($"Project met code '{req.Code}' bestaat al.");
 		}
@@ -83,7 +80,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 		}
 
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId);
+			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId, ctx);
 
 		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
@@ -176,6 +173,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
+			.Include(p => p.DateRange)
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
@@ -246,13 +244,6 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
 
-		// Technician? loggedInTechnician = await dbContext.Technicians
-		// 	.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
-		//
-		// if (loggedInTechnician is null) {
-		// 	return Result.Unauthorized("You are not authorized to edit this project.");
-		// }
-
 		project.UpdateStatus((Status)req.NewStatus);
 
 		await dbContext.SaveChangesAsync(ctx);
@@ -316,7 +307,7 @@ public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvi
 			.Where(ms => req.MeasurementStationIds.Contains(ms.Id))
 			.ToListAsync(ctx);
 
-		if (measurementStations.Count != req.MeasurementStationIds.Count()) {
+		if (measurementStations.Count != req.MeasurementStationIds.Count) {
 			return Result.Error("Een of meerdere meetstations zijn niet gevonden.");
 		}
 
