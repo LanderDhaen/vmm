@@ -12,7 +12,7 @@ permissions:
 jobs:
   label-pr:
     name: Label Pull Request
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code

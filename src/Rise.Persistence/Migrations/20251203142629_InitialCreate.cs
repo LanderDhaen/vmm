@@ -347,6 +347,38 @@ namespace Rise.Persistence.Migrations {
 				});
 
 			migrationBuilder.CreateTable(
+				name: "WorkOrder",
+				columns: table => new {
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+					Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+					Status = table.Column<int>(type: "int", nullable: false),
+					Priority = table.Column<int>(type: "int", nullable: false),
+					StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+					EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+					MaintObjId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					TechnicianId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+					CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+					UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+					IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+				},
+				constraints: table => {
+					table.PrimaryKey("PK_WorkOrder", x => x.Id);
+					table.ForeignKey(
+						name: "FK_WorkOrder_MaintObj_MaintObjId",
+						column: x => x.MaintObjId,
+						principalTable: "MaintObj",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+					table.ForeignKey(
+						name: "FK_WorkOrder_Technician_TechnicianId",
+						column: x => x.TechnicianId,
+						principalTable: "Technician",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
+				});
+
+			migrationBuilder.CreateTable(
 				name: "MeasurementStationProject",
 				columns: table => new {
 					ProjectsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -518,6 +550,16 @@ namespace Rise.Persistence.Migrations {
 				filter: "[NormalizedUserName] IS NOT NULL");
 
 			migrationBuilder.CreateIndex(
+				name: "IX_WorkOrder_MaintObjId",
+				table: "WorkOrder",
+				column: "MaintObjId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_WorkOrder_TechnicianId",
+				table: "WorkOrder",
+				column: "TechnicianId");
+
+			migrationBuilder.CreateIndex(
 				name: "IX_Zone_Code",
 				table: "Zone",
 				column: "Code",
@@ -526,9 +568,6 @@ namespace Rise.Persistence.Migrations {
 
 		/// <inheritdoc />
 		protected override void Down(MigrationBuilder migrationBuilder) {
-			migrationBuilder.DropTable(
-				name: "MaintObj");
-
 			migrationBuilder.DropTable(
 				name: "MeasurementStationHistory");
 
@@ -554,13 +593,7 @@ namespace Rise.Persistence.Migrations {
 				name: "UserTokens");
 
 			migrationBuilder.DropTable(
-				name: "MaintObjType");
-
-			migrationBuilder.DropTable(
-				name: "Technician");
-
-			migrationBuilder.DropTable(
-				name: "MeasurementStation");
+				name: "WorkOrder");
 
 			migrationBuilder.DropTable(
 				name: "Project");
@@ -572,13 +605,25 @@ namespace Rise.Persistence.Migrations {
 				name: "Users");
 
 			migrationBuilder.DropTable(
-				name: "Location");
+				name: "MaintObj");
 
 			migrationBuilder.DropTable(
 				name: "MeasurementNetwork");
 
 			migrationBuilder.DropTable(
+				name: "MaintObjType");
+
+			migrationBuilder.DropTable(
+				name: "MeasurementStation");
+
+			migrationBuilder.DropTable(
+				name: "Technician");
+
+			migrationBuilder.DropTable(
 				name: "Zone");
+
+			migrationBuilder.DropTable(
+				name: "Location");
 		}
 	}
 }

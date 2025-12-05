@@ -343,14 +343,11 @@ pipeline {
                    URL: https://vc1.vichogent.be
                 ========================================
             """
-            discordSend(
-                description: "Deployed ${env.COMMIT_SHORT} to ${env.TARGET_ENV}",
-                footer: "Build #${BUILD_NUMBER}",
-                link: env.BUILD_URL,
-                result: currentBuild.currentResult,
-                title: "Rise .NET Deployment - SUCCESS",
-                webhookURL: "https://discord.com/api/webhooks/1433444252938928229/2Y9ZS89WmgVpB9R4IQkekwunm3nKG_P6ADWKE8q6qpchE35KLg37ynWerIMz5DnNzfTV"
-            )
+            sh """
+                curl -s -H 'Content-Type: application/json' -X POST \
+                    -d '{"embeds":[{"title":"Rise .NET Deployment - SUCCESS","description":"Deployed ${COMMIT_SHORT} to ${TARGET_ENV}","color":3066993,"fields":[{"name":"Build","value":"#${BUILD_NUMBER}","inline":true},{"name":"Environment","value":"${TARGET_ENV}","inline":true},{"name":"Commit","value":"${COMMIT_SHORT}","inline":true}],"footer":{"text":"Jenkins CI/CD"}}]}' \
+                    'https://discord.com/api/webhooks/1433444252938928229/2Y9ZS89WmgVpB9R4IQkekwunm3nKG_P6ADWKE8q6qpchE35KLg37ynWerIMz5DnNzfTV' || true
+            """
         }
         failure {
             script {
@@ -362,14 +359,11 @@ pipeline {
                    Check logs for details
                 ========================================
             """
-            discordSend(
-                description: "Build failed for ${env.COMMIT_SHORT ?: 'unknown commit'}",
-                footer: "Build #${BUILD_NUMBER}",
-                link: env.BUILD_URL,
-                result: currentBuild.currentResult,
-                title: "Rise .NET Deployment - FAILED",
-                webhookURL: "https://discord.com/api/webhooks/1433444252938928229/2Y9ZS89WmgVpB9R4IQkekwunm3nKG_P6ADWKE8q6qpchE35KLg37ynWerIMz5DnNzfTV"
-            )
+            sh '''
+                curl -s -H 'Content-Type: application/json' -X POST \
+                    -d '{"embeds":[{"title":"Rise .NET Deployment - FAILED","description":"Build failed","color":15158332,"fields":[{"name":"Build","value":"#'"${BUILD_NUMBER}"'","inline":true},{"name":"Environment","value":"'"${TARGET_ENV:-unknown}"'","inline":true}],"footer":{"text":"Jenkins CI/CD"}}]}' \
+                    'https://discord.com/api/webhooks/1433444252938928229/2Y9ZS89WmgVpB9R4IQkekwunm3nKG_P6ADWKE8q6qpchE35KLg37ynWerIMz5DnNzfTV' || true
+            '''
         }
         always {
             script {
@@ -380,3 +374,4 @@ pipeline {
         }
     }
 }
+

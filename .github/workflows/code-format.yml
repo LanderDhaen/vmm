@@ -14,7 +14,7 @@ permissions:
 jobs:
   format-check:
     name: Check Code Formatting
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
