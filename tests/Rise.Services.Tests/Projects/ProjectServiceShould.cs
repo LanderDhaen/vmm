@@ -13,7 +13,6 @@ using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
 using Rise.Shared.Common;
 using Rise.Shared.Projects;
-using Rise.Shared.Stations;
 
 using Status = Rise.Shared.Projects.Status;
 
@@ -35,7 +34,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		// Act
 		Result<ProjectResponse.Detail> result = await service.GetDetailAsync(project.Id);
@@ -61,7 +60,7 @@ public class ProjectServiceShould {
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		Guid nonExistentId = Guid.NewGuid();
 
@@ -78,7 +77,7 @@ public class ProjectServiceShould {
 	public async Task UpdateStatusAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.UpdateStatus req = new() {
 			ProjectId = Guid.NewGuid(),
@@ -109,7 +108,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.UpdateStatus req = new() {
 			ProjectId = project.Id,
@@ -141,7 +140,7 @@ public class ProjectServiceShould {
 		db.MeasurementNetworks.Add(measurementNetwork);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Create request = new() {
 			Name = "Test Project",
@@ -177,7 +176,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(new Project("Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)), measurementNetwork));
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Create request = new() {
 			Name = "Test Project",
@@ -203,7 +202,7 @@ public class ProjectServiceShould {
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Create request = new() {
 			Name = "Test Project",
@@ -237,7 +236,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project.Id,
@@ -279,7 +278,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = Guid.NewGuid(),
@@ -316,7 +315,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project1);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project1.Id,
@@ -351,7 +350,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.Edit request = new() {
 			ProjectId = project.Id,
@@ -401,7 +400,7 @@ public class ProjectServiceShould {
 		db.MeasurementStations.Add(station);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		Result<ProjectResponse.MeasurementStations> result = await service.GetStationsAsync(project.Id, new QueryRequest.Search());
 
@@ -416,7 +415,7 @@ public class ProjectServiceShould {
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		await using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		Guid nonExistentId = Guid.NewGuid();
 
@@ -448,7 +447,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = project.Id,
@@ -482,7 +481,7 @@ public class ProjectServiceShould {
 		db.MeasurementStations.Add(measurementStation);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = Guid.Empty,
@@ -514,7 +513,7 @@ public class ProjectServiceShould {
 		db.Projects.Add(project);
 		await db.SaveChangesAsync();
 
-		ProjectService service = new(db, null!);
+		ProjectService service = new(db);
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = project.Id,

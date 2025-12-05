@@ -188,20 +188,29 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				new Coordinate(request.Location.X, request.Location.Y)
 			);
 		} else {
-			location = await dbContext.Set<Location>()
+			location = await dbContext.Locations
 				.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
 			if (location is null) {
 				return Result.NotFound("Locatie niet gevonden.");
 			}
 		}
 
-		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
-
 		MeasurementStation station = new(
 			request.Code,
 			location,
-			new Installation(installedAt)
+			new Installation((DateTime)request.InstalledAt!)
 		);
+
+		if (request.ProjectId != Guid.Empty) {
+			Project project = await dbContext.Projects
+				.SingleOrDefaultAsync(x => x.Id == request.ProjectId, ct);
+
+			if (project is null) {
+				return Result.NotFound("Project niet gevonden.");
+			}
+
+			station.UpdateProjectList(new List<Project> { project });
+		}
 
 		dbContext.MeasurementStations.Add(station);
 		await dbContext.SaveChangesAsync(ct);
