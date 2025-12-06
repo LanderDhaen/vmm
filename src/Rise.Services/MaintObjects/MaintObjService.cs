@@ -106,7 +106,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (plan is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-		
+
 		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand, location);
 
 		dbContext.MaintObjects.Add(mo);
