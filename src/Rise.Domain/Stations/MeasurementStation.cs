@@ -62,6 +62,19 @@ public class MeasurementStation : Entity {
 		projectsToRemove.ForEach(p => Projects.Remove(p));
 	}
 
+	public void Edit(string code, Installation installation) {
+		UpdateCode(code);
+		UpdateInstallation(installation);
+	}
+
+	private void UpdateCode(string code) {
+		// Check if the values are the same as the old values
+		if (code.Equals(Code)) {
+			return;
+		}
+
+		Code = code;
+	}
 
 	public void MoveTo(Location location) {
 		// Check if the values are the same as the old values
@@ -82,7 +95,7 @@ public class MeasurementStation : Entity {
 		Location = location;
 	}
 
-	public void UpdateInstallation(Installation installation) {
+	private void UpdateInstallation(Installation installation) {
 		// Check if the values are the same as the old values
 
 		if (installation.Equals(Installation)) {

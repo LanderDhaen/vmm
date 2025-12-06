@@ -35,17 +35,7 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Result<MeasurementStationResponse.Detail> result = await StationService.GetDetailAsync(StationId);
-
-		if (result.IsSuccess) {
-			_station = result.Value.Station;
-		} else {
-			string message = result.Errors != null
-				? string.Join(Environment.NewLine, result.Errors)
-				: "Er is een fout opgetreden.";
-			Snackbar.Add(message, Severity.Error);
-		}
-
+		await RefreshStationDetails();
 		await RefreshProjects();		
 
 		// set breadcrumbs
@@ -80,6 +70,36 @@ public partial class Detail {
 		}
 	}
 	
+	private async Task OpenUpdateLocationDialogAsync() {
+		var parameters = new DialogParameters<UpdateLocationDialog> {
+			{ x => x.StationId, StationId },
+			{ x => x.LocationId, _station.Location.Id }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		var dialog = await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshStationDetails();
+		}
+	}
+	
+	private async Task OpenEditStationDialogAsync() {
+		var parameters = new DialogParameters<EditFormDialog> {
+			{ x => x.StationId, StationId },
+			{ x => x.Station, _station }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		var dialog = await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshStationDetails();
+		}
+	}
+	
 	private async Task RefreshProjects() {
 		Result<MeasurementStationResponse.ProjectList> projectsResult =
 			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
@@ -89,5 +109,18 @@ public partial class Detail {
 		}
 		
 		StateHasChanged();
+	}
+
+	private async Task RefreshStationDetails() {
+		Result<MeasurementStationResponse.Detail> result = await StationService.GetDetailAsync(StationId);
+
+		if (result.IsSuccess) {
+			_station = result.Value.Station;
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
 	}
 }
