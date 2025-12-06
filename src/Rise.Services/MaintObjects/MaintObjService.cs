@@ -9,6 +9,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
+using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 
@@ -97,16 +98,16 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjPlans
-			.FirstOrDefaultAsync(s => s.Name == request.MaintObjType.ToString(), ctx);
+		// TODO: Update the form to allow users to pick their own plan from the options in the db (if we have time)
 
-		if (type is null) {
+		MaintObjPlan? plan = await dbContext.MaintObjPlans
+			.FirstOrDefaultAsync(s => s.Name == "Standaard", ctx);
+
+		if (plan is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-
-		// TODO: Update the form (edit and create)
-
-		MaintObj mo = new(request.Name, request.SerialNumber, Domain.MaintObjects.MaintObjType.Battery, type, request.Brand, location);
+		
+		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand, location);
 
 		dbContext.MaintObjects.Add(mo);
 
@@ -177,14 +178,14 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("De locatie werd niet gevonden.");
 		}
 
-		Domain.MaintObjects.MaintObjPlan? type = await dbContext.MaintObjPlans
-			.FirstOrDefaultAsync(s => s.Name == req.MaintObjType.ToString(), ctx);
+		MaintObjPlan? plan = await dbContext.MaintObjPlans
+			.FirstOrDefaultAsync(s => s.Name == "Standaard", ctx);
 
-		if (type is null) {
+		if (plan is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		maintObj.Edit(req.Name, req.SerialNumber, type, req.Brand,
+		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand,
 			new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
 
 		await dbContext.SaveChangesAsync(ctx);
