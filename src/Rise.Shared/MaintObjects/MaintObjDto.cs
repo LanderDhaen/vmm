@@ -15,9 +15,7 @@ public static class MaintObjDto {
 		public required string SerialNumber { get; init; }
 		public required string? Brand { get; init; }
 		public required MaintObjType MaintObjType { get; init; }
-
 		public required MaintObjStatus MaintObjStatus { get; init; }
-
 		// Location name of the maintenance object (mirrors assigned station's location when assigned)
 		public required string Location { get; init; }
 	}
