@@ -481,24 +481,24 @@ public class DbSeeder(
 
 		foreach (MaintObj maintObj in maintObjs) {
 			if (maintObj.MaintObjStatus == MaintObjStatus.Broken) {
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} vervangen",
+				workOrders.Add(new WorkOrder("Vervanging",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is defect door waterschade",
 					Priority.High, maintObj));
 			}
 
 			if (maintObj.MaintObjStatus == MaintObjStatus.Active) {
 
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} onderhouden",
+				workOrders.Add(new WorkOrder("Onderhoud",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet onderhouden worden volgens onderhoudsplan",
 					Priority.Normal, maintObj));
 
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} kalibreren",
-					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet gekalibreerd worden volgens onderhoudsplan",
+				workOrders.Add(new WorkOrder("Kalibratie",
+					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} moet gekalibreerd worden volgens kalibratieplan",
 					Priority.Normal, maintObj));
 			}
 
 			if (maintObj.MaintObjStatus == MaintObjStatus.Inactive) {
-				workOrders.Add(new WorkOrder($"{maintObj.MaintObjPlan.Name} plaatsen",
+				workOrders.Add(new WorkOrder("Plaatsing",
 					$"{maintObj.Name} met serienummer {maintObj.SerialNumber} is geleverd en kan geplaatst worden",
 					Priority.Low, maintObj));
 			}

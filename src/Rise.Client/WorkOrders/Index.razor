@@ -38,9 +38,7 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
-	             SortMode="SortMode.Single"
-	             AllowUnsorted="false"
-	             ShowColumnOptions="false"
+	             SortMode="SortMode.None"
 	>
 
 		<Columns>
@@ -51,7 +49,11 @@
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
-			<PropertyColumn Property="x => x.MaintObj" Title="Onderhoudsobject" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObj" Title="Onderhoudsobject" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@MaintObjectUtility.TranslateType(context.Item.MaintObjType) @context.Item.MaintObj
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.Name" Title="Titel" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
@@ -138,7 +140,7 @@
 										</MudChip>
 									</MudStack>
 								</MudStack>
-								<MudText Typo="Typo.h6"><b>@item.MaintObj</b></MudText>
+								<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(item.MaintObjType) @item.MaintObj</b></MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
