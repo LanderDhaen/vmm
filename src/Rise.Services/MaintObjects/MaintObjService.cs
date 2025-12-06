@@ -6,6 +6,7 @@ using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.Identity;
 using Rise.Shared.Common;
+using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
@@ -116,50 +117,44 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		});
 	}
 
-	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId,
-		CancellationToken ct = default) {
-		MaintObj? maintObj = await dbContext.MaintObjects
-			.AsNoTracking()
-			.Include(d => d.Station)
-			.Include(d => d.MaintObjPlan)
-			.Include(d => d.Location)
-			.SingleOrDefaultAsync(d => d.Id == maintObjId, ct);
+	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId, CancellationToken ct = default) {
+		
+		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
+		
+		MaintObjDto.Detail? maintObj = await query
+			.Where(m => m.Id == maintObjId)
+			.Select(m => new MaintObjDto.Detail {
+				Id =  m.Id,
+				Name = m.Name,
+				SerialNumber = m.SerialNumber,
+				Brand = m.Brand,
+				MaintObjType = (SharedType)m.MaintObjType,
+				MaintObjStatus = (SharedStatus)m.MaintObjStatus,
+				Location = new LocationDto.Detail {
+					Id = m.Location.Id,
+					Name = m.Location.Name,
+					AddressLine1 = m.Location.Address.Addressline1,
+					AddressLine2 = m.Location.Address.Addressline2,
+					City = m.Location.Address.City,
+					PostalCode = m.Location.Address.PostalCode,
+					Country = m.Location.Address.CountryIso,
+					X = m.Location.Coordinate.X,
+					Y = m.Location.Coordinate.Y,
+				},
+				InstalledAt = m.Installation != null ? m.Installation.InstalledAt : null,
+				RemovedAt = m.Installation != null ? m.Installation.RemovedAt : null,
+				MaintenanceIntervalDays = m.MaintObjPlan.MaintenanceIntervalDays,
+				CalibrationIntervalDays = m.MaintObjPlan.CalibrationIntervalDays,
+				
+			}).SingleOrDefaultAsync(ct);
 
 		if (maintObj is null) {
-			return Result.NotFound();
+			return Result.NotFound($"Onderhoudsobject met Id '{maintObjId}' was niet gevonden.");
 		}
 
-		SharedType parsedType = SharedType.Sensor;
-
-		if (maintObj.MaintObjPlan?.Name is { } code && Enum.TryParse(code, out SharedType tmp)) {
-			parsedType = tmp;
-		}
-
-		DateTime? installedAtOpt = maintObj.Installation?.InstalledAt;
-		DateTime? nextMaintenance = null;
-		DateTime? nextCalibration = null;
-
-		if (installedAtOpt is DateTime installedAtValue && maintObj.MaintObjPlan is not null) {
-			nextMaintenance = installedAtValue.AddDays(maintObj.MaintObjPlan.MaintenanceIntervalDays);
-			nextCalibration = installedAtValue.AddDays(maintObj.MaintObjPlan.CalibrationIntervalDays);
-		}
-
-		MaintObjDto.Detail dto = new() {
-			Id = maintObj.Id,
-			Name = maintObj.Name,
-			SerialNumber = maintObj.SerialNumber,
-			MaintObjType = parsedType,
-			MaintObjStatus = (SharedStatus)maintObj.MaintObjStatus,
-			Brand = maintObj.Brand,
-			MeasurementStationCode = maintObj.Station?.Code,
-			Location = maintObj.Location?.Name ?? maintObj.Station?.Location.Name,
-			InstalledAt = installedAtOpt,
-			RemovedAt = maintObj.Installation?.RemovedAt,
-			NextMaintenanceDate = nextMaintenance,
-			NextCalibrationDate = nextCalibration
-		};
-
-		return Result.Success(new MaintObjResponse.Detail { MaintObj = dto });
+		return Result.Success(new MaintObjResponse.Detail {
+			MaintObj = maintObj
+		});
 	}
 
 	public async Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx = default) {
