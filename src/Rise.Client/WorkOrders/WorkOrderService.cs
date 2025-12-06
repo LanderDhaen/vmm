@@ -12,4 +12,17 @@ public class WorkOrderService(HttpClient httpClient) : IWorkOrderService {
 			await httpClient.GetFromJsonAsync<Result<WorkOrderResponse.Index>>($"/api/workorders?{req.AsQuery()}", ctx);
 		return result!;
 	}
+
+	public async Task<Result<WorkOrderResponse.Detail>> GetDetailAsync(
+		Guid workOrderId,
+		CancellationToken ctx = default
+	) {
+		Result<WorkOrderResponse.Detail>? result =
+			await httpClient.GetFromJsonAsync<Result<WorkOrderResponse.Detail>>(
+				$"/api/workorders/{workOrderId}",
+				ctx
+			);
+
+		return result!;
+	}
 }

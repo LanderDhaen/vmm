@@ -1,0 +1,117 @@
+@page "/workorders/{WorkOrderId:guid}"
+@using Rise.Shared.WorkOrders
+@using Rise.Shared.MaintObjects
+@using Rise.Client.Utils
+
+<PageTitle>Werkbon Details</PageTitle>
+
+@if (_workOrder is null)
+{
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	@* Tabs *@
+	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+		         @onclick="() => SetTab(0)">
+			@_tabs[0]
+		</MudText>
+
+		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+		         @onclick="() => SetTab(1)">
+			@_tabs[1]
+		</MudText>
+	</MudStack>
+
+	@switch (_selectedTab)
+	{
+		case 0:
+			<MudGrid Spacing="4" Class="mt-4">
+
+				@* Werkbon details *@
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6" Color="Color.Primary">@_workOrder.Name</MudText>
+									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+										<MudChip T="string"
+										         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
+										         Size="Size.Small"
+										         Variant="Variant.Outlined"
+										         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
+											@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
+										</MudChip>
+										<MudChip T="string"
+										         Size="Size.Small"
+										         Variant="Variant.Outlined"
+										         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
+											@WorkOrderUtility.TranslateStatus(_workOrder.Status)
+										</MudChip>
+									</MudStack>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
+							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
+							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* Onderhoudsobject *@
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6" Color="Color.Primary">Onderhoudsobject</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.OpenInNew"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@(() => NavigateToMaintObj(_workOrder.MaintObj.Id))">
+										Bekijk
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText Typo="Typo.subtitle2">
+								<b>@MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType) @_workOrder.MaintObj.Name</b>
+							</MudText>
+							<MudText><b>Serienummer:</b> @_workOrder.MaintObj.SerialNumber</MudText>
+							<MudText><b>Merk:</b> @(_workOrder.MaintObj.Brand ?? "-")</MudText>
+							<MudText><b>Locatie:</b> @_workOrder.MaintObj.Location</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* Beschrijving *@
+				<MudItem xs="12">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudText Typo="Typo.h6" Color="Color.Primary">Beschrijving</MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText Style="white-space: pre-wrap;">@_workOrder.Description</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+			</MudGrid>
+			break;
+
+		case 1:
+			<div>Historiek?</div>
+			break;
+	}
+}

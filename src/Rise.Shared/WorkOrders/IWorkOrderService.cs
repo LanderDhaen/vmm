@@ -11,4 +11,9 @@ public interface IWorkOrderService {
 		CancellationToken ctx = default
 	);
 
+	Task<Result<WorkOrderResponse.Detail>> GetDetailAsync(
+		Guid workOrderId,
+		CancellationToken ctx = default
+	);
+
 }
