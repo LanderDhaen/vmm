@@ -34,11 +34,13 @@ public class MaintObj : Entity {
 
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
+		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.InstalledAt);
 		Location = station.Location;
 		SetStatus(MaintObjStatus.Active);
 	}
 
 	public void UnassignFromStation() {
+		Installation = null;
 		Station = null;
 	}
 
