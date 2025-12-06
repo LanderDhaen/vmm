@@ -56,9 +56,9 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
-							<MudText><b>Merk:</b> @(_maintObj.Brand)</MudText>
-							<MudText><b>Geïnstalleerd:</b> @(_maintObj.InstalledAt)</MudText>
-							<MudText><b>Verwijderd:</b> @(_maintObj.RemovedAt)</MudText>
+							<MudText><b>Merk:</b> @(_maintObj.Brand?? "-")</MudText>
+							<MudText><b>Geïnstalleerd:</b> @MaintObjectUtility.ToLongInstalledAt(_maintObj.InstalledAt)</MudText>
+							<MudText><b>Verwijderd:</b> @MaintObjectUtility.ToLongRemovedAt(_maintObj.RemovedAt)</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
