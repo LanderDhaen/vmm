@@ -36,7 +36,7 @@ public partial class Detail {
 
 	protected override async Task OnInitializedAsync() {
 		await RefreshStationDetails();
-		await RefreshProjects();		
+		await RefreshProjects();
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
@@ -54,7 +54,7 @@ public partial class Detail {
 			}
 		);
 	}
-	
+
 	private async Task OpenDialogAsync() {
 		var parameters = new DialogParameters<UpdateProjectListDialog> {
 			{ x => x.StationId, StationId },
@@ -69,7 +69,7 @@ public partial class Detail {
 			await RefreshProjects();
 		}
 	}
-	
+
 	private async Task OpenUpdateLocationDialogAsync() {
 		var parameters = new DialogParameters<UpdateLocationDialog> {
 			{ x => x.StationId, StationId },
@@ -84,7 +84,7 @@ public partial class Detail {
 			await RefreshStationDetails();
 		}
 	}
-	
+
 	private async Task OpenEditStationDialogAsync() {
 		var parameters = new DialogParameters<EditFormDialog> {
 			{ x => x.StationId, StationId },
@@ -99,7 +99,7 @@ public partial class Detail {
 			await RefreshStationDetails();
 		}
 	}
-	
+
 	private async Task RefreshProjects() {
 		Result<MeasurementStationResponse.ProjectList> projectsResult =
 			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
@@ -107,7 +107,7 @@ public partial class Detail {
 		if (projectsResult.IsSuccess) {
 			_projectsFromStation = projectsResult.Value.Projects;
 		}
-		
+
 		StateHasChanged();
 	}
 

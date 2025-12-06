@@ -20,7 +20,7 @@ public partial class UpdateProjectListDialog {
 	// Form
 	private readonly ProjectRequest.Create.Validator _validator = new();
 	private Result<ProjectResponse.Create>? _createResult;
-	private MudForm _form;
+	private readonly MudForm _form;
 
 	private ProjectRequest.Create CreateModel { get; } = new();
 

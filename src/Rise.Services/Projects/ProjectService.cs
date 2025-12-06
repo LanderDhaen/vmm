@@ -107,10 +107,10 @@ public class ProjectService(ApplicationDbContext dbContext)
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
-		
+
 		// Only get active projects
 		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string status &&
-		    status.Equals("Active")) {
+			status.Equals("Active")) {
 			query = query.Where(p => p.Status == Status.Actief);
 		}
 
