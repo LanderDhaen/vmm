@@ -1,5 +1,6 @@
 @page "/maintobjects"
 @using Rise.Client.Components
+@using Rise.Client.Components.MaintObjects
 @using Rise.Shared.MaintObjects
 <PageTitle>Onderhoudsobjecten</PageTitle>
 
@@ -41,15 +42,19 @@
 	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#"
-			                HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@MaintObjectUtility.TranslateType(context.Item.MaintObjType)
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.Brand" Title="Merk" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
 					         Color="@(MaintObjectUtility.DefineStatusColor(context.Item.MaintObjStatus))">
-						@context.Item.MaintObjStatus
+						@MaintObjectUtility.TranslateStatus(context.Item.MaintObjStatus)
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
@@ -59,7 +64,7 @@
 		</Columns>
 
 		<PagerContent>
-			<Pagination T="MaintObjDto.Index"></Pagination>
+			<Pagination T="MaintObjDto.Index" />
 		</PagerContent>
 
 	</MudDataGrid>
@@ -113,24 +118,7 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2"
-					         Class="rounded-lg"
-					         @onclick="() => NavigateToMaintObj(item.Id)">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween"
-								          Class="pr-3">
-									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.SerialNumber</b>
-									</MudText>
-									<MudBadge Color="@(MaintObjectUtility.DefineStatusColor(item.MaintObjStatus))" Dot="true"></MudBadge>
-								</MudStack>
-								<MudText Typo="Typo.h6">@item.Name</MudText>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Onderhoudsobject: </b> @item.MaintObjType</MudText>
-						</MudCardContent>
-					</MudCard>
+					<MaintObjCard MaintObj="item"/>
 				</MudItem>
 			}
 		}

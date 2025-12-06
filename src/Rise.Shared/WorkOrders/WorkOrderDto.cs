@@ -1,3 +1,5 @@
+using Rise.Shared.MaintObjects;
+
 namespace Rise.Shared.WorkOrders;
 
 /// <summary>
@@ -12,6 +14,8 @@ public static class WorkOrderDto {
 		public required Priority Priority { get; init; }
 		public required string Name { get; init; }
 		public required string MaintObj { get; init; }
+
+		public required MaintObjType MaintObjType { get; init; }
 		public required string? Technician { get; init; }
 		public required WorkOrderStatus Status { get; init; }
 		public required DateOnly? StartDate { get; init; }

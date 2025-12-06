@@ -42,7 +42,7 @@ public partial class Edit {
 				Brand = maintObj.Value.MaintObj.Brand,
 				InstalledAt = maintObj.Value.MaintObj.InstalledAt,
 				RemovedAt = maintObj.Value.MaintObj.RemovedAt,
-				LocationId = maintObj.Value.MaintObj.LocationId
+				LocationId = maintObj.Value.MaintObj.Location.Id
 			};
 		}
 

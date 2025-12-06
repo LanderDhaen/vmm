@@ -34,7 +34,7 @@ public partial class Detail {
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 	private bool IsActive => _project?.Status == Status.Actief;
 
-	private void SetTabAsync(int index) {
+	private void SetTab(int index) {
 		_selectedTab = index;
 	}
 

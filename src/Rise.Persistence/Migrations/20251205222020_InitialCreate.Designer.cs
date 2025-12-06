@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251203142629_InitialCreate")]
+    [Migration("20251205222020_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -315,17 +315,20 @@ namespace Rise.Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsInStock")
-                        .HasColumnType("bit");
+                    b.Property<Guid?>("LastScannedById")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("LocationId")
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MaintObjPlanId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("MaintObjStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("MaintObjTypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("MaintObjType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -340,9 +343,6 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid?>("StationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TechnicianId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -350,18 +350,18 @@ namespace Rise.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LastScannedById");
+
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("MaintObjTypeId");
+                    b.HasIndex("MaintObjPlanId");
 
                     b.HasIndex("StationId");
-
-                    b.HasIndex("TechnicianId");
 
                     b.ToTable("MaintObj", (string)null);
                 });
 
-            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -369,11 +369,6 @@ namespace Rise.Persistence.Migrations
 
                     b.Property<int>("CalibrationIntervalDays")
                         .HasColumnType("int");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -400,67 +395,7 @@ namespace Rise.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("MaintObjType", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            CalibrationIntervalDays = 21,
-                            Code = "Sonde",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            MaintenanceIntervalDays = 14,
-                            Name = "Sonde",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            CalibrationIntervalDays = 97,
-                            Code = "Logger",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            MaintenanceIntervalDays = 90,
-                            Name = "Logger",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            CalibrationIntervalDays = 187,
-                            Code = "Modem",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            MaintenanceIntervalDays = 180,
-                            Name = "Modem",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            CalibrationIntervalDays = 372,
-                            Code = "Sim",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            MaintenanceIntervalDays = 365,
-                            Name = "SIM",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                            CalibrationIntervalDays = 372,
-                            Code = "Voeding",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            MaintenanceIntervalDays = 365,
-                            Name = "Voeding",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
+                    b.ToTable("MaintObjPlan", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
@@ -898,14 +833,20 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
                 {
+                    b.HasOne("Rise.Domain.Projects.Technician", "LastScannedBy")
+                        .WithMany()
+                        .HasForeignKey("LastScannedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Rise.Domain.Locations.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Rise.Domain.MaintObjects.MaintObjType", "MaintObjType")
-                        .WithMany("MaintObjects")
-                        .HasForeignKey("MaintObjTypeId")
+                    b.HasOne("Rise.Domain.MaintObjects.MaintObjPlan", "MaintObjPlan")
+                        .WithMany()
+                        .HasForeignKey("MaintObjPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -913,10 +854,6 @@ namespace Rise.Persistence.Migrations
                         .WithMany("MaintObjects")
                         .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Rise.Domain.Projects.Technician", "Technician")
-                        .WithMany()
-                        .HasForeignKey("TechnicianId");
 
                     b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
                         {
@@ -941,13 +878,13 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("Installation");
 
+                    b.Navigation("LastScannedBy");
+
                     b.Navigation("Location");
 
-                    b.Navigation("MaintObjType");
+                    b.Navigation("MaintObjPlan");
 
                     b.Navigation("Station");
-
-                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>
@@ -1188,11 +1125,6 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("MaintObj");
 
                     b.Navigation("Technician");
-                });
-
-            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjType", b =>
-                {
-                    b.Navigation("MaintObjects");
                 });
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>

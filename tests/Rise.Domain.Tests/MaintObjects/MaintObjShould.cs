@@ -23,77 +23,69 @@ public class MaintObjShould {
 		return new Technician("John", "Doe", "account-1");
 	}
 
-	private static MaintObjType MakeType(string code = "Sonde", string name = "Sonde") {
-		return new MaintObjType(Guid.NewGuid(), code, name, 30, 180);
+	private static MaintObjPlan MakeType(string code = "Sonde", string name = "Sonde") {
+		return new MaintObjPlan(name, 30, 180);
 	}
 
 	[Fact]
 	public void BeCreatedWithExpectedDefaults() {
-		MaintObjType type = MakeType();
+		MaintObjPlan plan = MakeType();
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", type, "BrandX", null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, plan, "BrandX", location);
 
 		mo.Name.ShouldBe("Sensor-1");
 		mo.SerialNumber.ShouldBe("SN-123");
-		mo.MaintObjType.ShouldBe(type);
+		mo.MaintObjPlan.ShouldBe(plan);
 		mo.Brand.ShouldBe("BrandX");
-		mo.IsInStock.ShouldBeTrue();
 		mo.Location.ShouldBe(location);
 		mo.Station.ShouldBeNull();
-		mo.Technician.ShouldBeNull();
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
+		mo.LastScannedBy.ShouldBeNull();
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactive);
 	}
 
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 		MeasurementStation station = MakeStation("STN-100");
 
 		mo.AssignToStation(station);
 
 		mo.Station.ShouldBe(station);
 		mo.Station!.Id.ShouldBe(station.Id);
-		mo.IsInStock.ShouldBeFalse();
 		mo.Location.ShouldBe(station.Location);
 
 		mo.UnassignFromStation();
 
 		mo.Station.ShouldBeNull();
-		mo.IsInStock.ShouldBeTrue();
 	}
 
 	[Fact]
 	public void RecordAndClearTechnician() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 		Technician tech = MakeTechnician();
 
-		mo.RecordTechnician(tech);
-
-		mo.Technician.ShouldBe(tech);
-
-		mo.ClearTechnician();
-
-		mo.Technician.ShouldBeNull();
+		mo.ScanBy(tech);
+		mo.LastScannedBy.ShouldBe(tech);
 	}
 
 	[Fact]
 	public void AllowChangingStatus() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MakeType(), null, null, true, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 
-		mo.SetStatus(MaintObjStatus.Defect);
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Defect);
+		mo.SetStatus(MaintObjStatus.Broken);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Broken);
 
-		mo.SetStatus(MaintObjStatus.Inactief);
-		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactief);
+		mo.SetStatus(MaintObjStatus.Inactive);
+		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactive);
 	}
 
 	[Fact]
 	public void ConstructorGuardsAgainstInvalidArguments() {
 		Location location = MakeLocation();
-		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MakeType(), null, null, true, location));
-		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MakeType(), null, null, true, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("", "SN-1", MaintObjType.Sensor, MakeType(), null, location));
+		Should.Throw<ArgumentException>(() => new MaintObj("Name", "", MaintObjType.Sensor, MakeType(), null, location));
 	}
 }
