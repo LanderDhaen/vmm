@@ -393,7 +393,7 @@ public class DbSeeder(
 			new MaintObjPlan("Standaard", 14, 56),
 			new MaintObjPlan("Langer", 21, 84)
 		};
-		
+
 		dbContext.MaintObjPlans.AddRange(maintObjPlans);
 		await dbContext.SaveChangesAsync();
 	}
@@ -405,9 +405,9 @@ public class DbSeeder(
 
 		List<MaintObjPlan> plans = await dbContext.MaintObjPlans.ToListAsync();
 		List<Location> stockLocations = await dbContext.Locations.Where(x => x.IsStockLocation).ToListAsync();
-		
+
 		// Adding devices to one of the stations in Aalst
-		
+
 		List<MaintObj> maintObjsAalst = new()
 		{
 			new MaintObj("BT1000", "48291", MaintObjType.Battery, plans[0], null, stockLocations[0]),
@@ -418,16 +418,16 @@ public class DbSeeder(
 		};
 
 		MeasurementStation stationAalst = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Zeebergbrug").FirstAsync();
-		
+
 		foreach (MaintObj maintObj in maintObjsAalst) {
 			maintObj.AssignToStation(stationAalst);
-			if (maintObj.MaintObjType == MaintObjType.Battery ||  maintObj.MaintObjType == MaintObjType.Logger) {
+			if (maintObj.MaintObjType == MaintObjType.Battery || maintObj.MaintObjType == MaintObjType.Logger) {
 				maintObj.SetStatus(MaintObjStatus.Broken);
 			}
 		}
-		
+
 		dbContext.MaintObjects.AddRange(maintObjsAalst);
-		
+
 		// Adding devices to one of the stations in Gent
 
 		List<MaintObj> maintObjsGent = new() {
@@ -437,18 +437,18 @@ public class DbSeeder(
 			new MaintObj("SM1200", "34527", MaintObjType.Sim, plans[0], null, stockLocations[1]),
 			new MaintObj("CT9300", "76094", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[1]),
 		};
-		
+
 		MeasurementStation stationGent = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Duikplaats Blaarmeersen").FirstAsync();
-		
+
 		foreach (MaintObj maintObj in maintObjsGent) {
 			maintObj.AssignToStation(stationGent);
 			if (maintObj.MaintObjType == MaintObjType.Modem) {
 				maintObj.SetStatus(MaintObjStatus.Broken);
 			}
 		}
-		
+
 		dbContext.MaintObjects.AddRange(maintObjsGent);
-		
+
 		// Adding devices to the stock in Antwerpen
 
 		List<MaintObj> maintObjsAntwerpen = new() {
@@ -458,13 +458,13 @@ public class DbSeeder(
 			new MaintObj("SM1200", "87962", MaintObjType.Sim, plans[0], null, stockLocations[2]),
 			new MaintObj("CT9300", "50736", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[2]),
 		};
-		
+
 		dbContext.MaintObjects.AddRange(maintObjsAntwerpen);
-		
+
 		// Saving changes
-		
+
 		await dbContext.SaveChangesAsync();
-		
+
 	}
 
 	private async Task WorkOrdersAsync() {

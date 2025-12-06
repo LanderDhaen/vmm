@@ -9,8 +9,8 @@ using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
-using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
+using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.MaintObjects;
 
@@ -28,7 +28,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		int totalCount = await query.CountAsync(ctx);
-		
+
 		// Sorting
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
@@ -57,13 +57,13 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		} else {
 			query = query.OrderBy(d => d.Id);
 		}
-		
+
 		// Paginating
 
 		query = query
 			.Skip(req.Skip)
 			.Take(req.Take);
-		
+
 		// Selecting
 
 		List<MaintObjDto.Index> maintObjects = await query
@@ -103,10 +103,10 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		if (type is null) {
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
-		
+
 		// TODO: Update the form (edit and create)
-		
-		MaintObj mo = new(request.Name, request.SerialNumber, Domain.MaintObjects.MaintObjType.Battery , type, request.Brand, location);
+
+		MaintObj mo = new(request.Name, request.SerialNumber, Domain.MaintObjects.MaintObjType.Battery, type, request.Brand, location);
 
 		dbContext.MaintObjects.Add(mo);
 
@@ -118,13 +118,13 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	}
 
 	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId, CancellationToken ct = default) {
-		
+
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
-		
+
 		MaintObjDto.Detail? maintObj = await query
 			.Where(m => m.Id == maintObjId)
 			.Select(m => new MaintObjDto.Detail {
-				Id =  m.Id,
+				Id = m.Id,
 				Name = m.Name,
 				SerialNumber = m.SerialNumber,
 				Brand = m.Brand,
@@ -145,7 +145,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				RemovedAt = m.Installation != null ? m.Installation.RemovedAt : null,
 				MaintenanceIntervalDays = m.MaintObjPlan.MaintenanceIntervalDays,
 				CalibrationIntervalDays = m.MaintObjPlan.CalibrationIntervalDays,
-				
+
 			}).SingleOrDefaultAsync(ct);
 
 		if (maintObj is null) {

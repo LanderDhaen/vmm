@@ -46,7 +46,7 @@ public class MaintObjShould {
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor , MakeType(), null, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 		MeasurementStation station = MakeStation("STN-100");
 
 		mo.AssignToStation(station);
@@ -63,7 +63,7 @@ public class MaintObjShould {
 	[Fact]
 	public void RecordAndClearTechnician() {
 		Location location = MakeLocation();
-		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor,MakeType(), null, location);
+		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 		Technician tech = MakeTechnician();
 
 		mo.ScanBy(tech);

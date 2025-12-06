@@ -9,7 +9,7 @@ namespace Rise.Domain.MaintObjects;
 public class MaintObj : Entity {
 	private MaintObj() { }
 
-	public MaintObj(string name, string serialNumber, MaintObjType maintObjType ,MaintObjPlan maintObjPlan, string? brand, Location location) {
+	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, MaintObjPlan maintObjPlan, string? brand, Location location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjType = Guard.Against.Null(maintObjType);
@@ -21,7 +21,7 @@ public class MaintObj : Entity {
 	public string Name { get; private set; }
 	public string SerialNumber { get; private set; }
 	public string? Brand { get; private set; }
-	
+
 	public MaintObjType MaintObjType { get; private set; }
 	public MaintObjStatus MaintObjStatus { get; private set; } = MaintObjStatus.Inactive;
 	public MaintObjPlan MaintObjPlan { get; private set; }
@@ -48,7 +48,7 @@ public class MaintObj : Entity {
 	public void ScanBy(Technician technician) {
 		LastScannedBy = Guard.Against.Null(technician);
 	}
-	
+
 
 	public void SetStatus(MaintObjStatus status) {
 		MaintObjStatus = status;

@@ -8,7 +8,7 @@ public class MaintObjPlan : Entity {
 		MaintenanceIntervalDays = Guard.Against.NegativeOrZero(maintenanceIntervalDays);
 		CalibrationIntervalDays = Guard.Against.NegativeOrZero(calibrationIntervalDays);
 	}
-	
+
 	public string Name { get; private set; }
 	public int MaintenanceIntervalDays { get; private set; }
 	public int CalibrationIntervalDays { get; private set; }

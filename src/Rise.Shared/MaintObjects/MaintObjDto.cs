@@ -13,7 +13,7 @@ public static class MaintObjDto {
 		public required Guid Id { get; init; }
 		public required string Name { get; init; }
 		public required string SerialNumber { get; init; }
-		public required string? Brand { get; init; } 
+		public required string? Brand { get; init; }
 		public required MaintObjType MaintObjType { get; init; }
 
 		public required MaintObjStatus MaintObjStatus { get; init; }
@@ -32,11 +32,11 @@ public static class MaintObjDto {
 		public required string? Brand { get; init; }
 		public required MaintObjType MaintObjType { get; init; }
 		public required MaintObjStatus MaintObjStatus { get; init; }
-		
+
 		public required LocationDto.Detail Location { get; init; }
 		public required DateTime? InstalledAt { get; init; }
 		public required DateTime? RemovedAt { get; init; }
-		public required int MaintenanceIntervalDays {get; init; }
-		public required int CalibrationIntervalDays {get; init; }
+		public required int MaintenanceIntervalDays { get; init; }
+		public required int CalibrationIntervalDays { get; init; }
 	}
 }

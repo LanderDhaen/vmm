@@ -1,4 +1,5 @@
 using MudBlazor;
+
 using Rise.Shared.MaintObjects;
 
 namespace Rise.Client.Utils;

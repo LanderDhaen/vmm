@@ -5,9 +5,9 @@ using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
 
+using SharedMainObjType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedPriority = Rise.Shared.WorkOrders.Priority;
 using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
-using SharedMainObjType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.WorkOrders;
 
@@ -37,7 +37,7 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 				Id = p.Id,
 				Name = p.Name,
 				MaintObj = p.MaintObj.Name,
-				MaintObjType =  (SharedMainObjType)p.MaintObj.MaintObjType,
+				MaintObjType = (SharedMainObjType)p.MaintObj.MaintObjType,
 				Status = (SharedStatus)p.Status,
 				Priority = (SharedPriority)p.Priority,
 				StartDate = p.DateRange != null ? p.DateRange.StartDate : null,
