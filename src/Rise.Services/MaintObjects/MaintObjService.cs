@@ -8,7 +8,7 @@ using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
-using MaintObjType = Rise.Shared.MaintObjects.MaintObjType;
+using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 
 namespace Rise.Services.MaintObjects;
@@ -24,17 +24,19 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	: IMaintObjService {
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable();
+		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		int totalCount = await query.CountAsync(ctx);
+		
+		// Sorting
 
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			query = req.OrderBy switch {
 				nameof(MaintObj.MaintObjPlan)
 					=> desc
-						? query.OrderByDescending(d => d.MaintObjPlan!.Name)
-						: query.OrderBy(d => d.MaintObjPlan!.Name),
+						? query.OrderByDescending(d => d.MaintObjPlan.Name)
+						: query.OrderBy(d => d.MaintObjPlan.Name),
 
 
 				nameof(MaintObj.MaintObjStatus)
@@ -44,8 +46,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 				nameof(MaintObj.Location)
 					=> desc
-						? query.OrderByDescending(d => d.Location!.Name)
-						: query.OrderBy(d => d.Location!.Name),
+						? query.OrderByDescending(d => d.Location.Name)
+						: query.OrderBy(d => d.Location.Name),
 
 				_ => desc
 					? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
@@ -54,44 +56,25 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		} else {
 			query = query.OrderBy(d => d.Id);
 		}
+		
+		// Paginating
 
-		IQueryable<MaintObj> page = query
-			.AsNoTracking()
-			.Include(mo => mo.MaintObjPlan)
-			.Include(mo => mo.Station)
-			.Include(mo => mo.Location)
+		query = query
 			.Skip(req.Skip)
 			.Take(req.Take);
+		
+		// Selecting
 
-		var raw = await page
-			.Select(mo => new {
-				mo.Id,
-				mo.Name,
-				mo.SerialNumber,
-				MaintObjTypeCode = mo.MaintObjPlan != null ? mo.MaintObjPlan.Name : null,
-				mo.MaintObjStatus,
-				LocationName = mo.Location != null ? mo.Location.Name :
-					mo.Station != null ? mo.Station.Location.Name : null
-			})
-			.ToListAsync(ctx);
-
-		List<MaintObjDto.Index> maintObjects = raw.Select(mo => {
-			// safe parse of type code to shared enum
-			MaintObjType parsedType = MaintObjType.Sonde;
-			if (mo.MaintObjTypeCode is not null &&
-				Enum.TryParse(mo.MaintObjTypeCode, out MaintObjType tmp)) {
-				parsedType = tmp;
-			}
-
-			return new MaintObjDto.Index {
-				Id = mo.Id,
-				Name = mo.Name,
-				SerialNumber = mo.SerialNumber,
-				MaintObjType = parsedType,
-				MaintObjStatus = (SharedStatus)mo.MaintObjStatus,
-				Location = mo.LocationName ?? string.Empty
-			};
-		}).ToList();
+		List<MaintObjDto.Index> maintObjects = await query
+			.Select(m => new MaintObjDto.Index {
+				Id = m.Id,
+				Name = m.Name,
+				SerialNumber = m.SerialNumber,
+				Brand = m.Brand,
+				MaintObjType = (SharedType)m.MaintObjType,
+				MaintObjStatus = (SharedStatus)m.MaintObjStatus,
+				Location = m.Location.Name,
+			}).ToListAsync(ctx);
 
 		return Result.Success(new MaintObjResponse.Index {
 			MaintObjects = maintObjects,
@@ -146,9 +129,9 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound();
 		}
 
-		MaintObjType parsedType = MaintObjType.Sonde;
+		SharedType parsedType = SharedType.Sensor;
 
-		if (maintObj.MaintObjPlan?.Name is { } code && Enum.TryParse(code, out MaintObjType tmp)) {
+		if (maintObj.MaintObjPlan?.Name is { } code && Enum.TryParse(code, out SharedType tmp)) {
 			parsedType = tmp;
 		}
 

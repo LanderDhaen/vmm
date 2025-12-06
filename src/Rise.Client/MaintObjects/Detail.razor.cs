@@ -28,7 +28,7 @@ public partial class Detail {
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = null!;
 	[Inject] private IDialogService DialogService { get; set; } = null!;
-	private bool IsActive => _maintObj?.MaintObjStatus == MaintObjStatus.Actief;
+	private bool IsActive => _maintObj?.MaintObjStatus == MaintObjStatus.Active;
 
 	private void SetTab(int index) {
 		_selectedTab = index;
