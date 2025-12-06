@@ -42,6 +42,7 @@ public class MaintObj : Entity {
 	public void UnassignFromStation() {
 		Installation = null;
 		Station = null;
+		SetStatus(MaintObjStatus.Inactive);
 	}
 
 	public void ScanBy(Technician technician) {
