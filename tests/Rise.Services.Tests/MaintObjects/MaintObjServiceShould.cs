@@ -3,11 +3,14 @@ using Ardalis.Result;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.MaintObjects;
 using Rise.Services.Tests.Common;
 using Rise.Shared.MaintObjects;
+
+using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Tests.MaintObjects;
 
@@ -43,17 +46,30 @@ public class MaintObjServiceShould {
 	public async Task GetBySerialAsync_ShouldReturnMaintObj_WhenSerialExists() {
 		using ApplicationDbContext db = DbContextFactory.CreateContext(out SqliteConnection connection);
 
-		var type = await db.MaintObjTypes.FirstAsync();
+		var plan = new MaintObjPlan(
+			name: "Test Plan",
+			maintenanceIntervalDays: 30,
+			calibrationIntervalDays: 60
+		);
+
+		Location location = new(
+			"TestLoc",
+			new Address("Street 1", "Bus 2", "City", "1234"),
+			new Coordinate(4.35, 50.85)
+		);
+
+		db.MaintObjPlans.Add(plan);
+		db.Locations.Add(location);
+		await db.SaveChangesAsync();
 
 		var serial = $"ABC-{Guid.NewGuid():N}";
 		var mo = new MaintObj(
 			name: "Test Device",
 			serialNumber: serial,
-			maintObjType: type,
+			MaintObjType.Sensor,
+			maintObjPlan: plan,
 			brand: "RiseBrand",
-			installation: null,
-			isInStock: true,
-			location: null
+			location: location
 		);
 
 		db.MaintObjects.Add(mo);
@@ -71,4 +87,7 @@ public class MaintObjServiceShould {
 
 		connection.Close();
 	}
+
+
+
 }

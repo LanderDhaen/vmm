@@ -7,6 +7,7 @@ using Rise.Domain.MaintObjects;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
+using Rise.Domain.WorkOrders;
 
 namespace Rise.Persistence;
 
@@ -28,7 +29,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 	public DbSet<Technician> Technicians => Set<Technician>();
 	public DbSet<MeasurementStation> MeasurementStations => Set<MeasurementStation>();
 	public DbSet<MaintObj> MaintObjects => Set<MaintObj>();
-	public DbSet<MaintObjType> MaintObjTypes => Set<MaintObjType>();
+	public DbSet<MaintObjPlan> MaintObjPlans => Set<MaintObjPlan>();
+	public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) {
 		// All columns in the database have a maxlength of 4000.
