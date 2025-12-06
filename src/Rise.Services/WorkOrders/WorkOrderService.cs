@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Rise.Domain.WorkOrders;
 using Rise.Persistence;
 using Rise.Shared.Common;
+using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 using Rise.Shared.WorkOrders;
 
@@ -27,13 +28,11 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		int totalCount = await query.CountAsync(ctx);
 
 		// Paginating
-
 		query = query
 			.Skip(req.Skip)
 			.Take(req.Take);
 
 		// Selecting
-
 		List<WorkOrderDto.Index> workOrders = await query
 			.Select(p => new WorkOrderDto.Index {
 				Id = p.Id,
@@ -80,6 +79,22 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 					MaintObjType = (SharedMainObjType)w.MaintObj.MaintObjType,
 					MaintObjStatus = (SharedMaintObjStatus)w.MaintObj.MaintObjStatus,
 					Location = w.MaintObj.Location.Name
+				},
+
+				StationCode = w.MaintObj.Station != null
+					? w.MaintObj.Station.Code
+					: null,
+
+				Location = new LocationDto.Detail {
+					Id = w.MaintObj.Location.Id,
+					Name = w.MaintObj.Location.Name,
+					AddressLine1 = w.MaintObj.Location.Address.Addressline1,
+					AddressLine2 = w.MaintObj.Location.Address.Addressline2,
+					City = w.MaintObj.Location.Address.City,
+					PostalCode = w.MaintObj.Location.Address.PostalCode,
+					Country = w.MaintObj.Location.Address.CountryIso,
+					X = w.MaintObj.Location.Coordinate.X,
+					Y = w.MaintObj.Location.Coordinate.Y,
 				}
 			})
 			.FirstOrDefaultAsync(ctx);

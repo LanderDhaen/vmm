@@ -2,6 +2,7 @@
 @using Rise.Shared.WorkOrders
 @using Rise.Shared.MaintObjects
 @using Rise.Client.Utils
+@using Rise.Client.Components.Locations
 
 <PageTitle>Werkbon Details</PageTitle>
 
@@ -30,81 +31,94 @@ else
 	{
 		case 0:
 			<MudGrid Spacing="4" Class="mt-4">
-
-				@* Werkbon details *@
+				
 				<MudItem xs="12" md="6">
-					<MudCard Elevation="2" Class="rounded-lg">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.h6" Color="Color.Primary">@_workOrder.Name</MudText>
-									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-										<MudChip T="string"
-										         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
-										         Size="Size.Small"
-										         Variant="Variant.Outlined"
-										         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
-											@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
-										</MudChip>
-										<MudChip T="string"
-										         Size="Size.Small"
-										         Variant="Variant.Outlined"
-										         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
-											@WorkOrderUtility.TranslateStatus(_workOrder.Status)
-										</MudChip>
+					<MudStack Spacing="4">
+						
+						<MudCard Elevation="2" Class="rounded-lg">
+							<MudCardHeader>
+								<CardHeaderContent>
+									<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+										<MudText Typo="Typo.h6" Color="Color.Primary">@_workOrder.Name</MudText>
+										<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+											<MudChip T="string"
+											         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
+											         Size="Size.Small"
+											         Variant="Variant.Outlined"
+											         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
+												@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
+											</MudChip>
+											<MudChip T="string"
+											         Size="Size.Small"
+											         Variant="Variant.Outlined"
+											         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
+												@WorkOrderUtility.TranslateStatus(_workOrder.Status)
+											</MudChip>
+										</MudStack>
 									</MudStack>
-								</MudStack>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent>
-							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
-							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
-							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>
-						</MudCardContent>
-					</MudCard>
-				</MudItem>
+									
+									@if (!string.IsNullOrWhiteSpace(_workOrder.StationCode))
+									{
+										<MudText Typo="Typo.subtitle2" Class="mt-1">
+											<b>Station:</b> @_workOrder.StationCode
+										</MudText>
+									}
+								</CardHeaderContent>
+							</MudCardHeader>
 
-				@* Onderhoudsobject *@
+							<MudCardContent>
+								<MudText Typo="Typo.subtitle1" Class="mb-2">
+									<b>Beschrijving</b>
+								</MudText>
+								
+								<MudText Style="white-space: pre-wrap;">@_workOrder.Description</MudText>
+							</MudCardContent>
+						</MudCard>
+						
+						<LocationCard Location="_workOrder.Location" ShowMoveButton="false" />
+					</MudStack>
+				</MudItem>
 				<MudItem xs="12" md="6">
-					<MudCard Elevation="2" Class="rounded-lg">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.h6" Color="Color.Primary">Onderhoudsobject</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.OpenInNew"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           OnClick="@(() => NavigateToMaintObj(_workOrder.MaintObj.Id))">
-										Bekijk
-									</MudButton>
-								</MudStack>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent>
-							<MudText Typo="Typo.subtitle2">
-								<b>@MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType) @_workOrder.MaintObj.Name</b>
-							</MudText>
-							<MudText><b>Serienummer:</b> @_workOrder.MaintObj.SerialNumber</MudText>
-							<MudText><b>Merk:</b> @(_workOrder.MaintObj.Brand ?? "-")</MudText>
-							<MudText><b>Locatie:</b> @_workOrder.MaintObj.Location</MudText>
-						</MudCardContent>
-					</MudCard>
-				</MudItem>
+					<MudStack Spacing="4">
+						<MudCard Elevation="2" Class="rounded-lg">
+							<MudCardHeader>
+								<CardHeaderContent>
+									<MudText Typo="Typo.h6" Color="Color.Primary">Werkbon details</MudText>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent>
+								<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
+								<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
+								<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>
+							</MudCardContent>
+						</MudCard>
+						<MudCard Elevation="2" Class="rounded-lg">
+							<MudCardHeader>
+								<CardHeaderContent>
+									<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+										<MudText Typo="Typo.h6" Color="Color.Primary">Onderhoudsobject</MudText>
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.OpenInNew"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@(() => NavigateToMaintObj(_workOrder.MaintObj.Id))">
+											Bekijk
+										</MudButton>
+									</MudStack>
+								</CardHeaderContent>
+							</MudCardHeader>
+							<MudCardContent>
+								<MudText Typo="Typo.subtitle2">
+									<b>@MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType) @_workOrder.MaintObj.Name</b>
+								</MudText>
+								<MudText><b>Serienummer:</b> @_workOrder.MaintObj.SerialNumber</MudText>
+								<MudText><b>Merk:</b> @(_workOrder.MaintObj.Brand ?? "-")</MudText>
+								<MudText><b>Locatie:</b> @_workOrder.MaintObj.Location</MudText>
+							</MudCardContent>
+						</MudCard>
 
-				@* Beschrijving *@
-				<MudItem xs="12">
-					<MudCard Elevation="2" Class="rounded-lg">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudText Typo="Typo.h6" Color="Color.Primary">Beschrijving</MudText>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent>
-							<MudText Style="white-space: pre-wrap;">@_workOrder.Description</MudText>
-						</MudCardContent>
-					</MudCard>
+					</MudStack>
 				</MudItem>
 
 			</MudGrid>

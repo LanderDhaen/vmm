@@ -1,22 +1,51 @@
-<MudCard Elevation="2" Class="rounded-lg">
-	<MudCardHeader>
-		<CardHeaderContent>
-			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-				<MudText Typo="Typo.h6" Color="Color.Primary">@Location.Name</MudText>
-				<MudButton Variant="Variant.Text"
-				           StartIcon="@Icons.Material.Filled.MyLocation"
-				           Size="Size.Small"
-				           Color="Color.Primary"
-				           Class="px-4"
-				           Disabled="true">
-					Verplaatsen
-				</MudButton>
-			</MudStack>
-		</CardHeaderContent>
-	</MudCardHeader>
-	<MudCardContent>
-		<MudText><b>Adres:</b> @LocationUtility.FormatAddress(Location.AddressLine1, Location.AddressLine2, Location.City, Location.PostalCode, Location.Country)</MudText>
-		<MudText><b>Breedtegraad:</b> @Location.X</MudText>
-		<MudText><b>Lengtegraad:</b> @Location.Y</MudText>
-	</MudCardContent>
-</MudCard>
+@using Rise.Client.Utils
+@using Rise.Shared.Locations
+
+@if (Location is null)
+{
+	<MudCard Elevation="2" Class="rounded-lg">
+		<MudCardContent>
+			<MudText Color="Color.Error">Locatie niet beschikbaar.</MudText>
+		</MudCardContent>
+	</MudCard>
+}
+else
+{
+	<MudCard Elevation="2" Class="rounded-lg">
+		<MudCardHeader>
+			<CardHeaderContent>
+				<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+					<MudText Typo="Typo.h6" Color="Color.Primary">@Location.Name</MudText>
+
+					@* ✅ Only show when desired *@
+					@if (ShowMoveButton)
+					{
+						<MudButton Variant="Variant.Text"
+						           StartIcon="@Icons.Material.Filled.MyLocation"
+						           Size="Size.Small"
+						           Color="Color.Primary"
+						           Class="px-4"
+						           Disabled="true">
+							Verplaatsen
+						</MudButton>
+					}
+				</MudStack>
+			</CardHeaderContent>
+		</MudCardHeader>
+
+		<MudCardContent>
+			<MudText>
+				<b>Adres:</b>
+				@LocationUtility.FormatAddress(
+					Location.AddressLine1,
+					Location.AddressLine2,
+					Location.City,
+					Location.PostalCode,
+					Location.Country)
+			</MudText>
+
+			<MudText><b>Breedtegraad:</b> @Location.X</MudText>
+			<MudText><b>Lengtegraad:</b> @Location.Y</MudText>
+		</MudCardContent>
+	</MudCard>
+}
