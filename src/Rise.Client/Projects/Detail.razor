@@ -1,6 +1,5 @@
 @page "/projects/{ProjectId:guid}"
 @using Rise.Shared.Projects
-@using Rise.Client.Components.Projects
 @inject NavigationManager Navigation
 
 <PageTitle>Project Details</PageTitle>
@@ -13,12 +12,6 @@
 }
 else
 {
-	<UpdateStationListDialog></UpdateStationListDialog>
-	
-	<UpdateMeasurementNetworkDialog></UpdateMeasurementNetworkDialog>
-	
-	<EditFormDialog></EditFormDialog>
-
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
 			<MudDrawerHeader>Acties</MudDrawerHeader>

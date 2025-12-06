@@ -11,7 +11,6 @@
 }
 else
 {	
-	
 	@* Tabs *@
 	
 	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
@@ -86,9 +85,29 @@ else
 				@* TODO: MaintObj table *@
 
 				@* Projects table *@
-
 				<MudItem xs="12">
-					<Projects StationId="_station.Id"/>
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">Projecten
+									</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@OpenDialogAsync">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<Projects StationId="_station.Id" ProjectsFromStation="_projectsFromStation"/>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
 
 			</MudGrid>

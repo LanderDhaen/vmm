@@ -11,6 +11,8 @@ public static partial class ProjectRequest {
 		public string Code { get; set; }
 		public DateTime? StartDate { get; set; } = DateTime.UtcNow;
 		public Guid? MeasurementNetworkId { get; set; }
+		// Measurementstation -> to link the project to a station upon creation
+		public Guid? MeasurementStationId { get; set; } = Guid.Empty;
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
