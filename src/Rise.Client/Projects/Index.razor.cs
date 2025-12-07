@@ -1,6 +1,9 @@
 using System.Globalization;
+
 using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
+
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
@@ -153,14 +156,6 @@ namespace Rise.Client.Projects {
 
 		private void NavigateToProject(Guid projectId) => NavigationManager.NavigateTo($"/projects/{projectId}");
 		private void NavigateToCreate() => NavigationManager.NavigateTo("/projects/create");
-		private async Task UpdateFilterAsync<T>(Action<T?> setter, T? value, Func<Task>? after = null) {
-			setter(value);
-			if (after != null)
-				await after();
-			else
-				await ApplyOrReloadOnChangeAsync();
-			StateHasChanged();
-		}
 
 		private async Task ClearFilters() {
 			_filterStatus = null;
