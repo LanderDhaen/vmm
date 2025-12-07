@@ -12,7 +12,6 @@ namespace Rise.Client.Components.Locations;
 public partial class LocationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
 
-	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public ILocationRequest Model { get; set; }
 	[Inject] private ILocationService LocationService { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
@@ -20,12 +19,6 @@ public partial class LocationForm {
 	protected override async Task OnInitializedAsync() {
 		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
 		_locations = locsResult.Value.Locations;
-
-		if (StationId != Guid.Empty) {
-			Model = new MeasurementStationRequest.UpdateLocation {
-				MeasurementStationId = StationId
-			};
-		}
 	}
 
 	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
