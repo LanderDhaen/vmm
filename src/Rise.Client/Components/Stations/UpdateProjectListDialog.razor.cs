@@ -20,11 +20,10 @@ public partial class UpdateProjectListDialog {
 	// Form
 	private readonly ProjectRequest.Create.Validator _validator = new();
 	private Result<ProjectResponse.Create>? _createResult;
-	private readonly MudForm _form;
+	private MudForm _form;
 
 	private ProjectRequest.Create CreateModel { get; } = new();
-
-
+	
 	private MeasurementStationRequest.UpdateProjects Model { get; } = new();
 
 	[CascadingParameter]

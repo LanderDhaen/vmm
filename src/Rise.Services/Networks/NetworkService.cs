@@ -14,13 +14,19 @@ namespace Rise.Services.Networks;
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class NetworkService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class NetworkService(ApplicationDbContext dbContext)
 	: INetworkService {
 	public async Task<Result<NetworkResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		IQueryable<MeasurementNetwork> query = dbContext.MeasurementNetworks.AsQueryable();
 
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			query = query.Where(m =>
+				m.Name.Contains(request.SearchTerm) ||
+				m.Zone.Name.Contains(request.SearchTerm)
+			);
+		}
+		
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
 		} else {
