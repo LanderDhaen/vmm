@@ -517,7 +517,7 @@ public class DbSeeder(
 
 			if (i % 3 == 0) {
 				workOrder.AssignTechnician(technicians[1]);
-				workOrder.MarkAsCompleted();
+				workOrder.UpdateStatus(WorkOrderStatus.Completed);
 			}
 			i++;
 		}
