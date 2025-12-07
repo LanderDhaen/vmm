@@ -107,7 +107,7 @@ public partial class LocationForm {
 		DialogResult? result = await dialog.Result;
 
 		if (result is { Canceled: false, Data: CoordinateResult c }) {
-			Model.Location.X = c.X; 
+			Model.Location.X = c.X;
 			Model.Location.Y = c.Y;
 		}
 	}
