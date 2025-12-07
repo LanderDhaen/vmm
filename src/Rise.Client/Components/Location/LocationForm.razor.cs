@@ -14,7 +14,7 @@ public partial class LocationForm {
 	private string _searchText = string.Empty;
 
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
-	[Parameter] public ILocationRequest Model { get; set; }
+	[Parameter] public required ILocationRequest Model { get; set; }
 	[Inject] private ILocationService LocationService { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 
@@ -106,8 +106,8 @@ public partial class LocationForm {
 
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled && result.Data is CoordinateResult c) {
-			Model.Location.X = c.X;
+		if (result is { Canceled: false, Data: CoordinateResult c }) {
+			Model.Location.X = c.X; 
 			Model.Location.Y = c.Y;
 		}
 	}
