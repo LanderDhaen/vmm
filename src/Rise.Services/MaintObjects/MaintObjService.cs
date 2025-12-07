@@ -76,6 +76,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				MaintObjType = (SharedType)m.MaintObjType,
 				MaintObjStatus = (SharedStatus)m.MaintObjStatus,
 				Location = m.Location.Name,
+				StationCode = m.Station != null ? m.Station.Code : null
 			}).ToListAsync(ctx);
 
 		return Result.Success(new MaintObjResponse.Index {
@@ -142,6 +143,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 					X = m.Location.Coordinate.X,
 					Y = m.Location.Coordinate.Y,
 				},
+				StationCode = m.Station != null ? m.Station.Code : null,
 				InstalledAt = m.Installation != null ? m.Installation.InstalledAt : null,
 				RemovedAt = m.Installation != null ? m.Installation.RemovedAt : null,
 				MaintenanceIntervalDays = m.MaintObjPlan.MaintenanceIntervalDays,

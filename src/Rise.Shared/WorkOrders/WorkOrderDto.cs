@@ -1,3 +1,4 @@
+using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
 namespace Rise.Shared.WorkOrders;
@@ -20,5 +21,20 @@ public static class WorkOrderDto {
 		public required WorkOrderStatus Status { get; init; }
 		public required DateOnly? StartDate { get; init; }
 		public required DateOnly? EndDate { get; init; }
+	}
+
+	public class Detail {
+		public required Guid Id { get; init; }
+		public required string Name { get; init; }
+		public required string Description { get; init; }
+		public required Priority Priority { get; init; }
+		public required WorkOrderStatus Status { get; init; }
+		public required DateOnly? StartDate { get; init; }
+		public required DateOnly? EndDate { get; init; }
+		public required string? Technician { get; init; }
+
+		public required MaintObjDto.Detail MaintObj { get; init; }
+
+		public required LocationDto.Detail Location { get; init; }
 	}
 }
