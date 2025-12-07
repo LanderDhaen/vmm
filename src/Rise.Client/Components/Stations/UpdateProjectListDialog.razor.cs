@@ -23,7 +23,7 @@ public partial class UpdateProjectListDialog {
 	private MudForm _form;
 
 	private ProjectRequest.Create CreateModel { get; } = new();
-	
+
 	private MeasurementStationRequest.UpdateProjects Model { get; } = new();
 
 	[CascadingParameter]

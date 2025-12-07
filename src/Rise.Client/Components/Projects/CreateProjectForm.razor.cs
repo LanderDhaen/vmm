@@ -10,15 +10,15 @@ public partial class CreateProjectForm {
 	private IEnumerable<MeasurementNetworkDto.Index>? _networks;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
-	
+
 	[Parameter] public required ProjectRequest.Create Model { get; set; } = new();
-	
+
 	[Inject] public required INetworkService NetworkService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
 		await RefreshMeasurementNetworks();
 	}
-	
+
 	private async Task RefreshMeasurementNetworks() {
 		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
@@ -30,11 +30,10 @@ public partial class CreateProjectForm {
 
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
-		foreach (MeasurementNetworkDto.Index valueMeasurementsNetwork in result.Value.measurementsNetworks)
-		{
+		foreach (MeasurementNetworkDto.Index valueMeasurementsNetwork in result.Value.measurementsNetworks) {
 			Console.WriteLine(valueMeasurementsNetwork.Name);
 		}
-		
+
 		if (result.IsSuccess) {
 			_networks = result.Value.measurementsNetworks;
 		}

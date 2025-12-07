@@ -26,7 +26,7 @@ public class NetworkService(ApplicationDbContext dbContext)
 				m.Zone.Name.Contains(request.SearchTerm)
 			);
 		}
-		
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
 		} else {
