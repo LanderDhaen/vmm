@@ -12,7 +12,6 @@ namespace Rise.Client.MaintObjects;
 
 public partial class Edit {
 	private readonly MaintObjRequest.Edit.Validator _validator = new();
-	private IEnumerable<LocationDto.Index>? _locations;
 	private Result? _result;
 	private MudForm form;
 
@@ -20,7 +19,6 @@ public partial class Edit {
 
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
-	[Inject] public required ILocationService LocationService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
@@ -30,8 +28,6 @@ public partial class Edit {
 
 	protected override async Task OnInitializedAsync() {
 		Result<MaintObjResponse.Detail> maintObj = await MaintObjService.GetDetailAsync(MaintObjId);
-		Result<LocationResponse.Index> result = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
-		_locations = result.Value.Locations;
 
 		if (maintObj.IsSuccess) {
 			Model = new MaintObjRequest.Edit {
@@ -42,7 +38,6 @@ public partial class Edit {
 				Brand = maintObj.Value.MaintObj.Brand,
 				InstalledAt = maintObj.Value.MaintObj.InstalledAt,
 				RemovedAt = maintObj.Value.MaintObj.RemovedAt,
-				LocationId = maintObj.Value.MaintObj.Location.Id
 			};
 		}
 
