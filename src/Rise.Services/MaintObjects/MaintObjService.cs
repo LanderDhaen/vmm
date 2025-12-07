@@ -185,7 +185,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		return Result.Success();
 	}
-	
+
 	public async Task<Result> UpdateLocationAsync(MaintObjRequest.UpdateLocation req,
 		CancellationToken ctx = default) {
 		MaintObj? maintObj = await dbContext.MaintObjects
@@ -198,7 +198,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 
 		Location location = await dbContext.Locations
 			.SingleOrDefaultAsync(l => l.Id == req.LocationId, ctx);
-		
+
 		if (location is null) {
 			return Result.NotFound("Locatie niet gevonden.");
 		}

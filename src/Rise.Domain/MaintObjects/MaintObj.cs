@@ -49,7 +49,7 @@ public class MaintObj : Entity {
 		if (Location.Equals(location)) {
 			return;
 		}
-		
+
 		Location = Guard.Against.Null(location);
 		UnassignFromStation();
 	}
