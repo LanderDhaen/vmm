@@ -15,7 +15,7 @@ using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
 namespace Rise.Services.WorkOrders;
 
 /// <summary>
-///     Service for projects.
+///     Service for workorders.
 /// </summary>
 /// <param name="dbContext"></param>
 public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderService {
@@ -74,15 +74,31 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 					? w.Technician.FirstName + " " + w.Technician.LastName
 					: null,
 
-				MaintObj = new MaintObjDto.Index {
+				MaintObj = new MaintObjDto.Detail {
 					Id = w.MaintObj.Id,
 					Name = w.MaintObj.Name,
 					SerialNumber = w.MaintObj.SerialNumber,
 					Brand = w.MaintObj.Brand,
 					MaintObjType = (SharedMainObjType)w.MaintObj.MaintObjType,
 					MaintObjStatus = (SharedMaintObjStatus)w.MaintObj.MaintObjStatus,
-					Location = w.MaintObj.Location.Name,
-					StationCode = w.MaintObj.Station != null ? w.MaintObj.Station.Code : null
+
+					Location = new LocationDto.Detail {
+						Id = w.MaintObj.Location.Id,
+						Name = w.MaintObj.Location.Name,
+						AddressLine1 = w.MaintObj.Location.Address.Addressline1,
+						AddressLine2 = w.MaintObj.Location.Address.Addressline2,
+						City = w.MaintObj.Location.Address.City,
+						PostalCode = w.MaintObj.Location.Address.PostalCode,
+						Country = w.MaintObj.Location.Address.CountryIso,
+						X = w.MaintObj.Location.Coordinate.X,
+						Y = w.MaintObj.Location.Coordinate.Y,
+					},
+
+					StationCode = w.MaintObj.Station != null ? w.MaintObj.Station.Code : null,
+					InstalledAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.InstalledAt : null,
+					RemovedAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.RemovedAt : null,
+					MaintenanceIntervalDays = w.MaintObj.MaintObjPlan.MaintenanceIntervalDays,
+					CalibrationIntervalDays = w.MaintObj.MaintObjPlan.CalibrationIntervalDays,
 				},
 
 				Location = new LocationDto.Detail {
@@ -105,5 +121,4 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 		return Result.Success(new WorkOrderResponse.Detail { WorkOrder = workOrder });
 	}
-
 }

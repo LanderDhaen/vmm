@@ -90,7 +90,9 @@ public class WorkOrderServiceShould {
 		Assert.Equal("RiseBrand", dto.MaintObj.Brand);
 		Assert.Equal(Rise.Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
 		Assert.Equal(Rise.Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
-		Assert.Equal("TestLoc", dto.MaintObj.Location);
+
+		Assert.Equal("TestLoc", dto.MaintObj.Location.Name);
+
 		Assert.Null(dto.MaintObj.StationCode);
 
 		Assert.Equal(location.Id, dto.Location.Id);

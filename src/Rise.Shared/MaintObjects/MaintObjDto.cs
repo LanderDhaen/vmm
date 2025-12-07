@@ -16,10 +16,7 @@ public static class MaintObjDto {
 		public required string? Brand { get; init; }
 		public required MaintObjType MaintObjType { get; init; }
 		public required MaintObjStatus MaintObjStatus { get; init; }
-		// Location name of the maintenance object (mirrors assigned station's location when assigned)
 		public required string Location { get; init; }
-
-		// Code of the assigned measurement station (null if not assigned)
 		public required string? StationCode { get; init; }
 	}
 
@@ -35,6 +32,8 @@ public static class MaintObjDto {
 		public required MaintObjStatus MaintObjStatus { get; init; }
 
 		public required LocationDto.Detail Location { get; init; }
+		public required string? StationCode { get; init; }
+
 		public required DateTime? InstalledAt { get; init; }
 		public required DateTime? RemovedAt { get; init; }
 		public required int MaintenanceIntervalDays { get; init; }

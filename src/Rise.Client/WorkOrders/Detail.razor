@@ -84,12 +84,14 @@ else
 										</MudButton>
 									</MudStack>
 								</MudStack>
+
 								<MudText Typo="Typo.subtitle2">
 									@MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType)
 									in @(_workOrder.MaintObj.StationCode ?? "-")
 								</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
+
 						<MudCardContent>
 							<MudText><b>Code:</b> @_workOrder.MaintObj.SerialNumber</MudText>
 							<MudText><b>Naam:</b> @_workOrder.MaintObj.Name</MudText>

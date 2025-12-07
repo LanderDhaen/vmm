@@ -33,7 +33,8 @@ public static class WorkOrderDto {
 		public required DateOnly? EndDate { get; init; }
 		public required string? Technician { get; init; }
 
-		public required MaintObjDto.Index MaintObj { get; init; }
+		public required MaintObjDto.Detail MaintObj { get; init; }
+
 		public required LocationDto.Detail Location { get; init; }
 	}
 }
