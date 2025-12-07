@@ -7,11 +7,10 @@ using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.Stations;
 
-namespace Rise.Client.Components.Location;
+namespace Rise.Client.Components.Locations;
 
 public partial class LocationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
-	private string _searchText = string.Empty;
 
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public ILocationRequest Model { get; set; }
@@ -67,19 +66,7 @@ public partial class LocationForm {
 	private void AddNewLocation() {
 		Model.IsNewLocation = true;
 		Model.LocationId = null;
-		Model.Location = new LocationRequest.Create {
-			Name = _searchText
-		};
-	}
-
-	private string BuildString(Guid? id) {
-		LocationDto.Index? location = _locations!.FirstOrDefault(x => x.Id == id);
-
-		if (location is null) {
-			return string.Empty;
-		}
-
-		return $"{location.Name} ({location.Address.City})";
+		Model.Location = new LocationRequest.Create();
 	}
 
 	private async Task OpenMapDialog() {

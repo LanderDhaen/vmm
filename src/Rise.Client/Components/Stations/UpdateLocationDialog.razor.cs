@@ -22,6 +22,7 @@ public partial class UpdateLocationDialog {
 	private MeasurementStationRequest.UpdateLocation Model { get; set; }
 
 	protected override async Task OnInitializedAsync() {
+		Console.WriteLine(LocationId);
 		Model = new MeasurementStationRequest.UpdateLocation() {
 			MeasurementStationId = StationId,
 			LocationId = LocationId
@@ -34,6 +35,7 @@ public partial class UpdateLocationDialog {
 		await form.Validate();
 
 		if (form.IsValid) {
+			Console.WriteLine(Model.LocationId);
 			_result = await StationService.UpdateLocationAsync(Model, CancellationToken.None);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Locatie succesvol aangepast!", Severity.Success);
