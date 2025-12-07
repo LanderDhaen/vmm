@@ -62,7 +62,7 @@ public partial class Detail {
 	private void NavigateToMaintObj(Guid id) {
 		Navigation.NavigateTo($"/maintobjects/{id}");
 	}
-	
+
 	private async Task Close() {
 		Result result = await WorkOrderService.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
 			WorkOrderId = WorkOrderId,

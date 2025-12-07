@@ -122,7 +122,7 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 		return Result.Success(new WorkOrderResponse.Detail { WorkOrder = workOrder });
 	}
-	
+
 	public async Task<Result> UpdateStatusAsync(WorkOrderRequest.UpdateStatus req, CancellationToken ctx = default) {
 		WorkOrder? workOrder = await dbContext.WorkOrders
 			.SingleOrDefaultAsync(x => x.Id == req.WorkOrderId, ctx);
