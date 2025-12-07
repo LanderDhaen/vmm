@@ -59,7 +59,7 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture> {
 
 		Project? createdProject = await _dbContext.Projects.FindAsync(result.Value.ProjectId);
 		Assert.NotNull(createdProject);
-		Assert.Equal("New Project", createdProject.Name);
+		Assert.Equal("New Project", createdProject!.Name);
 		Assert.Equal("NEWCODE", createdProject.Code);
 	}
 

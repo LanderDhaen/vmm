@@ -1,7 +1,7 @@
 using Testcontainers.MsSql;
 using Testcontainers.Xunit;
 
-using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Rise.Services.Tests.Common;
 
