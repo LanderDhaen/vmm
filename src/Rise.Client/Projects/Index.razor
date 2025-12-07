@@ -213,7 +213,7 @@
 			<MudSelect T="Status?"
 			           Label="Status"
 			           Value="_filterStatus"
-			           ValueChanged="@(val => UpdateFilterAsync<Status?>(v => _filterStatus = v, val))"
+                 ValueChanged="@(async val => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })"
 			           Dense="true"
 			           Clearable="true">
 				@foreach (var s in Enum.GetValues(typeof(Status)).Cast<Status>())
@@ -223,7 +223,7 @@
 			</MudSelect>
 
 			<MudSelect T="string" Label="Zone" Value="_filterZone"
-			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterZone = v, val))"
+			           ValueChanged="@(async val => { _filterZone = val; await ApplyOrReloadOnChangeAsync(); })"
 			           Dense="true" Clearable="true" Placeholder="Selecteer..."
 			           OnOpen="HandleZoneSelectOpen">
 				@if (_zones == null)
@@ -240,7 +240,7 @@
 			</MudSelect>
 
 			<MudSelect T="string" Label="Meetnet" Value="_filterMeasurementNetwork"
-			           ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterMeasurementNetwork = v, val))"			           
+			           ValueChanged="@(async val => { _filterMeasurementNetwork = val; await ApplyOrReloadOnChangeAsync(); })"
 			           Dense="true" Clearable="true" Placeholder="Selecteer..."
 			           OnOpen="HandleNetworkSelectOpen">
 				@if (_measurementNetworks == null)
@@ -257,18 +257,18 @@
 			</MudSelect>
 
 			<MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate"
-			               DateChanged="@(val => UpdateFilterAsync<DateTime?>(v =>
-			                            {
-				                            _filterStartDate = v;
-				                            if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value)
-				                            {
-					                            _filterEndDate = null;
-				                            }
-			                            }, val))"
+               DateChanged="@(async val => {
+                   _filterStartDate = val;
+                   if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value)
+                   {
+                       _filterEndDate = null;
+                   }
+                   await ApplyOrReloadOnChangeAsync();
+                   })"
 			                Clearable="true" PickerVariant="PickerVariant.Dialog"/>
 
 			<MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate"
-			               DateChanged="@(val => UpdateFilterAsync<DateTime?>(v => _filterEndDate = v, val))"
+                     DateChanged="@(async val => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })"
 			               Clearable="true" PickerVariant="PickerVariant.Dialog"
 			               MinDate="_filterStartDate?.AddDays(1)"/>
 
