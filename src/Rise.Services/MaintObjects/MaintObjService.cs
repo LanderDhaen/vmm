@@ -171,13 +171,6 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.Conflict($"Onderhoudsobject met serienummer '{req.SerialNumber}' bestaat al.");
 		}
 
-		Location? location = await dbContext.Locations
-			.FirstOrDefaultAsync(x => x.Id == req.LocationId);
-
-		if (location is null) {
-			return Result.NotFound("De locatie werd niet gevonden.");
-		}
-
 		MaintObjPlan? plan = await dbContext.MaintObjPlans
 			.FirstOrDefaultAsync(s => s.Name == "Standaard", ctx);
 
@@ -186,7 +179,31 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 		}
 
 		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand,
-			new Installation((DateTime)req.InstalledAt, req.RemovedAt), location);
+			new Installation((DateTime)req.InstalledAt, req.RemovedAt));
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
+	
+	public async Task<Result> UpdateLocationAsync(MaintObjRequest.UpdateLocation req,
+		CancellationToken ctx = default) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.Include(p => p.Location)
+			.SingleOrDefaultAsync(x => x.Id == req.MaintObjId, ctx);
+
+		if (maintObj is null) {
+			return Result.NotFound($"Onderhoudsobject met id '{req.MaintObjId}' is niet gevonden.");
+		}
+
+		Location location = await dbContext.Locations
+			.SingleOrDefaultAsync(l => l.Id == req.LocationId, ctx);
+		
+		if (location is null) {
+			return Result.NotFound("Locatie niet gevonden.");
+		}
+
+		maintObj.MoveToStockLocation(location);
 
 		await dbContext.SaveChangesAsync(ctx);
 

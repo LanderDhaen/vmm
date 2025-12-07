@@ -45,6 +45,15 @@ public class MaintObj : Entity {
 		SetStatus(MaintObjStatus.Inactive);
 	}
 
+	public void MoveToStockLocation(Location location) {
+		if (Location.Equals(location)) {
+			return;
+		}
+		
+		Location = Guard.Against.Null(location);
+		UnassignFromStation();
+	}
+
 	public void ScanBy(Technician technician) {
 		LastScannedBy = Guard.Against.Null(technician);
 	}
@@ -55,12 +64,11 @@ public class MaintObj : Entity {
 	}
 
 	public void Edit(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand,
-		Installation installation, Location location) {
+		Installation installation) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjPlan = maintObjPlan;
 		Brand = brand;
 		Installation = installation;
-		Location = location;
 	}
 }
