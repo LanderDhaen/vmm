@@ -22,7 +22,6 @@ public partial class UpdateLocationDialog {
 	private MeasurementStationRequest.UpdateLocation Model { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		Console.WriteLine(LocationId);
 		Model = new MeasurementStationRequest.UpdateLocation() {
 			MeasurementStationId = StationId,
 			LocationId = LocationId

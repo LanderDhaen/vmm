@@ -4,8 +4,8 @@
 		<MudText Typo="Typo.subtitle2">Locatie
 			<MudText Color="Color.Error" Inline="true">*</MudText>
 		</MudText>
-		<MudAutocomplete T="Guid?" SearchFunc="Search"
-		                 ToStringFunc="@(id => _locations!.FirstOrDefault(l => l.Id == id)?.Name ?? string.Empty)"
+		<MudAutocomplete T="Guid?" SearchFunc="@Search"
+		                 ToStringFunc="@(id => BuildString(id))"
 		                 @bind-Value="Model.LocationId"
 		                 @bind-Value:after="@OnLocationSelected"
 		                 For="@(() => Model.LocationId)"
