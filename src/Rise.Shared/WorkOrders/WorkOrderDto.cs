@@ -34,8 +34,6 @@ public static class WorkOrderDto {
 		public required string? Technician { get; init; }
 
 		public required MaintObjDto.Index MaintObj { get; init; }
-
-		public required string? StationCode { get; init; }
 		public required LocationDto.Detail Location { get; init; }
 	}
 }

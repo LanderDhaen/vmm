@@ -48,10 +48,10 @@ public partial class Detail {
 		Result<WorkOrderResponse.Detail> detail =
 			await WorkOrderService.GetDetailAsync(WorkOrderId);
 
-		if (detail.IsSuccess && detail.Value is not null) {
+		if (detail is { IsSuccess: true, Value: not null }) {
 			_workOrder = detail.Value.WorkOrder;
 		} else {
-			string message = detail.Errors != null
+			string message = detail.Errors != null && detail.Errors.Any()
 				? string.Join(Environment.NewLine, detail.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);

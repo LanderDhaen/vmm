@@ -39,12 +39,15 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 				Name = p.Name,
 				MaintObj = p.MaintObj.Name,
 				MaintObjType = (SharedMainObjType)p.MaintObj.MaintObjType,
-				Status = (SharedStatus)p.Status,
 				Priority = (SharedPriority)p.Priority,
+				Status = (SharedStatus)p.Status,
 				StartDate = p.DateRange != null ? p.DateRange.StartDate : null,
 				EndDate = p.DateRange != null ? p.DateRange.EndDate : null,
-				Technician = !Equals(p.Technician, null) ? p.Technician.FirstName + " " + p.Technician.LastName : null
-			}).ToListAsync(ctx);
+				Technician = p.Technician != null
+					? p.Technician.FirstName + " " + p.Technician.LastName
+					: null,
+			})
+			.ToListAsync(ctx);
 
 		return Result.Success(new WorkOrderResponse.Index {
 			WorkOrders = workOrders,
@@ -78,12 +81,9 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 					Brand = w.MaintObj.Brand,
 					MaintObjType = (SharedMainObjType)w.MaintObj.MaintObjType,
 					MaintObjStatus = (SharedMaintObjStatus)w.MaintObj.MaintObjStatus,
-					Location = w.MaintObj.Location.Name
+					Location = w.MaintObj.Location.Name,
+					StationCode = w.MaintObj.Station != null ? w.MaintObj.Station.Code : null
 				},
-
-				StationCode = w.MaintObj.Station != null
-					? w.MaintObj.Station.Code
-					: null,
 
 				Location = new LocationDto.Detail {
 					Id = w.MaintObj.Location.Id,

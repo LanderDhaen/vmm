@@ -18,6 +18,9 @@ public static class MaintObjDto {
 		public required MaintObjStatus MaintObjStatus { get; init; }
 		// Location name of the maintenance object (mirrors assigned station's location when assigned)
 		public required string Location { get; init; }
+
+		// Code of the assigned measurement station (null if not assigned)
+		public required string? StationCode { get; init; }
 	}
 
 	/// <summary>

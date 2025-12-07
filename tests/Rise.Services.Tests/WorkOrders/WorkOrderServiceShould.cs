@@ -91,6 +91,7 @@ public class WorkOrderServiceShould {
 		Assert.Equal(Rise.Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
 		Assert.Equal(Rise.Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
 		Assert.Equal("TestLoc", dto.MaintObj.Location);
+		Assert.Null(dto.MaintObj.StationCode);
 
 		Assert.Equal(location.Id, dto.Location.Id);
 		Assert.Equal("TestLoc", dto.Location.Name);
@@ -101,7 +102,6 @@ public class WorkOrderServiceShould {
 		Assert.Equal("BE", dto.Location.Country);
 		Assert.Equal(4.35, dto.Location.X);
 		Assert.Equal(50.85, dto.Location.Y);
-		Assert.Null(dto.StationCode);
 	}
 
 	[Fact]
@@ -148,7 +148,7 @@ public class WorkOrderServiceShould {
 		Result<WorkOrderResponse.Detail> result = await service.GetDetailAsync(workOrder.Id);
 
 		Assert.True(result.IsSuccess);
-		Assert.Equal("STN-42", result.Value!.WorkOrder.StationCode);
+		Assert.Equal("STN-42", result.Value!.WorkOrder.MaintObj.StationCode);
 	}
 
 	[Fact]

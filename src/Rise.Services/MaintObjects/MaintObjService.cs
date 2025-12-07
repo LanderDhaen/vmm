@@ -76,6 +76,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				MaintObjType = (SharedType)m.MaintObjType,
 				MaintObjStatus = (SharedStatus)m.MaintObjStatus,
 				Location = m.Location.Name,
+				StationCode = m.Station != null ? m.Station.Code : null
 			}).ToListAsync(ctx);
 
 		return Result.Success(new MaintObjResponse.Index {
