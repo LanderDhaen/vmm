@@ -39,6 +39,7 @@
 	             Striped="true"
 	             Hover="true"
 	             SortMode="SortMode.None"
+	             RowClick="OnRowClick"
 	>
 
 		<Columns>
@@ -125,8 +126,8 @@
 			{
 				<MudItem xs="12">
 					<MudCard Elevation="2"
-					         Class="rounded-lg"
-					         >
+					         Class="rounded-lg cursor-pointer"
+					         @onclick="() => NavigateToDetail(item.Id)">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">

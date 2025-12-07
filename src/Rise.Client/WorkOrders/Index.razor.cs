@@ -18,6 +18,7 @@ public partial class Index {
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 	[Inject] public required HeaderService HeaderService { get; init; }
 	[Inject] public required IBrowserViewportService ViewportService { get; init; }
+	[Inject] public required NavigationManager Navigation { get; init; }
 
 	protected override async Task OnInitializedAsync() {
 		BreadcrumbService.SetBreadcrumbs(
@@ -49,6 +50,14 @@ public partial class Index {
 			TotalItems = result.Value.TotalCount,
 			Items = result.Value.WorkOrders
 		};
+	}
+
+	private void OnRowClick(DataGridRowClickEventArgs<WorkOrderDto.Index> args) {
+		NavigateToDetail(args.Item.Id);
+	}
+
+	private void NavigateToDetail(Guid id) {
+		Navigation.NavigateTo($"/workorders/{id}");
 	}
 
 	// Mobile
