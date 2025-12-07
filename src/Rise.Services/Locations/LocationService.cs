@@ -22,7 +22,7 @@ public class LocationService(ApplicationDbContext dbContext) : ILocationService 
 		if (request.Filters.TryGetValue("isStockLocation", out object? stockObj) && stockObj is bool stock) {
 			query = query.Where(l => l.IsStockLocation == stock);
 		}
-		
+
 		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
 			query = query.Where(l =>
 				l.Name.Contains(request.SearchTerm) ||

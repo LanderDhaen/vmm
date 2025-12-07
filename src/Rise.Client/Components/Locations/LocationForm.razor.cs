@@ -32,7 +32,7 @@ public partial class LocationForm {
 		request.Filters["isStockLocation"] = false;
 
 		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(request, _cancellationTokenSource.Token);
-		
+
 		if (locsResult.IsSuccess) {
 			_locations = locsResult.Value.Locations;
 		}
@@ -41,7 +41,7 @@ public partial class LocationForm {
 	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
 		_searchTerm = value;
 		await RefreshLocations();
-		 
+
 		return _locations?.Select(l => (Guid?)l.Id) ?? [];
 	}
 
@@ -82,7 +82,7 @@ public partial class LocationForm {
 			Model.Location.Y = c.Y;
 		}
 	}
-	
+
 	private string BuildString(Guid? id) {
 		LocationDto.Index? location = _locations!.FirstOrDefault(x => x.Id == id);
 
