@@ -30,6 +30,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 	private IDbContextTransaction? _tx;
 
 	#region Setup
+
 	public WorkOrderServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 
@@ -54,6 +55,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 			await _tx.DisposeAsync();
 		}
 	}
+
 	#endregion
 
 	#region GetDetail
@@ -92,7 +94,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 		await _dbContext.SaveChangesAsync();
 
 		workOrder.AssignTechnician(tech);
-		workOrder.MarkAsCompleted();
+		workOrder.UpdateStatus(WorkOrderStatus.Completed);
 		await _dbContext.SaveChangesAsync();
 
 		// Act
@@ -118,7 +120,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 		Assert.Equal("SN-001", dto.MaintObj.SerialNumber);
 		Assert.Equal("RiseBrand", dto.MaintObj.Brand);
 		Assert.Equal(Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
-		Assert.Equal(Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
+		Assert.Equal(MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
 
 		Assert.Equal("TestLoc", dto.MaintObj.Location.Name);
 

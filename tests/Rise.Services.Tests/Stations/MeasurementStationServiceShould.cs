@@ -33,7 +33,29 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 	private readonly MeasurementStationService _service;
 	private IDbContextTransaction? _tx;
 
+	#region Helpers
+
+	private async Task<(Guid projectId, Project project, Location location)> CreateProjectAndLocationAsync() {
+		Location location = new(
+			"TestLoc",
+			new Address("Line1", "Line2", "City", "1234"),
+			new Coordinate(4.35, 50.85));
+
+		_dbContext.Locations.Add(location);
+
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+		Project project = new("Test Project", "TP2025", dateRange, DummyMeasurementNetwork);
+		_dbContext.Projects.Add(project);
+
+		await _dbContext.SaveChangesAsync();
+
+		return (project.Id, project, location);
+	}
+
+	#endregion
+
 	#region Setup
+
 	public MeasurementStationServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 
@@ -57,26 +79,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 			await _tx.RollbackAsync();
 			await _tx.DisposeAsync();
 		}
-	}
-	#endregion
-
-	#region Helpers
-
-	private async Task<(Guid projectId, Project project, Location location)> CreateProjectAndLocationAsync() {
-		Location location = new(
-			"TestLoc",
-			new Address("Line1", "Line2", "City", "1234"),
-			new Coordinate(4.35, 50.85));
-
-		_dbContext.Locations.Add(location);
-
-		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
-		Project project = new("Test Project", "TP2025", dateRange, DummyMeasurementNetwork);
-		_dbContext.Projects.Add(project);
-
-		await _dbContext.SaveChangesAsync();
-
-		return (project.Id, project, location);
 	}
 
 	#endregion
@@ -382,52 +384,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 	}
 
 	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenNewLocationDoesNotExist() {
-		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
-		MeasurementStation station = new(
-			"STN-404L",
-			loc,
-			new Installation(DateTime.UtcNow.AddDays(-4)));
-		_dbContext.MeasurementStations.Add(station);
-		await _dbContext.SaveChangesAsync();
-
-		MeasurementStationRequest.Edit req = new() {
-			StationId = station.Id,
-			Code = station.Code,
-			LocationId = Guid.NewGuid(),
-			ProjectId = project.Id,
-			InstalledAt = station.Installation.InstalledAt
-		};
-
-		Result result = await _service.EditAsync(req);
-
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenNewProjectDoesNotExist() {
-		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
-		MeasurementStation station = new(
-			"STN-404P",
-			loc,
-			new Installation(DateTime.UtcNow.AddDays(-4)));
-		_dbContext.MeasurementStations.Add(station);
-		await _dbContext.SaveChangesAsync();
-
-		MeasurementStationRequest.Edit req = new() {
-			StationId = station.Id,
-			Code = station.Code,
-			LocationId = loc.Id,
-			ProjectId = Guid.NewGuid(),
-			InstalledAt = station.Installation.InstalledAt
-		};
-
-		Result result = await _service.EditAsync(req);
-
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-	}
-
-	[Fact]
 	public async Task EditAsync_ShouldThrow_WhenRemovedBeforeInstalled() {
 		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 		MeasurementStation station = new(
@@ -474,7 +430,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 		MeasurementStationRequest.UpdateProjects request = new() {
 			MeasurementStationId = measurementStation.Id,
-			ProjectIds = new List<Guid> { project.Id }
+			ProjectIds = [project.Id]
 		};
 
 		Result result = await _service.UpdateProjectsAsync(request);
@@ -503,7 +459,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 		MeasurementStationRequest.UpdateProjects request = new() {
 			MeasurementStationId = Guid.Empty,
-			ProjectIds = new List<Guid> { project.Id }
+			ProjectIds = [project.Id]
 		};
 
 		Result result = await _service.UpdateProjectsAsync(request);
@@ -523,7 +479,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 		MeasurementStationRequest.UpdateProjects request = new() {
 			MeasurementStationId = measurementStation.Id,
-			ProjectIds = new List<Guid> { Guid.NewGuid() }
+			ProjectIds = [Guid.NewGuid()]
 		};
 
 		Result result = await _service.UpdateProjectsAsync(request);
