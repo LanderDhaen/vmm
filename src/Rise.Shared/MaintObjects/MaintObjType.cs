@@ -1,4 +1,5 @@
 namespace Rise.Shared.MaintObjects;
+
 public enum MaintObjType {
 	Battery,
 	Logger,

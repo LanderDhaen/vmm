@@ -9,11 +9,9 @@ using Rise.Shared.WorkOrders;
 namespace Rise.Client.WorkOrders;
 
 public partial class Index {
-
-	private static readonly (string Value, string Label)[] SortColumns = new[]
-	{
+	private static readonly (string Value, string Label)[] SortColumns = new[] {
 		("Priority", "Prioriteit"),
-		("MaintObjType", "Onderhoudsobject (type)"),
+		("MaintObjType", "Type"),
 		("MaintObj", "Onderhoudsobject"),
 		("Name", "Titel"),
 		("Technician", "Technieker"),
@@ -24,9 +22,9 @@ public partial class Index {
 
 	private string _activeSorting = "Priority";
 	private bool _activeSortingDesc = true;
+	private bool _mobileSortOptionsOpen;
 
 	private IEnumerable<WorkOrderDto.Index>? _mobilityWorkOrders;
-	private bool _mobileSortOptionsOpen;
 
 	[Inject] public required IWorkOrderService WorkOrderService { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
@@ -46,15 +44,15 @@ public partial class Index {
 			await GetWorkOrdersMobileAsync();
 		}
 	}
-	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
 
-		var sorting = state.SortDefinitions.FirstOrDefault();
+	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
+		SortDefinition<WorkOrderDto.Index>? sorting = state.SortDefinitions.FirstOrDefault();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
 			OrderBy = sorting?.SortBy ?? _activeSorting,
-			OrderDescending = sorting?.Descending ?? _activeSortingDesc,
+			OrderDescending = sorting?.Descending ?? _activeSortingDesc
 		};
 
 		Result<WorkOrderResponse.Index> result =
@@ -75,12 +73,11 @@ public partial class Index {
 	}
 
 	private async Task GetWorkOrdersMobileAsync() {
-
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
 			OrderBy = _activeSorting,
-			OrderDescending = _activeSortingDesc,
+			OrderDescending = _activeSortingDesc
 		};
 
 		Result<WorkOrderResponse.Index> result =
@@ -89,10 +86,13 @@ public partial class Index {
 		if (result.IsSuccess) {
 			_mobilityWorkOrders = result.Value.WorkOrders;
 		}
+
 		StateHasChanged();
 	}
 
-	private void ToggleSortingDrawer() => _mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+	private void ToggleSortingDrawer() {
+		_mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+	}
 
 	private async Task SortMobileAsync(string orderBy, bool descending) {
 		_activeSorting = orderBy;
@@ -100,5 +100,4 @@ public partial class Index {
 		await GetWorkOrdersMobileAsync();
 		ToggleSortingDrawer();
 	}
-
 }
