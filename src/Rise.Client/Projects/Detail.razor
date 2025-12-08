@@ -12,45 +12,6 @@
 }
 else
 {
-	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
-			<MudDrawerHeader>Acties</MudDrawerHeader>
-			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="@ShowCloseConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
-				Project afsluiten
-			</MudButton>
-
-			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="@ShowStartConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Actief)">
-				Project opstarten
-			</MudButton>
-		</MudDrawer>
-	</MudHidden>
-
-	// Mobile
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom" Elevation="1" Variant="DrawerVariant.Temporary">
-			<MudDrawerHeader>Acties</MudDrawerHeader>
-			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="@ShowCloseConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
-				Project afsluiten
-			</MudButton>
-
-			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="@ShowStartConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Actief)">
-				Project opstarten
-			</MudButton>
-		</MudDrawer>
-	</MudHidden>
-
 	@* Tabs *@
 	<MudStack Row="true" Justify="Justify.SpaceBetween">
 		<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
