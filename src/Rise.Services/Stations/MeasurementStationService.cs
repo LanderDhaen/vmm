@@ -407,7 +407,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				mo.AssignToStation(measurementStation);
 			}
 		}
-		
+
 		await dbContext.SaveChangesAsync(ct);
 
 		return Result.Success();
