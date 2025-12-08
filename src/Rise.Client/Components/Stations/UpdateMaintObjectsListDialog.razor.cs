@@ -13,7 +13,7 @@ public partial class UpdateMaintObjectsListDialog {
 	private Result? _result;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
-	
+
 	private MeasurementStationRequest.UpdateMaintObjects Model { get; } = new();
 
 	[CascadingParameter]
