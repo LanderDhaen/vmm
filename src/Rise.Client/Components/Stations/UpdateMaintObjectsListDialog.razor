@@ -1,0 +1,60 @@
+@using Rise.Client.Components
+@using Rise.Client.Components.Projects
+@using Rise.Shared.MaintObjects
+@using Rise.Shared.Projects
+<MudDialog Class="mx-3" Style="width: 80vw; max-width: 80vh">
+	<TitleContent>
+		<MudText Typo="Typo.h5">Onderhoudsobjecten aanpassen</MudText>
+	</TitleContent>
+
+	<DialogContent>
+		<MudRadioGroup @bind-Value="_selectedOption">
+			<MudRadio Value="@("Bestaand")">Bestaand onderhoudsobject toevoegen of verwijderen</MudRadio>
+			<MudRadio Value="@("Nieuw")">Nieuw onderhoudsobject toevoegen</MudRadio>
+		</MudRadioGroup>
+
+		@switch (_selectedOption)
+		{
+			case "Bestaand":
+				<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
+				             Label="Zoek onderhoudsobject"></SearchField>
+
+				<MudTable T="MaintObjDto.Index" Items="@_allMaintObjects" Hover="true" CustomHeader="true"
+				          FixedHeader="true" Dense="true">
+					<HeaderContent>
+						<MudTHeadRow>
+							<MudTh Class="mud-theme-primary"></MudTh>
+							<MudTh Class="mud-theme-primary">Naam</MudTh>
+							<MudTh Class="mud-theme-primary">Serienummer</MudTh>
+							<MudTh Class="mud-theme-primary">Type</MudTh>
+						</MudTHeadRow>
+					</HeaderContent>
+					<RowTemplate>
+						<MudCheckBox Value="@Model.MaintObjIds.Contains(context.Id)"
+						             ValueChanged="@((bool value) => OnCheckboxChanged(context.Id, value))"/>
+						<MudTd DataLabel="Naam">@context.Name</MudTd>
+						<MudTd DataLabel="Serienummer">@context.SerialNumber</MudTd>
+						<MudTd DataLabel="Type">@context.MaintObjType</MudTd>
+					</RowTemplate>
+				</MudTable>
+				break;
+			case "Nieuw":
+				@* <MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0"> *@
+				@* 	<CreateProjectForm Model="CreateModel"></CreateProjectForm> *@
+				@* </MudForm> *@
+				break;
+		}
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Save"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@Save">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
+</MudDialog>

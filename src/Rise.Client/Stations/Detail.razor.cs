@@ -71,6 +71,21 @@ public partial class Detail {
 			await RefreshProjects();
 		}
 	}
+	
+	private async Task OpenMaintObjectsListDialogAsync() {
+		var parameters = new DialogParameters<UpdateMaintObjectsListDialog> {
+			{ x => x.StationId, StationId },
+			{ x => x.MaintObjects, _maintObjectsFromStation }
+		};
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+
+		var dialog = await DialogService.ShowAsync<UpdateMaintObjectsListDialog>("Simple Dialog", parameters, options);
+		var result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshMaintObjects();
+		}
+	}
 
 	private async Task OpenUpdateLocationDialogAsync() {
 		var parameters = new DialogParameters<UpdateLocationDialog> {
