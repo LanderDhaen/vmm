@@ -9,21 +9,11 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Components.Stations;
 
 public partial class UpdateMaintObjectsListDialog {
-	// Radio button
-	private string _selectedOption = "Bestaand";
-
 	private IEnumerable<MaintObjDto.Index>? _allMaintObjects = new List<MaintObjDto.Index>();
 	private Result? _result;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
-
-	// Form
-	private readonly MaintObjRequest.Create.Validator _validator = new();
-	private Result<MaintObjResponse.Create>? _createResult;
-	private readonly MudForm _form;
-
-	private MaintObjRequest.Create CreateModel { get; } = new();
-
+	
 	private MeasurementStationRequest.UpdateMaintObjects Model { get; } = new();
 
 	[CascadingParameter]
@@ -84,14 +74,6 @@ public partial class UpdateMaintObjectsListDialog {
 		}
 	}
 
-	private async Task Save() {
-		if (_selectedOption == "Bestaand") {
-			await UpdateMaintObjects();
-		} else {
-			await CreateMaintObjectAsync();
-		}
-	}
-
 	private async Task UpdateMaintObjects() {
 		bool selectionChanged = !Model.MaintObjIds.SequenceEqual(
 			MaintObjects?.Select(s => s.Id) ?? []);
@@ -113,22 +95,6 @@ public partial class UpdateMaintObjectsListDialog {
 			CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
-		}
-	}
-
-	private async Task CreateMaintObjectAsync() {
-		await _form.Validate();
-
-		if (_form.IsValid) {
-			//CreateModel.MeasurementStationId = StationId;
-			_createResult = await MaintObjService.CreateAsync(CreateModel);
-			if (_createResult.IsSuccess) {
-				Snackbar.Add("Onderhoudsobject succesvol aangemaakt!", Severity.Success);
-
-				CloseOverlay();
-			} else {
-				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
-			}
 		}
 	}
 }
