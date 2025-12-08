@@ -30,13 +30,6 @@
 					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
 				</MudItem>
-
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
-					               DateFormat="dd/MM/yyyy"
-					               Variant="Variant.Outlined"/>
-				</MudItem>
 			</MudGrid>
 		</MudForm>
 	</DialogContent>

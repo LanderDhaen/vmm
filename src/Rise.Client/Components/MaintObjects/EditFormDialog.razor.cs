@@ -26,8 +26,6 @@ public partial class EditFormDialog {
 				Name = MaintObj.Name,
 				SerialNumber = MaintObj.SerialNumber,
 				Brand = MaintObj.Brand,
-				InstalledAt = MaintObj.InstalledAt,
-				RemovedAt = MaintObj.RemovedAt
 			};
 		}
 

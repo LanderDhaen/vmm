@@ -199,8 +199,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand,
-			new Installation((DateTime)req.InstalledAt, req.RemovedAt));
+		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand);
 
 		await dbContext.SaveChangesAsync(ctx);
 

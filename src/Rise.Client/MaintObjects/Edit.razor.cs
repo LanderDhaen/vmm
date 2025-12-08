@@ -33,8 +33,6 @@ public partial class Edit {
 				Name = maintObj.Value.MaintObj.Name,
 				SerialNumber = maintObj.Value.MaintObj.SerialNumber,
 				Brand = maintObj.Value.MaintObj.Brand,
-				InstalledAt = maintObj.Value.MaintObj.InstalledAt,
-				RemovedAt = maintObj.Value.MaintObj.RemovedAt
 			};
 		}
 

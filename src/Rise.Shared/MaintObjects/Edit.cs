@@ -11,14 +11,12 @@ public static partial class MaintObjRequest {
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
 		public string? Brand { get; set; }
-		public DateTime? InstalledAt { get; set; }
-		public DateTime? RemovedAt { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {
 				RuleFor(x => x.Name)
 					.NotEmpty().WithMessage("Naam mag niet leeg zijn.")
-					.MaximumLength(250).WithMessage("Naam mag maar max. 250 karakter hebben.");
+					.MaximumLength(250).WithMessage("Naam mag maar max. 250 karakters hebben.");
 				RuleFor(x => x.SerialNumber)
 					.NotEmpty().WithMessage("Serienummer mag niet leeg zijn.");
 			}
