@@ -1,6 +1,7 @@
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
@@ -22,13 +23,13 @@ using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.Tests.WorkOrders;
 
-public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture> {
+public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsyncLifetime {
 	private readonly ApplicationDbContext _dbContext;
 	private readonly WorkOrderService _service;
+	private IDbContextTransaction? _tx;
 
 	public WorkOrderServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
-		_service = new WorkOrderService(_dbContext);
 
 		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
 			.UseSqlServer(container.GetConnectionString())
@@ -38,6 +39,18 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture> {
 		_dbContext.Database.Migrate();
 
 		_service = new WorkOrderService(_dbContext);
+	}
+
+	// Begin a transaction per test and roll back afterwards to keep DB clean
+	public async Task InitializeAsync() {
+		_tx = await _dbContext.Database.BeginTransactionAsync();
+	}
+
+	public async Task DisposeAsync() {
+		if (_tx is not null) {
+			await _tx.RollbackAsync();
+			await _tx.DisposeAsync();
+		}
 	}
 
 	[Fact]

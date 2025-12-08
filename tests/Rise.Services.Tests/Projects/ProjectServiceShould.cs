@@ -1,6 +1,7 @@
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
@@ -19,9 +20,10 @@ using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Tests.Projects;
 
-public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture> {
+public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsyncLifetime {
 	private readonly ApplicationDbContext _dbContext;
 	private readonly ProjectService _service;
+	private IDbContextTransaction? _tx;
 
 	public ProjectServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
@@ -34,6 +36,18 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture> {
 		_dbContext.Database.Migrate();
 
 		_service = new ProjectService(_dbContext);
+	}
+
+	// Begin a transaction for each test instance and roll it back afterwards to avoid duplicate inserts
+	public async Task InitializeAsync() {
+		_tx = await _dbContext.Database.BeginTransactionAsync();
+	}
+
+	public async Task DisposeAsync() {
+		if (_tx is not null) {
+			await _tx.RollbackAsync();
+			await _tx.DisposeAsync();
+		}
 	}
 
 	[Fact]

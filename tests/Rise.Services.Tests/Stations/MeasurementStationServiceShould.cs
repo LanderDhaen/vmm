@@ -1,6 +1,7 @@
 using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
@@ -18,7 +19,7 @@ using Testcontainers.MsSql;
 
 namespace Rise.Services.Tests.Stations;
 
-public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixture> {
+public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixture>, IAsyncLifetime {
 	private static readonly DateRange DummyDateRange = new(
 		new DateOnly(2025, 1, 5),
 		new DateOnly(2025, 5, 10)
@@ -30,6 +31,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange, DummyMeasurementNetwork);
 	private readonly ApplicationDbContext _dbContext;
 	private readonly MeasurementStationService _service;
+	private IDbContextTransaction? _tx;
 
 	public MeasurementStationServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
@@ -44,17 +46,16 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		_service = new MeasurementStationService(_dbContext);
 	}
 
-	private async Task ResetDatabaseAsync() {
-		// Remove in correct order to avoid FK constraint issues
-		_dbContext.MeasurementStations.RemoveRange(await _dbContext.MeasurementStations.Include(s => s.Projects)
-			.ToListAsync());
-		await _dbContext.SaveChangesAsync();
+	// Start a transaction before each test and roll it back afterwards to avoid polluting the shared DB
+	public async Task InitializeAsync() {
+		_tx = await _dbContext.Database.BeginTransactionAsync();
+	}
 
-		_dbContext.Projects.RemoveRange(await _dbContext.Projects.ToListAsync());
-		_dbContext.MeasurementNetworks.RemoveRange(await _dbContext.MeasurementNetworks.ToListAsync());
-		_dbContext.Zones.RemoveRange(await _dbContext.Zones.ToListAsync());
-		_dbContext.Locations.RemoveRange(await _dbContext.Locations.ToListAsync());
-		await _dbContext.SaveChangesAsync();
+	public async Task DisposeAsync() {
+		if (_tx is not null) {
+			await _tx.RollbackAsync();
+			await _tx.DisposeAsync();
+		}
 	}
 
 	private async Task<(Guid projectId, Project project, Location location)> CreateProjectAndLocationAsync() {
@@ -76,7 +77,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetIndexAsync_ShouldReturnPagedResults() {
-		await ResetDatabaseAsync();
 		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 
 		for (int i = 0; i < 5; i++) {
@@ -115,7 +115,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetIndexAsync_ShouldRespectOrderDescending() {
-		await ResetDatabaseAsync();
 		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
 		foreach (string code in new[] { "STN-1", "STN-2", "STN-3" }) {
@@ -143,7 +142,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnStationDetails_WhenStationExists() {
-		await ResetDatabaseAsync();
 		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
 		DateTime installedAt = new(2024, 11, 6, 0, 0, 0, DateTimeKind.Utc);
@@ -169,14 +167,12 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		await ResetDatabaseAsync();
 		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
-		await ResetDatabaseAsync();
 		(Guid projectId, Project project, Location loc) = await CreateProjectAndLocationAsync();
 
 		MeasurementStation station = new(
@@ -207,7 +203,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnEmptyList_WhenStationHasNoProjects() {
-		await ResetDatabaseAsync();
 		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
 		MeasurementStation station = new(
@@ -227,7 +222,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		await ResetDatabaseAsync();
 		Result<MeasurementStationResponse.ProjectList> result =
 			await _service.GetProjectsAsync(Guid.NewGuid(), new QueryRequest.Search());
 
@@ -236,8 +230,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnNewMeasurementStationId_WithExistingLocation() {
-		await ResetDatabaseAsync();
-
 		Location location = new(
 			"Location", new Address(null, null, "TestCity", "1234"), new Coordinate(4.35, 50.85));
 
@@ -266,8 +258,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnNewMeasurementStationId_WithNewLocation() {
-		await ResetDatabaseAsync();
-
 		MeasurementStationRequest.Create request = new() {
 			Code = "ST-001",
 			Location = new LocationRequest.Create {
@@ -300,8 +290,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnConflict_WithNonExistingLocationId() {
-		await ResetDatabaseAsync();
-
 		MeasurementStationRequest.Create request = new() {
 			Code = "ST-001",
 			LocationId = Guid.NewGuid(),
@@ -317,7 +305,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task EditAsync_ShouldUpdateFields_WhenValid() {
-		await ResetDatabaseAsync();
 		(Guid _, Project project1, Location loc1) = await CreateProjectAndLocationAsync();
 		Location loc2 = new("Loc-2", new Address("l1", "l2", "City2", "2222"), new Coordinate(4.4, 50.9));
 		Project project2 = new("Second Project", "SP-2",
@@ -364,7 +351,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		await ResetDatabaseAsync();
 		MeasurementStationRequest.Edit req = new() {
 			StationId = Guid.NewGuid(),
 			Code = "NOPE",
@@ -380,7 +366,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenNewLocationDoesNotExist() {
-		await ResetDatabaseAsync();
 		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 		MeasurementStation station = new(
 			"STN-404L",
@@ -404,7 +389,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task EditAsync_ShouldReturnNotFound_WhenNewProjectDoesNotExist() {
-		await ResetDatabaseAsync();
 		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 		MeasurementStation station = new(
 			"STN-404P",
@@ -428,7 +412,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task EditAsync_ShouldThrow_WhenRemovedBeforeInstalled() {
-		await ResetDatabaseAsync();
 		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 		MeasurementStation station = new(
 			"STN-DATE",
@@ -454,8 +437,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task UpdateProjectsAsync_ShouldReturnSuccess() {
-		await ResetDatabaseAsync();
-
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
@@ -491,8 +472,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task UpdateProjectsAsync_ShouldReturnNotFound_WithNonExistingMeasurementStationId() {
-		await ResetDatabaseAsync();
-
 		Zone zone = new("TestZone", "Z-001");
 		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
 		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
@@ -516,8 +495,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnError_WhenAProjectIsNotFound() {
-		await ResetDatabaseAsync();
-
 		MeasurementStation measurementStation = new("ST-001",
 			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
 			new Installation(new DateTime(2025, 1, 1)));
