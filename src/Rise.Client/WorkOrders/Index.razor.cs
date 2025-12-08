@@ -45,15 +45,13 @@ public partial class Index {
 			await GetWorkOrdersMobileAsync();
 		}
 	}
-
-	// Desktop
-
 	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
-
+		_ = state.SortDefinitions.FirstOrDefault();
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = "Id"
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc
 		};
 
 		Result<WorkOrderResponse.Index> result =
@@ -73,14 +71,13 @@ public partial class Index {
 		Navigation.NavigateTo($"/workorders/{id}");
 	}
 
-	// Mobile
-
 	private async Task GetWorkOrdersMobileAsync() {
 
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			OrderBy = "Id"
+			OrderBy = _activeSorting,
+			OrderDescending = _activeSortingDesc
 		};
 
 		Result<WorkOrderResponse.Index> result =
