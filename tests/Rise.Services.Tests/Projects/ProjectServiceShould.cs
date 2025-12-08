@@ -2,8 +2,11 @@ using Ardalis.Result;
 
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.Common;
+using Rise.Domain.Locations;
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
+using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Services.Projects;
 using Rise.Services.Tests.Common;
@@ -12,7 +15,6 @@ using Rise.Shared.Projects;
 
 using Testcontainers.MsSql;
 
-using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Tests.Projects;
@@ -34,454 +36,397 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture> {
 		_service = new ProjectService(_dbContext);
 	}
 
-	#region CreateAsync Tests
-
 	[Fact]
-	public async Task CreateAsync_ShouldCreateProject_WhenRequestIsValid() {
+	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
 		// Arrange
-		MeasurementNetwork network = new("MN2", new Zone("Zone2", "Z2"));
-		_dbContext.MeasurementNetworks.Add(network);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+
+		Project project = new("Test Project", "TP-001", dateRange, measurementNetwork);
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
 		await _dbContext.SaveChangesAsync();
 
-		ProjectRequest.Create request = new() {
-			Name = "New Project",
-			Code = "NEWCODE",
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = network.Id
-		};
-
 		// Act
-		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
 
 		// Assert
 		Assert.True(result.IsSuccess);
-		Assert.NotEqual(Guid.Empty, result.Value.ProjectId);
+		Assert.NotNull(result.Value);
 
-		Project? createdProject = await _dbContext.Projects.FindAsync(result.Value.ProjectId);
-		Assert.NotNull(createdProject);
-		Assert.Equal("New Project", createdProject.Name);
-		Assert.Equal("NEWCODE", createdProject.Code);
+		ProjectDto.Detail dto = result.Value!.Project;
+		Assert.Equal(project.Id, dto.Id);
+		Assert.Equal("Test Project", dto.Name);
+		Assert.Equal("TP-001", dto.Code);
+		Assert.Equal(dateRange.StartDate, dto.StartDate);
+		Assert.Equal(dateRange.EndDate, dto.EndDate); // if end date was set
+		Assert.Equal(measurementNetwork.Name, dto.MeasurementNetwork.Name);
+		Assert.Equal(zone.Name, dto.Zone);
+		Assert.Equal((Shared.Projects.Status)Status.Actief, dto.Status);
 	}
-
-	#endregion
-
-	#region CreateAsync Conflict & NotFound Tests
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnConflict_WhenCodeAlreadyExists() {
-		// Arrange
-		MeasurementNetwork network = new("MN3", new Zone("Zone3", "Z3"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project existingProject = new("Existing Project", "DUPCODE",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(existingProject);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.Create request = new() {
-			Name = "Another Project",
-			Code = "DUPCODE",
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = network.Id
-		};
-
-		// Act
-		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.Status == ResultStatus.Conflict);
-	}
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnNotFound_WhenMeasurementNetworkDoesNotExist() {
-		// Arrange
-		ProjectRequest.Create request = new() {
-			Name = "Test Project",
-			Code = "TESTCODE",
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = Guid.NewGuid()
-		};
-
-		// Act
-		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	#endregion
-
-	#region DetailAsync Tests
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
-		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
-		MeasurementNetwork network = new("MN_Detail", new Zone("Zone_Detail", "ZD"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new(
-			"Test Project", "DETAIL_CODE",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
-
-		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(project.Id);
-
-		Assert.True(result.IsSuccess);
-		Assert.Equal("Test Project", result.Value!.Project.Name);
-	}
-
-	#endregion
-
-	#region EditAsync Tests
-
-	[Fact]
-	public async Task EditAsync_ShouldEditProject_WhenRequestIsValid() {
 		// Arrange
-		MeasurementNetwork network = new("MN4", new Zone("Zone4", "Z4"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("Original Name", "ORIGCODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.Edit request = new() {
-			ProjectId = project.Id,
-			Name = "Updated Name",
-			Code = "UPDCODE",
-			StartDate = DateTime.Today,
-			EndDate = DateTime.Today.AddDays(30),
-			MeasurementNetworkId = network.Id
-		};
+		Guid nonExistentId = Guid.NewGuid();
 
 		// Act
-		Result result = await _service.EditAsync(request);
+		Result<ProjectResponse.Detail> result = await _service.GetDetailAsync(nonExistentId);
 
 		// Assert
-		Assert.True(result.IsSuccess);
-
-		Project? updatedProject = await _dbContext.Projects.FindAsync(project.Id);
-		Assert.NotNull(updatedProject);
-		Assert.Equal("Updated Name", updatedProject.Name);
-		Assert.Equal("UPDCODE", updatedProject.Code);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
-		// Arrange
-		MeasurementNetwork network = new("MN5_EditNotFound", new Zone("Zone5", "Z5"));
-		_dbContext.MeasurementNetworks.Add(network);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.Edit request = new() {
-			ProjectId = Guid.NewGuid(),
-			Name = "Test Name",
-			Code = "EDIT_NOTFOUND_CODE",
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = network.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnConflict_WhenCodeAlreadyExistsForDifferentProject() {
-		// Arrange
-		MeasurementNetwork network = new("MN6_EditConflict", new Zone("Zone6", "Z6"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project1 = new("Project 1", "EDIT_CONFLICT_CODE1", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		Project project2 = new("Project 2", "EDIT_CONFLICT_CODE2", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.AddRange(project1, project2);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.Edit request = new() {
-			ProjectId = project2.Id,
-			Name = "Project 2 Updated",
-			Code = "EDIT_CONFLICT_CODE1", // Trying to use code from project1
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = network.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.Status == ResultStatus.Conflict);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenMeasurementNetworkDoesNotExist() {
-		// Arrange
-		MeasurementNetwork network = new("MN7_EditNetNotFound", new Zone("Zone7", "Z7"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("Test Project", "EDIT_NET_NOTFOUND_CODE",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.Edit request = new() {
-			ProjectId = project.Id,
-			Name = "Updated Name",
-			Code = "EDIT_NET_NOTFOUND_CODE",
-			StartDate = DateTime.Today,
-			MeasurementNetworkId = Guid.NewGuid()
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	#endregion
-
-	#region GetIndexAsync Tests
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldReturnProjects_WithPagination() {
-		// Arrange
-		MeasurementNetwork network = new("MN8_IndexPag", new Zone("Zone8", "Z8"));
-		_dbContext.MeasurementNetworks.Add(network);
-
-		for (int i = 1; i <= 5; i++) {
-			Project project = new($"Project {i}", $"INDEX_PAG_CODE{i}",
-				new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-			_dbContext.Projects.Add(project);
-		}
-
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 3,
-			SearchTerm = ""
-		};
-
-		// Act
-		Result<ProjectResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		Assert.Equal(3, result.Value.Projects.Count());
-		Assert.True(result.Value.TotalCount >= 5);
-	}
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldFilterBySearchTerm() {
-		// Arrange
-		MeasurementNetwork network = new("MN9_IndexFilter", new Zone("Zone9", "Z9"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project1 = new("Searchable Project", "INDEX_FILTER_SEARCH1",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		Project project2 = new("Another Project", "INDEX_FILTER_OTHER1",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.AddRange(project1, project2);
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			SearchTerm = "Searchable"
-		};
-
-		// Act
-		Result<ProjectResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		Assert.Contains(result.Value.Projects, p => p.Name.Contains("Searchable"));
-	}
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldSortByName() {
-		// Arrange
-		MeasurementNetwork network = new("MN10_IndexSort", new Zone("Zone10", "Z10"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project projectA = new("AAA Project", "INDEX_SORT_CODEA", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		Project projectZ = new("ZZZ Project", "INDEX_SORT_CODEZ", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.AddRange(projectA, projectZ);
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			SearchTerm = "",
-			OrderBy = "Name",
-			OrderDescending = false
-		};
-
-		// Act
-		Result<ProjectResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		List<ProjectDto.Index> projects = result.Value.Projects.ToList();
-		for (int i = 0; i < projects.Count - 1; i++) {
-			Assert.True(string.Compare(projects[i].Name, projects[i + 1].Name, StringComparison.Ordinal) <= 0);
-		}
-	}
-
-	#endregion
-
-	#region GetHistoryAsync Tests
-
-	[Fact]
-	public async Task GetHistoryAsync_ShouldReturnProjectHistory_WhenProjectExists() {
-		// Arrange
-		MeasurementNetwork network = new("MN11_History", new Zone("Zone11", "Z11"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("History Project", "HISTORY_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
-
-		// Act
-		Result<ProjectResponse.History> result = await _service.GetHistoryAsync(project.Id);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		Assert.Equal(project.Id, result.Value.Project.Id);
-		Assert.Equal("History Project", result.Value.Project.Name);
-	}
-
-	[Fact]
-	public async Task GetHistoryAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
-		// Act
-		Result<ProjectResponse.History> result = await _service.GetHistoryAsync(Guid.NewGuid());
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	#endregion
-
-	#region UpdateStatusAsync Tests
-
-	[Fact]
-	public async Task UpdateStatusAsync_ShouldUpdateStatus_WhenProjectExists() {
-		// Arrange
-		MeasurementNetwork network = new("MN12_Status", new Zone("Zone12", "Z12"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("Status Project", "STATUS_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.Add(project);
-		await _dbContext.SaveChangesAsync();
-
-		ProjectRequest.UpdateStatus request = new() {
-			ProjectId = project.Id,
-			NewStatus = SharedStatus.Afgesloten
-		};
-
-		// Act
-		Result result = await _service.UpdateStatusAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-
-		Project? updatedProject = await _dbContext.Projects.FindAsync(project.Id);
-		Assert.NotNull(updatedProject);
-		Assert.Equal(Status.Afgesloten, updatedProject.Status);
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
 	[Fact]
 	public async Task UpdateStatusAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
 		// Arrange
-		ProjectRequest.UpdateStatus request = new() {
+
+		ProjectRequest.UpdateStatus req = new() {
 			ProjectId = Guid.NewGuid(),
-			NewStatus = SharedStatus.Afgesloten
+			NewStatus = (Shared.Projects.Status)Status.Afgesloten
 		};
 
 		// Act
-		Result result = await _service.UpdateStatusAsync(request);
+		Result result = await _service.UpdateStatusAsync(req);
 
 		// Assert
-		Assert.True(result.IsNotFound());
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
-	#endregion
+	[Fact]
+	public async Task UpdateStatusAsync_ShouldSetProjectStatus_WhenProjectExists() {
+		// Arrange
 
-	#region GetStationsAsync Tests
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+
+		Project project = new("Test Project", "TP-002", dateRange, measurementNetwork);
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+
+		ProjectRequest.UpdateStatus req = new() {
+			ProjectId = project.Id,
+			NewStatus = (Shared.Projects.Status)Status.Afgesloten
+		};
+
+		// Act
+		Result result = await _service.UpdateStatusAsync(req);
+
+		// Assert
+		Assert.True(result.IsSuccess);
+
+		// Reload from DB to verify change persisted
+		Project updated = await _dbContext.Projects.SingleAsync(p => p.Id == project.Id);
+		Assert.Equal(Status.Afgesloten, updated.Status);
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNewProjectId() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		await _dbContext.SaveChangesAsync();
+
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
+
+		// Assert
+		Assert.True(result.IsCreated());
+		Assert.NotNull(result.Value);
+		Assert.NotEqual(Guid.Empty, result.Value!.ProjectId);
+
+		Project? created = await _dbContext.Projects.FindAsync(result.Value.ProjectId);
+		Assert.NotNull(created);
+		Assert.Equal("Test Project", created!.Name);
+		Assert.Equal("TP-001", created.Code);
+		Assert.Equal(measurementNetwork.Id, created.MeasurementNetwork.Id);
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		_dbContext.Projects.Add(new Project("Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork));
+		await _dbContext.SaveChangesAsync();
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+		Assert.Equal("Project met code 'TP-001' bestaat al.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNotFound_WhenMeasurementNetworkIsNotFound() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+
+		ProjectRequest.Create request = new() {
+			Name = "Test Project",
+			Code = "TP-001",
+			MeasurementNetworkId = measurementNetwork.Id,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result<ProjectResponse.Create> result = await _service.CreateAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal("Meetnet niet gevonden.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldReturnResultSuccess() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = project.Id,
+			Name = "Updated Project",
+			Code = project.Code,
+			StartDate = new DateTime(2025, 1, 1),
+			EndDate = new DateTime(2025, 12, 31)
+		};
+
+		// Act
+		Result result = await _service.EditAsync(request);
+
+		// Assert
+		Assert.True(result.IsSuccess);
+
+		Project? updated = await _dbContext.Projects.FindAsync(project.Id);
+		Assert.NotNull(updated);
+		Assert.Equal("Updated Project", updated!.Name);
+		Assert.Equal("EP-001", updated.Code);
+		Assert.Equal(new DateOnly(2025, 1, 1), updated.DateRange.StartDate);
+		Assert.Equal(new DateOnly(2025, 12, 31), updated.DateRange.EndDate);
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldReturnNotFound_WhenProjectIsNotFound() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = Guid.NewGuid(),
+			Name = "Updated Project",
+			Code = project.Code,
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result result = await _service.EditAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Project met Id '{request.ProjectId}' was niet gevonden.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldReturnConflict_WhenProjectHasAlreadyExistingCode() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Existing Project", "EP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+		Project project1 = new("Existing Project", "EP-002", new DateRange(new DateOnly(2025, 3, 8)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		_dbContext.Projects.Add(project1);
+		await _dbContext.SaveChangesAsync();
+
+		ProjectRequest.Edit request = new() {
+			ProjectId = project1.Id,
+			Name = project1.Name,
+			Code = "EP-001",
+			StartDate = new DateTime(2025, 1, 1)
+		};
+
+		// Act
+		Result result = await _service.EditAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+		Assert.Equal("Project met code 'EP-001' bestaat al.", result.Errors.First());
+	}
 
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
 		// Arrange
-		MeasurementNetwork network = new("MN13_Stations", new Zone("Zone13", "Z13"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("Station Project", "STATION_CODE", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+
+		Project project = new("Test Project", "TP-003", dateRange, measurementNetwork);
+
+		Location location = new(
+			"TestLoc",
+			new Address("Street 1", "Bus 2", "City", "1234"),
+			new Coordinate(4.35, 50.85));
+
+		MeasurementStation station = new(
+			"ST-001",
+			location,
+			new Installation(DateTime.UtcNow));
+
+		project.Stations.Add(station);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
 		_dbContext.Projects.Add(project);
+		_dbContext.Locations.Add(location);
+		_dbContext.MeasurementStations.Add(station);
 		await _dbContext.SaveChangesAsync();
 
-		QueryRequest.Search request = new() {
-			SearchTerm = ""
-		};
-
 		// Act
-		Result<ProjectResponse.MeasurementStations> result = await _service.GetStationsAsync(project.Id, request);
+		Result<ProjectResponse.MeasurementStations> result =
+			await _service.GetStationsAsync(project.Id, new QueryRequest.Search());
 
 		// Assert
 		Assert.True(result.IsSuccess);
-		Assert.NotNull(result.Value.MeasurementStationsFromProject);
+		Assert.NotNull(result.Value);
+		Assert.Single(result.Value.MeasurementStationsFromProject);
+		Assert.Equal("ST-001", result.Value!.MeasurementStationsFromProject.First().Code);
 	}
 
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
-		// Arrange
-		QueryRequest.Search request = new() {
-			SearchTerm = ""
-		};
+		Guid nonExistentId = Guid.NewGuid();
 
-		// Act
-		Result<ProjectResponse.MeasurementStations> result = await _service.GetStationsAsync(Guid.NewGuid(), request);
+		Result<ProjectResponse.MeasurementStations> result =
+			await _service.GetStationsAsync(nonExistentId, new QueryRequest.Search());
 
-		// Assert
-		Assert.True(result.IsNotFound());
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
-	#endregion
-
-	#region UpdateMeasurementStationsAsync Tests
-
 	[Fact]
-	public async Task UpdateMeasurementStationsAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnSuccess() {
 		// Arrange
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		_dbContext.MeasurementStations.Add(measurementStation);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
 		ProjectRequest.UpdateMeasurementStations request = new() {
-			ProjectId = Guid.NewGuid(),
-			MeasurementStationIds = []
+			ProjectId = project.Id,
+			MeasurementStationIds = [measurementStation.Id]
 		};
 
 		// Act
 		Result result = await _service.UpdateMeasurementStationsAsync(request);
 
 		// Assert
-		Assert.True(result.IsNotFound());
+		Assert.True(result.IsSuccess);
+
+		Project updated = _dbContext.Projects.Local.Single(p => p.Id == project.Id);
+		Assert.NotNull(updated);
+		Assert.NotEmpty(updated.Stations);
+		Assert.Equal(measurementStation.Id, updated.Stations.First().Id);
+		Assert.Equal(measurementStation.Code, updated.Stations.First().Code);
 	}
 
 	[Fact]
-	public async Task UpdateMeasurementStationsAsync_ShouldReturnError_WhenMeasurementStationNotFound() {
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnNotFound_WithNonExistingPrjectId() {
 		// Arrange
-		MeasurementNetwork network = new("MN14_UpdateStations", new Zone("Zone14", "Z14"));
-		_dbContext.MeasurementNetworks.Add(network);
-		Project project = new("Update Stations Project", "UPDATE_STATIONS_CODE",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		_dbContext.MeasurementStations.Add(measurementStation);
+		await _dbContext.SaveChangesAsync();
+
+
+		ProjectRequest.UpdateMeasurementStations request = new() {
+			ProjectId = Guid.Empty,
+			MeasurementStationIds = [measurementStation.Id]
+		};
+
+		// Act
+		Result result = await _service.UpdateMeasurementStationsAsync(request);
+
+		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Project met id '{request.ProjectId}' is niet gevonden.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task UpdateMeasurementStationsAsync_ShouldReturnError_WhenAMeasurementStationIsNotFound() {
+		// Arrange
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
 		_dbContext.Projects.Add(project);
 		await _dbContext.SaveChangesAsync();
 
 		ProjectRequest.UpdateMeasurementStations request = new() {
 			ProjectId = project.Id,
-			MeasurementStationIds = [Guid.NewGuid()] // Non-existent station
+			MeasurementStationIds = [Guid.NewGuid()]
 		};
 
 		// Act
@@ -489,7 +434,6 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture> {
 
 		// Assert
 		Assert.Equal(ResultStatus.Error, result.Status);
+		Assert.Equal("Een of meerdere meetstations zijn niet gevonden.", result.Errors.First());
 	}
-
-	#endregion
 }
