@@ -5,14 +5,14 @@ using MudBlazor;
 using Rise.Client.Stations;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
-using Rise.Shared.Stations;
 
-namespace Rise.Client.Components.Location;
+namespace Rise.Client.Components.Locations;
 
 public partial class LocationForm {
 	private MudAutocomplete<Guid?>? _locationIdField;
 	private IEnumerable<LocationDto.Index>? _locations;
-	private string _searchText = string.Empty;
+	private CancellationTokenSource _cancellationTokenSource = new();
+	private string _searchTerm = string.Empty;
 
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public required ILocationRequest Model { get; set; }
@@ -20,59 +20,41 @@ public partial class LocationForm {
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 
 	protected override async Task OnInitializedAsync() {
-		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(new QueryRequest.SkipTake());
-		_locations = locsResult.Value.Locations;
+		await RefreshLocations();
+	}
 
-		if (StationId != Guid.Empty) {
-			Model = new MeasurementStationRequest.UpdateLocation {
-				MeasurementStationId = StationId
-			};
+	private async Task RefreshLocations() {
+		await _cancellationTokenSource.CancelAsync();
+		_cancellationTokenSource.Dispose();
+		_cancellationTokenSource = new CancellationTokenSource();
+
+		QueryRequest.SkipTake request = new() {
+			SearchTerm = _searchTerm
+		};
+		request.Filters["isStockLocation"] = false;
+
+		Result<LocationResponse.Index> locsResult = await LocationService.GetIndexAsync(request, _cancellationTokenSource.Token);
+
+		if (locsResult.IsSuccess) {
+			_locations = locsResult.Value.Locations;
 		}
 	}
 
 	private async Task<IEnumerable<Guid?>> Search(string value, CancellationToken token) {
-		if (string.IsNullOrEmpty(value)) {
-			return _locations.Select(x => (Guid?)x.Id);
-		}
+		_searchTerm = value;
+		await RefreshLocations();
 
-		return _locations
-			.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-			.Select(x => (Guid?)x.Id);
+		return _locations?.Select(l => (Guid?)l.Id) ?? [];
 	}
 
-	private void OnLocationSelected() {
-		if (Model.LocationId.HasValue) {
-			LocationDto.Index selected = _locations.FirstOrDefault(x => x.Id == Model.LocationId.Value);
-
-			if (selected == null) {
-				return;
-			}
-
-			Model.Location = new LocationRequest.Create {
-				Name = selected.Name,
-				Addressline1 = selected.Address.AddressLine1,
-				Addressline2 = selected.Address.AddressLine2,
-				City = selected.Address.City,
-				PostalCode = selected.Address.PostalCode,
-				CountryIso = selected.Address.CountryIso,
-				X = selected.Coordinate.X,
-				Y = selected.Coordinate.Y
-			};
-		} else {
-			Model.Location = new LocationRequest.Create();
-		}
-
-		Model.IsNewLocation = false;
-	}
+	private void OnLocationSelected() => Model.IsNewLocation = false;
 
 	private async Task AddNewLocation() {
 		Model.IsNewLocation = true;
 		Model.LocationId = null;
-		Model.Location = new LocationRequest.Create {
-			Name = _searchText
-		};
+		Model.Location = new LocationRequest.Create();
 
-		await _locationIdField.ClearAsync();
+		await _locationIdField!.ClearAsync();
 	}
 
 	private string BuildString(Guid? id) {

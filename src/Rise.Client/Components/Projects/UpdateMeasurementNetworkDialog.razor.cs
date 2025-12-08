@@ -25,7 +25,7 @@ public partial class UpdateMeasurementNetworkDialog {
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
 		_networks = result.Value.measurementsNetworks;
 
-		Model = new ProjectRequest.UpdateMeasurementNetwork() {
+		Model = new ProjectRequest.UpdateMeasurementNetwork {
 			ProjectId = ProjectId,
 			MeasurementNetworkId = MeasurementNetworkId
 		};

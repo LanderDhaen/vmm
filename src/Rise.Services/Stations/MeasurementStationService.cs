@@ -218,10 +218,20 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		});
 	}
 
-	public Task<Result> EditAsync(
-		MeasurementStationRequest.Edit request,
-		CancellationToken ct = default) {
-		return UpdateAsync(request.StationId, request, ct);
+	public async Task<Result> EditAsync(MeasurementStationRequest.Edit request, CancellationToken ct = default) {
+		MeasurementStation? station = await dbContext.MeasurementStations
+			.Include(s => s.Installation)
+			.Include(s => s.Location)
+			.SingleOrDefaultAsync(s => s.Id == request.StationId, ct);
+
+		if (station is null) {
+			return Result.NotFound("Het meetstation is niet gevonden.");
+		}
+
+		station.Edit(request.Code, new Installation((DateTime)request.InstalledAt!, request.RemovedAt));
+
+		await dbContext.SaveChangesAsync(ct);
+		return Result.Success();
 	}
 
 	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
@@ -329,28 +339,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		await dbContext.SaveChangesAsync(ctx);
 
-		return Result.Success();
-	}
-
-	private async Task<Result> UpdateAsync(
-		Guid id,
-		MeasurementStationRequest.Edit request,
-		CancellationToken ct = default) {
-		MeasurementStation? station = await dbContext.MeasurementStations
-			.Include(s => s.Installation)
-			.Include(s => s.Location).ThenInclude(l => l.Address)
-			.Include(s => s.Location).ThenInclude(l => l.Coordinate)
-			.Include(s => s.Projects)
-			.SingleOrDefaultAsync(s => s.Id == id, ct);
-
-		if (station is null) {
-			return Result.NotFound();
-		}
-
-		DateTime installedAt = request.InstalledAt ?? station.Installation.InstalledAt;
-		station.UpdateInstallation(new Installation(installedAt, request.RemovedAt));
-
-		await dbContext.SaveChangesAsync(ct);
 		return Result.Success();
 	}
 }

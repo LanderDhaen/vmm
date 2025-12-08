@@ -351,6 +351,7 @@ public class DbSeeder(
 		foreach (MeasurementStation station in stations) {
 			Installation installation = station.Installation;
 			Location location = station.Location;
+			string code = station.Code;
 
 			// Move the location
 
@@ -359,17 +360,17 @@ public class DbSeeder(
 
 			// Move the installed at
 
-			station.UpdateInstallation(new Installation(installation.InstalledAt.AddYears(-1).AddMonths(-2).AddDays(-5), installation.RemovedAt));
+			station.Edit(code, new Installation(installation.InstalledAt.AddYears(-1).AddMonths(-2).AddDays(-5), installation.RemovedAt));
 			await dbContext.SaveChangesAsync();
 
 			// Revert the installed at change
 
-			station.UpdateInstallation(installation);
+			station.Edit(code, installation);
 			await dbContext.SaveChangesAsync();
 
 			// Add removed at
 
-			station.UpdateInstallation(new Installation(installation.InstalledAt, removedAts[i]));
+			station.Edit(code, new Installation(installation.InstalledAt, removedAts[i]));
 			await dbContext.SaveChangesAsync();
 
 			// Revert the location change

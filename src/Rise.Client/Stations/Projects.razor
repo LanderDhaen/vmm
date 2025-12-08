@@ -3,7 +3,7 @@
 
 <PageTitle>Project Details</PageTitle>
 
-@if (_projectsFromStation is null)
+@if (ProjectsFromStation is null)
 {
 	<MudContainer Class="d-flex justify-center align-center">
 		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
@@ -14,26 +14,7 @@ else
 	@* Desktop view *@
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudTextField T="string"
-			              InputType="InputType.Search"
-			              Label="Zoek"
-			              Class="m-0"
-			              Variant="Variant.Outlined"
-			              DebounceInterval="300"
-			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
-			              @bind-Value="_searchTerm"
-			              Margin="Margin.Dense"/>
-			<MudButton Variant="Variant.Filled"
-			           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-			           Size="Size.Small"
-			           Color="Color.Primary"
-			           Class="px-4">
-				Project toevoegen
-			</MudButton>
-		</MudStack>
-
-		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="_projectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
+		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="ProjectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
@@ -64,24 +45,8 @@ else
 	@* Mobile view *@
 
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
-			<MudTextField T="string"
-			              InputType="InputType.Search"
-			              Label="Zoek"
-			              Class="m-0"
-			              Variant="Variant.Outlined"
-			              DebounceInterval="300"
-			              OnDebounceIntervalElapsed="HandleIntervalElapsed"
-			              @bind-Value="_searchTerm"
-			              Margin="Margin.Dense"/>
-			<MudIconButton Variant="Variant.Filled"
-			               Icon="@Icons.Material.Filled.PlaylistAdd"
-			               Size="Size.Small"
-			               Color="Color.Primary"/>
-		</MudStack>
-
 		<MudGrid Spacing="4">
-			@foreach (var item in _projectsFromStation)
+			@foreach (var item in ProjectsFromStation)
 			{
 				<MudItem xs="12">
 					<ProjectCard Project="item" />

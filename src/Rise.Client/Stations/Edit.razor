@@ -1,5 +1,4 @@
 @page "/stations/edit/{StationId:guid}"
-@using Rise.Client.Components.Location
 @inject NavigationManager Navigation
 
 <PageTitle>Meetstation bewerken</PageTitle>
@@ -14,32 +13,7 @@ else
 		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
 			<MudCardContent>
 				<MudGrid>
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Code</MudText>
-						<MudTextField @bind-Value="Model.Code"
-						              For="@(() => Model.Code)"
-						              Counter="64"
-						              MaxLength="64"
-						              Immediate="true"
-						              Variant="Variant.Outlined"
-						              Placeholder="Code"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Installatie datum</MudText>
-						<MudDatePicker @bind-Date="Model.InstalledAt"
-						               For="@(() => Model.InstalledAt)"
-						               DateFormat="dd/MM/yyyy"
-						               Variant="Variant.Outlined"/>
-					</MudItem>
-
-					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Verwijderd op</MudText>
-						<MudDatePicker @bind-Date="Model.RemovedAt"
-						               For="@(() => Model.RemovedAt)"
-						               DateFormat="dd/MM/yyyy"
-						               Variant="Variant.Outlined"/>
-					</MudItem>
+					
 				</MudGrid>
 			</MudCardContent>
 		</MudForm>
