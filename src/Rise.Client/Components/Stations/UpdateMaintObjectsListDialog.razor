@@ -1,4 +1,5 @@
 @using Rise.Client.Components
+@using Rise.Client.Components.MaintObjects
 @using Rise.Client.Components.Projects
 @using Rise.Shared.MaintObjects
 @using Rise.Shared.Projects
@@ -39,9 +40,9 @@
 				</MudTable>
 				break;
 			case "Nieuw":
-				@* <MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0"> *@
-				@* 	<CreateProjectForm Model="CreateModel"></CreateProjectForm> *@
-				@* </MudForm> *@
+				<MudForm Model="@CreateModel" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
+					<CreateMaintObjectForm Model="CreateModel"></CreateMaintObjectForm>
+				</MudForm>
 				break;
 		}
 	</DialogContent>

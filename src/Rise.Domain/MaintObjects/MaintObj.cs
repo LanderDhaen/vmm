@@ -7,13 +7,13 @@ namespace Rise.Domain.MaintObjects;
 public class MaintObj : Entity {
 	private MaintObj() { }
 
-	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, MaintObjPlan maintObjPlan, string? brand, Location location) {
+	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, MaintObjPlan maintObjPlan, string? brand, Location? location) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjType = Guard.Against.Null(maintObjType);
 		MaintObjPlan = Guard.Against.Null(maintObjPlan);
 		Brand = brand;
-		Location = Guard.Against.Null(location);
+		Location = location;
 	}
 
 	public string Name { get; private set; }

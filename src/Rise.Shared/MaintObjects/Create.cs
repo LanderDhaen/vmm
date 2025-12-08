@@ -12,6 +12,7 @@ public static partial class MaintObjRequest {
 		public MaintObjType MaintObjType { get; set; }
 		public string? Brand { get; set; }
 		public Guid? LocationId { get; set; }
+		public Guid? MeasurementStationId { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
