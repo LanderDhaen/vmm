@@ -4,6 +4,7 @@ using MudBlazor;
 
 using Rise.Client.Services;
 using Rise.Shared.MaintObjects;
+using Rise.Shared.Stations;
 
 namespace Rise.Client.MaintObjects;
 
@@ -14,13 +15,13 @@ public partial class Detail {
 		"Historiek"
 	};
 
-	// ====== Main ======
 	private MaintObjDto.Detail? _maintObj;
 
 	// Drawer
 	// private bool _open;
 
 	private int _selectedTab;
+	private MeasurementStationDto.Index? _stationFromMaintObj;
 
 	[Parameter] public Guid MaintObjId { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
@@ -35,16 +36,12 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		// Load project details and stations in parallel
-		Task<Result<MaintObjResponse.Detail>> detailTask = MaintObjService.GetDetailAsync(MaintObjId);
-		await Task.WhenAll(detailTask);
-
-		Result<MaintObjResponse.Detail> detailResult = detailTask.Result;
+		// Load maintobj details and stations in parallel
+		await GetMaintObjDetailAsync();
+		// await GetStationAsync();
 
 		// --- Project detail ---
-		if (detailResult.IsSuccess) {
-			_maintObj = detailResult.Value.MaintObj;
-
+		if (_maintObj is not null) {
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
 				new BreadcrumbItem("Onderhoudsobjecten", "/maintObjects"),
@@ -60,11 +57,37 @@ public partial class Detail {
 					return Task.CompletedTask;
 				}
 			);
+		}
+	}
+
+	private async Task GetMaintObjDetailAsync() {
+		Result<MaintObjResponse.Detail> detail = await MaintObjService.GetDetailAsync(MaintObjId);
+
+		// --- MaintObj detail ---
+		if (detail.IsSuccess) {
+			_maintObj = detail.Value.MaintObj;
 		} else {
-			string message = detailResult.Errors != null
-				? string.Join(Environment.NewLine, detailResult.Errors)
+			string message = detail.Errors != null
+				? string.Join(Environment.NewLine, detail.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
 	}
+	//
+	// private async Task GetStationAsync() {
+	// 	Result<MaintObjResponse.MeasurementStation> stationFromProject =
+	// 		await MaintObjService.GetStationAsync(MaintObjId, new QueryRequest.Search());
+	//
+	// 	// --- Station for this maintobj ---
+	// 	if (stationFromProject is { IsSuccess: true, Value: not null }) {
+	// 		_stationFromMaintObj = stationFromProject.Value.MeasurementStationFromMaintObj;
+	// 	} else {
+	// 		_stationFromMaintObj = null;
+	//
+	// 		string message = stationFromProject.Errors != null
+	// 			? string.Join(Environment.NewLine, stationFromProject.Errors)
+	// 			: "Kon meetstations niet laden.";
+	// 		Snackbar.Add(message, Severity.Warning);
+	// 	}
+	// }
 }
