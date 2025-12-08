@@ -34,7 +34,7 @@ public class MaintObj : Entity {
 
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
-		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.InstalledAt);
+		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);
 		Location = station.Location;
 		SetStatus(MaintObjStatus.Active);
 	}
