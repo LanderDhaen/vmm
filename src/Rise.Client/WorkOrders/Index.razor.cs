@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+
 using MudBlazor;
+
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
@@ -8,7 +10,6 @@ namespace Rise.Client.WorkOrders;
 
 public partial class Index {
 
-	// Sort options (label shown in drawer, value sent as OrderBy)
 	private static readonly (string Value, string Label)[] SortColumns = new[]
 	{
 		("Priority", "Prioriteit"),
