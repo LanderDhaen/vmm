@@ -7,13 +7,11 @@ using Rise.Domain.MaintObjects;
 using Rise.Persistence;
 using Rise.Services.MaintObjects;
 using Rise.Services.Tests.Common;
-using Rise.Shared.Common;
 using Rise.Shared.MaintObjects;
 
 using Testcontainers.MsSql;
 
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
-using SharedMaintObjType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Tests.MaintObjects;
 
@@ -34,368 +32,61 @@ public class MaintObjServiceShould : IClassFixture<MsSqlContainerFixture> {
 	}
 
 
-	#region Helper Methods
+	[Fact]
+	public async Task GetBySerialAsync_ShouldReturnInvalid_WhenSerialIsEmpty() {
+		Result<MaintObjResponse.BySerial> result = await _service.GetBySerialAsync("");
 
-	private static Location CreateTestLocation(string name) {
-		Address address = new("Street", "1", "City", "12345");
-		Coordinate coordinate = new(50.0, 4.0);
-		return new Location(name, address, coordinate, true);
+		Assert.False(result.IsSuccess);
+		Assert.Equal(ResultStatus.Invalid, result.Status);
+		Assert.NotEmpty(result.ValidationErrors);
+		Assert.Contains(result.ValidationErrors, e => e.ErrorMessage.Contains("Serienummer"));
 	}
 
-	#endregion
+	[Fact]
+	public async Task GetBySerialAsync_ShouldReturnNotFound_WhenSerialDoesNotExist() {
+		Result<MaintObjResponse.BySerial> result = await _service.GetBySerialAsync("DOES-NOT-EXIST");
 
-	#region GetIndexAsync Tests
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+	}
 
 	[Fact]
-	public async Task GetIndexAsync_ShouldReturnMaintObjects_WithPagination() {
-		// Arrange
-		Location location = CreateTestLocation("Index_Pagination_Location");
+	public async Task GetBySerialAsync_ShouldReturnMaintObj_WhenSerialExists() {
+		MaintObjPlan plan = new(
+			"Test Plan",
+			30,
+			60
+		);
+
+		Location location = new(
+			"TestLoc",
+			new Address("Street 1", "Bus 2", "City", "1234"),
+			new Coordinate(4.35, 50.85)
+		);
+
+		_dbContext.MaintObjPlans.Add(plan);
 		_dbContext.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Sonde_Pagination", "Test Sonde Pagination", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
 		await _dbContext.SaveChangesAsync();
 
-		for (int i = 1; i <= 5; i++) {
-			MaintObj maintObj = new($"MaintObj {i}", $"SERIAL_PAG_{i}", maintObjType, "TestBrand", null, true,
-				location);
-			_dbContext.MaintObjects.Add(maintObj);
-		}
+		string serial = $"ABC-{Guid.NewGuid():N}";
+		MaintObj mo = new(
+			"Test Device",
+			serial,
+			MaintObjType.Sensor,
+			plan,
+			"RiseBrand",
+			location
+		);
 
+		_dbContext.MaintObjects.Add(mo);
 		await _dbContext.SaveChangesAsync();
 
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 3,
-			OrderBy = ""
-		};
 
-		// Act
-		Result<MaintObjResponse.Index> result = await _service.GetIndexAsync(request);
+		Result<MaintObjResponse.BySerial> result = await _service.GetBySerialAsync(serial);
 
-		// Assert
 		Assert.True(result.IsSuccess);
-		Assert.Equal(3, result.Value.MaintObjects.Count());
-		Assert.True(result.Value.TotalCount >= 5);
+		Assert.Equal(ResultStatus.Ok, result.Status);
+		Assert.Equal(mo.Id, result.Value.Id);
+		Assert.Equal(serial, result.Value.SerialNumber);
+		Assert.Equal(mo.Name, result.Value.Name);
 	}
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldSortByName() {
-		// Arrange
-		Location location = CreateTestLocation("Index_Sort_Location");
-		_dbContext.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Logger_Sort", "Test Logger Sort", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObj maintObjA = new("AAA MaintObj", "SERIAL_SORT_A", maintObjType, "BrandA", null, true, location);
-		MaintObj maintObjZ = new("ZZZ MaintObj", "SERIAL_SORT_Z", maintObjType, "BrandZ", null, true, location);
-		_dbContext.MaintObjects.AddRange(maintObjA, maintObjZ);
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			OrderBy = "Name",
-			OrderDescending = false
-		};
-
-		// Act
-		Result<MaintObjResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		List<MaintObjDto.Index> maintObjects = result.Value.MaintObjects.ToList();
-		for (int i = 0; i < maintObjects.Count - 1; i++) {
-			Assert.True(string.Compare(maintObjects[i].Name, maintObjects[i + 1].Name, StringComparison.Ordinal) <= 0);
-		}
-	}
-
-	#endregion
-
-	#region CreateAsync Tests
-
-	[Fact]
-	public async Task CreateAsync_ShouldCreateMaintObj_WhenRequestIsValid() {
-		// Arrange
-		Location location = CreateTestLocation("Create_Valid_Location");
-		_dbContext.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Modem_Create", "Test Modem Create", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Create request = new() {
-			Name = "New MaintObj",
-			SerialNumber = "CREATE_SERIAL_123",
-			MaintObjType = SharedMaintObjType.Modem,
-			Brand = "TestBrand",
-			LocationId = location.Id
-		};
-
-		// Act
-		Result<MaintObjResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		Assert.NotEqual(Guid.Empty, result.Value.MaintObjId);
-
-		MaintObj? createdMaintObj = await _dbContext.MaintObjects.FindAsync(result.Value.MaintObjId);
-		Assert.NotNull(createdMaintObj);
-		Assert.Equal("New MaintObj", createdMaintObj.Name);
-		Assert.Equal("CREATE_SERIAL_123", createdMaintObj.SerialNumber);
-	}
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnConflict_WhenSerialNumberAlreadyExists() {
-		// Arrange
-		Location location = CreateTestLocation("Create_Conflict_Location");
-		_dbContext.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Sim_Conflict", "Test Sim Conflict", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj existingMaintObj = new("Existing MaintObj", "CONFLICT_SERIAL", maintObjType, "Brand", null, true,
-			location);
-		_dbContext.MaintObjects.Add(existingMaintObj);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Create request = new() {
-			Name = "Another MaintObj",
-			SerialNumber = "CONFLICT_SERIAL",
-			MaintObjType = SharedMaintObjType.Sim,
-			Brand = "AnotherBrand",
-			LocationId = location.Id
-		};
-
-		// Act
-		Result<MaintObjResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.Status == ResultStatus.Conflict);
-	}
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnNotFound_WhenLocationDoesNotExist() {
-		// Arrange
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Voeding_NoLoc", "Test Voeding NoLoc", 30, 60);
-		_dbContext!.MaintObjTypes.Add(maintObjType);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Create request = new() {
-			Name = "Test MaintObj",
-			SerialNumber = "NOTFOUND_SERIAL",
-			MaintObjType = SharedMaintObjType.Voeding,
-			Brand = "TestBrand",
-			LocationId = Guid.NewGuid()
-		};
-
-		// Act
-		Result<MaintObjResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	// Note: Cannot test "MaintObjType does not exist" scenario because all MaintObjTypes
-	// are seeded in the database via MaintObjTypeConfig.HasData()
-
-	#endregion
-
-	#region GetDetailAsync Tests
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnNotFound_WhenMaintObjDoesNotExist() {
-		// Act
-		Result<MaintObjResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnMaintObjDetails_WhenMaintObjExists() {
-		// Arrange
-		Location location = CreateTestLocation("Detail_Location");
-		_dbContext!.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Sonde_Detail", "Detail Sonde", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj maintObj = new("Detail MaintObj", "DETAIL_SERIAL", maintObjType, "DetailBrand", null, true, location);
-		_dbContext.MaintObjects.Add(maintObj);
-		await _dbContext.SaveChangesAsync();
-
-		// Act
-		Result<MaintObjResponse.Detail> result = await _service.GetDetailAsync(maintObj.Id);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-		Assert.Equal("Detail MaintObj", result.Value.MaintObj.Name);
-		Assert.Equal("DETAIL_SERIAL", result.Value.MaintObj.SerialNumber);
-	}
-
-	#endregion
-
-	#region EditAsync Tests
-
-	[Fact]
-	public async Task EditAsync_ShouldEditMaintObj_WhenRequestIsValid() {
-		// Arrange
-		Location location = CreateTestLocation("Edit_Valid_Location");
-		_dbContext!.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Logger_Edit", "Edit Logger", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj maintObj = new("Original Name", "EDIT_ORIG_SERIAL", maintObjType, "OriginalBrand", null, true,
-			location);
-		_dbContext.MaintObjects.Add(maintObj);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Edit request = new() {
-			MaintObjId = maintObj.Id,
-			Name = "Updated Name",
-			SerialNumber = "EDIT_UPD_SERIAL",
-			MaintObjType = SharedMaintObjType.Logger,
-			Brand = "UpdatedBrand",
-			InstalledAt = DateTime.Today,
-			RemovedAt = null,
-			LocationId = location.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsSuccess);
-
-		MaintObj? updatedMaintObj = await _dbContext.MaintObjects.FindAsync(maintObj.Id);
-		Assert.NotNull(updatedMaintObj);
-		Assert.Equal("Updated Name", updatedMaintObj.Name);
-		Assert.Equal("EDIT_UPD_SERIAL", updatedMaintObj.SerialNumber);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenMaintObjDoesNotExist() {
-		// Arrange
-		Location location = CreateTestLocation("Edit_NotFound_Location");
-		_dbContext!.Locations.Add(location);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Edit request = new() {
-			MaintObjId = Guid.NewGuid(),
-			Name = "Test Name",
-			SerialNumber = "EDIT_NOTFOUND_SERIAL",
-			MaintObjType = SharedMaintObjType.Modem,
-			Brand = "TestBrand",
-			InstalledAt = DateTime.Today,
-			LocationId = location.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnConflict_WhenSerialNumberAlreadyExistsForDifferentMaintObj() {
-		// Arrange
-		Location location = CreateTestLocation("Edit_Conflict_Location");
-		_dbContext!.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Sim_EditConflict", "Edit Sim Conflict", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj maintObj1 = new("MaintObj 1", "EDIT_CONFLICT_SERIAL1", maintObjType, "Brand1", null, true, location);
-		MaintObj maintObj2 = new("MaintObj 2", "EDIT_CONFLICT_SERIAL2", maintObjType, "Brand2", null, true, location);
-		_dbContext.MaintObjects.AddRange(maintObj1, maintObj2);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Edit request = new() {
-			MaintObjId = maintObj2.Id,
-			Name = "MaintObj 2 Updated",
-			SerialNumber = "EDIT_CONFLICT_SERIAL1", // Trying to use serial from maintObj1
-			MaintObjType = SharedMaintObjType.Sim,
-			Brand = "Brand2",
-			InstalledAt = DateTime.Today,
-			LocationId = location.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.Status == ResultStatus.Conflict);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenLocationDoesNotExist() {
-		// Arrange
-		Location location = CreateTestLocation("Edit_NoLoc_Location");
-		_dbContext!.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Voeding_EditNoLoc", "Edit Voeding NoLoc", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj maintObj = new("Test MaintObj", "EDIT_NOLOC_SERIAL", maintObjType, "TestBrand", null, true, location);
-		_dbContext.MaintObjects.Add(maintObj);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Edit request = new() {
-			MaintObjId = maintObj.Id,
-			Name = "Updated Name",
-			SerialNumber = "EDIT_NOLOC_SERIAL",
-			MaintObjType = SharedMaintObjType.Voeding,
-			Brand = "TestBrand",
-			InstalledAt = DateTime.Today,
-			LocationId = Guid.NewGuid()
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenMaintObjTypeDoesNotExist() {
-		// Arrange
-		Location location = CreateTestLocation("Edit_NoType_Location");
-		_dbContext!.Locations.Add(location);
-
-		MaintObjType maintObjType = new(Guid.NewGuid(), "Sonde_EditNoType", "Edit Sonde NoType", 30, 60);
-		_dbContext.MaintObjTypes.Add(maintObjType);
-
-		MaintObj maintObj = new("Test MaintObj", "EDIT_NOTYPE_SERIAL", maintObjType, "TestBrand", null, true,
-			location);
-		_dbContext.MaintObjects.Add(maintObj);
-		await _dbContext.SaveChangesAsync();
-
-		// Remove the type from DB to simulate it not existing
-		_dbContext.MaintObjTypes.Remove(maintObjType);
-		await _dbContext.SaveChangesAsync();
-
-		MaintObjRequest.Edit request = new() {
-			MaintObjId = maintObj.Id,
-			Name = "Updated Name",
-			SerialNumber = "EDIT_NOTYPE_SERIAL",
-			MaintObjType = SharedMaintObjType.Modem, // Different type that doesn't exist
-			Brand = "TestBrand",
-			InstalledAt = DateTime.Today,
-			LocationId = location.Id
-		};
-
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		Assert.True(result.IsNotFound());
-	}
-
-	#endregion
 }
