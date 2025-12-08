@@ -22,19 +22,17 @@
 					<MudText Typo="Typo.subtitle2">Installatie datum
 						<MudText Color="Color.Error" Inline="true">*</MudText>
 					</MudText>
-					<MudDatePicker @bind-Date="Model.InstalledAt"
-					               For="@(() => Model.InstalledAt)"
-					               DateFormat="dd/MM/yyyy"
-					               Variant="Variant.Outlined"/>
+					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
+					               DateFormat="dd/MM/yyyy" Variant="Variant.Outlined"
+					               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
 					<MudText Typo="Typo.subtitle2">Verwijderd op
 						<MudText Typo="Typo.caption">(Optioneel)</MudText>
 					</MudText>
-					<MudDatePicker @bind-Date="Model.RemovedAt"
-					               For="@(() => Model.RemovedAt)"
-					               DateFormat="dd/MM/yyyy"
+					<MudDatePicker @bind-Date="Model.RemovedAt" For="@(() => Model.RemovedAt)" DateFormat="dd/MM/yyyy"
+					               IsDateDisabledFunc="@(dt => dt < Model.InstalledAt)"
 					               Variant="Variant.Outlined"/>
 				</MudItem>
 			</MudGrid>

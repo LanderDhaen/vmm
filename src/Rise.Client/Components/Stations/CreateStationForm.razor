@@ -14,8 +14,8 @@
 				<MudText Color="Color.Error" Inline="true">*</MudText>
 			</MudText>
 			<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
-			               DateFormat="dd/MM/yyyy"
-			               Variant="Variant.Outlined"/>
+			               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))"
+			               DateFormat="dd/MM/yyyy" Variant="Variant.Outlined"/>
 		</MudItem>
 
 		<LocationForm Model="Model"></LocationForm>
