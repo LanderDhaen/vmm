@@ -42,19 +42,32 @@
 
                 <MudItem xs="12">
                     <MudText Typo="Typo.subtitle2">Onderhoudsobject</MudText>
-                    <MudSelect T="Guid?"
-                               @bind-Value="Model.MaintObjId"
-                               Variant="Variant.Outlined">
-                        @if (_maintObjs is not null)
-                        {
-                            @foreach (var mo in _maintObjs)
-                            {
-                                <MudSelectItem T="Guid?" Value="@((Guid?)mo.Id)">
-                                    @mo.Name (@mo.SerialNumber)
-                                </MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
+
+                    <MudAutocomplete T="MaintObjDto.Index"
+                                     Dense="true"
+                                     Clearable="true"
+                                     ResetValueOnEmptyText="true"
+                                     @bind-Value="_selectedMaintObj"
+                                     @bind-Value:after="OnMaintObjChanged"
+                                     SearchFunc="SearchMaintObjs"
+                                     ToStringFunc="MaintObjToString"
+                                     CoerceText="true"
+                                     CoerceValue="true"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.End"
+                                     AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
+                                     OnAdornmentClick="OpenQrScanner"
+                                     Placeholder="Typ naam of serienummer…"
+                                     Required="true"
+                                     RequiredError="Kies een onderhoudsobject">
+
+                        <ItemTemplate Context="mo">
+                            <div class="d-flex flex-column">
+                                <span>@mo.Name</span>
+                                <small class="text-muted">@mo.SerialNumber</small>
+                            </div>
+                        </ItemTemplate>
+                    </MudAutocomplete>
                 </MudItem>
 
             </MudGrid>
