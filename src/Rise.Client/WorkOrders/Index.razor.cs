@@ -89,5 +89,16 @@ public partial class Index {
 		if (result.IsSuccess) {
 			_mobilityWorkOrders = result.Value.WorkOrders;
 		}
+		StateHasChanged();
 	}
+
+	private void ToggleSortingDrawer() => _mobileSortOptionsOpen = !_mobileSortOptionsOpen;
+
+	private async Task SortMobileAsync(string orderBy, bool descending) {
+		_activeSorting = orderBy;
+		_activeSortingDesc = descending;
+		await GetWorkOrdersMobileAsync();
+		ToggleSortingDrawer();
+	}
+
 }
