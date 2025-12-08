@@ -217,7 +217,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 		};
 
 		return Result.Success(new ProjectResponse.Detail {
-			Project = projectDto,
+			Project = projectDto
 		});
 	}
 
@@ -307,7 +307,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(new ProjectResponse.MeasurementStations() {
+		return Result.Success(new ProjectResponse.MeasurementStations {
 			MeasurementStationsFromProject = stations
 		});
 	}
