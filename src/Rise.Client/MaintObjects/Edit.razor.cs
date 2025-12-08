@@ -4,8 +4,6 @@ using MudBlazor;
 
 using Rise.Client.Components;
 using Rise.Client.Services;
-using Rise.Shared.Common;
-using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
 namespace Rise.Client.MaintObjects;
@@ -34,10 +32,7 @@ public partial class Edit {
 				MaintObjId = maintObj.Value.MaintObj.Id,
 				Name = maintObj.Value.MaintObj.Name,
 				SerialNumber = maintObj.Value.MaintObj.SerialNumber,
-				MaintObjType = maintObj.Value.MaintObj.MaintObjType,
 				Brand = maintObj.Value.MaintObj.Brand,
-				InstalledAt = maintObj.Value.MaintObj.InstalledAt,
-				RemovedAt = maintObj.Value.MaintObj.RemovedAt,
 			};
 		}
 
@@ -59,26 +54,27 @@ public partial class Edit {
 	}
 
 	private async Task OpenQrScanner() {
-		var options = new DialogOptions {
+		DialogOptions options = new() {
 			CloseButton = true,
 			MaxWidth = MaxWidth.Small,
 			FullWidth = true
 		};
 
-		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
-		var result = await dialog.Result;
+		IDialogReference dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		DialogResult? result = await dialog.Result;
 
-		if (result.Canceled || result.Data is not string decoded)
+		if (result.Canceled || result.Data is not string decoded) {
 			return;
+		}
 
-		var serial = decoded.Trim();
+		string serial = decoded.Trim();
 
 		if (string.IsNullOrWhiteSpace(serial)) {
 			Snackbar.Add("Onleesbare code: geen serienummer gevonden.", Severity.Error);
 			return;
 		}
 
-		var existsResult = await MaintObjService.GetBySerialAsync(serial);
+		Result<MaintObjResponse.BySerial> existsResult = await MaintObjService.GetBySerialAsync(serial);
 		if (existsResult.IsSuccess && existsResult.Value.Id != Model.MaintObjId) {
 			Snackbar.Add("Dit serienummer hoort al bij een ander toestel.", Severity.Warning);
 		}

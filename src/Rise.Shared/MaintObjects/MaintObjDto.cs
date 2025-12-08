@@ -1,4 +1,5 @@
 using Rise.Shared.Locations;
+using Rise.Shared.Stations;
 
 namespace Rise.Shared.MaintObjects;
 
@@ -33,6 +34,8 @@ public static class MaintObjDto {
 
 		public required LocationDto.Detail Location { get; init; }
 		public required string? StationCode { get; init; }
+
+		public required MeasurementStationDto.Detail Station { get; init; }
 
 		public required DateTime? InstalledAt { get; init; }
 		public required DateTime? RemovedAt { get; init; }
