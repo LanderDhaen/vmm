@@ -10,9 +10,9 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Components.Location;
 
 public partial class LocationForm {
+	private MudAutocomplete<Guid?>? _locationIdField;
 	private IEnumerable<LocationDto.Index>? _locations;
 	private string _searchText = string.Empty;
-	private MudAutocomplete<Guid?>? _locationIdField;
 
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public required ILocationRequest Model { get; set; }
@@ -78,11 +78,7 @@ public partial class LocationForm {
 	private string BuildString(Guid? id) {
 		LocationDto.Index? location = _locations!.FirstOrDefault(x => x.Id == id);
 
-		if (location is null) {
-			return string.Empty;
-		}
-
-		return $"{location.Name} ({location.Address.City})";
+		return location is null ? string.Empty : $"{location.Name} ({location.Address.City})";
 	}
 
 	private async Task OpenMapDialog() {
