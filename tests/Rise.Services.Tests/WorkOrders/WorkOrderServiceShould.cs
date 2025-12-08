@@ -126,8 +126,9 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 		Assert.Equal("City", dto.Location.City);
 		Assert.Equal("1234", dto.Location.PostalCode);
 		Assert.Equal("BE", dto.Location.Country);
-		Assert.Equal(4.35, dto.Location.X);
-		Assert.Equal(50.85, dto.Location.Y);
+		//TODO: temporary precision fix for double comparison, Coordinate should use decimal instead of double
+		Assert.Equal(4.35, dto.Location.X, 2);
+		Assert.Equal(50.85, dto.Location.Y, 2);
 	}
 
 	[Fact]
