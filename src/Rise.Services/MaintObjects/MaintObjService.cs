@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
@@ -27,17 +26,13 @@ public class MaintObjService(ApplicationDbContext dbContext)
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		if (req.Filters.TryGetValue("Status", out object? statusObj)
-			&& statusObj is string status
-			&& status.Equals("Active")) {
+		    && statusObj is string status
+		    && status.Equals("Active")) {
+
 			if (req.Filters.TryGetValue("StationId", out object? stationIdObj)
-				&& stationIdObj is string stationIdStr
-				&& Guid.TryParse(stationIdStr, out Guid parsedId)) {
-				query = query.Where(p =>
-					p.MaintObjStatus == MaintObjStatus.Active &&
-					(
-						p.Station == null || p.Station!.Id == parsedId
-					)
-				);
+			    && stationIdObj is string stationIdStr
+			    && Guid.TryParse(stationIdStr, out Guid parsedId)) {
+				query = query.Where(p => p.MaintObjStatus == MaintObjStatus.Inactive || p.Station!.Id == parsedId);
 			}
 		}
 

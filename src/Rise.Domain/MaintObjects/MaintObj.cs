@@ -1,5 +1,3 @@
-using System.Data;
-
 using Rise.Domain.Locations;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
