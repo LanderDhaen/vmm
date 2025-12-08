@@ -2,17 +2,30 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-using Rise.Client.Projects;
 using Rise.Client.Services;
 using Rise.Shared.Common;
-using Rise.Shared.Projects;
 using Rise.Shared.WorkOrders;
 
 namespace Rise.Client.WorkOrders;
 
 public partial class Index {
 
+	private static readonly (string Value, string Label)[] SortColumns = new[]
+	{
+		("Priority", "Prioriteit"),
+		("MaintObjType", "Onderhoudsobject (type)"),
+		("MaintObj", "Onderhoudsobject"),
+		("Name", "Titel"),
+		("Technician", "Technieker"),
+		("Status", "Status"),
+		("StartDate", "Startdatum"),
+		("EndDate", "Einddatum")
+	};
+
+	private string _activeSorting = "Priority";
+	private bool _activeSortingDesc = true;
 	private IEnumerable<WorkOrderDto.Index>? _mobilityWorkOrders;
+	private bool _mobileSortOptionsOpen;
 
 	[Inject] public required IWorkOrderService WorkOrderService { get; init; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
