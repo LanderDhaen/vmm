@@ -8,16 +8,16 @@ namespace Rise.Client.Components.MaintObjects;
 
 public partial class EditFormDialog {
 	private readonly MaintObjRequest.Edit.Validator _validator = new();
+	private MudForm _form = null!;
 	private Result? _result;
-	private MudForm form = default!;
 
 	[Parameter] public Guid MaintObjId { get; set; }
-	[Parameter] public MaintObjDto.Detail MaintObj { get; set; } = default!;
-	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
-	[Inject] public required IMaintObjService MaintObjService { get; set; } = default!;
-	[Inject] public required IDialogService DialogService { get; set; } = default!;
-	private MaintObjRequest.Edit Model { get; set; } = default!;
+	[Parameter] public MaintObjDto.Detail MaintObj { get; set; } = null!;
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = null!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	[Inject] public required IMaintObjService MaintObjService { get; set; } = null!;
+	[Inject] public required IDialogService DialogService { get; set; } = null!;
+	private MaintObjRequest.Edit Model { get; set; } = null!;
 
 	protected override Task OnInitializedAsync() {
 		if (MaintObj is not null) {
@@ -25,7 +25,6 @@ public partial class EditFormDialog {
 				MaintObjId = MaintObj.Id,
 				Name = MaintObj.Name,
 				SerialNumber = MaintObj.SerialNumber,
-				MaintObjType = MaintObj.MaintObjType,
 				Brand = MaintObj.Brand,
 				InstalledAt = MaintObj.InstalledAt,
 				RemovedAt = MaintObj.RemovedAt
@@ -38,7 +37,6 @@ public partial class EditFormDialog {
 	private void Cancel() {
 		MudDialog.Cancel();
 	}
-
 
 	private async Task OpenQrScanner() {
 		DialogOptions options = new() {
@@ -72,9 +70,9 @@ public partial class EditFormDialog {
 	}
 
 	private async Task EditMaintObjAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (form.IsValid) {
+		if (_form.IsValid) {
 			_result = await MaintObjService.EditAsync(Model, CancellationToken.None);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Onderhoudsobject succesvol aangepast!", Severity.Success);

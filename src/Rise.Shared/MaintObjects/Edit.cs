@@ -10,7 +10,6 @@ public static partial class MaintObjRequest {
 		public required Guid MaintObjId { get; set; }
 		public required string Name { get; set; }
 		public required string SerialNumber { get; set; }
-		public required MaintObjType MaintObjType { get; set; }
 		public string? Brand { get; set; }
 		public DateTime? InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
@@ -22,8 +21,6 @@ public static partial class MaintObjRequest {
 					.MaximumLength(250).WithMessage("Naam mag maar max. 250 karakter hebben.");
 				RuleFor(x => x.SerialNumber)
 					.NotEmpty().WithMessage("Serienummer mag niet leeg zijn.");
-				RuleFor(x => x.MaintObjType)
-					.NotNull().WithMessage("Je moet een type selecteren.");
 			}
 
 			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {

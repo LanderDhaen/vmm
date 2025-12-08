@@ -1,10 +1,9 @@
-@using Rise.Shared.MaintObjects
 <MudDialog Class="mx-3">
 	<TitleContent>
 		<MudText Typo="Typo.h6">Onderhoudsobject aanpassen</MudText>
 	</TitleContent>
 	<DialogContent>
-		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0"
+		<MudForm Model="@Model" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0"
 		         Style="width: 80vw; max-width: 80vh">
 			<MudGrid>
 				<MudItem xs="12" sm="6">
@@ -24,18 +23,6 @@
 					              AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
 					              OnAdornmentClick="OpenQrScanner"
 					/>
-				</MudItem>
-
-				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Type</MudText>
-					<MudSelect @bind-Value="Model.MaintObjType"
-					           For="@(() => Model.MaintObjType)"
-					           Placeholder="Selecteer een type: " Clearable="true" Variant="Variant.Outlined">
-						@foreach (var type in Enum.GetValues(typeof(MaintObjType)).Cast<MaintObjType>())
-						{
-							<MudSelectItem Value="type">@type.ToString()</MudSelectItem>
-						}
-					</MudSelect>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
