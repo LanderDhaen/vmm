@@ -4,31 +4,15 @@
 			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 				<MudText Typo="Typo.h6" Color="Color.Primary">Meetstation</MudText>
 			</MudStack>
-			@* Render code only when MeasurementStation is not null to avoid NRE *@
-			@if (MeasurementStation is null)
-			{
-				<MudText Typo="Typo.subtitle2"><em>Niet gekoppeld</em></MudText>
-			}
-			else
-			{
-				<MudText Typo="Typo.subtitle2">@MeasurementStation.Code</MudText>
-				@* TODO: go to station *@
-			}
+			<MudText Typo="Typo.subtitle2">@Station.Code</MudText>
+			<MudButton Variant="Variant.Text"
+			           StartIcon="@Icons.Material.Filled.OpenInNew"
+			           Size="Size.Small"
+			           Color="Color.Primary"
+			           Class="px-4"
+			           OnClick="@(() => NavigateToMaintObj(Station.Id))">
+				Bekijk
+			</MudButton>
 		</CardHeaderContent>
 	</MudCardHeader>
-
-	<MudCardContent>
-		@* <MudText> *@
-		@* 	<b>Adres:</b> *@
-		@* 	@LocationUtility.FormatAddress( *@
-		@* 		MeasurementStation.AddressLine1, *@
-		@* 		MeasurementStation.AddressLine2, *@
-		@* 		MeasurementStation.City, *@
-		@* 		MeasurementStation.PostalCode, *@
-		@* 		MeasurementStation.Country) *@
-		@* </MudText> *@
-
-		@* <MudText><b>Breedtegraad:</b> @MeasurementStation.X</MudText> *@
-		@* <MudText><b>Lengtegraad:</b> @MeasurementStation.Y</MudText> *@
-	</MudCardContent>
 </MudCard>

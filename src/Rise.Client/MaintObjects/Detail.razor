@@ -67,16 +67,15 @@ else
 					</MudCard>
 				</MudItem>
 
-				@* MeasurementStationCard *@
-				@* <MudItem xs="12" sm="6"> *@
-				@* 	<StationCard MeasurementStation=""></StationCard> *@
-				@* </MudItem> *@
+
 
 				@* Location *@
 
 				<MudItem xs="12" md="6">
 					<LocationCard Location="_maintObj.Location"/>
 				</MudItem>
+
+
 
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
@@ -100,8 +99,12 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-			</MudGrid>
 
+				@* MeasurementStationCard *@
+				<MudItem xs="12" sm="6">
+					<StationCard MaintOjb="_maintObj"></StationCard>
+				</MudItem>
+			</MudGrid>
 			break;
 
 		case 1:

@@ -5,5 +5,12 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Components.Stations;
 
 public partial class StationCard : ComponentBase {
-	[Parameter] public required MeasurementStationDto.Index MeasurementStation { get; init; }
+	[Inject] private NavigationManager Navigation { get; set; } = default!;
+
+	[Parameter] public required MeasurementStationDto.Detail Station { get; init; }
+
+
+	private void NavigateToMaintObj(Guid id) {
+		Navigation.NavigateTo($"/stations/{id}");
+	}
 }
