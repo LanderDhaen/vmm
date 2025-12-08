@@ -146,7 +146,7 @@ public class Project : Entity {
 
 	private void AddHistoryEntry() {
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), Status, MeasurementNetwork, validityRange);
 		_projectHistories.Add(projectHistory);
 	}
 
@@ -154,8 +154,8 @@ public class Project : Entity {
 		List<ProjectModification> modifications = [];
 		
 		// Add current state as the first history entry
-		
-		_projectHistories.Insert(0, new ProjectHistory(DateRange, MeasurementNetwork, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
+
+		_projectHistories.Insert(0, new ProjectHistory(DateRange, Status, MeasurementNetwork, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
 
 		for (int i = 0; i < _projectHistories.Count - 1; i++) {
 			
@@ -177,12 +177,14 @@ public class ProjectHistory : HistoryEntity {
 	private ProjectHistory() {
 	}
 
-	public ProjectHistory(DateRange dateRange, MeasurementNetwork measurementNetwork ,ValidityRange validityRange) {
+	public ProjectHistory(DateRange dateRange, Status status, MeasurementNetwork measurementNetwork, ValidityRange validityRange) {
 		DateRange = Guard.Against.Null(dateRange);
+		Status = Guard.Against.Null(status);
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 		ValidityRange = Guard.Against.Null(validityRange);
 	}
 
 	public DateRange DateRange { get; init; }
+	public Status Status { get; init; }
 	public MeasurementNetwork  MeasurementNetwork { get; init; }
 }

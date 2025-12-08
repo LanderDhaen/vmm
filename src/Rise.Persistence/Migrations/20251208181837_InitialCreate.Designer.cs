@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251208171324_InitialCreate")]
+    [Migration("20251208181837_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -531,6 +531,9 @@ namespace Rise.Persistence.Migrations
 
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -443,6 +443,7 @@ namespace Rise.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     MeasurementNetworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
