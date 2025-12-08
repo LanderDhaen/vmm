@@ -25,26 +25,30 @@ else
 				@_tabs[1]
 			</MudText>
 		</MudStack>
-
-		@if (_project.Status.Equals(Status.Afgesloten))
-		{
-			<MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success"
-			           OnClick="@ShowStartConfirmationAsync">
-				Opstarten
-			</MudButton>
-		}
-		else
-		{
-			<MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error"
-			           OnClick="@ShowCloseConfirmationAsync">Afsluiten
-			</MudButton>
-		}
 	</MudStack>
 
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-4">
+			<MudGrid Spacing="4">
+				
+				@* Toolbar *@
+				
+				<MudItem xs="12" Class="d-flex justify-end mt-2">
+						@if (_project.Status.Equals(Status.Afgesloten))
+						{
+							<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success"
+							           OnClick="@ShowStartConfirmationAsync">
+								Opstarten
+							</MudButton>
+						}
+						else
+						{
+							<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+							           OnClick="@ShowCloseConfirmationAsync">Afsluiten
+							</MudButton>
+						}
+				</MudItem>
 
 				@* Details *@
 				<MudItem xs="12" md="6">
