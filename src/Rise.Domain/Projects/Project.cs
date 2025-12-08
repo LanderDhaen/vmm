@@ -87,10 +87,8 @@ public class Project : Entity {
 		}
 		
 		// Create history object using old values
-		
-		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
-		_projectHistories.Add(projectHistory);
+
+		AddHistoryEntry();
 		
 		// Assign the new values
 
@@ -106,9 +104,7 @@ public class Project : Entity {
 
 		// Create history object using the old values
 
-		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
-		_projectHistories.Add(projectHistory);
+		AddHistoryEntry();
 
 		// Assign the new values
 	
@@ -126,9 +122,7 @@ public class Project : Entity {
 
 		// Create history object using the old values
 
-		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
-		_projectHistories.Add(projectHistory);
+		AddHistoryEntry();
 
 		// Assign the new values
 
@@ -146,6 +140,14 @@ public class Project : Entity {
 		Status = DateRange.EndDate.HasValue
 			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
 			: Status.Actief;
+	}
+	
+	// History
+
+	private void AddHistoryEntry() {
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
+		_projectHistories.Add(projectHistory);
 	}
 
 	public List<ProjectModification> GetModifications() {
