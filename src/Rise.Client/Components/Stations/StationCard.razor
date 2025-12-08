@@ -1,0 +1,26 @@
+<MudCard Elevation="2" Class="rounded-lg">
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+				<MudText Typo="Typo.h6" Color="Color.Primary">Meetstation</MudText>
+				@* TODO: go to station *@
+			</MudStack>
+			<MudText Typo="Typo.subtitle2">@MeasurementStation.Code</MudText>
+		</CardHeaderContent>
+	</MudCardHeader>
+
+	<MudCardContent>
+		@* <MudText> *@
+		@* 	<b>Adres:</b> *@
+		@* 	@LocationUtility.FormatAddress( *@
+		@* 		MeasurementStation.AddressLine1, *@
+		@* 		MeasurementStation.AddressLine2, *@
+		@* 		MeasurementStation.City, *@
+		@* 		MeasurementStation.PostalCode, *@
+		@* 		MeasurementStation.Country) *@
+		@* </MudText> *@
+
+		@* <MudText><b>Breedtegraad:</b> @MeasurementStation.X</MudText> *@
+		@* <MudText><b>Lengtegraad:</b> @MeasurementStation.Y</MudText> *@
+	</MudCardContent>
+</MudCard>
