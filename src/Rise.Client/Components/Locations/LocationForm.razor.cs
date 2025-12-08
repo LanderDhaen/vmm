@@ -9,7 +9,7 @@ using Rise.Shared.Locations;
 namespace Rise.Client.Components.Locations;
 
 public partial class LocationForm {
-	private readonly MudAutocomplete<Guid?>? _locationIdField;
+	private MudAutocomplete<Guid?>? _locationIdField;
 	private IEnumerable<LocationDto.Index>? _locations;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
@@ -54,7 +54,7 @@ public partial class LocationForm {
 		Model.LocationId = null;
 		Model.Location = new LocationRequest.Create();
 
-		await _locationIdField.ClearAsync();
+		await _locationIdField!.ClearAsync();
 	}
 
 	private string BuildString(Guid? id) {
