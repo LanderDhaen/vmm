@@ -12,7 +12,6 @@ using Rise.Services.Stations;
 using Rise.Services.Tests.Common;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
-using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 using Testcontainers.MsSql;
@@ -20,6 +19,15 @@ using Testcontainers.MsSql;
 namespace Rise.Services.Tests.Stations;
 
 public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixture> {
+	private static readonly DateRange DummyDateRange = new(
+		new DateOnly(2025, 1, 5),
+		new DateOnly(2025, 5, 10)
+	);
+
+	private static readonly Zone DummyZone = new("DummyZone", "DummyCode");
+	private static readonly MeasurementNetwork DummyMeasurementNetwork = new("DummyMeasurementNetwork", DummyZone);
+
+	private static readonly Project DummyProject = new("dummyproject", "DP-1", DummyDateRange, DummyMeasurementNetwork);
 	private readonly ApplicationDbContext _dbContext;
 	private readonly MeasurementStationService _service;
 
@@ -36,136 +44,47 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		_service = new MeasurementStationService(_dbContext);
 	}
 
-	#region CreateAsync Tests
-
-	[Fact]
-	public async Task CreateAsync_ShouldCreateStation_WithExistingLocation() {
-		// Arrange
-		Location location = new("Test Location", new Address("Street 1", "", "City", "1000"),
-			new Coordinate(50.0, 4.0));
-		_dbContext.Locations.Add(location);
+	private async Task ResetDatabaseAsync() {
+		// Remove in correct order to avoid FK constraint issues
+		_dbContext.MeasurementStations.RemoveRange(await _dbContext.MeasurementStations.Include(s => s.Projects)
+			.ToListAsync());
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.Create request = new() {
-			Code = "MS_CREATE_001",
-			LocationId = location.Id,
-			IsNewLocation = false,
-			InstalledAt = DateTime.UtcNow
-		};
-
-		// Act
-		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.MeasurementStationId.ShouldNotBe(Guid.Empty);
-
-		MeasurementStation? createdStation =
-			await _dbContext.MeasurementStations.FindAsync(result.Value.MeasurementStationId);
-		createdStation.ShouldNotBeNull();
-		createdStation.Code.ShouldBe("MS_CREATE_001");
-		createdStation.Location.Id.ShouldBe(location.Id);
+		_dbContext.Projects.RemoveRange(await _dbContext.Projects.ToListAsync());
+		_dbContext.MeasurementNetworks.RemoveRange(await _dbContext.MeasurementNetworks.ToListAsync());
+		_dbContext.Zones.RemoveRange(await _dbContext.Zones.ToListAsync());
+		_dbContext.Locations.RemoveRange(await _dbContext.Locations.ToListAsync());
+		await _dbContext.SaveChangesAsync();
 	}
 
-	[Fact]
-	public async Task CreateAsync_ShouldCreateStation_WithNewLocation() {
-		// Arrange
-		MeasurementStationRequest.Create request = new() {
-			Code = "MS_CREATE_002",
-			IsNewLocation = true,
-			Location = new LocationRequest.Create {
-				Name = "New Location",
-				Addressline1 = "New Street 1",
-				Addressline2 = "",
-				City = "New City",
-				PostalCode = "2000",
-				CountryIso = "BE",
-				X = 51.0,
-				Y = 5.0
-			},
-			InstalledAt = DateTime.UtcNow
-		};
+	private async Task<(Guid projectId, Project project, Location location)> CreateProjectAndLocationAsync() {
+		Location location = new(
+			"TestLoc",
+			new Address("Line1", "Line2", "City", "1234"),
+			new Coordinate(4.35, 50.85));
 
-		// Act
-		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-
-		MeasurementStation? createdStation =
-			await _dbContext!.MeasurementStations.Include(s => s.Location).FirstOrDefaultAsync(s =>
-				s.Id == result.Value.MeasurementStationId);
-		createdStation.ShouldNotBeNull();
-		createdStation.Code.ShouldBe("MS_CREATE_002");
-		createdStation.Location.Name.ShouldBe("New Location");
-		createdStation.Location.Address.City.ShouldBe("New City");
-	}
-
-	[Fact]
-	public async Task CreateAsync_ShouldReturnNotFound_WhenLocationDoesNotExist() {
-		// Arrange
-		MeasurementStationRequest.Create request = new() {
-			Code = "MS_CREATE_003",
-			LocationId = Guid.NewGuid(),
-			IsNewLocation = false
-		};
-
-		// Act
-		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
-
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
-	}
-
-	#endregion
-
-	#region GetDetailAsync Tests
-
-	[Fact]
-	public async Task GetDetailAsync_ShouldReturnStationDetails_WhenStationExists() {
-		// Arrange
-		Location location = new("Detail Location", new Address("Detail St", "", "Detail City", "3000"),
-			new Coordinate(50.5, 4.5));
 		_dbContext.Locations.Add(location);
 
-		MeasurementStation station =
-			new("MS_DETAIL_001", location, new Installation(DateTime.UtcNow.AddDays(-10)));
-		_dbContext.MeasurementStations.Add(station);
+		DateRange dateRange = new(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31));
+		Project project = new("Test Project", "TP2025", dateRange, DummyMeasurementNetwork);
+		_dbContext.Projects.Add(project);
+
 		await _dbContext.SaveChangesAsync();
 
-		// Act
-		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(station.Id);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.Station.Code.ShouldBe("MS_DETAIL_001");
-		result.Value.Station.Location.ShouldBe("Detail Location");
-		result.Value.Station.City.ShouldBe("Detail City");
+		return (project.Id, project, location);
 	}
 
 	[Fact]
-	public async Task GetDetailAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		// Act
-		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
+	public async Task GetIndexAsync_ShouldReturnPagedResults() {
+		await ResetDatabaseAsync();
+		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
 
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
-	}
+		for (int i = 0; i < 5; i++) {
+			MeasurementStation station = new(
+				$"STN-{i}",
+				loc,
+				new Installation(DateTime.UtcNow.AddDays(-i)));
 
-	#endregion
-
-	#region GetIndexAsync Tests
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldReturnStations_WithPagination() {
-		// Arrange
-		Location location = new("Index Location", new Address("Index St", "", "Index City", "4000"),
-			new Coordinate(50.8, 4.8));
-		_dbContext!.Locations.Add(location);
-
-		for (int i = 1; i <= 5; i++) {
-			MeasurementStation station =
-				new($"MS_INDEX_{i:D3}", location, new Installation(DateTime.UtcNow.AddDays(-i)));
 			_dbContext.MeasurementStations.Add(station);
 		}
 
@@ -174,352 +93,446 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 3,
-			SearchTerm = ""
+			OrderBy = "Code",
+			OrderDescending = false
 		};
 
-		// Act
 		Result<MeasurementStationResponse.Index> result = await _service.GetIndexAsync(request);
 
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.Stations.Count().ShouldBe(3);
-		result.Value.TotalCount.ShouldBeGreaterThanOrEqualTo(5);
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+
+		MeasurementStationResponse.Index payload = result.Value!;
+		Assert.Equal(5, payload.TotalCount);
+		Assert.Equal(3, payload.Stations.Count());
+
+		string[] codes = payload.Stations.Select(s => s.Code).ToArray();
+		Assert.Equal(new[] { "STN-0", "STN-1", "STN-2" }, codes);
+
+		Assert.All(payload.Stations, s => Assert.Equal("TestLoc", s.Location));
+		Assert.All(payload.Stations, s => Assert.Equal("City", s.City));
 	}
 
 	[Fact]
-	public async Task GetIndexAsync_ShouldFilterBySearchTerm_OnCode() {
-		// Arrange
-		Location location = new("Search Location", new Address("Search St", "", "Search City", "5000"),
-			new Coordinate(51.0, 5.0));
-		_dbContext!.Locations.Add(location);
+	public async Task GetIndexAsync_ShouldRespectOrderDescending() {
+		await ResetDatabaseAsync();
+		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
-		MeasurementStation station1 =
-			new("SEARCHABLE_001", location, new Installation(DateTime.UtcNow));
-		MeasurementStation station2 =
-			new("OTHER_001", location, new Installation(DateTime.UtcNow));
-		_dbContext.MeasurementStations.AddRange(station1, station2);
+		foreach (string code in new[] { "STN-1", "STN-2", "STN-3" }) {
+			_dbContext.MeasurementStations.Add(new MeasurementStation(
+				code,
+				loc,
+				new Installation(DateTime.UtcNow)));
+		}
+
 		await _dbContext.SaveChangesAsync();
 
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,
 			Take = 10,
-			SearchTerm = "SEARCHABLE"
-		};
-
-		// Act
-		Result<MeasurementStationResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.Stations.ShouldAllBe(s => s.Code.Contains("SEARCHABLE"));
-	}
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldFilterBySearchTerm_OnLocationName() {
-		// Arrange
-		Location location1 = new("Unique Location Name", new Address("St 1", "", "City 1", "6000"),
-			new Coordinate(51.2, 5.2));
-		Location location2 = new("Other Location", new Address("St 2", "", "City 2", "6001"),
-			new Coordinate(51.3, 5.3));
-		_dbContext!.Locations.AddRange(location1, location2);
-
-		MeasurementStation station1 = new("MS_FILTER_001", location1, new Installation(DateTime.UtcNow));
-		MeasurementStation station2 = new("MS_FILTER_002", location2, new Installation(DateTime.UtcNow));
-		_dbContext.MeasurementStations.AddRange(station1, station2);
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			SearchTerm = "Unique"
-		};
-
-		// Act
-		Result<MeasurementStationResponse.Index> result = await _service.GetIndexAsync(request);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.Stations.ShouldAllBe(s => s.Location!.Contains("Unique"));
-	}
-
-	[Fact]
-	public async Task GetIndexAsync_ShouldSortByInstalledAt_Descending() {
-		// Arrange
-		Location location = new("Sort Location", new Address("Sort St", "", "Sort City", "7000"),
-			new Coordinate(51.5, 5.5));
-		_dbContext!.Locations.Add(location);
-
-		MeasurementStation stationOld =
-			new("MS_SORT_001", location, new Installation(DateTime.UtcNow.AddDays(-30)));
-		MeasurementStation stationNew =
-			new("MS_SORT_002", location, new Installation(DateTime.UtcNow.AddDays(-1)));
-		_dbContext.MeasurementStations.AddRange(stationOld, stationNew);
-		await _dbContext.SaveChangesAsync();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			SearchTerm = "MS_SORT",
-			OrderBy = nameof(Installation.InstalledAt),
+			OrderBy = "Code",
 			OrderDescending = true
 		};
 
-		// Act
 		Result<MeasurementStationResponse.Index> result = await _service.GetIndexAsync(request);
+		Assert.True(result.IsSuccess);
 
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		List<MeasurementStationDto.Index> stations = result.Value.Stations.ToList();
-		stations.Count.ShouldBeGreaterThanOrEqualTo(2);
-		stations[0].InstalledAt.ShouldBeGreaterThan(stations[1].InstalledAt);
+		string[] codes = result.Value!.Stations.Select(s => s.Code).ToArray();
+		Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
 	}
 
-	#endregion
-
-	#region EditAsync Tests
-
 	[Fact]
-	public async Task EditAsync_ShouldUpdateStation_WhenRequestIsValid() {
-		// Arrange
-		Location location1 = new("Edit Location 1", new Address("Edit St 1", "", "Edit City 1", "9000"),
-			new Coordinate(52.5, 6.5));
-		Location location2 = new("Edit Location 2", new Address("Edit St 2", "", "Edit City 2", "9001"),
-			new Coordinate(52.6, 6.6));
-		_dbContext!.Locations.AddRange(location1, location2);
+	public async Task GetDetailAsync_ShouldReturnStationDetails_WhenStationExists() {
+		await ResetDatabaseAsync();
+		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
-		MeasurementNetwork network = new("Edit Network", new Zone("Edit Zone", "EZ"));
-		_dbContext.MeasurementNetworks.Add(network);
+		DateTime installedAt = new(2024, 11, 6, 0, 0, 0, DateTimeKind.Utc);
+		MeasurementStation station = new(
+			"STN-002",
+			loc,
+			new Installation(installedAt));
 
-		Project project = new("Edit Project", "EDIT_PROJ_001", new DateRange(DateOnly.FromDateTime(DateTime.Today)),
-			network);
-		_dbContext.Projects.Add(project);
-
-		MeasurementStation station =
-			new("MS_EDIT_001", location1, new Installation(DateTime.UtcNow.AddDays(-10)));
 		_dbContext.MeasurementStations.Add(station);
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.Edit request = new() {
-			StationId = station.Id,
-			Code = "MS_EDIT_001",
-			LocationId = location2.Id,
-			ProjectId = project.Id,
-			InstalledAt = DateTime.UtcNow.AddDays(-5),
-			RemovedAt = DateTime.UtcNow
-		};
+		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(station.Id);
 
-		// Act
-		Result result = await _service.EditAsync(request);
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
 
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-
-		MeasurementStation? updatedStation =
-			await _dbContext.MeasurementStations.Include(s => s.Location)
-				.Include(measurementStation => measurementStation.Installation)
-				.FirstOrDefaultAsync(s => s.Id == station.Id);
-		updatedStation.ShouldNotBeNull();
-		updatedStation.Location.Id.ShouldBe(location2.Id);
-		updatedStation.Installation.RemovedAt.ShouldNotBeNull();
+		MeasurementStationDto.Detail dto = result.Value!.Station;
+		Assert.Equal(station.Id, dto.Id);
+		Assert.Equal("STN-002", dto.Code);
+		Assert.Equal(installedAt, dto.InstalledAt);
+		Assert.Null(dto.RemovedAt);
 	}
 
 	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		// Arrange
-		Location location = new("NotFound Location", new Address("NF St", "", "NF City", "9999"),
-			new Coordinate(53.0, 7.0));
-		_dbContext!.Locations.Add(location);
+	public async Task GetDetailAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+		await ResetDatabaseAsync();
+		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+	}
 
-		MeasurementNetwork network = new("NotFound Network", new Zone("NotFound Zone", "NFZ"));
-		_dbContext.MeasurementNetworks.Add(network);
+	[Fact]
+	public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
+		await ResetDatabaseAsync();
+		(Guid projectId, Project project, Location loc) = await CreateProjectAndLocationAsync();
 
-		Project project = new("NotFound Project", "NF_PROJ_001",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
+		MeasurementStation station = new(
+			"STN-100",
+			loc,
+			new Installation(DateTime.UtcNow));
+
+		station.Projects.Add(project);
+		_dbContext.MeasurementStations.Add(station);
+
+		Project p2 = new("Second Project", "SP-2",
+			new DateRange(new DateOnly(2025, 2, 1)), DummyMeasurementNetwork);
+		_dbContext.Projects.Add(p2);
+		station.Projects.Add(p2);
+
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.Edit request = new() {
-			StationId = Guid.NewGuid(),
-			Code = "MS_NOTFOUND",
-			LocationId = location.Id,
-			ProjectId = project.Id,
-			InstalledAt = DateTime.UtcNow
-		};
+		Result<MeasurementStationResponse.ProjectList> result =
+			await _service.GetProjectsAsync(station.Id, new QueryRequest.Search());
 
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		MeasurementStationResponse.ProjectList? items = result.Value!;
+		Assert.Equal(2, items.Projects.Count());
+		Assert.Contains(items.Projects, x => x.Id == project.Id && x.Code == project.Code && x.Name == project.Name);
+		Assert.Contains(items.Projects, x => x.Id == p2.Id && x.Code == p2.Code && x.Name == p2.Name);
 	}
 
 	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenLocationDoesNotExist() {
-		// Arrange
-		Location location = new("Edit NoLoc Location", new Address("ENL St", "", "ENL City", "9100"),
-			new Coordinate(53.5, 7.5));
-		_dbContext!.Locations.Add(location);
+	public async Task GetProjectsAsync_ShouldReturnEmptyList_WhenStationHasNoProjects() {
+		await ResetDatabaseAsync();
+		(_, _, Location loc) = await CreateProjectAndLocationAsync();
 
-		MeasurementNetwork network = new("Edit NoLoc Network", new Zone("Edit NoLoc Zone", "ENLZ"));
-		_dbContext.MeasurementNetworks.Add(network);
-
-		Project project = new("Edit NoLoc Project", "ENL_PROJ_001",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.Add(project);
-
-		MeasurementStation station =
-			new("MS_EDIT_NOLOC", location, new Installation(DateTime.UtcNow.AddDays(-10)));
+		MeasurementStation station = new(
+			"STN-EMPTY",
+			loc,
+			new Installation(DateTime.UtcNow));
 		_dbContext.MeasurementStations.Add(station);
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.Edit request = new() {
-			StationId = station.Id,
-			Code = "MS_EDIT_NOLOC",
-			LocationId = Guid.NewGuid(),
-			ProjectId = project.Id,
-			InstalledAt = DateTime.UtcNow
-		};
+		Result<MeasurementStationResponse.ProjectList> result =
+			await _service.GetProjectsAsync(station.Id, new QueryRequest.Search());
 
-		// Act
-		Result result = await _service.EditAsync(request);
-
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
-	}
-
-	#endregion
-
-	#region GetProjectsAsync Tests
-
-	[Fact]
-	public async Task GetProjectsAsync_ShouldReturnProjects_WhenStationHasProjects() {
-		// Arrange
-		Location location = new("GetProj Location", new Address("GP St", "", "GP City", "9200"),
-			new Coordinate(54.0, 8.0));
-		_dbContext!.Locations.Add(location);
-
-		MeasurementNetwork network = new("GetProj Network", new Zone("GetProj Zone", "GPZ"));
-		_dbContext.MeasurementNetworks.Add(network);
-
-		Project project1 = new("GetProj Project 1", "GP_PROJ_001",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		Project project2 = new("GetProj Project 2", "GP_PROJ_002",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.AddRange(project1, project2);
-
-		MeasurementStation station =
-			new("MS_GETPROJ_001", location, new Installation(DateTime.UtcNow.AddDays(-10)));
-		station.Projects.Add(project1);
-		station.Projects.Add(project2);
-		_dbContext.MeasurementStations.Add(station);
-		await _dbContext.SaveChangesAsync();
-
-		// Act
-		Result<List<ProjectDto.Index>> result = await _service.GetProjectsAsync(station.Id);
-
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
-		result.Value.Count.ShouldBe(2);
-		result.Value.ShouldContain(p => p.Code == "GP_PROJ_001");
-		result.Value.ShouldContain(p => p.Code == "GP_PROJ_002");
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.Empty(result.Value!.Projects);
 	}
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		// Act
-		Result<List<ProjectDto.Index>> result = await _service.GetProjectsAsync(Guid.NewGuid());
+		await ResetDatabaseAsync();
+		Result<MeasurementStationResponse.ProjectList> result =
+			await _service.GetProjectsAsync(Guid.NewGuid(), new QueryRequest.Search());
 
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
-	#endregion
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNewMeasurementStationId_WithExistingLocation() {
+		await ResetDatabaseAsync();
 
-	#region UpdateProjectsAsync Tests
+		Location location = new(
+			"Location", new Address(null, null, "TestCity", "1234"), new Coordinate(4.35, 50.85));
+
+		_dbContext.Locations.Add(location);
+		await _dbContext.SaveChangesAsync();
+
+		MeasurementStationRequest.Create request = new() {
+			Code = "ST-001",
+			LocationId = location.Id,
+			InstalledAt = new DateTime(2024, 10, 1),
+			IsNewLocation = false
+		};
+
+		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
+
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.NotEqual(Guid.Empty, result.Value!.MeasurementStationId);
+
+		MeasurementStation? created = await _dbContext.MeasurementStations.FindAsync(result.Value.MeasurementStationId);
+		Assert.NotNull(created);
+		Assert.Equal("ST-001", created!.Code);
+		Assert.Equal(location.Id, created.Location.Id);
+		Assert.Equal(new DateTime(2024, 10, 1), created.Installation.InstalledAt);
+	}
 
 	[Fact]
-	public async Task UpdateProjectsAsync_ShouldUpdateProjects_WhenRequestIsValid() {
-		// Arrange
-		Location location = new("UpdateProj Location", new Address("UP St", "", "UP City", "9300"),
-			new Coordinate(54.5, 8.5));
-		_dbContext!.Locations.Add(location);
+	public async Task CreateAsync_ShouldReturnNewMeasurementStationId_WithNewLocation() {
+		await ResetDatabaseAsync();
 
-		MeasurementNetwork network = new("UpdateProj Network", new Zone("UpdateProj Zone", "UPZ"));
-		_dbContext.MeasurementNetworks.Add(network);
+		MeasurementStationRequest.Create request = new() {
+			Code = "ST-001",
+			Location = new LocationRequest.Create {
+				Name = "New Location",
+				Addressline1 = null,
+				Addressline2 = null,
+				City = "NewCity",
+				PostalCode = "5678",
+				CountryIso = "BE",
+				X = 4.40,
+				Y = 50.90
+			},
+			InstalledAt = new DateTime(2024, 10, 1),
+			IsNewLocation = true
+		};
 
-		Project project1 = new("UpdateProj Project 1", "UP_PROJ_001",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		Project project2 = new("UpdateProj Project 2", "UP_PROJ_002",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		Project project3 = new("UpdateProj Project 3", "UP_PROJ_003",
-			new DateRange(DateOnly.FromDateTime(DateTime.Today)), network);
-		_dbContext.Projects.AddRange(project1, project2, project3);
+		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
 
-		MeasurementStation station =
-			new("MS_UPDATEPROJ_001", location, new Installation(DateTime.UtcNow.AddDays(-10)));
-		station.Projects.Add(project1);
+		Assert.True(result.IsSuccess);
+		Assert.NotNull(result.Value);
+		Assert.NotEqual(Guid.Empty, result.Value!.MeasurementStationId);
+
+		MeasurementStation? created = await _dbContext.MeasurementStations.FindAsync(result.Value.MeasurementStationId);
+		Assert.NotNull(created);
+		Assert.Equal("ST-001", created!.Code);
+		Assert.NotEqual(Guid.Empty, created.Location.Id);
+		Assert.Equal("New Location", created.Location.Name);
+		Assert.Equal(new DateTime(2024, 10, 1), created.Installation.InstalledAt);
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnConflict_WithNonExistingLocationId() {
+		await ResetDatabaseAsync();
+
+		MeasurementStationRequest.Create request = new() {
+			Code = "ST-001",
+			LocationId = Guid.NewGuid(),
+			InstalledAt = new DateTime(2024, 10, 1),
+			IsNewLocation = false
+		};
+
+		Result<MeasurementStationResponse.Create> result = await _service.CreateAsync(request);
+
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal("Locatie niet gevonden.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldUpdateFields_WhenValid() {
+		await ResetDatabaseAsync();
+		(Guid _, Project project1, Location loc1) = await CreateProjectAndLocationAsync();
+		Location loc2 = new("Loc-2", new Address("l1", "l2", "City2", "2222"), new Coordinate(4.4, 50.9));
+		Project project2 = new("Second Project", "SP-2",
+			new DateRange(new DateOnly(2025, 2, 1), new DateOnly(2025, 12, 31)), DummyMeasurementNetwork);
+		_dbContext.Locations.Add(loc2);
+		_dbContext.Projects.Add(project2);
+		await _dbContext.SaveChangesAsync();
+
+		DateTime originalInstalled = new(2024, 10, 1, 0, 0, 0, DateTimeKind.Utc);
+		MeasurementStation station = new(
+			"STN-200",
+			loc1,
+			new Installation(originalInstalled));
 		_dbContext.MeasurementStations.Add(station);
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.UpdateProjects request = new() {
-			MeasurementStationId = station.Id,
-			ProjectIds = [project2.Id, project3.Id]
+		DateTime newInstalled = new(2024, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+		DateTime newRemoved = new(2024, 12, 1, 0, 0, 0, DateTimeKind.Utc);
+
+		MeasurementStationRequest.Edit req = new() {
+			StationId = station.Id,
+			Code = "STN-200",
+			LocationId = loc2.Id,
+			ProjectId = project2.Id,
+			InstalledAt = newInstalled,
+			RemovedAt = newRemoved
 		};
 
-		// Act
-		Result result = await _service.UpdateProjectsAsync(request);
+		Result result = await _service.EditAsync(req);
 
-		// Assert
-		result.IsSuccess.ShouldBeTrue();
+		Assert.True(result.IsSuccess);
 
-		MeasurementStation? updatedStation = await _dbContext.MeasurementStations
+		MeasurementStation reloaded = await _dbContext.MeasurementStations
+			.Include(s => s.Location)
 			.Include(s => s.Projects)
-			.FirstOrDefaultAsync(s => s.Id == station.Id);
-		updatedStation.ShouldNotBeNull();
-		updatedStation.Projects.Count.ShouldBe(2);
-		updatedStation.Projects.ShouldContain(p => p.Id == project2.Id);
-		updatedStation.Projects.ShouldContain(p => p.Id == project3.Id);
-		updatedStation.Projects.ShouldNotContain(p => p.Id == project1.Id);
+			.SingleAsync(s => s.Id == station.Id);
+
+		Assert.Equal(loc2.Id, reloaded.Location.Id);
+		Assert.Single(reloaded.Projects);
+		Assert.Equal(project2.Id, reloaded.Projects.First().Id);
+		Assert.Equal(newInstalled, reloaded.Installation.InstalledAt);
+		Assert.Equal(newRemoved, reloaded.Installation.RemovedAt);
 	}
 
 	[Fact]
-	public async Task UpdateProjectsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
-		// Arrange
-		MeasurementStationRequest.UpdateProjects request = new() {
-			MeasurementStationId = Guid.NewGuid(),
-			ProjectIds = [Guid.NewGuid()]
+	public async Task EditAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
+		await ResetDatabaseAsync();
+		MeasurementStationRequest.Edit req = new() {
+			StationId = Guid.NewGuid(),
+			Code = "NOPE",
+			LocationId = Guid.NewGuid(),
+			ProjectId = Guid.NewGuid(),
+			InstalledAt = DateTime.UtcNow
 		};
 
-		// Act
-		Result result = await _service.UpdateProjectsAsync(request);
+		Result result = await _service.EditAsync(req);
 
-		// Assert
-		result.IsNotFound().ShouldBeTrue();
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
 	[Fact]
-	public async Task UpdateProjectsAsync_ShouldReturnError_WhenProjectDoesNotExist() {
-		// Arrange
-		Location location = new("UpdateProj Error Location", new Address("UPE St", "", "UPE City", "9400"),
-			new Coordinate(55.0, 9.0));
-		_dbContext!.Locations.Add(location);
-
-		MeasurementStation station =
-			new("MS_UPDATEPROJ_ERR", location, new Installation(DateTime.UtcNow.AddDays(-10)));
+	public async Task EditAsync_ShouldReturnNotFound_WhenNewLocationDoesNotExist() {
+		await ResetDatabaseAsync();
+		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
+		MeasurementStation station = new(
+			"STN-404L",
+			loc,
+			new Installation(DateTime.UtcNow.AddDays(-4)));
 		_dbContext.MeasurementStations.Add(station);
 		await _dbContext.SaveChangesAsync();
 
-		MeasurementStationRequest.UpdateProjects request = new() {
-			MeasurementStationId = station.Id,
-			ProjectIds = [Guid.NewGuid()]
+		MeasurementStationRequest.Edit req = new() {
+			StationId = station.Id,
+			Code = station.Code,
+			LocationId = Guid.NewGuid(),
+			ProjectId = project.Id,
+			InstalledAt = station.Installation.InstalledAt
 		};
 
-		// Act
-		Result result = await _service.UpdateProjectsAsync(request);
+		Result result = await _service.EditAsync(req);
 
-		// Assert
-		result.IsSuccess.ShouldBeFalse();
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
-	#endregion
+	[Fact]
+	public async Task EditAsync_ShouldReturnNotFound_WhenNewProjectDoesNotExist() {
+		await ResetDatabaseAsync();
+		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
+		MeasurementStation station = new(
+			"STN-404P",
+			loc,
+			new Installation(DateTime.UtcNow.AddDays(-4)));
+		_dbContext.MeasurementStations.Add(station);
+		await _dbContext.SaveChangesAsync();
+
+		MeasurementStationRequest.Edit req = new() {
+			StationId = station.Id,
+			Code = station.Code,
+			LocationId = loc.Id,
+			ProjectId = Guid.NewGuid(),
+			InstalledAt = station.Installation.InstalledAt
+		};
+
+		Result result = await _service.EditAsync(req);
+
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+	}
+
+	[Fact]
+	public async Task EditAsync_ShouldThrow_WhenRemovedBeforeInstalled() {
+		await ResetDatabaseAsync();
+		(_, Project project, Location loc) = await CreateProjectAndLocationAsync();
+		MeasurementStation station = new(
+			"STN-DATE",
+			loc,
+			new Installation(DateTime.UtcNow.AddDays(-10)));
+		_dbContext.MeasurementStations.Add(station);
+		await _dbContext.SaveChangesAsync();
+
+		DateTime installed = new(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc);
+		DateTime removed = new(2025, 1, 5, 0, 0, 0, DateTimeKind.Utc);
+
+		MeasurementStationRequest.Edit req = new() {
+			StationId = station.Id,
+			Code = station.Code,
+			LocationId = loc.Id,
+			ProjectId = project.Id,
+			InstalledAt = installed,
+			RemovedAt = removed
+		};
+
+		await Assert.ThrowsAsync<ArgumentException>(async () => await _service.EditAsync(req));
+	}
+
+	[Fact]
+	public async Task UpdateProjectsAsync_ShouldReturnSuccess() {
+		await ResetDatabaseAsync();
+
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		_dbContext.MeasurementStations.Add(measurementStation);
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateProjects request = new() {
+			MeasurementStationId = measurementStation.Id,
+			ProjectIds = new List<Guid> { project.Id }
+		};
+
+		Result result = await _service.UpdateProjectsAsync(request);
+
+		Assert.True(result.IsSuccess);
+
+		MeasurementStation updated = await _dbContext.MeasurementStations.Include(s => s.Projects)
+			.SingleAsync(s => s.Id == measurementStation.Id);
+		Assert.NotNull(updated);
+		Assert.NotEmpty(updated.Projects);
+		Assert.Equal(project.Id, updated.Projects.First().Id);
+		Assert.Equal(project.Code, updated.Projects.First().Code);
+	}
+
+	[Fact]
+	public async Task UpdateProjectsAsync_ShouldReturnNotFound_WithNonExistingMeasurementStationId() {
+		await ResetDatabaseAsync();
+
+		Zone zone = new("TestZone", "Z-001");
+		MeasurementNetwork measurementNetwork = new("TestNetwork", zone);
+		Project project = new("Test Project", "TP-001", new DateRange(new DateOnly(2025, 1, 1)),
+			measurementNetwork);
+
+		_dbContext.Zones.Add(zone);
+		_dbContext.MeasurementNetworks.Add(measurementNetwork);
+		_dbContext.Projects.Add(project);
+		await _dbContext.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateProjects request = new() {
+			MeasurementStationId = Guid.Empty,
+			ProjectIds = new List<Guid> { project.Id }
+		};
+
+		Result result = await _service.UpdateProjectsAsync(request);
+
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+		Assert.Equal($"Meetstation met id '{request.MeasurementStationId}' is niet gevonden.", result.Errors.First());
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnError_WhenAProjectIsNotFound() {
+		await ResetDatabaseAsync();
+
+		MeasurementStation measurementStation = new("ST-001",
+			new Location("Loc1", new Address("Addr1", "Addr2", "City", "1234"), new Coordinate(4.35, 50.85)),
+			new Installation(new DateTime(2025, 1, 1)));
+
+		_dbContext.MeasurementStations.Add(measurementStation);
+		await _dbContext.SaveChangesAsync();
+
+		MeasurementStationRequest.UpdateProjects request = new() {
+			MeasurementStationId = measurementStation.Id,
+			ProjectIds = new List<Guid> { Guid.NewGuid() }
+		};
+
+		Result result = await _service.UpdateProjectsAsync(request);
+
+		Assert.Equal(ResultStatus.Error, result.Status);
+		Assert.Equal("Een of meerdere projecten zijn niet gevonden.", result.Errors.First());
+	}
 }
