@@ -10,7 +10,6 @@ namespace Rise.Client.WorkOrders;
 public partial class Detail {
 	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 	private int _selectedTab;
-
 	private WorkOrderDto.Detail? _workOrder;
 
 	[Parameter] public Guid WorkOrderId { get; set; }
@@ -89,7 +88,6 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			await GetWorkOrderDetailAsync();
 
-			// Message depends on previous status
 			if (_workOrder?.Status == WorkOrderStatus.Completed) {
 				Snackbar.Add("Werkbon succesvol heropend!", Severity.Success);
 			} else {
@@ -123,7 +121,6 @@ public partial class Detail {
 		}
 	}
 
-	// Show confirmation dialogs
 	private async Task ShowCloseConfirmationAsync() {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
