@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.MaintObjects;
 using Rise.Domain.WorkOrders;
 using Rise.Persistence;
 using Rise.Shared.Common;
@@ -206,18 +207,55 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		return Result.Success(new WorkOrderResponse.Detail { WorkOrder = workOrder });
 	}
 
-	public async Task<Result> UpdateStatusAsync(WorkOrderRequest.UpdateStatus req, CancellationToken ctx = default) {
+	public async Task<Result> UpdateStatusAsync(
+		WorkOrderRequest.UpdateStatus req,
+		CancellationToken ctx = default
+	) {
 		WorkOrder? workOrder = await dbContext.WorkOrders
+			.Include(x => x.MaintObj)
 			.SingleOrDefaultAsync(x => x.Id == req.WorkOrderId, ctx);
 
 		if (workOrder is null) {
 			return Result.NotFound($"Werkbon met Id '{req.WorkOrderId}' is niet gevonden.");
 		}
 
-		workOrder.UpdateStatus((Status)req.NewStatus);
+		try {
+			workOrder.UpdateStatus((Status)req.NewStatus);
+		} catch (ArgumentException ex) {
+			return Result.Conflict(ex.Message);
+		}
 
 		await dbContext.SaveChangesAsync(ctx);
 
 		return Result.Success();
+	}
+
+
+	public async Task<Result<WorkOrderResponse.Create>> CreateAsync(
+		WorkOrderRequest.Create req,
+		CancellationToken ctx = default
+	) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.SingleOrDefaultAsync(x => x.Id == req.MaintObjId, ctx);
+
+		if (maintObj is null) {
+			return Result.NotFound(
+				$"Onderhoudsobject met Id '{req.MaintObjId}' is niet gevonden."
+			);
+		}
+
+		WorkOrder workOrder = new(
+			req.Name,
+			req.Description,
+			(Rise.Domain.WorkOrders.Priority)req.Priority,
+			maintObj
+		);
+
+		dbContext.WorkOrders.Add(workOrder);
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Created(new WorkOrderResponse.Create {
+			WorkOrderId = workOrder.Id
+		});
 	}
 }

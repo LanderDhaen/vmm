@@ -1,0 +1,43 @@
+<MudCardContent>
+	<MudGrid>
+		<MudItem xs="12" sm="6">
+			<MudText Typo="Typo.subtitle2">Referentienummer
+				<MudText Color="Color.Error" Inline="true">*</MudText>
+			</MudText>
+			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
+			              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
+		</MudItem>
+
+		<MudItem xs="12" sm="6">
+			<MudText Typo="Typo.subtitle2">Naam
+				<MudText Color="Color.Error" Inline="true">*</MudText>
+			</MudText>
+			<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
+			              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+		</MudItem>
+
+		<MudItem xs="12" sm="6">
+			<MudText Typo="Typo.subtitle2">Start datum
+				<MudText Color="Color.Error" Inline="true">*</MudText>
+			</MudText>
+			<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy"
+			               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))" Variant="Variant.Outlined"/>
+		</MudItem>
+
+		<MudItem xs="12" sm="6">
+			@if (_networks != null)
+			{
+				<MudText Typo="Typo.subtitle2">Meetnet
+					<MudText Color="Color.Error" Inline="true">*</MudText>
+				</MudText>
+				<MudAutocomplete T="Guid?" SearchFunc="Search"
+				                 ToStringFunc="id => _networks.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty"
+				                 @bind-Value="Model.MeasurementNetworkId"
+				                 For="@(() => Model.MeasurementNetworkId)"
+				                 Placeholder="Selecteer een meetnet: " Clearable="true"
+				                 Variant="Variant.Outlined">
+				</MudAutocomplete>
+			}
+		</MudItem>
+	</MudGrid>
+</MudCardContent>
