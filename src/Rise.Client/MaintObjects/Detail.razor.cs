@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components.MaintObjects;
 using Rise.Client.Services;
 using Rise.Shared.MaintObjects;
-using Rise.Shared.Stations;
 
 namespace Rise.Client.MaintObjects;
 
@@ -17,11 +17,7 @@ public partial class Detail {
 
 	private MaintObjDto.Detail? _maintObj;
 
-	// Drawer
-	// private bool _open;
-
 	private int _selectedTab;
-	private MeasurementStationDto.Index? _stationFromMaintObj;
 
 	[Parameter] public Guid MaintObjId { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
@@ -37,7 +33,6 @@ public partial class Detail {
 
 	protected override async Task OnInitializedAsync() {
 		await GetMaintObjDetailAsync();
-		// await GetStationAsync();
 
 		if (_maintObj is not null) {
 			// set breadcrumbs
@@ -71,21 +66,34 @@ public partial class Detail {
 			Snackbar.Add(message, Severity.Error);
 		}
 	}
-	//
-	// private async Task GetStationAsync() {
-	// 	Result<MaintObjResponse.MeasurementStation> stationFromProject =
-	// 		await MaintObjService.GetStationAsync(MaintObjId, new QueryRequest.Search());
-	//
-	// 	// --- Station for this maintobj ---
-	// 	if (stationFromProject is { IsSuccess: true, Value: not null }) {
-	// 		_stationFromMaintObj = stationFromProject.Value.MeasurementStationFromMaintObj;
-	// 	} else {
-	// 		_stationFromMaintObj = null;
-	//
-	// 		string message = stationFromProject.Errors != null
-	// 			? string.Join(Environment.NewLine, stationFromProject.Errors)
-	// 			: "Kon meetstations niet laden.";
-	// 		Snackbar.Add(message, Severity.Warning);
-	// 	}
-	// }
+
+	private async Task OpenEditMaintObjDialogAsync() {
+		DialogParameters<EditFormDialog> parameters = new() {
+			{ x => x.MaintObjId, MaintObjId },
+			{ x => x.MaintObj, _maintObj }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshMaintObjDetails();
+		}
+	}
+
+	//helper
+	private async Task RefreshMaintObjDetails() {
+		Result<MaintObjResponse.Detail> result = await MaintObjService.GetDetailAsync(MaintObjId);
+
+		if (result.IsSuccess) {
+			_maintObj = result.Value.MaintObj;
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
 }
