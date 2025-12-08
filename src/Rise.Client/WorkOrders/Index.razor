@@ -35,12 +35,12 @@
 
 	<MudDataGrid T="WorkOrderDto.Index"
 	             ServerData="GetWorkOrdersAsync"
+	             @ref="_grid"
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
-	             SortMode="SortMode.None"
-	             RowClick="OnRowClick"
-	>
+	             SortMode="SortMode.Single"
+	             RowClick="OnRowClick">
 
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
@@ -50,13 +50,19 @@
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
-			<PropertyColumn Property="x => x.MaintObj" Title="Onderhoudsobject" HeaderClass="mud-theme-primary">
+
+			<PropertyColumn Property="x => x.MaintObj"
+			                SortBy="x => x.MaintObjType"
+			                Title="Onderhoudsobject"
+			                HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					@MaintObjectUtility.TranslateType(context.Item.MaintObjType) @context.Item.MaintObj
 				</CellTemplate>
 			</PropertyColumn>
+
 			<PropertyColumn Property="x => x.Name" Title="Titel" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
+
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(context.Item.Status))">
@@ -64,6 +70,7 @@
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
+
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 		</Columns>
@@ -92,7 +99,7 @@
 		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
 		               Color="Color.Primary"
 		               Size="Size.Small"
-		               Disabled="true"/>
+		               OnClick="@ToggleSortingDrawer"/>
 
 		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
 		               Color="Color.Primary"
@@ -117,7 +124,7 @@
 		else if (!_mobilityWorkOrders.Any())
 		{
 			<MudItem xs="12">
-				<MudText>Geen projecten</MudText>
+				<MudText>Geen werkbonnen</MudText>
 			</MudItem>
 		}
 		else
