@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
-
 using MudBlazor;
-
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
@@ -10,6 +8,7 @@ namespace Rise.Client.WorkOrders;
 
 public partial class Index {
 
+	// Sort options (label shown in drawer, value sent as OrderBy)
 	private static readonly (string Value, string Label)[] SortColumns = new[]
 	{
 		("Priority", "Prioriteit"),
@@ -24,6 +23,7 @@ public partial class Index {
 
 	private string _activeSorting = "Priority";
 	private bool _activeSortingDesc = true;
+
 	private IEnumerable<WorkOrderDto.Index>? _mobilityWorkOrders;
 	private bool _mobileSortOptionsOpen;
 
@@ -46,12 +46,14 @@ public partial class Index {
 		}
 	}
 	private async Task<GridData<WorkOrderDto.Index>> GetWorkOrdersAsync(GridState<WorkOrderDto.Index> state) {
-		_ = state.SortDefinitions.FirstOrDefault();
+
+		var sorting = state.SortDefinitions.FirstOrDefault();
+
 		QueryRequest.SkipTake request = new() {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
-			OrderBy = _activeSorting,
-			OrderDescending = _activeSortingDesc
+			OrderBy = sorting?.SortBy ?? _activeSorting,
+			OrderDescending = sorting?.Descending ?? _activeSortingDesc,
 		};
 
 		Result<WorkOrderResponse.Index> result =
@@ -77,7 +79,7 @@ public partial class Index {
 			Skip = 0,
 			Take = 10,
 			OrderBy = _activeSorting,
-			OrderDescending = _activeSortingDesc
+			OrderDescending = _activeSortingDesc,
 		};
 
 		Result<WorkOrderResponse.Index> result =
