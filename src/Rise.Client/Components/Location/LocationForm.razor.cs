@@ -71,7 +71,7 @@ public partial class LocationForm {
 		Model.Location = new LocationRequest.Create {
 			Name = _searchText
 		};
-		
+
 		await _locationIdField.ClearAsync();
 	}
 
