@@ -9,7 +9,7 @@ using Rise.Shared.Locations;
 namespace Rise.Client.Components.Locations;
 
 public partial class LocationForm {
-	private MudAutocomplete<Guid?>? _locationIdField;
+	private readonly MudAutocomplete<Guid?>? _locationIdField;
 	private IEnumerable<LocationDto.Index>? _locations;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
