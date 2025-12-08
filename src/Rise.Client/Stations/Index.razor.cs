@@ -94,8 +94,7 @@ public partial class Index {
 	// Desktop 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0, null));
+		_ = state.SortDefinitions.FirstOrDefault();
 
 		var request = CreateRequestFromGridState(state);
 
