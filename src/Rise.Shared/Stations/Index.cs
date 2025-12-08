@@ -1,5 +1,4 @@
 using Rise.Shared.Projects;
-using Rise.Shared.MaintObjects;
 
 namespace Rise.Shared.Stations;
 
@@ -22,9 +21,5 @@ public static partial class MeasurementStationResponse {
 
 	public class History {
 		public required IEnumerable<MeasurementStationDto.Modification> Modifications { get; init; }
-	}
-	
-	public class MaintObjList {
-		public IEnumerable<MaintObjDto.Index> MaintObjects { get; set; } = [];
 	}
 }
