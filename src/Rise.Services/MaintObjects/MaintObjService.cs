@@ -153,6 +153,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 					? new MeasurementStationDto.Detail {
 						Id = m.Station.Id,
 						Code = m.Station.Code,
+						InstalledAt = m.Station.Installation.InstalledAt,
+						RemovedAt = m.Station.Installation.RemovedAt,
 						Location = new LocationDto.Detail {
 							Id = m.Station.Location.Id,
 							Name = m.Station.Location.Name,
