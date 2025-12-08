@@ -23,6 +23,14 @@ public class LocationService(ApplicationDbContext dbContext) : ILocationService 
 			query = query.Where(l => l.IsStockLocation == stock);
 		}
 
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			query = query.Where(l =>
+				l.Name.Contains(request.SearchTerm) ||
+				l.Address.City.Contains(request.SearchTerm) ||
+				l.Address.PostalCode.Contains(request.SearchTerm)
+			);
+		}
+
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(l => EF.Property<object>(l, request.OrderBy));
 		} else {

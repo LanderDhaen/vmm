@@ -1,0 +1,55 @@
+<MudDialog Class="mx-3">
+	<TitleContent>
+		<MudText Typo="Typo.h6">Meetstation aanpassen</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0" Style="width: 80vw; max-width: 80vh">
+			<MudGrid>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Code
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+					</MudText>
+					<MudTextField @bind-Value="Model.Code"
+					              For="@(() => Model.Code)"
+					              Counter="64"
+					              MaxLength="64"
+					              Immediate="true"
+					              Variant="Variant.Outlined"
+					              Placeholder="Code"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Installatie datum
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+					</MudText>
+					<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
+					               DateFormat="dd/MM/yyyy" Variant="Variant.Outlined"
+					               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Verwijderd op
+						<MudText Typo="Typo.caption">(Optioneel)</MudText>
+					</MudText>
+					<MudDatePicker @bind-Date="Model.RemovedAt" For="@(() => Model.RemovedAt)" DateFormat="dd/MM/yyyy"
+					               IsDateDisabledFunc="@(dt => dt < Model.InstalledAt)"
+					               Variant="Variant.Outlined"/>
+				</MudItem>
+			</MudGrid>
+		</MudForm>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Save"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@EditStationAsync">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+		           Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
+</MudDialog>

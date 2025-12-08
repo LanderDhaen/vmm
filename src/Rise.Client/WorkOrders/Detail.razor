@@ -1,5 +1,6 @@
 @page "/workorders/{WorkOrderId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Shared.WorkOrders
 
 <PageTitle>Werkbon Details</PageTitle>
 
@@ -12,16 +13,27 @@
 else
 {
 	@* Tabs *@
-	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
-		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
-		         @onclick="() => SetTab(0)">
-			@_tabs[0]
-		</MudText>
+	<MudStack Row="true" Justify="Justify.SpaceBetween">
+		<MudStack Row="true" Spacing="8">
+			<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+			         @onclick="() => SetTab(0)">
+				@_tabs[0]
+			</MudText>
 
-		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
-		         @onclick="() => SetTab(1)">
-			@_tabs[1]
-		</MudText>
+			<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+			         @onclick="() => SetTab(1)">
+				@_tabs[1]
+			</MudText>
+		</MudStack>
+		
+		@if (_workOrder.Status.Equals(WorkOrderStatus.Completed))
+		{
+			<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">Heropenen</MudButton>
+		}
+		else
+		{
+			<MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Afsluiten</MudButton>
+		}
 	</MudStack>
 
 	@switch (_selectedTab)

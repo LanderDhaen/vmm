@@ -7,7 +7,6 @@ namespace Rise.Domain.WorkOrders;
 ///     A work order is something that holds a task for a technician on a maintenance object
 /// </summary>
 public class WorkOrder : Entity {
-
 	// Constructors
 
 	/// <summary>
@@ -38,12 +37,31 @@ public class WorkOrder : Entity {
 	// Functions
 	public void AssignTechnician(Technician technician) {
 		Technician = technician;
-		Status = WorkOrderStatus.InProgress;
-		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
+		MarkAsInProgress();
 	}
 
-	public void MarkAsCompleted() {
+	public void UpdateStatus(WorkOrderStatus status) {
+		if (Status.Equals(status)) {
+			return;
+		}
+
+		if (status.Equals(WorkOrderStatus.InProgress)) {
+			MarkAsInProgress();
+		} else {
+			MarkAsCompleted();
+		}
+	}
+
+	private void MarkAsCompleted() {
 		Status = WorkOrderStatus.Completed;
 		DateRange = new DateRange(DateRange!.StartDate, DateOnly.FromDateTime(DateTime.UtcNow));
+	}
+
+	private void MarkAsInProgress() {
+		Status = Technician is not null
+			? WorkOrderStatus.InProgress
+			: WorkOrderStatus.Pending;
+
+		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
 	}
 }

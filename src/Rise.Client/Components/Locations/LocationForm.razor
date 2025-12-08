@@ -1,14 +1,13 @@
-<MudItem xs="12" sm="6" Class="my-n4">
+<MudItem xs="12" sm="6">
 	@if (_locations is not null)
 	{
 		<MudText Typo="Typo.subtitle2">Locatie
 			<MudText Color="Color.Error" Inline="true">*</MudText>
 		</MudText>
-		<MudAutocomplete T="Guid?" SearchFunc="Search" @ref="_locationIdField"
+		<MudAutocomplete T="Guid?" SearchFunc="@Search" @ref="_locationIdField"
 		                 ToStringFunc="@(id => BuildString(id))"
 		                 @bind-Value="Model.LocationId"
-		                 @bind-Value:after="OnLocationSelected"
-		                 @bind-Text="_searchText"
+		                 @bind-Value:after="@OnLocationSelected"
 		                 For="@(() => Model.LocationId)"
 		                 Placeholder="Selecteer een locatie: " Clearable="true"
 		                 Variant="Variant.Outlined">
@@ -35,7 +34,8 @@
 					<MudText Color="Color.Error" Inline="true">*</MudText>
 				</MudText>
 				<MudTextField @bind-Value="Model.Location!.Name" For="@(() => Model.Location!.Name)"
-				              Counter="50" MaxLength="50" Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+				              Counter="50" MaxLength="50" Immediate="true" Variant="Variant.Outlined"
+				              Placeholder="Naam"/>
 			</MudItem>
 
 			<MudItem xs="12" sm="6">
@@ -89,7 +89,7 @@
 				<MudTextField @bind-Value="Model.Location!.X" For="@(() => Model.Location!.X)"
 				              Immediate="true" Variant="Variant.Outlined"
 				              Placeholder="X-coordinaat"
-				              HelperText="Bv. 4,034147"/>
+				              HelperText="Bv. 51,015400"/>
 			</MudItem>
 
 			<MudItem xs="12" sm="6">
@@ -97,10 +97,9 @@
 					<MudText Color="Color.Error" Inline="true">*</MudText>
 				</MudText>
 				<MudTextField @bind-Value="Model.Location!.Y" For="@(() => Model.Location!.Y)"
-				              Disabled="!Model.IsNewLocation"
 				              Immediate="true" Variant="Variant.Outlined"
 				              Placeholder="Y-coordinaat"
-				              HelperText="Bv. 51,015400"/>
+				              HelperText="Bv. 4,034147"/>
 			</MudItem>
 
 			<MudItem xs="12">

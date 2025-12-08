@@ -28,7 +28,7 @@ public static partial class ProjectRequest {
 					.MaximumLength(50).WithMessage("Code mag maar max. 50 karakter hebben.");
 				RuleFor(x => x.StartDate)
 					.NotNull().WithMessage("Startdatum mag niet leeg zijn!")
-					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet boven 1 januari 2000 liggen.")
+					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet na 01/01/00 liggen.")
 					.LessThan(DateTime.MaxValue).WithMessage("Startdatum moet onder het maximum zijn.");
 				RuleFor(x => x.EndDate)
 					.Must((model, endDate) => !endDate.HasValue || endDate.Value > model.StartDate)

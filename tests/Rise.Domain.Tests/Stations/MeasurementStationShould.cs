@@ -56,7 +56,7 @@ public class MeasurementStationShould {
 		);
 
 		DateTime removedAt = DateTime.UtcNow;
-		station.UpdateInstallation(new Installation(station.Installation.InstalledAt, removedAt));
+		station.Edit(station.Code, new Installation(station.Installation.InstalledAt, removedAt));
 
 		station.Installation.RemovedAt.ShouldNotBeNull();
 		station.Installation.RemovedAt!.Value.ShouldBe(removedAt, TimeSpan.FromSeconds(1));
