@@ -67,8 +67,8 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			query = query.Where(s =>
 				s.Code.Contains(t) ||
 				s.Location.Name.Contains(t) ||
-				s.Location.Address.Addressline1.Contains(t) ||
-				s.Location.Address.Addressline2.Contains(t) ||
+				(s.Location.Address.Addressline1 != null && s.Location.Address.Addressline1.Contains(t)) ||
+				(s.Location.Address.Addressline2 != null && s.Location.Address.Addressline2.Contains(t)) ||
 				s.Location.Address.City.Contains(t) ||
 				s.Location.Address.PostalCode.Contains(t)
 			);
