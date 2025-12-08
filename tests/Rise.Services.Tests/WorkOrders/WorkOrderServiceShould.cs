@@ -29,6 +29,172 @@ public class WorkOrderServiceShould {
 		return new ApplicationDbContext(options);
 	}
 
+	private static async Task<(ApplicationDbContext db, MaintObj maintObj, Location location, MaintObjPlan plan)>
+		SeedMaintObjAsync() {
+		ApplicationDbContext db = CreateDbContext();
+
+		Location location = new(
+			"TestLoc",
+			new Address("Street 1", "Bus 2", "City", "1234"),
+			new Coordinate(4.35, 50.85));
+
+		MaintObjPlan plan = new("Plan-1", maintenanceIntervalDays: 30, calibrationIntervalDays: 60);
+
+		MaintObj maintObj = new(
+			name: "Pump A",
+			serialNumber: "SN-001",
+			MaintObjType.Sensor,
+			maintObjPlan: plan,
+			brand: "RiseBrand",
+			location: location);
+
+		db.Locations.Add(location);
+		db.MaintObjPlans.Add(plan);
+		db.MaintObjects.Add(maintObj);
+		await db.SaveChangesAsync();
+
+		return (db, maintObj, location, plan);
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldCreateWorkOrder_WhenMaintObjExists() {
+		(ApplicationDbContext db, MaintObj maintObj, _, _) = await SeedMaintObjAsync();
+		WorkOrderService service = new(db);
+
+		WorkOrderRequest.Create req = new() {
+			Name = "Nieuw werkbon",
+			Description = "Beschrijving",
+			Priority = SharedPriority.High,
+			MaintObjId = maintObj.Id
+		};
+
+		Result<WorkOrderResponse.Create> result = await service.CreateAsync(req);
+
+		Assert.Equal(ResultStatus.Created, result.Status);
+		Assert.NotNull(result.Value);
+		Assert.NotEqual(Guid.Empty, result.Value!.WorkOrderId);
+
+		WorkOrder? saved = await db.WorkOrders
+			.Include(x => x.MaintObj)
+			.SingleOrDefaultAsync(x => x.Id == result.Value.WorkOrderId);
+
+		Assert.NotNull(saved);
+		Assert.Equal("Nieuw werkbon", saved!.Name);
+		Assert.Equal("Beschrijving", saved.Description);
+		Assert.Equal(DomainPriority.High, saved.Priority);
+		Assert.Equal(WorkOrderStatus.Pending, saved.Status);
+		Assert.Equal(maintObj.Id, saved.MaintObj.Id);
+	}
+
+	[Fact]
+	public async Task CreateAsync_ShouldReturnNotFound_WhenMaintObjDoesNotExist() {
+		(ApplicationDbContext db, _, _, _) = await SeedMaintObjAsync();
+		WorkOrderService service = new(db);
+
+		WorkOrderRequest.Create req = new() {
+			Name = "WO",
+			Description = "Desc",
+			Priority = SharedPriority.Normal,
+			MaintObjId = Guid.NewGuid()
+		};
+
+		Result<WorkOrderResponse.Create> result = await service.CreateAsync(req);
+
+		Assert.Equal(ResultStatus.NotFound, result.Status);
+	}
+
+	[Fact]
+	public async Task UpdateStatusAsync_ShouldReturnConflict_WhenCompletingPendingWorkOrder() {
+		(ApplicationDbContext db, MaintObj maintObj, _, _) = await SeedMaintObjAsync();
+
+		WorkOrder workOrder = new(
+			name: "Fix leak",
+			description: "Replace gasket",
+			priority: DomainPriority.Normal,
+			maintObj: maintObj);
+
+		db.WorkOrders.Add(workOrder);
+		await db.SaveChangesAsync();
+
+		WorkOrderService service = new(db);
+
+		Result result = await service.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = workOrder.Id,
+			NewStatus = SharedStatus.Completed
+		});
+
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+	}
+
+	[Fact]
+	public async Task UpdateStatusAsync_ShouldCancelPendingWorkOrder_WhenRequested() {
+		(ApplicationDbContext db, MaintObj maintObj, _, _) = await SeedMaintObjAsync();
+
+		WorkOrder workOrder = new(
+			"WO",
+			"Desc",
+			DomainPriority.Normal,
+			maintObj);
+
+		db.WorkOrders.Add(workOrder);
+		await db.SaveChangesAsync();
+
+		WorkOrderService service = new(db);
+
+		Result result = await service.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = workOrder.Id,
+			NewStatus = SharedStatus.Cancelled
+		});
+
+		Assert.True(result.IsSuccess);
+
+		WorkOrder? updated = await db.WorkOrders.SingleAsync(x => x.Id == workOrder.Id);
+		Assert.Equal(WorkOrderStatus.Cancelled, updated.Status);
+		Assert.Null(updated.DateRange);
+	}
+
+	[Fact]
+	public async Task UpdateStatusAsync_ShouldReturnConflict_WhenCancellingInProgressWorkOrder() {
+		(ApplicationDbContext db, MaintObj maintObj, _, _) = await SeedMaintObjAsync();
+
+		WorkOrder workOrder = new("WO", "Desc", DomainPriority.Normal, maintObj);
+		db.WorkOrders.Add(workOrder);
+		await db.SaveChangesAsync();
+
+		workOrder.UpdateStatus(WorkOrderStatus.InProgress);
+		await db.SaveChangesAsync();
+
+		WorkOrderService service = new(db);
+
+		Result result = await service.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = workOrder.Id,
+			NewStatus = SharedStatus.Cancelled
+		});
+
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+	}
+
+	[Fact]
+	public async Task UpdateStatusAsync_ShouldReturnConflict_WhenUpdatingCancelledWorkOrder() {
+		(ApplicationDbContext db, MaintObj maintObj, _, _) = await SeedMaintObjAsync();
+
+		WorkOrder workOrder = new("WO", "Desc", DomainPriority.Normal, maintObj);
+		db.WorkOrders.Add(workOrder);
+		await db.SaveChangesAsync();
+
+		workOrder.UpdateStatus(WorkOrderStatus.Cancelled);
+		await db.SaveChangesAsync();
+
+		WorkOrderService service = new(db);
+
+		Result result = await service.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = workOrder.Id,
+			NewStatus = SharedStatus.InProgress
+		});
+
+		Assert.Equal(ResultStatus.Conflict, result.Status);
+	}
+
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnWorkOrderDetails_WhenWorkOrderExists() {
 		ApplicationDbContext db = CreateDbContext();
