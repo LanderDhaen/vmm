@@ -215,6 +215,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 			.ThenInclude(mn => mn.Zone)
 			.Include(p => p.ProjectHistories)
 			.ThenInclude(h => h.DateRange)
+			.Include(p => p.ProjectHistories.OrderByDescending(h => h.ValidityRange.ValidFrom))
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
 
 		if (project is null) {
