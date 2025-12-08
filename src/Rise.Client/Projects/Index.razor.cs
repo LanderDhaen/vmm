@@ -1,9 +1,6 @@
 using System.Globalization;
-
 using Microsoft.AspNetCore.Components;
-
 using MudBlazor;
-
 using Rise.Client.Services;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
@@ -227,7 +224,7 @@ namespace Rise.Client.Projects {
 				var networkResult = await NetworkService.GetIndexAsync(reqAll, ct);
 				_measurementNetworks = networkResult.Value.measurementsNetworks;
 			} catch (OperationCanceledException) {
-				// negeren
+				
 			} catch (Exception) {
 				_measurementNetworks = Enumerable.Empty<MeasurementNetworkDto.Index>();
 			} finally {
