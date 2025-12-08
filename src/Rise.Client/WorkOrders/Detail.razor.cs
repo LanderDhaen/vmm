@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 using Rise.Client.Services;
-using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
 
 namespace Rise.Client.WorkOrders;
@@ -21,6 +20,7 @@ public partial class Detail {
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 	[Inject] private NavigationManager Navigation { get; set; } = default!;
+	[Inject] private IDialogService DialogService { get; set; } = default!;
 
 	protected override async Task OnInitializedAsync() {
 		await GetWorkOrderDetailAsync();
@@ -60,5 +60,70 @@ public partial class Detail {
 
 	private void NavigateToMaintObj(Guid id) {
 		Navigation.NavigateTo($"/maintobjects/{id}");
+	}
+
+	private async Task Close() {
+		Result result = await WorkOrderService.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = WorkOrderId,
+			NewStatus = WorkOrderStatus.Completed
+		});
+
+		if (result.IsSuccess) {
+			await GetWorkOrderDetailAsync();
+			Snackbar.Add("Werkbon succesvol afgesloten!", Severity.Success);
+			StateHasChanged();
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
+	private async Task Start() {
+		Result result = await WorkOrderService.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = WorkOrderId,
+			NewStatus = WorkOrderStatus.InProgress
+		});
+
+		if (result.IsSuccess) {
+			await GetWorkOrderDetailAsync();
+			Snackbar.Add("Werkbon succesvol heropent!", Severity.Success);
+			StateHasChanged();
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
+	// Show confirmation dialogs
+	private async Task ShowCloseConfirmationAsync() {
+		bool? result = await DialogService.ShowMessageBox(
+			"Bevestiging",
+			"Weet u zeker dat u deze werkbon wilt afsluiten?",
+			"Bevestigen",
+			"Annuleren",
+			options: new DialogOptions { CloseOnEscapeKey = true }
+		);
+
+		if (result == true) {
+			await Close();
+		}
+	}
+
+	private async Task ShowStartConfirmationAsync() {
+		bool? result = await DialogService.ShowMessageBox(
+			"Bevestiging",
+			"Weet u zeker dat u deze werkbon wilt heropenen?",
+			"Bevestigen",
+			"Annuleren",
+			options: new DialogOptions { CloseOnEscapeKey = true }
+		);
+
+		if (result == true) {
+			await Start();
+		}
 	}
 }

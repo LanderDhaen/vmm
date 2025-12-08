@@ -15,6 +15,7 @@ using Rise.Shared.WorkOrders;
 using DomainPriority = Rise.Domain.WorkOrders.Priority;
 using SharedPriority = Rise.Shared.WorkOrders.Priority;
 using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
+using WorkOrderStatus = Rise.Domain.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.Tests.WorkOrders;
 
@@ -63,7 +64,7 @@ public class WorkOrderServiceShould {
 		await db.SaveChangesAsync();
 
 		workOrder.AssignTechnician(tech);
-		workOrder.MarkAsCompleted();
+		workOrder.UpdateStatus(WorkOrderStatus.Completed);
 		await db.SaveChangesAsync();
 
 		WorkOrderService service = new(db);
@@ -88,8 +89,8 @@ public class WorkOrderServiceShould {
 		Assert.Equal("Pump A", dto.MaintObj.Name);
 		Assert.Equal("SN-001", dto.MaintObj.SerialNumber);
 		Assert.Equal("RiseBrand", dto.MaintObj.Brand);
-		Assert.Equal(Rise.Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
-		Assert.Equal(Rise.Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
+		Assert.Equal(Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
+		Assert.Equal(Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
 
 		Assert.Equal("TestLoc", dto.MaintObj.Location.Name);
 

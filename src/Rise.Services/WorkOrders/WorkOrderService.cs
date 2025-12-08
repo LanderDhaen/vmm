@@ -11,6 +11,7 @@ using SharedMainObjType = Rise.Shared.MaintObjects.MaintObjType;
 using SharedMaintObjStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedPriority = Rise.Shared.WorkOrders.Priority;
 using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
+using Status = Rise.Domain.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.WorkOrders;
 
@@ -178,5 +179,20 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		}
 
 		return Result.Success(new WorkOrderResponse.Detail { WorkOrder = workOrder });
+	}
+
+	public async Task<Result> UpdateStatusAsync(WorkOrderRequest.UpdateStatus req, CancellationToken ctx = default) {
+		WorkOrder? workOrder = await dbContext.WorkOrders
+			.SingleOrDefaultAsync(x => x.Id == req.WorkOrderId, ctx);
+
+		if (workOrder is null) {
+			return Result.NotFound($"Werkbon met Id '{req.WorkOrderId}' is niet gevonden.");
+		}
+
+		workOrder.UpdateStatus((Status)req.NewStatus);
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
 	}
 }
