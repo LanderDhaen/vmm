@@ -1,5 +1,6 @@
 @page "/projects"
 @using Rise.Client.Components
+@using Rise.Client.Components.Projects
 @using Rise.Shared.Projects
 <PageTitle>Projecten</PageTitle>
 
@@ -43,6 +44,7 @@
 	             SortMode="SortMode.Single"
 	             AllowUnsorted="false"
 	             ShowColumnOptions="false"
+	             RowClass=""
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
@@ -120,26 +122,7 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<MudCard Elevation="2"
-					         Class="rounded-lg"
-					         @onclick="() => NavigateToProject(item.Id)">
-						<MudCardHeader>
-							<CardHeaderContent>
-								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
-								          Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
-									<MudBadge Color="@(ProjectUtility.DefineStatusColor(item.Status))" Dot="true" />
-								</MudStack>
-								<MudText Typo="Typo.h6">@item.Name</MudText>
-							</CardHeaderContent>
-						</MudCardHeader>
-						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Startdatum:</b> @item.StartDate</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Einddatum:</b> @item.EndDate</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Meetnet:</b> @item.MeasurementNetwork</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Zone:</b> @item.Zone</MudText>
-						</MudCardContent>
-					</MudCard>
+					<ProjectCard Project="item" />
 				</MudItem>
 			}
 		}

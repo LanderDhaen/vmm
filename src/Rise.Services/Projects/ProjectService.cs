@@ -22,16 +22,16 @@ public class ProjectService(ApplicationDbContext dbContext)
 	: IProjectService {
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request,
 		CancellationToken ctx = default) {
-		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code, ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", request.Code);
 			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
 		DateOnly startdate = DateOnly.FromDateTime(request.StartDate!.Value);
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId);
+			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId, ctx);
 
-		if (measurementNetwork == null) {
+		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
@@ -54,21 +54,39 @@ public class ProjectService(ApplicationDbContext dbContext)
 			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
 		}
 
-		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId, ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", req.Code);
 			return Result.Conflict($"Project met code '{req.Code}' bestaat al.");
 		}
 
 		DateOnly startdate = DateOnly.FromDateTime(req.StartDate!.Value);
 		DateOnly? enddate = req.EndDate.HasValue ? DateOnly.FromDateTime(req.EndDate.Value) : null;
-		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId);
 
-		if (measurementNetwork == null) {
+		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate));
+
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
+
+	public async Task<Result> UpdateMeasurementNetworkAsync(
+		ProjectRequest.UpdateMeasurementNetwork req,
+		CancellationToken ctx = default) {
+		Project? project = await dbContext.Projects
+			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
+
+		if (project is null) {
+			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
+		}
+
+		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
+			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId, ctx);
+
+		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
-		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate), measurementNetwork);
+		project.UpdateMeasurementNetwork(measurementNetwork);
 
 		await dbContext.SaveChangesAsync(ctx);
 
@@ -155,6 +173,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
+			.Include(p => p.DateRange)
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
@@ -225,13 +244,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
 
-		// Technician? loggedInTechnician = await dbContext.Technicians
-		// 	.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
-		//
-		// if (loggedInTechnician is null) {
-		// 	return Result.Unauthorized("You are not authorized to edit this project.");
-		// }
-
 		project.UpdateStatus((Status)req.NewStatus);
 
 		await dbContext.SaveChangesAsync(ctx);
@@ -295,7 +307,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 			.Where(ms => req.MeasurementStationIds.Contains(ms.Id))
 			.ToListAsync(ctx);
 
-		if (measurementStations.Count != req.MeasurementStationIds.Count()) {
+		if (measurementStations.Count != req.MeasurementStationIds.Count) {
 			return Result.Error("Een of meerdere meetstations zijn niet gevonden.");
 		}
 

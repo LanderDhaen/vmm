@@ -6,7 +6,7 @@ namespace Rise.Domain.MaintObjects;
 ///     Statuses can include Active, Inactive, Defect ... possibly more in the future.
 /// </summary>
 public enum MaintObjStatus {
-	Actief,
-	Inactief,
-	Defect
+	Active,
+	Inactive,
+	Broken
 }

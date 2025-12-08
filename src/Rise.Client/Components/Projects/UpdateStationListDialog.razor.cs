@@ -6,9 +6,9 @@ using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
-namespace Rise.Client.Projects;
+namespace Rise.Client.Components.Projects;
 
-public partial class UpdateStationListOverlay {
+public partial class UpdateStationListDialog {
 	// Radio button
 	private string _selectedOption = "Bestaand";
 
@@ -17,12 +17,21 @@ public partial class UpdateStationListOverlay {
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
 
+	// Form
+	private readonly MeasurementStationRequest.Create.Validator _validator = new();
+	private Result<MeasurementStationResponse.Create>? _createResult;
+	private MudForm _form;
+
+	private MeasurementStationRequest.Create CreateModel { get; } = new() {
+		IsNewLocation = false
+	};
+
+
 	private ProjectRequest.UpdateMeasurementStations Model { get; } = new();
 
 	[CascadingParameter]
 	private IMudDialogInstance MudDialog { get; set; }
 	[Parameter] public Guid ProjectId { get; set; }
-	[Parameter] public EventCallback OnStationsUpdated { get; set; }
 	[Parameter] public IEnumerable<MeasurementStationDto.Index>? Stations { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -35,10 +44,6 @@ public partial class UpdateStationListOverlay {
 	}
 
 	private void CloseOverlay() {
-		// Delete any unsaved changes
-		Model.MeasurementStationIds = Stations?.Select(s => s.Id).ToList() ?? [];
-		StateHasChanged();
-
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
@@ -79,6 +84,14 @@ public partial class UpdateStationListOverlay {
 		}
 	}
 
+	private async Task Save() {
+		if (_selectedOption == "Bestaand") {
+			await UpdateMeasurementStations();
+		} else {
+			await CreateProjectAsync();
+		}
+	}
+
 	private async Task UpdateMeasurementStations() {
 		bool selectionChanged = !Model.MeasurementStationIds.SequenceEqual(
 			Stations?.Select(s => s.Id) ?? []);
@@ -97,10 +110,25 @@ public partial class UpdateStationListOverlay {
 				Stations = stationsResult.Value.MeasurementStationsFromProject;
 			}
 
-			await OnStationsUpdated.InvokeAsync();
 			CloseOverlay();
 		} else {
 			Snackbar.Add(string.Join("\n", _result.Errors), Severity.Error);
+		}
+	}
+
+	private async Task CreateProjectAsync() {
+		await _form.Validate();
+
+		if (_form.IsValid) {
+			CreateModel.ProjectId = ProjectId;
+			_createResult = await StationService.CreateAsync(CreateModel);
+			if (_createResult.IsSuccess) {
+				Snackbar.Add("Meetstation succesvol aangemaakt!", Severity.Success);
+
+				CloseOverlay();
+			} else {
+				Snackbar.Add(string.Join("\n", _createResult.Errors), Severity.Error);
+			}
 		}
 	}
 }

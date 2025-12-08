@@ -6,6 +6,7 @@ using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Shared.Common;
+using Rise.Shared.Locations;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -104,27 +105,39 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 	public async Task<Result<MeasurementStationResponse.Detail>> GetDetailAsync(
 		Guid stationId,
 		CancellationToken ct = default) {
-		MeasurementStation? station = await dbContext.MeasurementStations
-			.AsNoTracking()
-			.Include(s => s.Location)
-			.Include(s => s.Projects)
-			.SingleOrDefaultAsync(s => s.Id == stationId, ct);
+
+		IQueryable<MeasurementStation> query = dbContext.MeasurementStations.AsQueryable().AsNoTracking();
+
+		MeasurementStationDto.Detail? station = await query
+			.Where(s => s.Id == stationId)
+			.Select(s => new MeasurementStationDto.Detail {
+				Id = s.Id,
+				Code = s.Code,
+				InstalledAt = s.Installation.InstalledAt,
+				RemovedAt = s.Installation.RemovedAt,
+				Location = new LocationDto.Detail {
+					Id = s.Location.Id,
+					Name = s.Location.Name,
+					AddressLine1 = s.Location.Address.Addressline1,
+					AddressLine2 = s.Location.Address.Addressline2,
+					City = s.Location.Address.City,
+					PostalCode = s.Location.Address.PostalCode,
+					Country = s.Location.Address.CountryIso,
+					X = s.Location.Coordinate.X,
+					Y = s.Location.Coordinate.Y,
+				},
+				ProjectsCount = s.Projects.Count()
+			})
+			.SingleOrDefaultAsync(ct);
 
 		if (station is null) {
-			return Result.NotFound();
+			return Result.NotFound($"Measurement station with Id '{stationId}' was not found");
 		}
 
-		MeasurementStationDto.Detail dto = new() {
-			Id = station.Id,
-			Code = station.Code,
-			InstalledAt = station.Installation.InstalledAt,
-			RemovedAt = station.Installation.RemovedAt,
-			Location = station.Location.Name,
-			City = station.Location.Address.City,
-			ProjectsCount = station.Projects.Count()
-		};
+		return Result.Success(new MeasurementStationResponse.Detail {
+			Station = station
 
-		return Result.Success(new MeasurementStationResponse.Detail { Station = dto });
+		});
 	}
 
 	public async Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId,
@@ -179,20 +192,29 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				new Coordinate(request.Location.X, request.Location.Y)
 			);
 		} else {
-			location = await dbContext.Set<Location>()
+			location = await dbContext.Locations
 				.SingleOrDefaultAsync(l => l.Id == request.LocationId, ct);
 			if (location is null) {
 				return Result.NotFound("Locatie niet gevonden.");
 			}
 		}
 
-		DateTime installedAt = request.InstalledAt ?? DateTime.UtcNow;
-
 		MeasurementStation station = new(
 			request.Code,
 			location,
-			new Installation(installedAt)
+			new Installation((DateTime)request.InstalledAt!)
 		);
+
+		if (request.ProjectId != Guid.Empty) {
+			Project project = await dbContext.Projects
+				.SingleOrDefaultAsync(x => x.Id == request.ProjectId, ct);
+
+			if (project is null) {
+				return Result.NotFound("Project niet gevonden.");
+			}
+
+			station.UpdateProjectList(new List<Project> { project });
+		}
 
 		dbContext.MeasurementStations.Add(station);
 		await dbContext.SaveChangesAsync(ct);
@@ -208,8 +230,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		return UpdateAsync(request.StationId, request, ct);
 	}
 
-	public async Task<Result<List<ProjectDto.Index>>> GetProjectsAsync(
+	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
+		QueryRequest.Search request,
 		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
@@ -219,8 +242,21 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.NotFound("Meetstation niet gevonden.");
 		}
 
-		List<ProjectDto.Index> projects = await dbContext.Projects
+		// Typed IQueryable<Project>
+		IQueryable<Project> query = dbContext.Projects
 			.AsNoTracking()
+			.AsQueryable();
+
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			query = query.Where(p =>
+				EF.Functions.Like(p.Name, $"%{request.SearchTerm}%") ||
+				EF.Functions.Like(p.Code, $"%{request.SearchTerm}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Name, $"%{request.SearchTerm}%") ||
+				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{request.SearchTerm}%")
+			);
+		}
+
+		List<ProjectDto.Index> projects = await query
 			.Where(p => p.Stations.Any(s => s.Id == stationId))
 			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
@@ -234,7 +270,9 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			})
 			.ToListAsync(ct);
 
-		return Result.Success(projects);
+		return Result.Success(new MeasurementStationResponse.ProjectList {
+			Projects = projects
+		});
 	}
 
 	public async Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req,

@@ -13,11 +13,13 @@ using Rise.Client.Networks;
 using Rise.Client.Projects;
 using Rise.Client.Services;
 using Rise.Client.Stations;
+using Rise.Client.WorkOrders;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
+using Rise.Shared.WorkOrders;
 
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -75,6 +77,10 @@ try {
 	}).AddHttpMessageHandler<CookieHandler>();
 
 	builder.Services.AddHttpClient<IMaintObjService, MaintObjService>(client => {
+		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
+	}).AddHttpMessageHandler<CookieHandler>();
+
+	builder.Services.AddHttpClient<IWorkOrderService, WorkOrderService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 

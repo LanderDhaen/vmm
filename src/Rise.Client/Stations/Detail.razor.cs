@@ -10,9 +10,7 @@ namespace Rise.Client.Stations;
 public partial class Detail {
 	// ===== Tabs =====
 	private readonly List<string> _tabs = new() {
-		"Info",
-		"Apparaten",
-		"Projecten",
+		"Informatie",
 		"Historiek"
 	};
 
@@ -20,13 +18,14 @@ public partial class Detail {
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
+
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
 
-	private async Task SetTabAsync(int index) {
+	private void SetTabAsync(int index) {
 		_selectedTab = index;
 	}
 
@@ -35,7 +34,6 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			_station = result.Value.Station;
-			_tabs[2] = $"Projecten ({result.Value.Station.ProjectsCount})";
 		} else {
 			string message = result.Errors != null
 				? string.Join(Environment.NewLine, result.Errors)
@@ -58,10 +56,5 @@ public partial class Detail {
 				return Task.CompletedTask;
 			}
 		);
-	}
-
-	private void OnTabChange(string newValue) {
-		_tabs[1] = newValue;
-		StateHasChanged();
 	}
 }
