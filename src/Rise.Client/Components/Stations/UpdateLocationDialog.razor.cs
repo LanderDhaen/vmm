@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
-using Rise.Client.Stations;
-using Rise.Shared.Common;
-using Rise.Shared.Networks;
-using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 namespace Rise.Client.Components.Stations;
@@ -24,7 +20,6 @@ public partial class UpdateLocationDialog {
 	protected override async Task OnInitializedAsync() {
 		Model = new MeasurementStationRequest.UpdateLocation() {
 			MeasurementStationId = StationId,
-			LocationId = LocationId
 		};
 	}
 

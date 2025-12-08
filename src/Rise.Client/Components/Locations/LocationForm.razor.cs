@@ -9,11 +9,13 @@ using Rise.Shared.Locations;
 namespace Rise.Client.Components.Locations;
 
 public partial class LocationForm {
+	private MudAutocomplete<Guid?>? _locationIdField;
 	private IEnumerable<LocationDto.Index>? _locations;
 	private CancellationTokenSource _cancellationTokenSource = new();
 	private string _searchTerm = string.Empty;
 
-	[Parameter] public ILocationRequest Model { get; set; }
+	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
+	[Parameter] public required ILocationRequest Model { get; set; }
 	[Inject] private ILocationService LocationService { get; set; } = default!;
 	[Inject] private IDialogService DialogService { get; set; } = default!;
 
@@ -47,10 +49,18 @@ public partial class LocationForm {
 
 	private void OnLocationSelected() => Model.IsNewLocation = false;
 
-	private void AddNewLocation() {
+	private async Task AddNewLocation() {
 		Model.IsNewLocation = true;
 		Model.LocationId = null;
 		Model.Location = new LocationRequest.Create();
+
+		await _locationIdField!.ClearAsync();
+	}
+
+	private string BuildString(Guid? id) {
+		LocationDto.Index? location = _locations!.FirstOrDefault(x => x.Id == id);
+
+		return location is null ? string.Empty : $"{location.Name} ({location.Address.City})";
 	}
 
 	private async Task OpenMapDialog() {
@@ -77,19 +87,9 @@ public partial class LocationForm {
 
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled && result.Data is CoordinateResult c) {
+		if (result is { Canceled: false, Data: CoordinateResult c }) {
 			Model.Location.X = c.X;
 			Model.Location.Y = c.Y;
 		}
-	}
-
-	private string BuildString(Guid? id) {
-		LocationDto.Index? location = _locations!.FirstOrDefault(x => x.Id == id);
-
-		if (location is null) {
-			return string.Empty;
-		}
-
-		return $"{location.Name} ({location.Address.City})";
 	}
 }

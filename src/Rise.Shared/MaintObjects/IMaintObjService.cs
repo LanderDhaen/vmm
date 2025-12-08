@@ -23,5 +23,7 @@ public interface IMaintObjService {
 
 	Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx);
 
+	Task<Result> UpdateLocationAsync(MaintObjRequest.UpdateLocation req, CancellationToken ctx = default);
+
 	Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber, CancellationToken ct = default);
 }

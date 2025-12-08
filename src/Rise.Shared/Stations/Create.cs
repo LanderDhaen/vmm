@@ -26,7 +26,7 @@ public static partial class MeasurementStationRequest {
 					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
 				RuleFor(x => x.InstalledAt)
 					.NotNull().WithMessage("Installatiedatum mag niet leeg zijn!")
-					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Installatiedatum moet boven 1 januari 2000 liggen.")
+					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Installatiedatum moet na 01/01/00 liggen.")
 					.LessThan(DateTime.MaxValue).WithMessage("Installatiedatum moet onder het maximum zijn.");
 				RuleFor(x => x)
 					.Must(x => x.LocationId.HasValue || x.IsNewLocation)
@@ -41,11 +41,7 @@ public static partial class MeasurementStationRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Create>.CreateWithOptions((Create)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid) {
-					return Array.Empty<string>();
-				}
-
-				return result.Errors.Select(e => e.ErrorMessage);
+				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}

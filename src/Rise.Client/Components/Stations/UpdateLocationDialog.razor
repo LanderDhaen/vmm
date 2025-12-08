@@ -1,10 +1,10 @@
 @using Rise.Client.Components.Locations
-<MudDialog>
+<MudDialog Class="mx-3">
 	<TitleContent>
 		<MudText Typo="Typo.h6">Locatie wijzigen</MudText>
 	</TitleContent>
 	<DialogContent>
-		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0" Style="width: 80vh">
+		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0" Style="width: 80vw; max-width: 80vh">
 			<LocationForm Model="Model"></LocationForm>
 		</MudForm>
 	</DialogContent>

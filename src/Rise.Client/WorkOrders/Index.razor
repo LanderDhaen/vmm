@@ -38,9 +38,8 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
-	             SortMode="SortMode.None"
-	             RowClick="OnRowClick"
-	>
+	             SortMode="SortMode.Single"
+	             RowClick="OnRowClick">
 
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
@@ -50,13 +49,19 @@
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
-			<PropertyColumn Property="x => x.MaintObj" Title="Onderhoudsobject" HeaderClass="mud-theme-primary">
+
+			<PropertyColumn Property="x => x.MaintObj"
+			                SortBy="x => x.MaintObjType"
+			                Title="Onderhoudsobject"
+			                HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					@MaintObjectUtility.TranslateType(context.Item.MaintObjType) @context.Item.MaintObj
 				</CellTemplate>
 			</PropertyColumn>
+
 			<PropertyColumn Property="x => x.Name" Title="Titel" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
+
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(context.Item.Status))">
@@ -64,6 +69,7 @@
 					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
+
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 		</Columns>
@@ -92,7 +98,7 @@
 		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
 		               Color="Color.Primary"
 		               Size="Size.Small"
-		               Disabled="true"/>
+		               OnClick="@ToggleSortingDrawer"/>
 
 		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
 		               Color="Color.Primary"
@@ -117,7 +123,7 @@
 		else if (!_mobilityWorkOrders.Any())
 		{
 			<MudItem xs="12">
-				<MudText>Geen projecten</MudText>
+				<MudText>Geen werkbonnen</MudText>
 			</MudItem>
 		}
 		else
@@ -155,3 +161,52 @@
 		}
 	</MudGrid>
 </MudHidden>
+
+@* Sort drawer (mobile) *@
+@if (_mobileSortOptionsOpen)
+{
+	<MudDrawer Anchor="Anchor.Bottom"
+	           Variant="DrawerVariant.Temporary"
+	           Elevation="8"
+	           @bind-Open="_mobileSortOptionsOpen"
+	           Class="pa-4 rounded-lg">
+
+		<MudText Typo="Typo.h6">Sorteren</MudText>
+
+		<MudStack Spacing="4">
+			<MudDivider/>
+
+			@foreach (var column in SortColumns)
+			{
+				<MudStack Row="true" AlignItems="AlignItems.Center">
+					<MudText>@column.Label</MudText>
+					<MudSpacer/>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, false))">
+						Oplopend
+					</MudButton>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, true))">
+						Aflopend
+					</MudButton>
+				</MudStack>
+			}
+
+			<MudDivider/>
+
+			<MudButton Variant="Variant.Text"
+			           Color="Color.Primary"
+			           OnClick="@ToggleSortingDrawer">
+				Sluiten
+			</MudButton>
+		</MudStack>
+	</MudDrawer>
+}

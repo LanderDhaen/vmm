@@ -25,7 +25,65 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 		IQueryable<WorkOrder> query = dbContext.WorkOrders.AsQueryable().AsNoTracking();
 
+
 		int totalCount = await query.CountAsync(ctx);
+
+		// Sorting
+		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
+			bool desc = req.OrderDescending;
+			var orderBy = req.OrderBy.Trim();
+			var key = orderBy.ToLowerInvariant();
+
+			switch (key) {
+			case "priority":
+				query = desc ? query.OrderBy(p => p.Priority) : query.OrderByDescending(p => (SharedPriority)p.Priority);
+				break;
+
+			case "maintobjtype":
+				query = desc
+					? query.OrderByDescending(p => p.MaintObj.MaintObjType)
+					: query.OrderBy(p => (SharedMainObjType)p.MaintObj.MaintObjType);
+				break;
+
+			case "maintobj":
+				query = desc ? query.OrderByDescending(p => p.MaintObj.Name) : query.OrderBy(p => p.MaintObj.Name);
+				break;
+
+			case "name":
+				query = desc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name);
+				break;
+
+			case "technician":
+				query = desc
+					? query.OrderByDescending(p => p.Technician!.LastName)
+								 .ThenByDescending(p => p.Technician!.FirstName)
+					: query.OrderBy(p => p.Technician!.LastName)
+								 .ThenBy(p => p.Technician!.FirstName);
+				break;
+
+			case "status":
+				query = desc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => (SharedStatus)p.Status);
+				break;
+
+			case "startdate":
+				query = desc ? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.StartDate : default) : query.OrderBy(p => p.DateRange != null ? p.DateRange.StartDate : default);
+				break;
+
+			case "enddate":
+				query = desc ? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.EndDate : null) : query.OrderBy(p => p.DateRange != null ? p.DateRange.EndDate : null);
+				break;
+
+			default:
+				try {
+					query = desc ? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy)) : query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+				} catch {
+					query = query.OrderBy(w => w.Id);
+				}
+				break;
+			}
+		} else {
+			query = query.OrderBy(w => w.Id);
+		}
 
 		// Paginating
 		query = query

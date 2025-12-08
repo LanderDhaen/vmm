@@ -34,6 +34,15 @@ public class MaintObjService(HttpClient httpClient) : IMaintObjService {
 		return result!;
 	}
 
+	public async Task<Result> UpdateLocationAsync(MaintObjRequest.UpdateLocation req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/maintobjects/{req.MaintObjId}/location", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
+
 	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(
 		string serialNumber,
 		CancellationToken ct = default) {
@@ -50,5 +59,4 @@ public class MaintObjService(HttpClient httpClient) : IMaintObjService {
 		var result = await response.Content.ReadFromJsonAsync<Result<MaintObjResponse.BySerial>>(ct);
 		return result ?? Result.NotFound();
 	}
-
 }

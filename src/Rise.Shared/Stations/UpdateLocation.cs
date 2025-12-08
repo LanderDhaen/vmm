@@ -28,11 +28,7 @@ public static partial class MeasurementStationRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<UpdateLocation>.CreateWithOptions((UpdateLocation)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid) {
-					return Array.Empty<string>();
-				}
-
-				return result.Errors.Select(e => e.ErrorMessage);
+				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}
