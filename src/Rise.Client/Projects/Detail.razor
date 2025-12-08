@@ -13,8 +13,8 @@
 else
 {
 	@* Tabs *@
-	<MudStack Row="true" Justify="Justify.SpaceBetween">
-		<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pt-4">
+		<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center" Spacing="8">
 			<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			         @onclick="() =>  SetTab(0)">
 				@_tabs[0]
@@ -25,14 +25,19 @@ else
 				@_tabs[1]
 			</MudText>
 		</MudStack>
-	
+
 		@if (_project.Status.Equals(Status.Afgesloten))
 		{
-			<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">Opstarten</MudButton>
+			<MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success"
+			           OnClick="@ShowStartConfirmationAsync">
+				Opstarten
+			</MudButton>
 		}
 		else
 		{
-			<MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Afsluiten</MudButton>
+			<MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Error"
+			           OnClick="@ShowCloseConfirmationAsync">Afsluiten
+			</MudButton>
 		}
 	</MudStack>
 
