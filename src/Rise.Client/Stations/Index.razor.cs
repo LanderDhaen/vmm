@@ -237,7 +237,7 @@ public partial class Index {
 
 		if (bp == Breakpoint.Xs)
 			await GetStationsMobileAsync();
-		else if (_grid is not null)
+		else if (_grid != null)
 			await _grid.ReloadServerData();
 
 		_filterOptionsOpen = false;
@@ -249,21 +249,11 @@ public partial class Index {
 		if (bp == Breakpoint.Xs) {
 			await GetStationsMobileAsync();
 		} else {
-			if (_grid is not null)
+			if (_grid != null)
 				await _grid.ReloadServerData();
 		}
 		StateHasChanged();
 	}
-	private async Task UpdateFilterAsync<T>(Action<T?> setter, T? value, Func<Task>? after = null) {
-		setter(value);
-		if (after != null)
-			await after();
-		else
-			await ApplyOrReloadOnChangeAsync();
-		StateHasChanged();
-	}
-
-
 	private string GetFilterDrawerClass() =>
 		_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
 }
