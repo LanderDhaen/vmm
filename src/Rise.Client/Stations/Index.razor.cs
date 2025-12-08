@@ -70,7 +70,7 @@ public partial class Index {
 			Take = state.PageSize,
 			OrderBy = sorting?.SortBy ?? _activeSorting,
 			OrderDescending = sorting?.Descending ?? _activeSortingDesc,
-			SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+			SearchTerm = _searchTerm.Trim()
 		};
 		request.Filters ??= new Dictionary<string, object?>();
 		return request;
@@ -80,7 +80,7 @@ public partial class Index {
 
 		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
-		var stations = result?.Value?.Stations ?? Enumerable.Empty<MeasurementStationDto.Index>();
+		var stations = result?.Value?.Stations ?? [];
 
 
 		var total = result?.Value?.TotalCount ?? 0;
@@ -109,7 +109,7 @@ public partial class Index {
 			Take = 10,
 			OrderBy = _activeSorting,
 			OrderDescending = _activeSortingDesc,
-			SearchTerm = string.IsNullOrWhiteSpace(_searchTerm) ? string.Empty : _searchTerm.Trim()
+			SearchTerm = _searchTerm.Trim()
 		};
 		request.Filters ??= new Dictionary<string, object?>();
 		var gridData = await FetchStationsAsync(request, useContainsForText: true);
