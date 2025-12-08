@@ -20,7 +20,7 @@ public partial class UpdateMaintObjectsListDialog {
 	// Form
 	private readonly MaintObjRequest.Create.Validator _validator = new();
 	private Result<MaintObjResponse.Create>? _createResult;
-	private MudForm _form;
+	private readonly MudForm _form;
 
 	private MaintObjRequest.Create CreateModel { get; } = new();
 

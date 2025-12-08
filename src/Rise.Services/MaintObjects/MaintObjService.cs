@@ -27,11 +27,11 @@ public class MaintObjService(ApplicationDbContext dbContext)
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		if (req.Filters.TryGetValue("Status", out object? statusObj)
-		    && statusObj is string status
-		    && status.Equals("Active")) {
+			&& statusObj is string status
+			&& status.Equals("Active")) {
 			if (req.Filters.TryGetValue("StationId", out object? stationIdObj)
-			    && stationIdObj is string stationIdStr
-			    && Guid.TryParse(stationIdStr, out Guid parsedId)) {
+				&& stationIdObj is string stationIdStr
+				&& Guid.TryParse(stationIdStr, out Guid parsedId)) {
 				query = query.Where(p =>
 					p.MaintObjStatus == MaintObjStatus.Active &&
 					(

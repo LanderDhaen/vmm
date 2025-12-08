@@ -365,7 +365,7 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 
 		// Act
 		Result<ProjectResponse.MeasurementStations> result =
-			await _service.GetStationsAsync(project.Id, new QueryRequest.Search());
+			await _service.GetStationsAsync(project.Id);
 
 		// Assert
 		Assert.True(result.IsSuccess);
@@ -379,7 +379,7 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		Guid nonExistentId = Guid.NewGuid();
 
 		Result<ProjectResponse.MeasurementStations> result =
-			await _service.GetStationsAsync(nonExistentId, new QueryRequest.Search());
+			await _service.GetStationsAsync(nonExistentId);
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}

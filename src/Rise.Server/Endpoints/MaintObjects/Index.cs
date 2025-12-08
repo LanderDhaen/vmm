@@ -30,7 +30,7 @@ public class Index(IMaintObjService maintObjService) : Endpoint<QueryRequest.Ski
 				req.Filters[key] = value.ToString();
 			}
 		}
-		
+
 		return maintObjService.GetIndexAsync(req, ct);
 	}
 }

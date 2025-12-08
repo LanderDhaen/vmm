@@ -31,7 +31,7 @@ public class MaintObj : Entity {
 	public Location Location { get; private set; }
 
 	public Technician? LastScannedBy { get; private set; }
-	
+
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
 		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);

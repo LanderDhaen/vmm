@@ -19,7 +19,7 @@ public static partial class MeasurementStationResponse {
 	public class ProjectList {
 		public required IEnumerable<ProjectDto.Index> Projects { get; set; }
 	}
-	
+
 	public class MaintObjList {
 		public required IEnumerable<MaintObjDto.Index> MaintObjects { get; set; } = [];
 	}

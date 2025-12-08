@@ -13,8 +13,8 @@ using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 using MeasurementStationModificationType = Rise.Shared.Stations.MeasurementStationModificationType;
-using SharedStatus = Rise.Shared.Projects.Status;
 using SharedMaintObjStatus = Rise.Shared.MaintObjects.MaintObjStatus;
+using SharedStatus = Rise.Shared.Projects.Status;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Stations;
@@ -339,11 +339,10 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		return Result.Success();
 	}
-	
+
 	public async Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(
 		Guid stationId,
-		CancellationToken ct = default)
-	{
+		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
 			.AnyAsync(s => s.Id == stationId, ct);
@@ -371,7 +370,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				StationCode = m.Station.Code
 			})
 			.ToListAsync(ct);
-		
+
 		return Result.Success(new MeasurementStationResponse.MaintObjList {
 			MaintObjects = maintObjs
 		});
@@ -408,7 +407,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				mo.AssignToStation(measurementStation);
 			}
 		}
-		
+
 		return Result.Success();
 	}
 }

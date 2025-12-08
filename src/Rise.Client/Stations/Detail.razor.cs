@@ -71,7 +71,7 @@ public partial class Detail {
 			await RefreshProjects();
 		}
 	}
-	
+
 	private async Task OpenMaintObjectsListDialogAsync() {
 		var parameters = new DialogParameters<UpdateMaintObjectsListDialog> {
 			{ x => x.StationId, StationId },
