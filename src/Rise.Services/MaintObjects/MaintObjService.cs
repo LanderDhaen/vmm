@@ -9,6 +9,7 @@ using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 
+using MaintObjStatus = Rise.Domain.MaintObjects.MaintObjStatus;
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
@@ -27,6 +28,21 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
+
+		if (req.Filters.TryGetValue("Status", out object? statusObj)
+		    && statusObj is string status
+		    && status.Equals("Active")) {
+			if (req.Filters.TryGetValue("StationId", out object? stationIdObj)
+			    && stationIdObj is string stationIdStr
+			    && Guid.TryParse(stationIdStr, out Guid parsedId)) {
+				query = query.Where(p =>
+					p.MaintObjStatus == MaintObjStatus.Active &&
+					(
+						p.Station == null || p.Station!.Id == parsedId
+					)
+				);
+			}
+		}
 
 		int totalCount = await query.CountAsync(ctx);
 
@@ -108,7 +124,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand, location);
+		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand,
+			location);
 
 		dbContext.MaintObjects.Add(mo);
 
@@ -120,7 +137,6 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	}
 
 	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId, CancellationToken ct = default) {
-
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		MaintObjDto.Detail? maintObj = await query
@@ -148,7 +164,6 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 				RemovedAt = m.Installation != null ? m.Installation.RemovedAt : null,
 				MaintenanceIntervalDays = m.MaintObjPlan.MaintenanceIntervalDays,
 				CalibrationIntervalDays = m.MaintObjPlan.CalibrationIntervalDays,
-
 			}).SingleOrDefaultAsync(ct);
 
 		if (maintObj is null) {
@@ -215,10 +230,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber,
 		CancellationToken ct = default) {
 		if (string.IsNullOrWhiteSpace(serialNumber)) {
-			return Result.Invalid(new[]
-			{
-				new ValidationError
-				{
+			return Result.Invalid(new[] {
+				new ValidationError {
 					Identifier = nameof(serialNumber),
 					ErrorMessage = "Serienummer is verplicht."
 				}
@@ -238,5 +251,4 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Name = maintObj.Name
 		});
 	}
-
 }

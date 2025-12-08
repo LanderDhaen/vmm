@@ -67,7 +67,8 @@ public partial class UpdateMaintObjectsListDialog {
 			SearchTerm = _searchTerm
 		};
 
-		//request.Filters["Status"] = "Active";
+		request.Filters["Status"] = "Active";
+		request.Filters["StationId"] = StationId;
 
 		Result<MaintObjResponse.Index> allMaintObjects =
 			await MaintObjService.GetIndexAsync(request, _cancellationTokenSource.Token);
