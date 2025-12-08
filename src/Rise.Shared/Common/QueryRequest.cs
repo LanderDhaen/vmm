@@ -70,7 +70,7 @@ public static class QueryRequest {
 			if (!string.IsNullOrWhiteSpace(SearchTerm))
 				parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm!)}");
 
-			if (Filters == null || Filters.Count == 0)
+			if (Filters.Count == 0)
 				return string.Join("&", parts);
 
 			string json = JsonSerializer.Serialize(Filters);
