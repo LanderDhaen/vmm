@@ -36,32 +36,71 @@ public class WorkOrder : Entity {
 
 	// Functions
 	public void AssignTechnician(Technician technician) {
-		Technician = technician;
+		Technician = Guard.Against.Null(technician);
 		MarkAsInProgress();
 	}
 
 	public void UpdateStatus(WorkOrderStatus status) {
-		if (Status.Equals(status)) {
+		if (Status == status) {
 			return;
 		}
 
-		if (status.Equals(WorkOrderStatus.InProgress)) {
+		switch (status) {
+		case WorkOrderStatus.Pending:
+			MarkAsPending();
+			break;
+
+		case WorkOrderStatus.InProgress:
 			MarkAsInProgress();
-		} else {
+			break;
+
+		case WorkOrderStatus.Completed:
 			MarkAsCompleted();
+			break;
+
+		case WorkOrderStatus.Cancelled:
+			MarkAsCancelled();
+			break;
+
+		default:
+			throw new ArgumentOutOfRangeException(nameof(status), status, null);
 		}
 	}
 
+	private void MarkAsPending() {
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s != WorkOrderStatus.Completed && s != WorkOrderStatus.Cancelled,
+			"Completed or cancelled work orders cannot be set back to pending.");
+
+		Status = WorkOrderStatus.Pending;
+		DateRange = null;
+	}
+
 	private void MarkAsCompleted() {
+		Guard.Against.Null(DateRange, nameof(DateRange),
+			"WorkOrder must be started before it can be completed.");
+
 		Status = WorkOrderStatus.Completed;
-		DateRange = new DateRange(DateRange!.StartDate, DateOnly.FromDateTime(DateTime.UtcNow));
+
+		DateRange = new DateRange(
+			DateRange.StartDate,
+			DateOnly.FromDateTime(DateTime.UtcNow)
+		);
 	}
 
 	private void MarkAsInProgress() {
-		Status = Technician is not null
-			? WorkOrderStatus.InProgress
-			: WorkOrderStatus.Pending;
+		Status = WorkOrderStatus.InProgress;
 
 		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
+	}
+
+	private void MarkAsCancelled() {
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s == WorkOrderStatus.Pending,
+			"Only pending work orders can be cancelled.");
+
+		Status = WorkOrderStatus.Cancelled;
+		DateRange = null;
+		Technician = null;
 	}
 }

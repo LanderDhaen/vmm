@@ -20,4 +20,10 @@ public interface IWorkOrderService {
 		WorkOrderRequest.UpdateStatus req,
 		CancellationToken ctx = default
 	);
+
+	Task<Result<WorkOrderResponse.Create>> CreateAsync(
+		WorkOrderRequest.Create req,
+		CancellationToken ctx = default
+	);
+
 }

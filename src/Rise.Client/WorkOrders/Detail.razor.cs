@@ -88,7 +88,32 @@ public partial class Detail {
 
 		if (result.IsSuccess) {
 			await GetWorkOrderDetailAsync();
-			Snackbar.Add("Werkbon succesvol heropent!", Severity.Success);
+
+			// Message depends on previous status
+			if (_workOrder?.Status == WorkOrderStatus.Completed) {
+				Snackbar.Add("Werkbon succesvol heropend!", Severity.Success);
+			} else {
+				Snackbar.Add("Werkbon succesvol gestart!", Severity.Success);
+			}
+
+			StateHasChanged();
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
+	private async Task Cancel() {
+		Result result = await WorkOrderService.UpdateStatusAsync(new WorkOrderRequest.UpdateStatus {
+			WorkOrderId = WorkOrderId,
+			NewStatus = WorkOrderStatus.Cancelled
+		});
+
+		if (result.IsSuccess) {
+			await GetWorkOrderDetailAsync();
+			Snackbar.Add("Werkbon succesvol geannuleerd!", Severity.Success);
 			StateHasChanged();
 		} else {
 			string message = result.Errors != null
@@ -114,9 +139,13 @@ public partial class Detail {
 	}
 
 	private async Task ShowStartConfirmationAsync() {
+		string msg = _workOrder?.Status == WorkOrderStatus.Completed
+			? "Weet u zeker dat u deze werkbon wilt heropenen?"
+			: "Weet u zeker dat u deze werkbon wilt starten?";
+
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
-			"Weet u zeker dat u deze werkbon wilt heropenen?",
+			msg,
 			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
@@ -124,6 +153,20 @@ public partial class Detail {
 
 		if (result == true) {
 			await Start();
+		}
+	}
+
+	private async Task ShowCancelConfirmationAsync() {
+		bool? result = await DialogService.ShowMessageBox(
+			"Bevestiging",
+			"Weet u zeker dat u deze werkbon wilt annuleren?",
+			"Bevestigen",
+			"Annuleren",
+			options: new DialogOptions { CloseOnEscapeKey = true }
+		);
+
+		if (result == true) {
+			await Cancel();
 		}
 	}
 }

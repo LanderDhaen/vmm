@@ -72,6 +72,10 @@ public partial class Index {
 		Navigation.NavigateTo($"/workorders/{id}");
 	}
 
+	private void NavigateToCreate() {
+		Navigation.NavigateTo("/workorders/create");
+	}
+
 	private async Task GetWorkOrdersMobileAsync() {
 		QueryRequest.SkipTake request = new() {
 			Skip = 0,

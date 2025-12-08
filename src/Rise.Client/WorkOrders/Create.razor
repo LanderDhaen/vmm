@@ -1,0 +1,78 @@
+@page "/workorders/create"
+@using Rise.Shared.WorkOrders
+@using Rise.Shared.MaintObjects
+
+<PageTitle>Werkbon aanmaken</PageTitle>
+
+<MudCard>
+    <MudForm Model="@Model"
+             @ref="form"
+             Validation="_validator.ValidateValue"
+             ValidationDelay="0">
+        <MudCardContent>
+            <MudGrid>
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle2">Naam</MudText>
+                    <MudTextField @bind-Value="Model.Name"
+                                  For="@(() => Model.Name)"
+                                  Variant="Variant.Outlined"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle2">Prioriteit</MudText>
+                    <MudSelect T="Priority"
+                               @bind-Value="Model.Priority"
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="Priority.High">Hoog</MudSelectItem>
+                        <MudSelectItem Value="Priority.Normal">Normaal</MudSelectItem>
+                        <MudSelectItem Value="Priority.Low">Laag</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">Beschrijving</MudText>
+                    <MudTextField @bind-Value="Model.Description"
+                                  For="@(() => Model.Description)"
+                                  Variant="Variant.Outlined"
+                                  Lines="4"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">Onderhoudsobject</MudText>
+                    <MudSelect T="Guid?"
+                               @bind-Value="Model.MaintObjId"
+                               Variant="Variant.Outlined">
+                        @if (_maintObjs is not null)
+                        {
+                            @foreach (var mo in _maintObjs)
+                            {
+                                <MudSelectItem T="Guid?" Value="@((Guid?)mo.Id)">
+                                    @mo.Name (@mo.SerialNumber)
+                                </MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+
+            </MudGrid>
+        </MudCardContent>
+    </MudForm>
+
+    <MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
+        <MudButton StartIcon="@Icons.Material.Filled.Save"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="CreateWorkOrderAsync">
+            Opslaan
+        </MudButton>
+
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Primary"
+                   OnClick="@(() => NavigationManager.NavigateTo("/workorders"))">
+            Annuleren
+        </MudButton>
+    </MudCardActions>
+</MudCard>
