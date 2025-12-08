@@ -54,20 +54,21 @@ else
 										</MudButton>
 									</MudTooltip>
 								</MudStack>
-								<MudStack Row="true" AlignItems="AlignItems.End">
-									<MudText Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
-									<MudChip T="string"
-									         Class="ma-0"
-									         Size="Size.Small" 
-									         Variant="Variant.Outlined"
-									         Color="@(MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus))">
-										@MaintObjectUtility.TranslateStatus(_maintObj.MaintObjStatus)
-									</MudChip>
-								</MudStack>
+								<MudText Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
-							<MudText><b>Merk:</b> @(_maintObj.Brand?? "-")</MudText>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Status:</b></MudText>
+								<MudChip T="string"
+								         Class="ma-0"
+								         Size="Size.Small"
+								         Variant="Variant.Outlined"
+								         Color="@(MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus))">
+									@MaintObjectUtility.TranslateStatus(_maintObj.MaintObjStatus)
+								</MudChip>
+							</MudStack>
+							<MudText><b>Merk:</b> @(_maintObj.Brand ?? "-")</MudText>
 							<MudText><b>Geïnstalleerd:</b> @MaintObjectUtility.ToLongInstalledAt(_maintObj.InstalledAt)</MudText>
 							<MudText><b>Verwijderd:</b> @MaintObjectUtility.ToLongRemovedAt(_maintObj.RemovedAt)</MudText>
 						</MudCardContent>
@@ -91,7 +92,7 @@ else
 						<MudCardContent>
 							<MudText><b>Onderhoudsinterval:</b> @_maintObj.MaintenanceIntervalDays dagen</MudText>
 							<MudText><b>Volgende kalibratie:</b> @MaintObjectUtility.CalculateNextMaintenance(_maintObj.InstalledAt, _maintObj.MaintenanceIntervalDays)</MudText>
-							<MudDivider Class="my-4"/>
+							<MudDivider Light="true" Class="my-4"/>
 							<MudText><b>Kalibratieinterval:</b> @_maintObj.CalibrationIntervalDays dagen</MudText>
 							<MudText><b>Verwijderd:</b> @MaintObjectUtility.CalculateNextCalibration(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)</MudText>
 						</MudCardContent>
