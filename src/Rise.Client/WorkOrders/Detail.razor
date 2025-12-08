@@ -28,11 +28,11 @@ else
 		
 		@if (_workOrder.Status.Equals(WorkOrderStatus.Completed))
 		{
-			<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">Werkbon heropenen</MudButton>
+			<MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">Heropenen</MudButton>
 		}
 		else
 		{
-			<MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Werkbon afsluiten</MudButton>
+			<MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Afsluiten</MudButton>
 		}
 	</MudStack>
 

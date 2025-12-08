@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 using Rise.Client.Services;
-using Rise.Shared.Common;
 using Rise.Shared.WorkOrders;
 
 namespace Rise.Client.WorkOrders;
