@@ -194,23 +194,11 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 			return Result.NotFound($"Werkbon met Id '{req.WorkOrderId}' is niet gevonden.");
 		}
 
-
-		if (req.NewStatus == Rise.Shared.WorkOrders.WorkOrderStatus.Completed &&
-			workOrder.Status == Rise.Domain.WorkOrders.WorkOrderStatus.Pending) {
-			return Result.Conflict("Je kan een werkbon niet afsluiten voordat ze gestart is.");
+		try {
+			workOrder.UpdateStatus((Status)req.NewStatus);
+		} catch (ArgumentException ex) {
+			return Result.Conflict(ex.Message);
 		}
-		if (req.NewStatus == Rise.Shared.WorkOrders.WorkOrderStatus.Cancelled &&
-			workOrder.Status != Rise.Domain.WorkOrders.WorkOrderStatus.Pending) {
-			return Result.Conflict("Je kan enkel een werkbon annuleren zolang ze nog niet gestart is.");
-		}
-
-		if (workOrder.Status == Rise.Domain.WorkOrders.WorkOrderStatus.Cancelled) {
-			return Result.Conflict("Een geannuleerde werkbon kan niet meer aangepast worden.");
-		}
-
-		workOrder.UpdateStatus(
-			(Rise.Domain.WorkOrders.WorkOrderStatus)req.NewStatus
-		);
 
 		await dbContext.SaveChangesAsync(ctx);
 

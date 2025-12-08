@@ -45,6 +45,10 @@ public class WorkOrder : Entity {
 			return;
 		}
 
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s != WorkOrderStatus.Cancelled,
+			"Een geannuleerde werkbon kan niet meer aangepast worden.");
+
 		switch (status) {
 		case WorkOrderStatus.Pending:
 			MarkAsPending();
@@ -70,7 +74,7 @@ public class WorkOrder : Entity {
 	private void MarkAsPending() {
 		Guard.Against.InvalidInput(Status, nameof(Status),
 			s => s != WorkOrderStatus.Completed && s != WorkOrderStatus.Cancelled,
-			"Completed or cancelled work orders cannot be set back to pending.");
+			"Afgewerkte of geannuleerde werkbonnen kunnen niet terug op gepland worden gezet.");
 
 		Status = WorkOrderStatus.Pending;
 		DateRange = null;
@@ -78,7 +82,7 @@ public class WorkOrder : Entity {
 
 	private void MarkAsCompleted() {
 		Guard.Against.Null(DateRange, nameof(DateRange),
-			"WorkOrder must be started before it can be completed.");
+			"Een werkbon moet eerst gestart worden voor ze kan worden afgesloten.");
 
 		Status = WorkOrderStatus.Completed;
 
@@ -97,7 +101,7 @@ public class WorkOrder : Entity {
 	private void MarkAsCancelled() {
 		Guard.Against.InvalidInput(Status, nameof(Status),
 			s => s == WorkOrderStatus.Pending,
-			"Only pending work orders can be cancelled.");
+			"Alleen werkbonnen met status gepland kunnen geannuleerd worden.");
 
 		Status = WorkOrderStatus.Cancelled;
 		DateRange = null;
