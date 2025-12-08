@@ -12,6 +12,7 @@ namespace Rise.Client.Components.Location;
 public partial class LocationForm {
 	private IEnumerable<LocationDto.Index>? _locations;
 	private string _searchText = string.Empty;
+	private MudAutocomplete<Guid?>? _locationIdField;
 
 	[Parameter] public Guid StationId { get; set; } = Guid.Empty;
 	[Parameter] public required ILocationRequest Model { get; set; }
@@ -64,12 +65,14 @@ public partial class LocationForm {
 		Model.IsNewLocation = false;
 	}
 
-	private void AddNewLocation() {
+	private async Task AddNewLocation() {
 		Model.IsNewLocation = true;
 		Model.LocationId = null;
 		Model.Location = new LocationRequest.Create {
 			Name = _searchText
 		};
+		
+		await _locationIdField.ClearAsync();
 	}
 
 	private string BuildString(Guid? id) {
