@@ -103,7 +103,8 @@ public class Project : Entity {
 		_projectHistories.Add(projectHistory);
 
 		// Assign the new values
-
+	
+		UpdatedAt = DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		DateRange = dateRange;
 		UpdateStatusBasedOnEndDate();
 	}
