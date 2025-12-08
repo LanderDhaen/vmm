@@ -63,7 +63,7 @@ public partial class Detail {
 
 	private async Task GetStationsAsync() {
 		Result<ProjectResponse.MeasurementStations> stationsFromProject =
-			await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
+			await ProjectService.GetStationsAsync(ProjectId);
 
 		// --- Stations for this project ---
 		if (stationsFromProject is { IsSuccess: true, Value: not null }) {

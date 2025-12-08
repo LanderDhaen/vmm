@@ -53,11 +53,10 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 
 	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
-		QueryRequest.Search req,
 		CancellationToken ctx = default) {
 		Result<ProjectResponse.MeasurementStations>? result =
 			await httpClient.GetFromJsonAsync<Result<ProjectResponse.MeasurementStations>>(
-				$"/api/projects/{projectId}/stations?{req.AsQuery()}",
+				$"/api/projects/{projectId}/stations",
 				ctx);
 		return result!;
 	}

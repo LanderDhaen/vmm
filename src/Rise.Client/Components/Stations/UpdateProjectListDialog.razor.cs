@@ -104,7 +104,7 @@ public partial class UpdateProjectListDialog {
 		if (_result.IsSuccess) {
 			Snackbar.Add("Projecten succesvol bijgewerkt!", Severity.Success);
 			Result<MeasurementStationResponse.ProjectList> projectsResult =
-				await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
+				await StationService.GetProjectsAsync(StationId);
 			if (projectsResult is { IsSuccess: true, Value: not null }) {
 				Projects = projectsResult.Value.Projects;
 			}

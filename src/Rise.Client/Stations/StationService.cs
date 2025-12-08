@@ -34,10 +34,9 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 
 	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
-		QueryRequest.Search request,
 		CancellationToken ctx = default) {
 		return (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.ProjectList>>(
-			$"/api/stations/{stationId}/projects?{request.AsQuery()}", ctx))!;
+			$"/api/stations/{stationId}/projects", ctx))!;
 	}
 
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
@@ -61,6 +60,21 @@ public class StationService(HttpClient httpClient) : IMeasurementStationService 
 		CancellationToken ctx = default) {
 		HttpResponseMessage response =
 			await httpClient.PutAsJsonAsync($"/api/stations/{req.MeasurementStationId}/location", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
+
+	public async Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(Guid stationId,
+		CancellationToken ctx = default) {
+		return (await httpClient.GetFromJsonAsync<Result<MeasurementStationResponse.MaintObjList>>(
+			$"/api/stations/{stationId}/maintobjects", ctx))!;
+	}
+
+	public async Task<Result> UpdateMaintObjsAsync(MeasurementStationRequest.UpdateMaintObjects req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response = await httpClient.PutAsJsonAsync(
+			$"/api/stations/{req.MeasurementStationId}/maintobjects", req, ctx);
 
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;

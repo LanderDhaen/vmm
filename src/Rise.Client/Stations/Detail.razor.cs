@@ -4,7 +4,7 @@ using MudBlazor;
 
 using Rise.Client.Components.Stations;
 using Rise.Client.Services;
-using Rise.Shared.Common;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -21,7 +21,8 @@ public partial class Detail {
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
-	private IEnumerable<ProjectDto.Index> _projectsFromStation;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
+	private IEnumerable<MaintObjDto.Index>? _maintObjectsFromStation;
 
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -37,6 +38,7 @@ public partial class Detail {
 	protected override async Task OnInitializedAsync() {
 		await RefreshStationDetails();
 		await RefreshProjects();
+		await RefreshMaintObjects();
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
@@ -102,10 +104,21 @@ public partial class Detail {
 
 	private async Task RefreshProjects() {
 		Result<MeasurementStationResponse.ProjectList> projectsResult =
-			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
+			await StationService.GetProjectsAsync(StationId);
 
 		if (projectsResult.IsSuccess) {
 			_projectsFromStation = projectsResult.Value.Projects;
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task RefreshMaintObjects() {
+		Result<MeasurementStationResponse.MaintObjList> maintObjectsResult =
+			await StationService.GetMaintObjsAsync(StationId);
+
+		if (maintObjectsResult.IsSuccess) {
+			_maintObjectsFromStation = maintObjectsResult.Value.MaintObjects;
 		}
 
 		StateHasChanged();

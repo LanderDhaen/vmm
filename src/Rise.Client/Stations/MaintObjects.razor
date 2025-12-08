@@ -1,0 +1,55 @@
+@using Rise.Shared.MaintObjects
+@using Rise.Client.Components.MaintObjects
+
+<PageTitle>MaintObjects</PageTitle>
+
+@if (MaintObjectsFromStation is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	@* Desktop view *@
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudTable T="MaintObjDto.Index" Items="MaintObjectsFromStation" CustomHeader="true"
+		          OnRowClick="@(args => NavigateToMaintObject(args.Item!.Id))">
+			<HeaderContent>
+				<MudTHeadRow>
+					<MudTh Class="mud-theme-primary">Naam</MudTh>
+					<MudTh Class="mud-theme-primary">Serienummer</MudTh>
+					<MudTh Class="mud-theme-primary">Type</MudTh>
+					<MudTh Class="mud-theme-primary">Status</MudTh>
+					<MudTh Class="mud-theme-primary">Locatie</MudTh>
+				</MudTHeadRow>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="Naam">@context.Name</MudTd>
+				<MudTd DataLabel="Serienummer">@context.SerialNumber</MudTd>
+				<MudTd DataLabel="Type">@context.MaintObjType</MudTd>
+
+				<MudTd DataLabel="Status">
+					<MudChip T="string"
+					         Variant="Variant.Outlined"
+					         Color="@GetStatusColor(context.MaintObjStatus)"
+					         Size="Size.Small">
+						@context.MaintObjStatus
+					</MudChip>
+				</MudTd>
+
+				<MudTd DataLabel="Locatie">@context.Location</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</MudHidden>
+
+	@* Mobile view *@
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudGrid Spacing="6">
+			@foreach (var mo in MaintObjectsFromStation)
+			{
+				<MaintObjCard MaintObj="mo"/>
+			}
+		</MudGrid>
+	</MudHidden>
+}

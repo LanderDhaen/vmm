@@ -64,7 +64,31 @@ else
 					<LocationCard Location="_station.Location" OnClick="@OpenUpdateLocationDialogAsync"/>
 				</MudItem>
 
-				@* TODO: MaintObj table *@
+				@* MaintObj table *@
+				<MudItem xs="12">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">Onderhoudsobjecten
+									</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@OpenDialogAsync">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MaintObjects StationId="_station.Id" MaintObjectsFromStation="_maintObjectsFromStation"/>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
 
 				@* Projects table *@
 				<MudItem xs="12">
