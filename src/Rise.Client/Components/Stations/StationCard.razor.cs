@@ -5,5 +5,5 @@ using Rise.Shared.Stations;
 namespace Rise.Client.Components.Stations;
 
 public partial class StationCard : ComponentBase {
-	[Parameter] public required MeasurementStationDto.Detail MeasurementStation { get; init; }
+	[Parameter] public required MeasurementStationDto.Index MeasurementStation { get; init; }
 }

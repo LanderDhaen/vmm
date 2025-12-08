@@ -3,9 +3,17 @@
 		<CardHeaderContent>
 			<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 				<MudText Typo="Typo.h6" Color="Color.Primary">Meetstation</MudText>
-				@* TODO: go to station *@
 			</MudStack>
-			<MudText Typo="Typo.subtitle2">@MeasurementStation.Code</MudText>
+			@* Render code only when MeasurementStation is not null to avoid NRE *@
+			@if (MeasurementStation is null)
+			{
+				<MudText Typo="Typo.subtitle2"><em>Niet gekoppeld</em></MudText>
+			}
+			else
+			{
+				<MudText Typo="Typo.subtitle2">@MeasurementStation.Code</MudText>
+				@* TODO: go to station *@
+			}
 		</CardHeaderContent>
 	</MudCardHeader>
 
