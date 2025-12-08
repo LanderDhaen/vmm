@@ -198,7 +198,7 @@
 			<MudSelect T="string" Label="Locatie" Value="_filterLocation"
 			           ValueChanged="@(async val => { _filterLocation = val; await ApplyOrReloadOnChangeAsync(); })"
 			           Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleLocationSelectOpen">
-				@if (_locations == null)
+				@if (_locations is null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
 				}
@@ -214,7 +214,7 @@
 			<MudSelect T="string" Label="Gemeente" Value="_filterCity"
 			           ValueChanged="@(async val => { _filterCity = val; await ApplyOrReloadOnChangeAsync(); })"
 			           Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleCitySelectOpen">
-				@if (_cities == null)
+				@if (_cities is null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
 				}
