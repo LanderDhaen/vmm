@@ -12,6 +12,8 @@ using Rise.Shared.Stations;
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
 
+using SharedProjectModificationType = Rise.Shared.Projects.ProjectModificationType;
+
 namespace Rise.Services.Projects;
 
 /// <summary>
@@ -206,32 +208,32 @@ public class ProjectService(ApplicationDbContext dbContext)
 		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
-		ProjectDto.History? project = await query
-			.Where(p => p.Id == projectId)
-			.Select(p => new ProjectDto.History {
-				Id = p.Id,
-				Name = p.Name,
-				Code = p.Code,
-				StartDate = p.DateRange.StartDate,
-				EndDate = p.DateRange.EndDate,
-				ProjectHistories = p.ProjectHistories
-					.OrderByDescending(h => h.ValidityRange.ValidTo)
-					.Select(h => new ProjectHistoryDto.Index {
-						Id = h.Id,
-						StartDate = h.DateRange.StartDate,
-						EndDate = h.DateRange.EndDate,
-						ValidFrom = h.ValidityRange.ValidFrom,
-						ValidTo = h.ValidityRange.ValidTo
-					}).ToList()
-			})
-			.FirstOrDefaultAsync(ctx);
+		Project? project = await dbContext.Projects
+			.AsNoTracking()
+			.Include(p => p.DateRange)
+			.Include(p => p.MeasurementNetwork)
+			.ThenInclude(mn => mn.Zone)
+			.Include(p => p.ProjectHistories)
+			.ThenInclude(h => h.DateRange)
+			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
 
 		if (project is null) {
 			return Result.NotFound($"Project with Id '{projectId}' was not found");
 		}
 
+		List<ProjectDto.Modification> modifications = [];
+
+		foreach (var m in project.GetModifications()) {
+			modifications.Add(new ProjectDto.Modification {
+				ProjectModificationType = (SharedProjectModificationType)m.MeasurementStationModificationType,
+				ModifiedAt = m.ModifiedAt,
+				PreviousValue = m.PreviousValue,
+				CurrentValue = m.CurrentValue,
+			});
+		}
+
 		return Result.Success(new ProjectResponse.History {
-			Project = project
+			Modifications = modifications
 		});
 	}
 

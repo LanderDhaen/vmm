@@ -138,6 +138,25 @@ public class Project : Entity {
 			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
 			: Status.Actief;
 	}
+
+	public List<ProjectModification> GetModifications() {
+		List<ProjectModification> modifications = [];
+		
+		// Add current state as the first history entry
+		
+		_projectHistories.Insert(0, new ProjectHistory(DateRange, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
+
+		for (int i = 0; i < _projectHistories.Count - 1; i++) {
+			
+			var current = _projectHistories[i];
+			var previous  = _projectHistories[i + 1];
+			
+			ProjectModification modification = ProjectModificationFactory.Create(current, previous);
+			modifications.Add(modification);
+		}
+
+		return modifications;
+	}
 }
 
 public class ProjectHistory : HistoryEntity {
