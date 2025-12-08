@@ -30,11 +30,7 @@ public static partial class MaintObjRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Edit>.CreateWithOptions((Edit)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid) {
-					return Array.Empty<string>();
-				}
-
-				return result.Errors.Select(e => e.ErrorMessage);
+				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}

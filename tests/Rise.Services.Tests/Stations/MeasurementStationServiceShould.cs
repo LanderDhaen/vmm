@@ -350,8 +350,6 @@ public class MeasurementStationServiceShould {
 		MeasurementStationRequest.Edit req = new() {
 			StationId = station.Id,
 			Code = "STN-200",
-			LocationId = loc2.Id,
-			ProjectId = project2.Id,
 			InstalledAt = newInstalled,
 			RemovedAt = newRemoved
 		};
@@ -361,13 +359,9 @@ public class MeasurementStationServiceShould {
 		Assert.True(result.IsSuccess);
 
 		MeasurementStation reloaded = await db.MeasurementStations
-			.Include(s => s.Location)
-			.Include(s => s.Projects)
+			.Include(x => x.Installation)
 			.SingleAsync(s => s.Id == station.Id);
 
-		Assert.Equal(loc2.Id, reloaded.Location.Id);
-		Assert.Single(reloaded.Projects);
-		Assert.Equal(project2.Id, reloaded.Projects.First().Id);
 		Assert.Equal(newInstalled, reloaded.Installation.InstalledAt);
 		Assert.Equal(newRemoved, reloaded.Installation.RemovedAt);
 	}
@@ -380,59 +374,7 @@ public class MeasurementStationServiceShould {
 		MeasurementStationRequest.Edit req = new() {
 			StationId = Guid.NewGuid(),
 			Code = "NOPE",
-			LocationId = Guid.NewGuid(),
-			ProjectId = Guid.NewGuid(),
 			InstalledAt = DateTime.UtcNow
-		};
-
-		Result result = await service.EditAsync(req);
-
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenNewLocationDoesNotExist() {
-		ApplicationDbContext db = CreateDbContext(out _, out Project project, out Location loc);
-		MeasurementStation station = new(
-			"STN-404L",
-			loc,
-			new Installation(DateTime.UtcNow.AddDays(-4)));
-		db.MeasurementStations.Add(station);
-		await db.SaveChangesAsync();
-
-		MeasurementStationService service = new(db);
-
-		MeasurementStationRequest.Edit req = new() {
-			StationId = station.Id,
-			Code = station.Code,
-			LocationId = Guid.NewGuid(),
-			ProjectId = project.Id,
-			InstalledAt = station.Installation.InstalledAt
-		};
-
-		Result result = await service.EditAsync(req);
-
-		Assert.Equal(ResultStatus.NotFound, result.Status);
-	}
-
-	[Fact]
-	public async Task EditAsync_ShouldReturnNotFound_WhenNewProjectDoesNotExist() {
-		ApplicationDbContext db = CreateDbContext(out _, out Project project, out Location loc);
-		MeasurementStation station = new(
-			"STN-404P",
-			loc,
-			new Installation(DateTime.UtcNow.AddDays(-4)));
-		db.MeasurementStations.Add(station);
-		await db.SaveChangesAsync();
-
-		MeasurementStationService service = new(db);
-
-		MeasurementStationRequest.Edit req = new() {
-			StationId = station.Id,
-			Code = station.Code,
-			LocationId = loc.Id,
-			ProjectId = Guid.NewGuid(),
-			InstalledAt = station.Installation.InstalledAt
 		};
 
 		Result result = await service.EditAsync(req);
@@ -458,8 +400,6 @@ public class MeasurementStationServiceShould {
 		MeasurementStationRequest.Edit req = new() {
 			StationId = station.Id,
 			Code = station.Code,
-			LocationId = loc.Id,
-			ProjectId = project.Id,
 			InstalledAt = installed,
 			RemovedAt = removed
 		};

@@ -22,4 +22,6 @@ public interface IMeasurementStationService {
 		CancellationToken ctx = default);
 
 	Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req, CancellationToken ctx = default);
+
+	Task<Result> UpdateLocationAsync(MeasurementStationRequest.UpdateLocation req, CancellationToken ctx = default);
 }

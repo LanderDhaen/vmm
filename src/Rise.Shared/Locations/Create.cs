@@ -28,7 +28,8 @@ public static class LocationRequest {
 				.MaximumLength(20).WithMessage("Postcode mag maar max. 20 karakter hebben.");
 			RuleFor(x => x.CountryIso)
 				.NotEmpty().WithMessage("Landcode mag niet leeg zijn.")
-				.MaximumLength(2).WithMessage("Landcode mag maar max. 2 karakter hebben.");
+				.MaximumLength(2).WithMessage("Landcode mag maar max. 2 karakter hebben.")
+				.Matches("^[A-Z]{2}$").WithMessage("Landcode moet uit 2 hoofdletters bestaan.");
 			RuleFor(x => x.X)
 				.NotEmpty().WithMessage("X-coordinaat mag niet leeg zijn.");
 			RuleFor(x => x.Y)
