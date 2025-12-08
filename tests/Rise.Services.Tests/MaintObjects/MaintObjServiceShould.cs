@@ -20,6 +20,7 @@ public class MaintObjServiceShould : IClassFixture<MsSqlContainerFixture> {
 	private readonly ApplicationDbContext _dbContext;
 	private readonly MaintObjService _service;
 
+	#region Setup
 	public MaintObjServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -30,7 +31,9 @@ public class MaintObjServiceShould : IClassFixture<MsSqlContainerFixture> {
 
 		_service = new MaintObjService(_dbContext);
 	}
+	#endregion
 
+	#region GetBySerial
 
 	[Fact]
 	public async Task GetBySerialAsync_ShouldReturnInvalid_WhenSerialIsEmpty() {
@@ -89,4 +92,6 @@ public class MaintObjServiceShould : IClassFixture<MsSqlContainerFixture> {
 		Assert.Equal(serial, result.Value.SerialNumber);
 		Assert.Equal(mo.Name, result.Value.Name);
 	}
+
+	#endregion
 }

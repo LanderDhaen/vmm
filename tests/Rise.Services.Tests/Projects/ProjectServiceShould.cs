@@ -25,6 +25,7 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 	private readonly ProjectService _service;
 	private IDbContextTransaction? _tx;
 
+	#region Setup
 	public ProjectServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 
@@ -49,6 +50,9 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 			await _tx.DisposeAsync();
 		}
 	}
+	#endregion
+
+	#region GetDetail
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnProjectDetails_WhenProjectExists() {
@@ -92,6 +96,10 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		// Assert
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
+
+	#endregion
+
+	#region UpdateStatus
 
 	[Fact]
 	public async Task UpdateStatusAsync_ShouldReturnNotFound_WhenProjectDoesNotExist() {
@@ -139,6 +147,10 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		Project updated = await _dbContext.Projects.SingleAsync(p => p.Id == project.Id);
 		Assert.Equal(Status.Afgesloten, updated.Status);
 	}
+
+	#endregion
+
+	#region Create
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnNewProjectId() {
@@ -218,6 +230,10 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 		Assert.Equal("Meetnet niet gevonden.", result.Errors.First());
 	}
+
+	#endregion
+
+	#region Edit
 
 	[Fact]
 	public async Task EditAsync_ShouldReturnResultSuccess() {
@@ -315,6 +331,10 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		Assert.Equal("Project met code 'EP-001' bestaat al.", result.Errors.First());
 	}
 
+	#endregion
+
+	#region Stations
+
 	[Fact]
 	public async Task GetStationsAsync_ShouldReturnStations_WhenProjectExists() {
 		// Arrange
@@ -363,6 +383,10 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
+
+	#endregion
+
+	#region UpdateMeasurementStations
 
 	[Fact]
 	public async Task UpdateMeasurementStationsAsync_ShouldReturnSuccess() {
@@ -450,4 +474,6 @@ public class ProjectServiceShould : IClassFixture<MsSqlContainerFixture>, IAsync
 		Assert.Equal(ResultStatus.Error, result.Status);
 		Assert.Equal("Een of meerdere meetstations zijn niet gevonden.", result.Errors.First());
 	}
+
+	#endregion
 }

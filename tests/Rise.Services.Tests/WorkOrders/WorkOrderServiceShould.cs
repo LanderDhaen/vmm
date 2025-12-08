@@ -28,6 +28,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 	private readonly WorkOrderService _service;
 	private IDbContextTransaction? _tx;
 
+	#region Setup
 	public WorkOrderServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 
@@ -52,6 +53,9 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 			await _tx.DisposeAsync();
 		}
 	}
+	#endregion
+
+	#region GetDetail
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnWorkOrderDetails_WhenWorkOrderExists() {
@@ -183,4 +187,6 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
+
+	#endregion
 }

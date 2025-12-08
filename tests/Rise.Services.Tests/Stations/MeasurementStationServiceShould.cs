@@ -33,6 +33,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 	private readonly MeasurementStationService _service;
 	private IDbContextTransaction? _tx;
 
+	#region Setup
 	public MeasurementStationServiceShould(MsSqlContainerFixture fixture) {
 		MsSqlContainer container = fixture.Container!;
 
@@ -57,6 +58,9 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 			await _tx.DisposeAsync();
 		}
 	}
+	#endregion
+
+	#region Helpers
 
 	private async Task<(Guid projectId, Project project, Location location)> CreateProjectAndLocationAsync() {
 		Location location = new(
@@ -74,6 +78,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 		return (project.Id, project, location);
 	}
+
+	#endregion
+
+	#region Index
 
 	[Fact]
 	public async Task GetIndexAsync_ShouldReturnPagedResults() {
@@ -140,6 +148,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		Assert.Equal(new[] { "STN-3", "STN-2", "STN-1" }, codes);
 	}
 
+	#endregion
+
+	#region Detail
+
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnStationDetails_WhenStationExists() {
 		(_, _, Location loc) = await CreateProjectAndLocationAsync();
@@ -170,6 +182,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		Result<MeasurementStationResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
+
+	#endregion
+
+	#region Projects
 
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnProjects_ForExistingStation() {
@@ -227,6 +243,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
+
+	#endregion
+
+	#region Create
 
 	[Fact]
 	public async Task CreateAsync_ShouldReturnNewMeasurementStationId_WithExistingLocation() {
@@ -302,6 +322,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 		Assert.Equal("Locatie niet gevonden.", result.Errors.First());
 	}
+
+	#endregion
+
+	#region Edit
 
 	[Fact]
 	public async Task EditAsync_ShouldUpdateFields_WhenValid() {
@@ -435,6 +459,10 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		await Assert.ThrowsAsync<ArgumentException>(async () => await _service.EditAsync(req));
 	}
 
+	#endregion
+
+	#region UpdateProjects
+
 	[Fact]
 	public async Task UpdateProjectsAsync_ShouldReturnSuccess() {
 		MeasurementStation measurementStation = new("ST-001",
@@ -512,4 +540,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		Assert.Equal(ResultStatus.Error, result.Status);
 		Assert.Equal("Een of meerdere projecten zijn niet gevonden.", result.Errors.First());
 	}
+
+	#endregion
 }
