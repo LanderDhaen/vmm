@@ -9,10 +9,9 @@ using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
+using SharedProjectModificationType = Rise.Shared.Projects.ProjectModificationType;
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
-
-using SharedProjectModificationType = Rise.Shared.Projects.ProjectModificationType;
 
 namespace Rise.Services.Projects;
 

@@ -85,11 +85,11 @@ public class Project : Entity {
 		if (measurementNetwork.Equals(MeasurementNetwork)) {
 			return;
 		}
-		
+
 		// Create history object using old values
 
 		AddHistoryEntry();
-		
+
 		// Assign the new values
 
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
@@ -107,7 +107,7 @@ public class Project : Entity {
 		AddHistoryEntry();
 
 		// Assign the new values
-	
+
 		UpdatedAt = DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		DateRange = dateRange;
 		UpdateStatusBasedOnEndDate();
@@ -141,7 +141,7 @@ public class Project : Entity {
 			? DateRange.EndDate.Value <= DateOnly.FromDateTime(DateTime.UtcNow) ? Status.Afgesloten : Status.Actief
 			: Status.Actief;
 	}
-	
+
 	// History
 
 	private void AddHistoryEntry() {
@@ -152,16 +152,16 @@ public class Project : Entity {
 
 	public List<ProjectModification> GetModifications() {
 		List<ProjectModification> modifications = [];
-		
+
 		// Add current state as the first history entry
 
 		_projectHistories.Insert(0, new ProjectHistory(DateRange, Status, MeasurementNetwork, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
 
 		for (int i = 0; i < _projectHistories.Count - 1; i++) {
-			
+
 			var current = _projectHistories[i];
-			var previous  = _projectHistories[i + 1];
-			
+			var previous = _projectHistories[i + 1];
+
 			ProjectModification modification = ProjectModificationFactory.Create(current, previous);
 			modifications.Add(modification);
 		}
@@ -186,5 +186,5 @@ public class ProjectHistory : HistoryEntity {
 
 	public DateRange DateRange { get; init; }
 	public Status Status { get; init; }
-	public MeasurementNetwork  MeasurementNetwork { get; init; }
+	public MeasurementNetwork MeasurementNetwork { get; init; }
 }
