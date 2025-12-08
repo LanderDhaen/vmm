@@ -99,7 +99,7 @@ public class Project : Entity {
 		// Create history object using the old values
 
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
 		_projectHistories.Add(projectHistory);
 
 		// Assign the new values
@@ -119,7 +119,7 @@ public class Project : Entity {
 		// Create history object using the old values
 
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), validityRange);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
 		_projectHistories.Add(projectHistory);
 
 		// Assign the new values
@@ -145,7 +145,7 @@ public class Project : Entity {
 		
 		// Add current state as the first history entry
 		
-		_projectHistories.Insert(0, new ProjectHistory(DateRange, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
+		_projectHistories.Insert(0, new ProjectHistory(DateRange, MeasurementNetwork, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
 
 		for (int i = 0; i < _projectHistories.Count - 1; i++) {
 			
@@ -167,10 +167,12 @@ public class ProjectHistory : HistoryEntity {
 	private ProjectHistory() {
 	}
 
-	public ProjectHistory(DateRange dateRange, ValidityRange validityRange) {
+	public ProjectHistory(DateRange dateRange, MeasurementNetwork measurementNetwork ,ValidityRange validityRange) {
 		DateRange = Guard.Against.Null(dateRange);
+		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 		ValidityRange = Guard.Against.Null(validityRange);
 	}
 
 	public DateRange DateRange { get; init; }
+	public MeasurementNetwork  MeasurementNetwork { get; init; }
 }

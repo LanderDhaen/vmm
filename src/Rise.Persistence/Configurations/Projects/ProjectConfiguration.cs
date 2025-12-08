@@ -45,5 +45,8 @@ internal class ProjectHistoryConfiguration : HistoryEntityConfiguration<ProjectH
 			d.Property(x => x.StartDate).IsRequired().HasColumnName(nameof(DateRange.StartDate));
 			d.Property(x => x.EndDate).HasColumnName(nameof(DateRange.EndDate));
 		}).Navigation(x => x.DateRange).IsRequired();
+		builder.HasOne(x => x.MeasurementNetwork)
+			.WithMany()
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

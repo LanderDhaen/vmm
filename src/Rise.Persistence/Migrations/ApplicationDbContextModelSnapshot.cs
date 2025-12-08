@@ -523,10 +523,15 @@ namespace Rise.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("MeasurementNetworkId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MeasurementNetworkId");
 
                     b.HasIndex("ProjectId");
 
@@ -932,6 +937,12 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.ProjectHistory", b =>
                 {
+                    b.HasOne("Rise.Domain.Networks.MeasurementNetwork", "MeasurementNetwork")
+                        .WithMany()
+                        .HasForeignKey("MeasurementNetworkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Rise.Domain.Projects.Project", null)
                         .WithMany("ProjectHistories")
                         .HasForeignKey("ProjectId");
@@ -980,6 +991,8 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("DateRange")
                         .IsRequired();
+
+                    b.Navigation("MeasurementNetwork");
 
                     b.Navigation("ValidityRange")
                         .IsRequired();

@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251205222020_InitialCreate")]
+    [Migration("20251208171324_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -526,10 +526,15 @@ namespace Rise.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("MeasurementNetworkId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MeasurementNetworkId");
 
                     b.HasIndex("ProjectId");
 
@@ -935,6 +940,12 @@ namespace Rise.Persistence.Migrations
 
             modelBuilder.Entity("Rise.Domain.Projects.ProjectHistory", b =>
                 {
+                    b.HasOne("Rise.Domain.Networks.MeasurementNetwork", "MeasurementNetwork")
+                        .WithMany()
+                        .HasForeignKey("MeasurementNetworkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Rise.Domain.Projects.Project", null)
                         .WithMany("ProjectHistories")
                         .HasForeignKey("ProjectId");
@@ -983,6 +994,8 @@ namespace Rise.Persistence.Migrations
 
                     b.Navigation("DateRange")
                         .IsRequired();
+
+                    b.Navigation("MeasurementNetwork");
 
                     b.Navigation("ValidityRange")
                         .IsRequired();
