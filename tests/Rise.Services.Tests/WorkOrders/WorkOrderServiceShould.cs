@@ -9,67 +9,78 @@ using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Domain.WorkOrders;
 using Rise.Persistence;
+using Rise.Services.Tests.Common;
 using Rise.Services.WorkOrders;
 using Rise.Shared.WorkOrders;
 
+using Testcontainers.MsSql;
+
 using DomainPriority = Rise.Domain.WorkOrders.Priority;
+using MaintObjStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedPriority = Rise.Shared.WorkOrders.Priority;
 using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.Tests.WorkOrders;
 
-public class WorkOrderServiceShould {
+public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture> {
+	private readonly ApplicationDbContext _dbContext;
+	private readonly WorkOrderService _service;
 
-	private static ApplicationDbContext CreateDbContext() {
+	public WorkOrderServiceShould(MsSqlContainerFixture fixture) {
+		MsSqlContainer container = fixture.Container!;
+		_service = new WorkOrderService(_dbContext);
+
 		DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase(Guid.NewGuid().ToString())
+			.UseSqlServer(container.GetConnectionString())
 			.Options;
 
-		return new ApplicationDbContext(options);
+		_dbContext = new ApplicationDbContext(options);
+		_dbContext.Database.Migrate();
+
+		_service = new WorkOrderService(_dbContext);
 	}
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnWorkOrderDetails_WhenWorkOrderExists() {
-		ApplicationDbContext db = CreateDbContext();
-
+		// Arrange
 		Location location = new(
 			"TestLoc",
 			new Address("Street 1", "Bus 2", "City", "1234"),
 			new Coordinate(4.35, 50.85));
 
-		MaintObjPlan plan = new("Plan-1", maintenanceIntervalDays: 30, calibrationIntervalDays: 60);
+		MaintObjPlan plan = new("Plan-1", 30, 60);
 
 		MaintObj maintObj = new(
-			name: "Pump A",
-			serialNumber: "SN-001",
+			"Pump A",
+			"SN-001",
 			MaintObjType.Sensor,
-			maintObjPlan: plan,
-			brand: "RiseBrand",
-			location: location);
+			plan,
+			"RiseBrand",
+			location);
 
 		WorkOrder workOrder = new(
-			name: "Fix leak",
-			description: "Replace gasket",
-			priority: DomainPriority.High,
-			maintObj: maintObj);
+			"Fix leak",
+			"Replace gasket",
+			DomainPriority.High,
+			maintObj);
 
 		Technician tech = new("Temp", "Tech", "acc-1");
 
-		db.Locations.Add(location);
-		db.MaintObjPlans.Add(plan);
-		db.MaintObjects.Add(maintObj);
-		db.WorkOrders.Add(workOrder);
-		db.Technicians.Add(tech);
-		await db.SaveChangesAsync();
+		_dbContext.Locations.Add(location);
+		_dbContext.MaintObjPlans.Add(plan);
+		_dbContext.MaintObjects.Add(maintObj);
+		_dbContext.WorkOrders.Add(workOrder);
+		_dbContext.Technicians.Add(tech);
+		await _dbContext.SaveChangesAsync();
 
 		workOrder.AssignTechnician(tech);
 		workOrder.MarkAsCompleted();
-		await db.SaveChangesAsync();
+		await _dbContext.SaveChangesAsync();
 
-		WorkOrderService service = new(db);
+		// Act
+		Result<WorkOrderResponse.Detail> result = await _service.GetDetailAsync(workOrder.Id);
 
-		Result<WorkOrderResponse.Detail> result = await service.GetDetailAsync(workOrder.Id);
-
+		// Assert
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
 
@@ -88,8 +99,8 @@ public class WorkOrderServiceShould {
 		Assert.Equal("Pump A", dto.MaintObj.Name);
 		Assert.Equal("SN-001", dto.MaintObj.SerialNumber);
 		Assert.Equal("RiseBrand", dto.MaintObj.Brand);
-		Assert.Equal(Rise.Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
-		Assert.Equal(Rise.Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
+		Assert.Equal(Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
+		Assert.Equal(MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
 
 		Assert.Equal("TestLoc", dto.MaintObj.Location.Name);
 
@@ -108,8 +119,7 @@ public class WorkOrderServiceShould {
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnStationCode_WhenMaintObjAssignedToStation() {
-		ApplicationDbContext db = CreateDbContext();
-
+		// Arrange
 		Location location = new(
 			"Loc",
 			new Address("L1", null, "City", "1000"),
@@ -138,27 +148,24 @@ public class WorkOrderServiceShould {
 			DomainPriority.Normal,
 			maintObj);
 
-		db.Locations.Add(location);
-		db.MaintObjPlans.Add(plan);
-		db.MeasurementStations.Add(station);
-		db.MaintObjects.Add(maintObj);
-		db.WorkOrders.Add(workOrder);
-		await db.SaveChangesAsync();
+		_dbContext.Locations.Add(location);
+		_dbContext.MaintObjPlans.Add(plan);
+		_dbContext.MeasurementStations.Add(station);
+		_dbContext.MaintObjects.Add(maintObj);
+		_dbContext.WorkOrders.Add(workOrder);
+		await _dbContext.SaveChangesAsync();
 
-		WorkOrderService service = new(db);
+		// Act
+		Result<WorkOrderResponse.Detail> result = await _service.GetDetailAsync(workOrder.Id);
 
-		Result<WorkOrderResponse.Detail> result = await service.GetDetailAsync(workOrder.Id);
-
+		// Assert
 		Assert.True(result.IsSuccess);
 		Assert.Equal("STN-42", result.Value!.WorkOrder.MaintObj.StationCode);
 	}
 
 	[Fact]
 	public async Task GetDetailAsync_ShouldReturnNotFound_WhenWorkOrderDoesNotExist() {
-		ApplicationDbContext db = CreateDbContext();
-		WorkOrderService service = new(db);
-
-		Result<WorkOrderResponse.Detail> result = await service.GetDetailAsync(Guid.NewGuid());
+		Result<WorkOrderResponse.Detail> result = await _service.GetDetailAsync(Guid.NewGuid());
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
