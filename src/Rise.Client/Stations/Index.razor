@@ -187,14 +187,17 @@
 		<MudStack Spacing="3" Class="mt-2">
 			<MudDivider/>
 
-			<MudDatePicker T="DateTime?" Label="Installatiedatum" Date="_filterInstalledAt" DateChanged="@(val => UpdateFilterAsync<DateTime?>(v => _filterInstalledAt = v, val))" DateExpression="() => _filterInstalledAt" 
-				DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+			<MudDatePicker T="DateTime?" Label="Installatiedatum" Date="_filterInstalledAt"
+			              DateChanged="@(async val => { _filterInstalledAt = val; await ApplyOrReloadOnChangeAsync(); })"
+			              Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
-			<MudDatePicker T="DateTime?" Label="Verwijderd op" Date="_filterRemovedAt" DateChanged="@(val => UpdateFilterAsync<DateTime?>(v => _filterRemovedAt = v, val))" DateExpression="() => _filterRemovedAt" 
-				DisableToolbar="true" Clearable="true" PickerVariant="PickerVariant.Dialog" />
+			<MudDatePicker T="DateTime?" Label="Verwijderd op" Date="_filterRemovedAt"
+			              DateChanged="@(async val => { _filterRemovedAt = val; await ApplyOrReloadOnChangeAsync(); })"
+                    Clearable="true" PickerVariant="PickerVariant.Dialog" />
 
-			<MudSelect T="string" Label="Locatie" Value="_filterLocation" ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterLocation = v, val))" ValueExpression="() => _filterLocation" 
-				Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleLocationSelectOpen">
+			<MudSelect T="string" Label="Locatie" Value="_filterLocation"
+			           ValueChanged="@(async val => { _filterLocation = val; await ApplyOrReloadOnChangeAsync(); })"
+			           Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleLocationSelectOpen">
 				@if (_locations == null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
@@ -208,8 +211,9 @@
 				}
 			</MudSelect>
 
-			<MudSelect T="string" Label="Gemeente" Value="_filterCity" ValueChanged="@(val => UpdateFilterAsync<string?>(v => _filterCity = v, val))" ValueExpression="() => _filterCity" 
-				Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleCitySelectOpen">
+			<MudSelect T="string" Label="Gemeente" Value="_filterCity"
+			           ValueChanged="@(async val => { _filterCity = val; await ApplyOrReloadOnChangeAsync(); })"
+			           Dense="true" Clearable="true" Placeholder="Selecteer..." OnOpen="HandleCitySelectOpen">
 				@if (_cities == null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
