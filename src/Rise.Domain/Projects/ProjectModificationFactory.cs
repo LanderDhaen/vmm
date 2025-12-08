@@ -22,6 +22,6 @@ public static class ProjectModificationFactory {
 		
 		
 		
-		throw new InvalidOperationException("Niet mogelijk om een modificatie o pte stellen voor deze twee historiek rijen");
+		throw new InvalidOperationException("Niet mogelijk om een modificatie op te stellen voor deze twee historiek rijen");
 	}
 }
