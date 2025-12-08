@@ -33,4 +33,18 @@ public class WorkOrderService(HttpClient httpClient) : IWorkOrderService {
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
+
+	public async Task<Result<WorkOrderResponse.Create>> CreateAsync(
+		WorkOrderRequest.Create req,
+		CancellationToken ctx = default
+	) {
+		HttpResponseMessage response =
+			await httpClient.PostAsJsonAsync("/api/workorders", req, ctx);
+
+		Result<WorkOrderResponse.Create>? result =
+			await response.Content.ReadFromJsonAsync<Result<WorkOrderResponse.Create>>(ctx);
+
+		return result!;
+	}
+
 }

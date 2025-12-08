@@ -34,7 +34,7 @@ public class MaintObj : Entity {
 	
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
-		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.InstalledAt);
+		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);
 		Location = station.Location;
 		SetStatus(MaintObjStatus.Active);
 	}
@@ -63,12 +63,10 @@ public class MaintObj : Entity {
 		MaintObjStatus = status;
 	}
 
-	public void Edit(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand,
-		Installation installation) {
+	public void Edit(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand) {
 		Name = Guard.Against.NullOrWhiteSpace(name);
 		SerialNumber = Guard.Against.NullOrWhiteSpace(serialNumber);
 		MaintObjPlan = maintObjPlan;
 		Brand = brand;
-		Installation = installation;
 	}
 }

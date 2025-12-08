@@ -19,6 +19,10 @@ using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Stations;
 
+/// <summary>
+///     Service for measurementstations.
+/// </summary>
+/// <param name="dbContext"></param>
 public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasurementStationService {
 	public async Task<Result<MeasurementStationResponse.Index>> GetIndexAsync(
 		QueryRequest.SkipTake request,

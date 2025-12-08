@@ -36,32 +36,75 @@ public class WorkOrder : Entity {
 
 	// Functions
 	public void AssignTechnician(Technician technician) {
-		Technician = technician;
+		Technician = Guard.Against.Null(technician);
 		MarkAsInProgress();
 	}
 
 	public void UpdateStatus(WorkOrderStatus status) {
-		if (Status.Equals(status)) {
+		if (Status == status) {
 			return;
 		}
 
-		if (status.Equals(WorkOrderStatus.InProgress)) {
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s != WorkOrderStatus.Cancelled,
+			"Een geannuleerde werkbon kan niet meer aangepast worden.");
+
+		switch (status) {
+		case WorkOrderStatus.Pending:
+			MarkAsPending();
+			break;
+
+		case WorkOrderStatus.InProgress:
 			MarkAsInProgress();
-		} else {
+			break;
+
+		case WorkOrderStatus.Completed:
 			MarkAsCompleted();
+			break;
+
+		case WorkOrderStatus.Cancelled:
+			MarkAsCancelled();
+			break;
+
+		default:
+			throw new ArgumentOutOfRangeException(nameof(status), status, null);
 		}
 	}
 
+	private void MarkAsPending() {
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s != WorkOrderStatus.Completed && s != WorkOrderStatus.Cancelled,
+			"Afgewerkte of geannuleerde werkbonnen kunnen niet terug op gepland worden gezet.");
+
+		Status = WorkOrderStatus.Pending;
+		DateRange = null;
+	}
+
 	private void MarkAsCompleted() {
+		Guard.Against.Null(DateRange, nameof(DateRange),
+			"Een werkbon moet eerst gestart worden voor ze kan worden afgesloten.");
+
 		Status = WorkOrderStatus.Completed;
-		DateRange = new DateRange(DateRange!.StartDate, DateOnly.FromDateTime(DateTime.UtcNow));
+
+		DateRange = new DateRange(
+			DateRange.StartDate,
+			DateOnly.FromDateTime(DateTime.UtcNow)
+		);
 	}
 
 	private void MarkAsInProgress() {
-		Status = Technician is not null
-			? WorkOrderStatus.InProgress
-			: WorkOrderStatus.Pending;
+		Status = WorkOrderStatus.InProgress;
 
 		DateRange = new DateRange(DateOnly.FromDateTime(DateTime.UtcNow));
+	}
+
+	private void MarkAsCancelled() {
+		Guard.Against.InvalidInput(Status, nameof(Status),
+			s => s == WorkOrderStatus.Pending,
+			"Alleen werkbonnen met status gepland kunnen geannuleerd worden.");
+
+		Status = WorkOrderStatus.Cancelled;
+		DateRange = null;
+		Technician = null;
 	}
 }

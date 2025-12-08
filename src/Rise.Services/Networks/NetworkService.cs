@@ -2,15 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Networks;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 
 namespace Rise.Services.Networks;
 
 /// <summary>
-///     Service for measurement networks. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
-///     this layer
+///     Service for measurement networks.
 ///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
