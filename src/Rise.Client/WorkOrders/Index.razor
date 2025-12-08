@@ -161,52 +161,106 @@
 		}
 	</MudGrid>
 </MudHidden>
+<MudDrawer Anchor="Anchor.Bottom"
+           Variant="DrawerVariant.Temporary"
+           Elevation="8"
+           @bind-Open="_mobileSortOptionsOpen"
+           Class="p-4 rounded-lg">
 
-@* Sort drawer (mobile) *@
-@if (_mobileSortOptionsOpen)
+	<MudText Typo="Typo.h6">Sorteren</MudText>
+
+	<MudStack Spacing="4">
+		<MudDivider/>
+
+		@foreach (var column in SortColumns)
+		{
+			<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudText>@column.Label</MudText>
+				<MudSpacer/>
+
+				<MudButton
+					Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+					Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+					Size="Size.Small"
+					OnClick="@(async () => await SortMobileAsync(column.Value, false))">
+					Oplopend
+				</MudButton>
+
+				<MudButton
+					Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+					Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+					Size="Size.Small"
+					OnClick="@(async () => await SortMobileAsync(column.Value, true))">
+					Aflopend
+				</MudButton>
+			</MudStack>
+		}
+
+		<MudDivider/>
+
+		<MudButton Variant="Variant.Text"
+		           Color="Color.Primary"
+		           OnClick="@ToggleSortingDrawer">
+			Sluiten
+		</MudButton>
+	</MudStack>
+</MudDrawer>
+
+@if (_filterOptionsOpen)
 {
-	<MudDrawer Anchor="Anchor.Bottom"
-	           Variant="DrawerVariant.Temporary"
-	           Elevation="8"
-	           @bind-Open="_mobileSortOptionsOpen"
-	           Class="pa-4 rounded-lg">
-
-		<MudText Typo="Typo.h6">Sorteren</MudText>
-
-		<MudStack Spacing="4">
+	<MudDrawer Anchor="@_filterDrawerAnchor" Variant="DrawerVariant.Temporary" Elevation="8" @bind-Open="_filterOptionsOpen" Class="@GetFilterDrawerClass()">
+		<MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
+		<MudStack Spacing="3" Class="pa-4 mt-2">
 			<MudDivider/>
 
-			@foreach (var column in SortColumns)
-			{
-				<MudStack Row="true" AlignItems="AlignItems.Center">
-					<MudText>@column.Label</MudText>
-					<MudSpacer/>
+			<MudSelect T="WorkOrderStatus?" Label="Status" Value="_filterStatus" ValueChanged="@(async val => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" OnOpen="HandleStatusSelectOpen">
+				@if (_statusOptions is null)
+				{
+					<MudSelectItem T="WorkOrderStatus?" Disabled="true">Laden...</MudSelectItem>
+				}
+				else
+				{
+					@foreach (var s in _statusOptions)
+					{
+						<MudSelectItem T="WorkOrderStatus?" Value="@((WorkOrderStatus?)s)">@WorkOrderUtility.TranslateStatus(s)</MudSelectItem>
+					}
+				}
+			</MudSelect>
 
-					<MudButton
-						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, false))">
-						Oplopend
-					</MudButton>
+			<MudSelect T="MaintObjType?" Label="Type object" Value="_filterMaintObjType" ValueChanged="@(async val => { _filterMaintObjType = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" OnOpen="HandleMaintObjTypeSelectOpen">
+				@if (_maintObjTypeOptions == null)
+				{
+					<MudSelectItem T="MaintObjType?" Disabled="true">Laden...</MudSelectItem>
+				}
+				else
+				{
+					@foreach (var t in _maintObjTypeOptions)
+					{
+						<MudSelectItem T="MaintObjType?" Value="@((MaintObjType?)t)">@MaintObjectUtility.TranslateType(t)</MudSelectItem>
+					}
+				}
+			</MudSelect>
 
-					<MudButton
-						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, true))">
-						Aflopend
-					</MudButton>
-				</MudStack>
-			}
+			<MudSelect T="string" Label="Technieker" Value="_filterTechnician" ValueChanged="@(async val => { _filterTechnician = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" Placeholder="Selecteer technieker..." OnOpen="HandleTechnicianSelectOpen">
+				@if (_filterTechnicianOptions is null)
+				{
+					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
+				}
+				else
+				{
+					@foreach (var t in _filterTechnicianOptions)
+					{
+						<MudSelectItem T="string" Value="@t">@t</MudSelectItem>
+					}
+				}
+			</MudSelect>
 
-			<MudDivider/>
+			<MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate" DateChanged="@(async val => { _filterStartDate = val; if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value) { _filterEndDate = null; } await ApplyOrReloadOnChangeAsync(); })" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
+			<MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate" DateChanged="@(async val => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })" Clearable="true" PickerVariant="PickerVariant.Dialog" MinDate="_filterStartDate?.AddDays(1)"/>
 
-			<MudButton Variant="Variant.Text"
-			           Color="Color.Primary"
-			           OnClick="@ToggleSortingDrawer">
-				Sluiten
-			</MudButton>
+			<MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
+				<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
+			</MudStack>
 		</MudStack>
 	</MudDrawer>
 }
