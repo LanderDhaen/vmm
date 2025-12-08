@@ -72,7 +72,7 @@ public partial class Index {
 			OrderDescending = sorting?.Descending ?? _activeSortingDesc,
 			SearchTerm = _searchTerm.Trim()
 		};
-		request.Filters ??= new Dictionary<string, object?>();
+		request.Filters = [];
 		return request;
 	}
 	private async Task<GridData<MeasurementStationDto.Index>> FetchStationsAsync(QueryRequest.SkipTake request, bool useContainsForText) {
@@ -80,7 +80,7 @@ public partial class Index {
 
 		Result<MeasurementStationResponse.Index> result = await StationService.GetIndexAsync(request);
 
-		var stations = result?.Value?.Stations ?? [];
+		var stations = result.Value.Stations ?? [];
 
 
 		var total = result?.Value?.TotalCount ?? 0;
@@ -110,7 +110,7 @@ public partial class Index {
 			OrderDescending = _activeSortingDesc,
 			SearchTerm = _searchTerm.Trim()
 		};
-		request.Filters ??= new Dictionary<string, object?>();
+		request.Filters = [];
 		var gridData = await FetchStationsAsync(request, useContainsForText: true);
 
 		_mobileItems = gridData.Items;
@@ -155,7 +155,7 @@ public partial class Index {
 
 	// Filtering
 	private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
-		request.Filters ??= new Dictionary<string, object?>();
+		request.Filters = [];
 
 		if (_filterInstalledAt.HasValue)
 			request.Filters["InstalledAt"] = new { Operator = "GreaterThanOrEqual", Value = _filterInstalledAt.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
@@ -215,7 +215,7 @@ public partial class Index {
 			var locations = result.Value.Locations;
 
 			_cities = locations
-				.Select(l => l.Address?.City ?? string.Empty)
+				.Select(l => l.Address.City)
 				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.Distinct(StringComparer.OrdinalIgnoreCase)
 				.OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
