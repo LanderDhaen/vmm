@@ -39,7 +39,9 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">@_maintObj.SerialNumber</MudText>
+									         Color="Color.Primary">
+										@_maintObj.SerialNumber
+									</MudText>
 									<MudTooltip Delay="400"
 									            Text="Onderhoudsobject bewerken">
 										<MudButton Variant="Variant.Text"
@@ -52,7 +54,16 @@ else
 										</MudButton>
 									</MudTooltip>
 								</MudStack>
-								<MudText Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
+								<MudStack Row="true" AlignItems="AlignItems.End">
+									<MudText Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
+									<MudChip T="string"
+									         Class="ma-0"
+									         Size="Size.Small" 
+									         Variant="Variant.Outlined"
+									         Color="@(MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus))">
+										@MaintObjectUtility.TranslateStatus(_maintObj.MaintObjStatus)
+									</MudChip>
+								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>

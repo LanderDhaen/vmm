@@ -73,6 +73,16 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
+							<MudStack Row="true" Justify="Justify.FlexStart">
+								<MudText><b>Status: </b></MudText>
+								<MudChip T="string"
+								         Class="ma-0"
+								         Size="Size.Small"
+								         Variant="Variant.Outlined"
+								         Color="@(ProjectUtility.DefineStatusColor(_project.Status))">
+									@_project.Status
+								</MudChip>
+							</MudStack>
 							<MudText><b>Startdatum:</b> @(_project.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @(_project.EndDate)</MudText>
 						</MudCardContent>
@@ -86,7 +96,7 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">@_project.MeasurementNetwork.Name</MudText>
+									         Color="Color.Primary">Meetnet</MudText>
 									<MudTooltip Delay="400"
 									            Text="@(IsActive ? "Meetnet wijzigen" : "Afgesloten project kan niet bewerkt worden")">
 										<MudButton Variant="Variant.Text"
@@ -100,6 +110,7 @@ else
 										</MudButton>
 									</MudTooltip>
 								</MudStack>
+								<MudText Typo="Typo.subtitle2">@_project.MeasurementNetwork.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
