@@ -74,12 +74,12 @@
 			</MudItem>
 
 			<MudItem xs="12" sm="6" Class="mt-n4">
-				<MudText Typo="Typo.subtitle2">Landcode
+				<MudText Typo="Typo.subtitle2">ISO-code
 					<MudText Color="Color.Error" Inline="true">*</MudText>
 				</MudText>
 				<MudTextField @bind-Value="Model.Location!.CountryIso"
 				              For="@(() => Model.Location!.CountryIso)" MaxLength="2"
-				              Immediate="true" Variant="Variant.Outlined" Placeholder="Landcode"/>
+				              Immediate="true" Variant="Variant.Outlined" Placeholder="ISO-code"/>
 			</MudItem>
 
 			<MudItem xs="12" sm="6">
