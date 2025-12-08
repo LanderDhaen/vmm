@@ -21,7 +21,7 @@
 				<MudText Color="Color.Error" Inline="true">*</MudText>
 			</MudText>
 			<MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)" DateFormat="dd/MM/yyyy"
-			               Variant="Variant.Outlined"/>
+			               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))" Variant="Variant.Outlined"/>
 		</MudItem>
 
 		<MudItem xs="12" sm="6">
