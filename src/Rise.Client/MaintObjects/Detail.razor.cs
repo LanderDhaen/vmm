@@ -10,10 +10,10 @@ namespace Rise.Client.MaintObjects;
 
 public partial class Detail {
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Info",
 		"Historiek"
-	};
+	];
 
 	private MaintObjDto.Detail? _maintObj;
 
@@ -36,11 +36,9 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		// Load maintobj details and stations in parallel
 		await GetMaintObjDetailAsync();
 		// await GetStationAsync();
 
-		// --- Project detail ---
 		if (_maintObj is not null) {
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
