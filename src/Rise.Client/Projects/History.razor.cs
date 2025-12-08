@@ -25,9 +25,10 @@ public partial class History {
 
 	private static string DefineTitle(ProjectModificationType modificationType) {
 		return modificationType switch {
-			ProjectModificationType.MeasurementNetworkChanged => "Meetnet gewijzigd",
 			ProjectModificationType.StartDateChanged => "Startdatum gewijzigd",
 			ProjectModificationType.EndDateChanged => "Einddatum gewijzigd",
+			ProjectModificationType.StatusChanged => "Status gewijzigd",
+			ProjectModificationType.MeasurementNetworkChanged => "Meetnet gewijzigd",
 			_ => "Wijziging"
 		};
 	}

@@ -3,8 +3,8 @@ namespace Rise.Shared.Projects;
 ///     A project modification type is something that defines the type of change made to a project.
 /// </summary>
 public enum ProjectModificationType {
-	MeasurementNetworkChanged,
-	StatusChanged,
 	StartDateChanged,
 	EndDateChanged,
+	StatusChanged,
+	MeasurementNetworkChanged,
 }
