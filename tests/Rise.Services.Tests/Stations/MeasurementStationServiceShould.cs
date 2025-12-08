@@ -351,8 +351,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		MeasurementStationRequest.Edit req = new() {
 			StationId = station.Id,
 			Code = "STN-200",
-			LocationId = loc2.Id,
-			ProjectId = project2.Id,
 			InstalledAt = newInstalled,
 			RemovedAt = newRemoved
 		};
@@ -366,9 +364,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 			.Include(s => s.Projects)
 			.SingleAsync(s => s.Id == station.Id);
 
-		Assert.Equal(loc2.Id, reloaded.Location.Id);
-		Assert.Single(reloaded.Projects);
-		Assert.Equal(project2.Id, reloaded.Projects.First().Id);
 		Assert.Equal(newInstalled, reloaded.Installation.InstalledAt);
 		Assert.Equal(newRemoved, reloaded.Installation.RemovedAt);
 	}
@@ -378,8 +373,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		MeasurementStationRequest.Edit req = new() {
 			StationId = Guid.NewGuid(),
 			Code = "NOPE",
-			LocationId = Guid.NewGuid(),
-			ProjectId = Guid.NewGuid(),
 			InstalledAt = DateTime.UtcNow
 		};
 
@@ -450,8 +443,6 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		MeasurementStationRequest.Edit req = new() {
 			StationId = station.Id,
 			Code = station.Code,
-			LocationId = loc.Id,
-			ProjectId = project.Id,
 			InstalledAt = installed,
 			RemovedAt = removed
 		};

@@ -12,7 +12,6 @@
 }
 else
 {	
-	
 	@* Tabs *@
 	
 	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
@@ -34,8 +33,8 @@ else
 
 				@* Details *@
 
-				<MudItem xs="12" md="6">
-					<MudCard Elevation="2" Class="rounded-lg">
+				<MudItem xs="12" md="6" Class="d-flex">
+					<MudCard Elevation="2" Class="rounded-lg flex-grow-1">
 						<MudCardHeader>
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
@@ -44,7 +43,8 @@ else
 									           StartIcon="@Icons.Material.Filled.Edit"
 									           Size="Size.Small"
 									           Color="Color.Primary"
-									           Class="px-4">
+									           Class="px-4"
+									           OnClick="@OpenEditStationDialogAsync">
 										Aanpassen
 									</MudButton>
 								</MudStack>
@@ -61,15 +61,35 @@ else
 				@* Location *@
 
 				<MudItem xs="12" md="6">
-					<LocationCard Location="_station.Location"/>
+					<LocationCard Location="_station.Location" OnClick="@OpenUpdateLocationDialogAsync"/>
 				</MudItem>
 
 				@* TODO: MaintObj table *@
 
 				@* Projects table *@
-
 				<MudItem xs="12">
-					<Projects StationId="_station.Id"/>
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">Projecten
+									</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@OpenDialogAsync">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<Projects StationId="_station.Id" ProjectsFromStation="_projectsFromStation"/>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
 
 			</MudGrid>

@@ -16,4 +16,14 @@ public interface IWorkOrderService {
 		CancellationToken ctx = default
 	);
 
+	Task<Result> UpdateStatusAsync(
+		WorkOrderRequest.UpdateStatus req,
+		CancellationToken ctx = default
+	);
+
+	Task<Result<WorkOrderResponse.Create>> CreateAsync(
+		WorkOrderRequest.Create req,
+		CancellationToken ctx = default
+	);
+
 }

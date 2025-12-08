@@ -20,6 +20,7 @@ using DomainPriority = Rise.Domain.WorkOrders.Priority;
 using MaintObjStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedPriority = Rise.Shared.WorkOrders.Priority;
 using SharedStatus = Rise.Shared.WorkOrders.WorkOrderStatus;
+using WorkOrderStatus = Rise.Domain.WorkOrders.WorkOrderStatus;
 
 namespace Rise.Services.Tests.WorkOrders;
 
@@ -117,7 +118,7 @@ public class WorkOrderServiceShould : IClassFixture<MsSqlContainerFixture>, IAsy
 		Assert.Equal("SN-001", dto.MaintObj.SerialNumber);
 		Assert.Equal("RiseBrand", dto.MaintObj.Brand);
 		Assert.Equal(Shared.MaintObjects.MaintObjType.Sensor, dto.MaintObj.MaintObjType);
-		Assert.Equal(MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
+		Assert.Equal(Shared.MaintObjects.MaintObjStatus.Inactive, dto.MaintObj.MaintObjStatus);
 
 		Assert.Equal("TestLoc", dto.MaintObj.Location.Name);
 

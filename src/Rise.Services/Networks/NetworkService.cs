@@ -18,9 +18,18 @@ public class NetworkService(ApplicationDbContext dbContext)
 		CancellationToken ctx = default) {
 		IQueryable<MeasurementNetwork> query = dbContext.MeasurementNetworks.AsQueryable();
 
-		query = !string.IsNullOrWhiteSpace(request.OrderBy)
-			? query.OrderBy(p => EF.Property<object>(p, request.OrderBy))
-			: query.OrderBy(p => p.Name);
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			query = query.Where(m =>
+				m.Name.Contains(request.SearchTerm) ||
+				m.Zone.Name.Contains(request.SearchTerm)
+			);
+		}
+
+		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
+			query = query.OrderBy(p => EF.Property<object>(p, request.OrderBy));
+		} else {
+			query = query.OrderBy(p => p.Name);
+		}
 
 		IQueryable<MeasurementNetwork> page = query
 			.AsNoTracking()

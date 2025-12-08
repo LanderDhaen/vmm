@@ -11,6 +11,8 @@ public static partial class ProjectRequest {
 		public string Code { get; set; }
 		public DateTime? StartDate { get; set; } = DateTime.UtcNow;
 		public Guid? MeasurementNetworkId { get; set; }
+		// Measurementstation -> to link the project to a station upon creation
+		public Guid? MeasurementStationId { get; set; } = Guid.Empty;
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
@@ -22,7 +24,7 @@ public static partial class ProjectRequest {
 					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
 				RuleFor(x => x.StartDate)
 					.NotNull().WithMessage("Startdatum mag niet leeg zijn!")
-					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet boven 1 januari 2000 liggen.")
+					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Startdatum moet na 01/01/00 liggen.")
 					.LessThan(DateTime.MaxValue).WithMessage("Startdatum moet onder het maximum zijn.");
 				RuleFor(x => x.MeasurementNetworkId)
 					.NotNull().WithMessage("Je moet een meetnet selecteren.");
@@ -32,11 +34,7 @@ public static partial class ProjectRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Create>.CreateWithOptions((Create)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid) {
-					return Array.Empty<string>();
-				}
-
-				return result.Errors.Select(e => e.ErrorMessage);
+				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}

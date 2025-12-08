@@ -37,6 +37,17 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
+		if (request.MeasurementStationId != Guid.Empty) {
+			MeasurementStation measurementStation = await dbContext.MeasurementStations
+				.SingleOrDefaultAsync(x => x.Id == request.MeasurementStationId, ctx);
+
+			if (measurementStation is null) {
+				return Result.NotFound("Meetstation niet gevonden.");
+			}
+
+			p.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
+		}
+
 		dbContext.Projects.Add(p);
 
 		await dbContext.SaveChangesAsync(ctx);
@@ -97,14 +108,22 @@ public class ProjectService(ApplicationDbContext dbContext)
 		CancellationToken ctx = default) {
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
+		// Only get active projects
+		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string status &&
+			status.Equals("Active")) {
+			query = query.Where(p => p.Status == Status.Actief);
+		}
+
 		// Filtering (MSSQL handles casing)
 
-		query = query.Where(p =>
-			EF.Functions.Like(p.Name, $"%{req.SearchTerm}%") ||
-			EF.Functions.Like(p.Code, $"%{req.SearchTerm}%") ||
-			EF.Functions.Like(p.MeasurementNetwork.Name, $"%{req.SearchTerm}%") ||
-			EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{req.SearchTerm}%")
-		);
+		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
+			query = query.Where(p =>
+				p.Name.Contains(req.SearchTerm) ||
+				p.Code.Contains(req.SearchTerm) ||
+				p.MeasurementNetwork.Name.Contains(req.SearchTerm) ||
+				p.MeasurementNetwork.Zone.Name.Contains(req.SearchTerm)
+			);
+		}
 
 		int totalCount = await query.CountAsync(ctx);
 

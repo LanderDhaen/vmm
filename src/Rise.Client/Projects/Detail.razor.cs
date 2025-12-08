@@ -97,9 +97,9 @@ public partial class Detail {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.Stations, _stationsFromProject }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true };
+		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", options);
+		var dialog = await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", parameters, options);
 		var result = await dialog.Result;
 
 		if (!result.Canceled) {

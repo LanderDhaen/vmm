@@ -1,5 +1,6 @@
 @page "/workorders/{WorkOrderId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Shared.WorkOrders
 
 <PageTitle>Werkbon Details</PageTitle>
 
@@ -11,17 +12,57 @@
 }
 else
 {
-	@* Tabs *@
-	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
-		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
-		         @onclick="() => SetTab(0)">
-			@_tabs[0]
-		</MudText>
+	<MudStack Row="true" Justify="Justify.SpaceBetween">
+		<MudStack Row="true" Spacing="8">
+			<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+			         @onclick="() => SetTab(0)">
+				@_tabs[0]
+			</MudText>
+			<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+			         @onclick="() => SetTab(1)">
+				@_tabs[1]
+			</MudText>
+		</MudStack>
 
-		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
-		         @onclick="() => SetTab(1)">
-			@_tabs[1]
-		</MudText>
+		<MudHidden Breakpoint="Breakpoint.SmAndDown">
+			@switch (_workOrder.Status)
+			{
+				case WorkOrderStatus.Pending:
+					<MudStack Row="true" Spacing="2">
+						<MudButton Variant="Variant.Outlined"
+						           Color="Color.Primary"
+						           OnClick="@ShowStartConfirmationAsync">
+							Starten
+						</MudButton>
+
+						<MudButton Variant="Variant.Outlined"
+						           Color="Color.Error"
+						           OnClick="@ShowCancelConfirmationAsync">
+							Annuleren
+						</MudButton>
+					</MudStack>
+					break;
+
+				case WorkOrderStatus.InProgress:
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Error"
+					           OnClick="@ShowCloseConfirmationAsync">
+						Afsluiten
+					</MudButton>
+					break;
+
+				case WorkOrderStatus.Completed:
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Success"
+					           OnClick="@ShowStartConfirmationAsync">
+						Heropenen
+					</MudButton>
+					break;
+
+				case WorkOrderStatus.Cancelled:
+					break;
+			}
+		</MudHidden>
 	</MudStack>
 
 	@switch (_selectedTab)
@@ -50,7 +91,7 @@ else
 										</MudChip>
 									</MudStack>
 								</MudStack>
-									
+
 								<MudText Typo="Typo.subtitle2">@_workOrder.Description</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
@@ -62,7 +103,7 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-				
+
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
 						<MudCardHeader>
@@ -99,9 +140,9 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-				
-				<MudItem xs="12" md="6"> 
-					<LocationCard Location="_workOrder.Location" ShowMoveButton="false" />
+
+				<MudItem xs="12" md="6">
+					<LocationCard Location="_workOrder.Location" ShowMoveButton="false"/>
 				</MudItem>
 
 			</MudGrid>
@@ -111,4 +152,47 @@ else
 			<div>Historiek?</div>
 			break;
 	}
+	
+	<MudHidden Breakpoint="Breakpoint.MdAndUp">
+		<MudStack Row="true"
+		          Spacing="2"
+		          Style="position:fixed; right:16px; bottom:16px; z-index:10;">
+
+			@switch (_workOrder.Status)
+			{
+				case WorkOrderStatus.Pending:
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Primary"
+					           OnClick="@ShowStartConfirmationAsync">
+						Starten
+					</MudButton>
+
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Error"
+					           OnClick="@ShowCancelConfirmationAsync">
+						Annuleren
+					</MudButton>
+					break;
+
+				case WorkOrderStatus.InProgress:
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Error"
+					           OnClick="@ShowCloseConfirmationAsync">
+						Afsluiten
+					</MudButton>
+					break;
+
+				case WorkOrderStatus.Completed:
+					<MudButton Variant="Variant.Outlined"
+					           Color="Color.Success"
+					           OnClick="@ShowStartConfirmationAsync">
+						Heropenen
+					</MudButton>
+					break;
+
+				case WorkOrderStatus.Cancelled:
+					break;
+			}
+		</MudStack>
+	</MudHidden>
 }

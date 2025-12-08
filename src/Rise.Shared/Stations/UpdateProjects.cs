@@ -6,6 +6,6 @@ namespace Rise.Shared.Stations;
 public static partial class MeasurementStationRequest {
 	public class UpdateProjects {
 		public Guid MeasurementStationId { get; set; }
-		public IEnumerable<Guid> ProjectIds { get; set; } = new List<Guid>();
+		public List<Guid> ProjectIds { get; set; } = new();
 	}
 }
