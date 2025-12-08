@@ -85,6 +85,14 @@ public class Project : Entity {
 		if (measurementNetwork.Equals(MeasurementNetwork)) {
 			return;
 		}
+		
+		// Create history object using old values
+		
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		ProjectHistory projectHistory = new(new DateRange(DateRange.StartDate, DateRange.EndDate), MeasurementNetwork, validityRange);
+		_projectHistories.Add(projectHistory);
+		
+		// Assign the new values
 
 		MeasurementNetwork = Guard.Against.Null(measurementNetwork);
 	}

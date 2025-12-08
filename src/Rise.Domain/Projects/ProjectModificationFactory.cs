@@ -6,6 +6,13 @@ namespace Rise.Domain.Projects;
 public static class ProjectModificationFactory {
 	public static ProjectModification Create(ProjectHistory current, ProjectHistory previous) {
 
+		if (!current.MeasurementNetwork.Equals(previous.MeasurementNetwork)) {
+			return new ProjectModification(ProjectModificationType.MeasurementNetworkChanged,
+				current.ValidityRange.ValidFrom,
+				previous.MeasurementNetwork.Name,
+				current.MeasurementNetwork.Name);
+		}
+
 		if (!current.DateRange.StartDate.Equals(previous.DateRange.StartDate)) {
 			return new ProjectModification(ProjectModificationType.StartDateChanged, 
 				current.ValidityRange.ValidFrom, 

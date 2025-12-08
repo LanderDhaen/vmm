@@ -251,8 +251,21 @@ public class DbSeeder(
 
 		int i = 0;
 
+		MeasurementNetwork dummyMeasurementNetwork = new("Conductiviteitsmeetnet Noord", new Zone("Noord", "NSTA"));
+
 		foreach (Project project in projects) {
 			DateRange dateRange = project.DateRange;
+			MeasurementNetwork network = project.MeasurementNetwork;
+			
+			// Change network
+			
+			project.UpdateMeasurementNetwork(dummyMeasurementNetwork);
+			await dbContext.SaveChangesAsync();
+			
+			// Revert the measurement network change
+			
+			project.UpdateMeasurementNetwork(network);
+			await dbContext.SaveChangesAsync();
 
 			// Move the start date
 
