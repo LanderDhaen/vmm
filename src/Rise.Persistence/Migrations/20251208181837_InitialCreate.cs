@@ -404,12 +404,20 @@ namespace Rise.Persistence.Migrations {
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					StartDate = table.Column<DateOnly>(type: "date", nullable: false),
 					EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+					Status = table.Column<int>(type: "int", nullable: false),
+					MeasurementNetworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
 					ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
 					ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
 				},
 				constraints: table => {
 					table.PrimaryKey("PK_ProjectHistory", x => x.Id);
+					table.ForeignKey(
+						name: "FK_ProjectHistory_MeasurementNetwork_MeasurementNetworkId",
+						column: x => x.MeasurementNetworkId,
+						principalTable: "MeasurementNetwork",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Restrict);
 					table.ForeignKey(
 						name: "FK_ProjectHistory_Project_ProjectId",
 						column: x => x.ProjectId,
@@ -477,6 +485,11 @@ namespace Rise.Persistence.Migrations {
 			migrationBuilder.CreateIndex(
 				name: "IX_Project_MeasurementNetworkId",
 				table: "Project",
+				column: "MeasurementNetworkId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_ProjectHistory_MeasurementNetworkId",
+				table: "ProjectHistory",
 				column: "MeasurementNetworkId");
 
 			migrationBuilder.CreateIndex(
