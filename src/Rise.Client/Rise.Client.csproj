@@ -32,4 +32,8 @@
 		</Compile>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Components\MeasurementNetworks\MeasurementNetworkAutoComplete.razor" />
+	</ItemGroup>
+
 </Project>
