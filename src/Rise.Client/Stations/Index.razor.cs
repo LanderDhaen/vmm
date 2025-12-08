@@ -35,8 +35,8 @@ public partial class Index {
 	private DateTime? _filterRemovedAt;
 	private string? _filterLocation;
 	private string? _filterCity;
-	private List<string>? _locations = null;
-	private List<string>? _cities = null;
+	private List<string>? _locations;
+	private List<string>? _cities;
 
 	private CancellationTokenSource _selectCancellationTokenSource = new();
 
