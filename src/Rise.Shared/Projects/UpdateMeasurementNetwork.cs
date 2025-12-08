@@ -20,11 +20,7 @@ public static partial class ProjectRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<UpdateMeasurementNetwork>.CreateWithOptions((UpdateMeasurementNetwork)model,
 						x => x.IncludeProperties(propertyName)));
-				if (result.IsValid) {
-					return Array.Empty<string>();
-				}
-
-				return result.Errors.Select(e => e.ErrorMessage);
+				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}
