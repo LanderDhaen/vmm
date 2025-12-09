@@ -213,59 +213,107 @@
 
 @if (_filterOptionsOpen)
 {
-	<MudDrawer Anchor="@_filterDrawerAnchor" Variant="DrawerVariant.Temporary" Elevation="8" @bind-Open="_filterOptionsOpen" Class="@GetFilterDrawerClass()">
+	<MudDrawer Anchor="@_filterDrawerAnchor" 
+	  Variant="DrawerVariant.Temporary" 
+	  Elevation="8" @bind-Open="_filterOptionsOpen" 
+		Class="@GetFilterDrawerClass()">
 		<MudText Typo="Typo.h6" Color="Color.Primary">Filteren</MudText>
 		<MudStack Spacing="3" Class="pa-4 mt-2">
 			<MudDivider/>
 
-			<MudSelect T="WorkOrderStatus?" Label="Status" Value="_filterStatus" ValueChanged="@(async val => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" OnOpen="HandleStatusSelectOpen">
+			<MudSelect T="WorkOrderStatus?" 
+			           Label="Status" Value="_filterStatus" 
+								 ValueChanged="@(async val => { _filterStatus = val; await ApplyOrReloadOnChangeAsync(); })" 
+								 Dense="true" Clearable="true" OnOpen="HandleStatusSelectOpen">
 				@if (_statusOptions is null)
 				{
 					<MudSelectItem T="WorkOrderStatus?" Disabled="true">Laden...</MudSelectItem>
 				}
 				else
 				{
-					@foreach (var s in _statusOptions)
+					@foreach (WorkOrderStatus s in _statusOptions)
 					{
 						<MudSelectItem T="WorkOrderStatus?" Value="@((WorkOrderStatus?)s)">@WorkOrderUtility.TranslateStatus(s)</MudSelectItem>
 					}
 				}
 			</MudSelect>
 
-			<MudSelect T="MaintObjType?" Label="Type object" Value="_filterMaintObjType" ValueChanged="@(async val => { _filterMaintObjType = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" OnOpen="HandleMaintObjTypeSelectOpen">
+			<MudSelect T="MaintObjType?" 
+			           Label="Type object" 
+								 Value="_filterMaintObjType" 
+								 ValueChanged="@(async val => { _filterMaintObjType = val; await ApplyOrReloadOnChangeAsync(); })" 
+								 Dense="true" Clearable="true" 
+								 OnOpen="HandleMaintObjTypeSelectOpen">
 				@if (_maintObjTypeOptions == null)
 				{
 					<MudSelectItem T="MaintObjType?" Disabled="true">Laden...</MudSelectItem>
 				}
 				else
 				{
-					@foreach (var t in _maintObjTypeOptions)
+					@foreach (MaintObjType t in _maintObjTypeOptions)
 					{
 						<MudSelectItem T="MaintObjType?" Value="@((MaintObjType?)t)">@MaintObjectUtility.TranslateType(t)</MudSelectItem>
 					}
 				}
 			</MudSelect>
 
-			<MudSelect T="string" Label="Technieker" Value="_filterTechnician" ValueChanged="@(async val => { _filterTechnician = val; await ApplyOrReloadOnChangeAsync(); })" Dense="true" Clearable="true" Placeholder="Selecteer technieker..." OnOpen="HandleTechnicianSelectOpen">
+			<MudSelect T="Priority?" 
+			           Label="Prioriteit" 
+								 Value="_filterPriority" 
+								 ValueChanged="@(async val => { _filterPriority = val; await ApplyOrReloadOnChangeAsync(); })" 
+								 Dense="true" Clearable="true" 
+								 OnOpen="HandlePrioritySelectOpen">
+				@if (_priorityOptions is null)
+				{
+					<MudSelectItem T="Priority?" Disabled="true">Laden...</MudSelectItem>
+				}
+				else
+				{
+					@foreach (Priority p in _priorityOptions)
+					{
+						<MudSelectItem T="Priority?" Value="@((Priority?)p)">@WorkOrderUtility.TranslatePriority(p)</MudSelectItem>
+					}
+				}
+			</MudSelect>
+
+			<MudSelect T="string" 
+			           Label="Technieker" 
+								 Value="_filterTechnician" 
+								 ValueChanged="@(async val => { _filterTechnician = val; await ApplyOrReloadOnChangeAsync(); })" 
+								 Dense="true" 
+								 Clearable="true" 
+								 Placeholder="Selecteer technieker..." 
+								 OnOpen="HandleTechnicianSelectOpen">
 				@if (_filterTechnicianOptions is null)
 				{
 					<MudSelectItem T="string" Disabled="true">Laden...</MudSelectItem>
 				}
 				else
 				{
-					@foreach (var t in _filterTechnicianOptions)
+					@foreach (string t in _filterTechnicianOptions)
 					{
 						<MudSelectItem T="string" Value="@t">@t</MudSelectItem>
 					}
 				}
 			</MudSelect>
 
-			<MudDatePicker T="DateTime?" Label="Startdatum (vanaf)" Date="_filterStartDate" DateChanged="@(async val => { _filterStartDate = val; if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value) { _filterEndDate = null; } await ApplyOrReloadOnChangeAsync(); })" Clearable="true" PickerVariant="PickerVariant.Dialog"/>
-			<MudDatePicker T="DateTime?" Label="Einddatum (t.e.m.)" Date="_filterEndDate" DateChanged="@(async val => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })" Clearable="true" PickerVariant="PickerVariant.Dialog" MinDate="_filterStartDate?.AddDays(1)"/>
+			<MudDatePicker T="DateTime?" 
+			               Label="Startdatum (vanaf)" 
+										 Date="_filterStartDate" 
+										 DateChanged="@(async val => { _filterStartDate = val; if (_filterStartDate.HasValue && _filterEndDate.HasValue && _filterEndDate.Value <= _filterStartDate.Value) { _filterEndDate = null; } await ApplyOrReloadOnChangeAsync(); })" 
+										 Clearable="true" 
+										 PickerVariant="PickerVariant.Dialog"/>
+			<MudDatePicker T="DateTime?" 
+			               Label="Einddatum (t.e.m.)" 
+										 Date="_filterEndDate" 
+										 DateChanged="@(async val => { _filterEndDate = val; await ApplyOrReloadOnChangeAsync(); })" 
+										 Clearable="true" 
+										 PickerVariant="PickerVariant.Dialog" 
+										 MinDate="_filterStartDate?.AddDays(1)"/>
 
 			<MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="pt-2">
 				<MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@ClearFilters">Wissen</MudButton>
 			</MudStack>
 		</MudStack>
 	</MudDrawer>
-}
+};
