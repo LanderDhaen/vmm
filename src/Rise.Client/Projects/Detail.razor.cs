@@ -13,12 +13,6 @@ public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 
-	// Overlay
-	private readonly bool _visible;
-
-	// Drawer
-	private readonly bool _open;
-
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
 
@@ -118,7 +112,7 @@ public partial class Detail {
 			await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshProjectDetail();
 		}
 	}

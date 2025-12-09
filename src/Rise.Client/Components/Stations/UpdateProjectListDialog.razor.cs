@@ -64,6 +64,8 @@ public partial class UpdateProjectListDialog {
 		_cancellationTokenSource = new CancellationTokenSource();
 
 		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = Int32.MaxValue,
 			SearchTerm = _searchTerm
 		};
 

@@ -2,7 +2,7 @@
 @using Rise.Client.Components.Projects
 
 <MudCard>
-	<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
+	<MudForm Model="@Model" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
 		<CreateProjectForm Model="Model"></CreateProjectForm>
 	</MudForm>
 	<MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
