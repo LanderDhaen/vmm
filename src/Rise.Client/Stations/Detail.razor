@@ -30,7 +30,6 @@ else
 	{
 		case 0:
 			<MudGrid Spacing="4" Class="mt-2">
-
 				@* Details *@
 				<MudItem xs="12" md="6" Class="d-flex">
 					<MudCard Elevation="2" Class="rounded-lg flex-grow-1">
@@ -38,14 +37,16 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6" Color="Color.Primary">@_station.Code</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.Edit"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           OnClick="@OpenEditStationDialogAsync">
-										Aanpassen
-									</MudButton>
+									<MudTooltip Text="Meetstation bewerken" Delay="600">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.Edit"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@OpenEditStationDialogAsync">
+											Aanpassen
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
@@ -72,14 +73,17 @@ else
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">Onderhoudsobjecten
 									</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           OnClick="@OpenMaintObjectsListDialogAsync">
-										Toevoegen
-									</MudButton>
+									<MudTooltip Text="Onderhoudsobjecten toevoegen" Delay="600"
+									            Placement="Placement.Top">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@OpenMaintObjectsListDialogAsync">
+											Toevoegen
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
@@ -98,14 +102,16 @@ else
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">Projecten
 									</MudText>
-									<MudButton Variant="Variant.Text"
-									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
-									           Size="Size.Small"
-									           Color="Color.Primary"
-									           Class="px-4"
-									           OnClick="@OpenDialogAsync">
-										Aanpassen
-									</MudButton>
+									<MudTooltip Text="Lijst bewerken" Delay="600" Placement="Placement.Top">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@OpenDialogAsync">
+											Aanpassen
+										</MudButton>
+									</MudTooltip>
 								</MudStack>
 							</CardHeaderContent>
 						</MudCardHeader>
@@ -114,9 +120,7 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-
 			</MudGrid>
-
 			break;
 
 		case 1:

@@ -12,7 +12,7 @@ else
 	@* Desktop view *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
 		<MudTable T="MeasurementStationDto.Index" Items="Stations" CustomHeader="true"
-		          OnRowClick="OnStationRowClick">
+		          OnRowClick="OnStationRowClick" Hover="true" Striped="true">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>
@@ -51,8 +51,10 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="d-flex flex-column gap-1">
-							<MudText Typo="Typo.caption"><b>Geïnstalleerd op:</b> @(StationUtility.ToLongInstalledAt(p.InstalledAt))</MudText>
-							<MudText Typo="Typo.caption"><b>Verwijderd op:</b> @(StationUtility.ToLongRemovedAt(p.RemovedAt))</MudText>
+							<MudText Typo="Typo.caption"><b>Geïnstalleerd
+									op:</b> @(StationUtility.ToLongInstalledAt(p.InstalledAt))</MudText>
+							<MudText Typo="Typo.caption"><b>Verwijderd
+									op:</b> @(StationUtility.ToLongRemovedAt(p.RemovedAt))</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
