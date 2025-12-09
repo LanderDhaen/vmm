@@ -28,6 +28,7 @@ public partial class History {
 
 	private static string DefineTitle(MaintObjModificationType modificationType) {
 		return modificationType switch {
+			MaintObjModificationType.StatusChanged => "Status gewijzigd",
 			MaintObjModificationType.MovedToStock => "Verplaatst naar stock",
 			MaintObjModificationType.AssignedToStation => "Geplaatst in meetstation",
 			MaintObjModificationType.Scanned => "Gescand",

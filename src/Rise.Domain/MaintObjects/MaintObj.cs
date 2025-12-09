@@ -124,6 +124,23 @@ public class MaintObj : Entity {
 
 
 	public void SetStatus(MaintObjStatus status) {
+
+		// Check if the values are the same as the old values
+		
+		if (status.Equals(MaintObjStatus)) {
+			return;
+		}
+		
+		// Check if the values are allowed
+
+		Guard.Against.Null(MaintObjStatus);
+		
+		// Create history object using old values
+		
+		AddHistoryEntry();
+		
+		// Assign the new values
+		
 		MaintObjStatus = status;
 	}
 
@@ -182,7 +199,8 @@ public class MaintObjHistory : HistoryEntity {
 	private MaintObjHistory() { }
 
 	public MaintObjHistory(MaintObjStatus maintObjStatus, 
-		MaintObjPlan maintObjPlan, Installation? installation, 
+		MaintObjPlan maintObjPlan, 
+		Installation? installation, 
 		MeasurementStation? station, 
 		Location location, 
 		Technician? lastScannedBy,
