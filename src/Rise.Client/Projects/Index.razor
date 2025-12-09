@@ -5,7 +5,6 @@
 <PageTitle>Projecten</PageTitle>
 
 @* Desktop view *@
-
 <MudHidden Breakpoint="Breakpoint.Xs">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
 		<MudTextField T="string"
@@ -135,44 +134,25 @@
 	           Variant="DrawerVariant.Temporary"
 	           Elevation="8"
 	           @bind-Open="_mobileSortOptionsOpen"
-	           Class="pa-4 rounded-lg">
+	           Class="py-6 px-4 rounded-lg">
 
-		<MudText Typo="Typo.h6">Sorteren</MudText>
+		<MudText Class="pb-4" Typo="Typo.h6">Sorteren</MudText>
 
-		<MudStack Spacing="4">
+		<MudStack Spacing="1">
 			<MudDivider/>
 
 			@foreach (var column in SortColumns)
 			{
-				<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 					<MudText>@column.Label</MudText>
-					<MudSpacer/>
-
-					<MudButton
-						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, false))">
-						Oplopend
-					</MudButton>
-
-					<MudButton
-						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, true))">
-						Aflopend
-					</MudButton>
+					<MudIconButton
+						Icon="@(_activeSorting == column.Value && _activeSortingDesc ? Icons.Material.Outlined.ArrowDownward : Icons.Material.Outlined.ArrowUpward)"
+						Color="@(_activeSorting == column.Value ? Color.Primary : Color.Default)"
+						Size="Size.Medium"
+						OnClick="@(() => SortMobileAsync(column.Value, _activeSorting == column.Value && !_activeSortingDesc))">
+					</MudIconButton>
 				</MudStack>
 			}
-
-			<MudDivider/>
-
-			<MudButton Variant="Variant.Text"
-			           Color="Color.Primary"
-			           OnClick="@ToggleSortingDrawer">
-				Sluiten
-			</MudButton>
 		</MudStack>
 	</MudDrawer>
 }
