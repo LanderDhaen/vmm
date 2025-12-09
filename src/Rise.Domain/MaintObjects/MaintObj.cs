@@ -69,7 +69,7 @@ public class MaintObj : Entity {
 		Station = station;
 		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);
 		Location = station.Location;
-		MaintObjStatus = MaintObjStatus.Active;
+		SetStatus(MaintObjStatus.Active);
 	}
 	
 	public void MoveToStockLocation(Location location) {
@@ -97,7 +97,7 @@ public class MaintObj : Entity {
 		Location = location;
 		Installation = null;
 		Station = null;
-		MaintObjStatus =  MaintObjStatus.Inactive;
+		SetStatus(MaintObjStatus.Inactive);
 	}
 
 	public void ScanBy(Technician technician) {
@@ -105,7 +105,6 @@ public class MaintObj : Entity {
 		// Check if the values are the same as the old values
 
 		if (technician.Equals(LastScannedBy)) {
-			Console.WriteLine("I'm returned in device " + Name);
 			return;
 		}
 		
@@ -154,9 +153,6 @@ public class MaintObj : Entity {
 	// History
 
 	private void AddHistoryEntry() {
-		
-		Console.WriteLine("Historiek toegevoegd aan apparaat " + Name);
-		
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		Installation? installation = Installation is null ? null : new Installation(Installation.InstalledAt, Installation.RemovedAt);
 		
