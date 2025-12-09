@@ -24,7 +24,7 @@ public class MaintObjService(ApplicationDbContext dbContext)
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
-		
+
 		if (req.Filters.TryGetValue("Status", out object? statusObj)
 			&& statusObj is string status
 			&& status.Equals("Active")) {
