@@ -42,7 +42,8 @@
 	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
 
 		<Columns>
-			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#"
+			                HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
@@ -65,7 +66,7 @@
 		</Columns>
 
 		<PagerContent>
-			<Pagination T="MaintObjDto.Index" />
+			<Pagination T="MaintObjDto.Index"/>
 		</PagerContent>
 
 	</MudDataGrid>
@@ -134,44 +135,25 @@
 	           Variant="DrawerVariant.Temporary"
 	           Elevation="8"
 	           @bind-Open="_mobileSortOptionsOpen"
-	           Class="pa-4 rounded-lg">
+	           Class="py-6 px-4 rounded-lg">
 
-		<MudText Typo="Typo.h6">Sorteren</MudText>
+		<MudText Class="pb-4" Typo="Typo.h6">Sorteren</MudText>
 
-		<MudStack Spacing="4">
+		<MudStack Spacing="1">
 			<MudDivider/>
 
 			@foreach (var column in SortColumns)
 			{
-				<MudStack Row="true" AlignItems="AlignItems.Center">
+				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 					<MudText>@column.Label</MudText>
-					<MudSpacer/>
-
-					<MudButton
-						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, false))">
-						Oplopend
-					</MudButton>
-
-					<MudButton
-						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
-						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
-						Size="Size.Small"
-						OnClick="@(() => SortMobileAsync(column.Value, true))">
-						Aflopend
-					</MudButton>
+					<MudIconButton
+						Icon="@(_activeSorting == column.Value && _activeSortingDesc ? Icons.Material.Outlined.ArrowDownward : Icons.Material.Outlined.ArrowUpward)"
+						Color="@(_activeSorting == column.Value ? Color.Primary : Color.Default)"
+						Size="Size.Medium"
+						OnClick="@(() => SortMobileAsync(column.Value, _activeSorting == column.Value && !_activeSortingDesc))">
+					</MudIconButton>
 				</MudStack>
 			}
-
-			<MudDivider/>
-
-			<MudButton Variant="Variant.Text"
-			           Color="Color.Primary"
-			           OnClick="@ToggleSortingDrawer">
-				Sluiten
-			</MudButton>
 		</MudStack>
 	</MudDrawer>
 }

@@ -1,6 +1,7 @@
 using Rise.Domain.Projects;
 
 namespace Rise.Domain.MaintObjects;
+
 public static class MaintObjModificationFactory {
 	public static List<MaintObjModification> Create(MaintObjHistory current, MaintObjHistory previous) {
 		var modifications = new List<MaintObjModification>();
