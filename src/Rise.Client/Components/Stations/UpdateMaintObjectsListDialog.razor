@@ -8,8 +8,18 @@
 	</TitleContent>
 
 	<DialogContent>
-		<SearchField Value="@_searchTerm" ValueChanged="@UpdateSearch"
-		             Label="Zoek onderhoudsobject"></SearchField>
+		<MudTextField T="string"
+		              InputType="InputType.Search"
+		              Label="Zoek onderhoudsobject"
+		              Class="m-0"
+		              Variant="Variant.Outlined"
+		              DebounceInterval="300"
+		              OnDebounceIntervalElapsed="@UpdateSearch"
+		              @bind-Value="@_searchTerm"
+		              Margin="Margin.Dense"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
+		              OnAdornmentClick="OpenQrScanner"/>
 
 		<MudTable T="MaintObjDto.Index" Items="@_allMaintObjects" Hover="true" CustomHeader="true"
 		          FixedHeader="true" Dense="true">
@@ -19,6 +29,7 @@
 					<MudTh Class="mud-theme-primary">Naam</MudTh>
 					<MudTh Class="mud-theme-primary">Serienummer</MudTh>
 					<MudTh Class="mud-theme-primary">Type</MudTh>
+					<MudTh Class="mud-theme-primary">Status</MudTh>
 				</MudTHeadRow>
 			</HeaderContent>
 			<RowTemplate>
@@ -27,6 +38,14 @@
 				<MudTd DataLabel="Naam">@context.Name</MudTd>
 				<MudTd DataLabel="Serienummer">@context.SerialNumber</MudTd>
 				<MudTd DataLabel="Type">@context.MaintObjType</MudTd>
+				<MudTd DataLabel="Status">
+					<MudChip T="string"
+					         Variant="Variant.Outlined"
+					         Color="@MaintObjectUtility.DefineStatusColor(context.MaintObjStatus)"
+					         Size="Size.Small">
+						@(MaintObjectUtility.TranslateStatus(context.MaintObjStatus))
+					</MudChip>
+				</MudTd>
 			</RowTemplate>
 		</MudTable>
 	</DialogContent>

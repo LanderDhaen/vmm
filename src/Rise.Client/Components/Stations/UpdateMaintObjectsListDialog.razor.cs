@@ -23,6 +23,7 @@ public partial class UpdateMaintObjectsListDialog {
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	[Inject] public required IDialogService DialogService { get; set; }
 
 	protected override async Task OnInitializedAsync() {
 		Model.MeasurementStationId = StationId;
@@ -73,6 +74,48 @@ public partial class UpdateMaintObjectsListDialog {
 			Snackbar.Add(message, Severity.Warning);
 		}
 	}
+
+	private async Task OpenQrScanner() {
+		var options = new DialogOptions {
+			CloseButton = true,
+			MaxWidth = MaxWidth.Small,
+			FullWidth = true
+		};
+
+		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		var result = await dialog.Result;
+
+		if (result.Canceled || result.Data is not string decoded)
+			return;
+
+		var serial = decoded.Trim();
+
+		if (string.IsNullOrWhiteSpace(serial)) {
+			Snackbar.Add("Onleesbare code: geen serienummer gevonden.", Severity.Error);
+			return;
+		}
+
+		var match = _allMaintObjects?.FirstOrDefault(mo =>
+			string.Equals(mo.SerialNumber, serial, StringComparison.OrdinalIgnoreCase));
+
+		if (match is null) {
+			var existsResult = await MaintObjService.GetBySerialAsync(serial);
+			if (existsResult.IsSuccess) {
+				match = _allMaintObjects?.FirstOrDefault(mo => mo.Id == existsResult.Value.Id);
+			}
+		}
+
+		if (match is null) {
+			Snackbar.Add($"Geen onderhoudsobject gevonden voor code '{serial}'.", Severity.Warning);
+			return;
+		}
+
+		Model.MaintObjIds.Add(match.Id);
+
+		Snackbar.Add("Onderhoudsobject geselecteerd via scan.", Severity.Success);
+		StateHasChanged();
+	}
+
 
 	private async Task UpdateMaintObjects() {
 		bool selectionChanged = !Model.MaintObjIds.SequenceEqual(

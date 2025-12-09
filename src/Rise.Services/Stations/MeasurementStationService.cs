@@ -382,6 +382,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		CancellationToken ct = default) {
 		MeasurementStation? measurementStation = await dbContext.MeasurementStations
 			.Include(s => s.MaintObjects)
+			.Include(s => s.Location)
 			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ct);
 
 		if (measurementStation is null) {

@@ -38,7 +38,7 @@ public class MaintObjService(ApplicationDbContext dbContext)
 
 		query = query.Where(m =>
 			m.SerialNumber.Contains(req.SearchTerm) ||
-			m.Location.Name.Contains(req.SearchTerm)
+			m.Name.Contains(req.SearchTerm)
 		);
 
 		int totalCount = await query.CountAsync(ctx);
