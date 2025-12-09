@@ -6,7 +6,7 @@ public static class MaintObjModificationFactory {
 	public static MaintObjModification Create(MaintObjHistory current, MaintObjHistory previous) {
 
 		if (current.MaintObjStatus != previous.MaintObjStatus) {
-			return new MaintObjModification(MaintObjModificationType.Scanned,
+			return new MaintObjModification(MaintObjModificationType.StatusChanged,
 				current.ValidityRange.ValidFrom,
 				previous.MaintObjStatus.ToString(),
 				current.MaintObjStatus.ToString());
