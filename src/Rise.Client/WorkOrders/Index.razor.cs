@@ -60,7 +60,8 @@ public partial class Index{
 			await GetWorkOrdersMobileAsync();
 	}
 
-	private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
+	private void ApplyDrawerFilters(QueryRequest.SkipTake request) {
+		if (_filterPriority.HasValue) request.Filters["Priority"] = new { Operator = "Equals", Value = _filterPriority.Value.ToString() }; // toegevoegd
 		if (_filterStatus.HasValue) request.Filters["Status"] = new { Operator = "Equals", Value = _filterStatus.Value.ToString() };
 		if (_filterMaintObjType.HasValue) request.Filters["MaintObjType"] = new { Operator = "Equals", Value = _filterMaintObjType.Value.ToString() };
 		if (!string.IsNullOrWhiteSpace(_filterTechnician)) request.Filters["Technician"] = new { Operator = "Contains", Value = _filterTechnician!.Trim() };
@@ -78,7 +79,7 @@ public partial class Index{
 			SearchTerm = _searchTerm.Trim()
 		};
 
-		ApplyDrawerFilters(request, useContainsForText: false);
+		ApplyDrawerFilters(request);
 
 		var result = await WorkOrderService.GetIndexAsync(request);
 		return new GridData<WorkOrderDto.Index> {
@@ -96,7 +97,7 @@ public partial class Index{
 			SearchTerm = _searchTerm.Trim()
 		};
 
-		ApplyDrawerFilters(request, useContainsForText: true);
+		ApplyDrawerFilters(request);
 
 		var result = await WorkOrderService.GetIndexAsync(request);
 		_mobilityWorkOrders = result.IsSuccess ? result.Value.WorkOrders : Enumerable.Empty<WorkOrderDto.Index>();
