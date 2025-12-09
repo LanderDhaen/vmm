@@ -13,10 +13,10 @@ namespace Rise.Client.MaintObjects;
 		{
 			return type switch
 			{
-				MaintObjModificationType.StatusChanged => "Status wijziging",
+				MaintObjModificationType.StatusChanged => "Status gewijzigd",
 				MaintObjModificationType.Scanned => "Gescand",
-				MaintObjModificationType.MovedToStock => "Verplaatst naar stock",
-				MaintObjModificationType.AssignedToStation => "Toegevoegd aan station",
+				MaintObjModificationType.MovedToStock => "Locatie gewijzigd",
+				MaintObjModificationType.AssignedToStation => "Locatie gewijzigd",
 				_ => "Wijziging"
 			};
 		}
