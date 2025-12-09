@@ -14,14 +14,16 @@
 		              Variant="Variant.Outlined"
 		              Adornment="Adornment.End"
 		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              Disabled="true"
+		              DebounceInterval="300"
+		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
+		              @bind-Value="_searchTerm"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
 		           StartIcon="@Icons.Material.Filled.FilterAlt"
 		           Color="Color.Primary"
-		           Class="px-4"
-		           Disabled="true">
+							 OnClick="@ToggleFiltersDrawer"
+		           Class="px-4">
 			Filteren
 		</MudButton>
 		<MudButton Variant="Variant.Filled"
