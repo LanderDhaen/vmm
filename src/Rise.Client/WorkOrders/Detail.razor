@@ -36,13 +36,24 @@ else
 					@switch (_workOrder.Status)
 					{
 						case WorkOrderStatus.Pending: 
-							<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch"
+							
+							@* Currently backend doesn't assign the work order to the logged in user so no point in allowing the workorder to be started *@
+							@* <MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" *@
+							@*            Class="border-b-2" *@
+							@*            Size="Size.Small" *@
+							@*            Variant="Variant.Filled" *@
+							@*            Color="Color.Info" *@
+							@*            OnClick="@ShowStartConfirmationAsync"> *@
+							@* 	Opnemen *@
+							@* </MudButton> *@
+							
+							<MudButton StartIcon="@Icons.Material.Filled.Close"
 							           Class="border-b-2"
 							           Size="Size.Small"
 							           Variant="Variant.Filled"
-							           Color="Color.Info"
-							           OnClick="@ShowStartConfirmationAsync">
-								Opnemen
+							           Color="Color.Error"
+							           OnClick="@ShowCancelConfirmationAsync">
+								Annuleren
 							</MudButton>
 							break;
 							
