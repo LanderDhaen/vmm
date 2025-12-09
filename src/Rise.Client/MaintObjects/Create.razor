@@ -31,7 +31,7 @@
 					           Placeholder="Selecteer een type: " Clearable="true" Variant="Variant.Outlined">
 						@foreach (var type in Enum.GetValues(typeof(MaintObjType)).Cast<MaintObjType>())
 						{
-							<MudSelectItem Value="type">@type.ToString()</MudSelectItem>
+							<MudSelectItem Value="type">@MaintObjectUtility.TranslateType(type)</MudSelectItem>
 						}
 					</MudSelect>
 				</MudItem>
