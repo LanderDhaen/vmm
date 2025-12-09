@@ -1,7 +1,4 @@
-@using Rise.Client.Components
-@using Rise.Client.Components.Projects
 @using Rise.Shared.MaintObjects
-@using Rise.Shared.Projects
 <MudDialog Class="mx-3" Style="width: 80vw; max-width: 80vh">
 	<TitleContent>
 		<MudText Typo="Typo.h5">Onderhoudsobjecten aanpassen</MudText>
@@ -51,13 +48,14 @@
 	</DialogContent>
 	<DialogActions>
 		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.Save"
+		           StartIcon="@Icons.Material.Filled.SaveAs"
 		           Size="Size.Small"
 		           Color="Color.Primary"
 		           OnClick="@UpdateMaintObjects">
 			Opslaan
 		</MudButton>
-		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Class="my-3 mr-4">
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+		           Class="my-3 mr-4">
 			Annuleren
 		</MudButton>
 	</DialogActions>
