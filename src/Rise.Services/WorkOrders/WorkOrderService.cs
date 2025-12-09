@@ -277,14 +277,14 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 						PostalCode = w.MaintObj.Location.Address.PostalCode,
 						Country = w.MaintObj.Location.Address.CountryIso,
 						X = w.MaintObj.Location.Coordinate.X,
-						Y = w.MaintObj.Location.Coordinate.Y,
+						Y = w.MaintObj.Location.Coordinate.Y
 					},
 
 					StationCode = w.MaintObj.Station != null ? w.MaintObj.Station.Code : null,
 					InstalledAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.InstalledAt : null,
 					RemovedAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.RemovedAt : null,
 					MaintenanceIntervalDays = w.MaintObj.MaintObjPlan.MaintenanceIntervalDays,
-					CalibrationIntervalDays = w.MaintObj.MaintObjPlan.CalibrationIntervalDays,
+					CalibrationIntervalDays = w.MaintObj.MaintObjPlan.CalibrationIntervalDays
 				},
 
 				Location = new LocationDto.Detail {
