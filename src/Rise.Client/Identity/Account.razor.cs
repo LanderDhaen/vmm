@@ -42,6 +42,7 @@ public partial class Account {
 		}
 
 		BreadcrumbService.SetBreadcrumbs(
+			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Account", null, true)
 		);
 

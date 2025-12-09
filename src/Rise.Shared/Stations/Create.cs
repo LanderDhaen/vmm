@@ -5,7 +5,7 @@ using Rise.Shared.Locations;
 namespace Rise.Shared.Stations;
 
 public static partial class MeasurementStationRequest {
-	public class Create : ILocationRequest {
+	public class Create {
 		public string Code { get; set; } = default!;
 		public Guid? LocationId { get; set; }
 		public bool IsNewLocation { get; set; }
@@ -14,20 +14,13 @@ public static partial class MeasurementStationRequest {
 		public LocationRequest.Create? Location { get; set; } = new();
 
 		// Installation
-		public DateTime? InstalledAt { get; set; } = DateTime.UtcNow;
-
-		// Project -> to link the station to a project upon creation
-		public Guid? ProjectId { get; set; } = Guid.Empty;
+		public DateTime? InstalledAt { get; set; }
 
 		public class Validator : AbstractValidator<Create> {
 			public Validator() {
 				RuleFor(x => x.Code)
 					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
 					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
-				RuleFor(x => x.InstalledAt)
-					.NotNull().WithMessage("Installatiedatum mag niet leeg zijn!")
-					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Installatiedatum moet na 01/01/00 liggen.")
-					.LessThan(DateTime.MaxValue).WithMessage("Installatiedatum moet onder het maximum zijn.");
 				RuleFor(x => x)
 					.Must(x => x.LocationId.HasValue || x.IsNewLocation)
 					.WithMessage("Je moet een bestaande locatie selecteren of een nieuwe locatie invullen.")
@@ -41,7 +34,11 @@ public static partial class MeasurementStationRequest {
 				ValidationResult? result =
 					await ValidateAsync(ValidationContext<Create>.CreateWithOptions((Create)model,
 						x => x.IncludeProperties(propertyName)));
-				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
+				if (result.IsValid) {
+					return Array.Empty<string>();
+				}
+
+				return result.Errors.Select(e => e.ErrorMessage);
 			};
 		}
 	}

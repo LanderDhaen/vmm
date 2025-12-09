@@ -1,38 +1,26 @@
-using FluentValidation.Results;
-
-using Rise.Shared.Locations;
-
 namespace Rise.Shared.Stations;
 
 public static partial class MeasurementStationRequest {
 	public class Edit {
 		public Guid StationId { get; set; }
-		public string Code { get; set; } = default!;
 
-		// Installation
+		public string Code { get; set; } = default!;
+		public Guid LocationId { get; set; }
+		public Guid ProjectId { get; set; }
 		public DateTime? InstalledAt { get; set; }
 		public DateTime? RemovedAt { get; set; }
 
 		public class Validator : AbstractValidator<Edit> {
 			public Validator() {
-				RuleFor(x => x.Code)
-					.NotEmpty().WithMessage("Code mag niet leeg zijn.")
-					.MaximumLength(50).WithMessage("Code maar max. 50 karakter hebben.");
-				RuleFor(x => x.InstalledAt)
-					.NotNull().WithMessage("Installatiedatum mag niet leeg zijn!")
-					.GreaterThan(new DateTime(2000, 1, 1)).WithMessage("Installatiedatum moet na 01/01/00 liggen.")
-					.LessThan(DateTime.MaxValue).WithMessage("Installatiedatum moet onder het maximum zijn.");
+				RuleFor(x => x.StationId).NotEmpty();
+				RuleFor(x => x.Code).NotEmpty().WithMessage("Code mag niet leeg zijn.").MaximumLength(64);
+				RuleFor(x => x.LocationId).NotEmpty();
+				RuleFor(x => x.ProjectId).NotEmpty();
+
 				RuleFor(x => x.RemovedAt)
 					.Must((m, removed) => removed is null || (m.InstalledAt ?? DateTime.MinValue) <= removed)
 					.WithMessage("Einddatum kan niet voor de startdatum liggen.");
 			}
-
-			public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) => {
-				ValidationResult? result =
-					await ValidateAsync(ValidationContext<Edit>.CreateWithOptions((Edit)model,
-						x => x.IncludeProperties(propertyName)));
-				return result.IsValid ? [] : result.Errors.Select(e => e.ErrorMessage);
-			};
 		}
 	}
 }

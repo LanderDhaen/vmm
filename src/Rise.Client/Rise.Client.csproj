@@ -27,14 +27,4 @@
 		<ProjectReference Include="..\Rise.Shared\Rise.Shared.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="Stations\PickLocationDialog.cs">
-			<DependentUpon>PickLocationDialog.razor</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="Components\MeasurementNetworks\MeasurementNetworkAutoComplete.razor" />
-	</ItemGroup>
-
 </Project>

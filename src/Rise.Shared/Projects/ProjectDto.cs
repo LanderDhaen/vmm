@@ -31,10 +31,22 @@ public static class ProjectDto {
 		public required Status Status { get; set; }
 	}
 
-	public class Modification {
-		public required ProjectModificationType ProjectModificationType { get; init; }
-		public required DateTime ModifiedAt { get; init; }
-		public required string PreviousValue { get; init; }
-		public required string CurrentValue { get; init; }
+	public class History {
+		public required Guid Id { get; set; }
+		public required string Name { get; set; }
+		public required string Code { get; set; }
+		public required DateOnly StartDate { get; set; }
+		public required DateOnly? EndDate { get; set; }
+		public required IReadOnlyList<ProjectHistoryDto.Index> ProjectHistories { get; init; }
+	}
+}
+
+public static class ProjectHistoryDto {
+	public class Index {
+		public required Guid Id { get; init; }
+		public required DateOnly StartDate { get; init; }
+		public required DateOnly? EndDate { get; init; }
+		public required DateTime ValidFrom { get; init; }
+		public required DateTime ValidTo { get; init; }
 	}
 }

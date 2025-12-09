@@ -30,32 +30,12 @@ namespace Rise.Client.Projects {
 		private bool _mobileSortOptionsOpen;
 		private bool _filterOptionsOpen;
 		private Anchor _filterDrawerAnchor = Anchor.Right;
-public partial class Index {
-	private static readonly (string Value, string Label)[] SortColumns = [
-		("Code", "Code"),
-		("Name", "Naam"),
-		("StartDate", "Startdatum"),
-		("EndDate", "Einddatum"),
-		("Status",  "Status"),
-		("MeasurementNetwork", "Meetnet"),
-		("Zone", "Zone"),
-		("Status", "Status")
-	];
-
-	private string _activeSorting = "Code";
-	private bool _activeSortingDesc = true;
-
-	private CancellationTokenSource _cancellationTokenSource = new();
-
-	private MudDataGrid<ProjectDto.Index> _grid;
 
 		private CancellationTokenSource _cancellationTokenSource = new();
 
 		private CancellationTokenSource _selectCancellationTokenSource = new();
 
 		private MudDataGrid<ProjectDto.Index>? _grid;
-	private bool _mobileSortOptionsOpen;
-	private string _searchTerm;
 
 
 		private Status? _filterStatus;
@@ -73,10 +53,6 @@ public partial class Index {
 		[Inject] public required BreadcrumbService BreadcrumbService { get; init; }
 		[Inject] public required HeaderService HeaderService { get; init; }
 		[Inject] public required IBrowserViewportService ViewportService { get; init; }
-	protected override async Task OnInitializedAsync() {
-		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Projecten", null, true)
-		);
 
 		protected override async Task OnInitializedAsync() {
 			BreadcrumbService.SetBreadcrumbs(
@@ -86,8 +62,12 @@ public partial class Index {
 
 			HeaderService.Set("Projecten");
 
-		if (breakpoint == Breakpoint.Xs) {
-			await GetProjectsMobileAsync();
+			Breakpoint breakpoint = await ViewportService.GetCurrentBreakpointAsync();
+			if (breakpoint == Breakpoint.Xs) {
+				var bp = await ViewportService.GetCurrentBreakpointAsync();
+				if (bp == Breakpoint.Xs)
+					await GetProjectsMobileAsync();
+			}
 		}
 
 		private void ApplyDrawerFilters(QueryRequest.SkipTake request, bool useContainsForText = false) {
@@ -102,21 +82,6 @@ public partial class Index {
 
 			if (_filterStartDate.HasValue)
 				request.Filters["StartDate"] = new { Operator = "GreaterThanOrEqual", Value = _filterStartDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
-	private async Task<GridData<ProjectDto.Index>> GetProjectsAsync(GridState<ProjectDto.Index> state) {
-		SortDefinition<ProjectDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
-			new SortDefinition<ProjectDto.Index>(_activeSorting, _activeSortingDesc, 0,
-				null)); // Can't seem to have no sort function here
-
-		QueryRequest.SkipTake request = new() {
-			Skip = state.Page * state.PageSize,
-			Take = state.PageSize,
-			OrderBy = sorting.SortBy,
-			OrderDescending = sorting.Descending,
-			SearchTerm = _searchTerm
-		};
-
-		Result<ProjectResponse.Index> result =
-			await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 			if (_filterEndDate.HasValue)
 				request.Filters["EndDate"] = new { Operator = "LessThanOrEqual", Value = _filterEndDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) };
@@ -135,21 +100,6 @@ public partial class Index {
 			ApplyDrawerFilters(request, useContainsForText: false);
 
 			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
-	private async Task GetProjectsMobileAsync() {
-		_cancellationTokenSource.Cancel();
-		_cancellationTokenSource.Dispose();
-		_cancellationTokenSource = new CancellationTokenSource();
-
-		QueryRequest.SkipTake request = new() {
-			Skip = 0,
-			Take = 10,
-			OrderBy = _activeSorting,
-			OrderDescending = _activeSortingDesc,
-			SearchTerm = _searchTerm
-		};
-
-		Result<ProjectResponse.Index> result =
-			await ProjectService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 			return new GridData<ProjectDto.Index> {
 				TotalItems = result.Value.TotalCount,
@@ -171,22 +121,6 @@ public partial class Index {
 			};
 
 			ApplyDrawerFilters(request, useContainsForText: true);
-	private async Task SortMobileAsync(string orderBy, bool descending) {
-		_activeSorting = orderBy;
-		_activeSortingDesc = descending;
-		await GetProjectsMobileAsync();
-		ToggleSortingDrawer();
-	}
-
-	// Searching
-
-	private async Task HandleDesktopIntervalElapsed() {
-		await _grid.ReloadServerData();
-	}
-
-	private async Task HandleMobileIntervalElapsed() {
-		await GetProjectsMobileAsync();
-	}
 
 			Result<ProjectResponse.Index> result = await ProjectService.GetIndexAsync(request);
 
@@ -297,7 +231,5 @@ public partial class Index {
 				StateHasChanged();
 			}
 		}
-	private void NavigateToCreate() {
-		NavigationManager.NavigateTo("/projects/create");
 	}
 }

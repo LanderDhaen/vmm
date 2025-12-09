@@ -9,20 +9,16 @@ using MudBlazor.Translations;
 using Rise.Client;
 using Rise.Client.Identity;
 using Rise.Client.Locations;
-using Rise.Client.MaintObjects;
 using Rise.Client.Networks;
 using Rise.Client.Projects;
 using Rise.Client.Services;
 using Rise.Client.Stations;
 using Rise.Client.Zones;
-using Rise.Client.WorkOrders;
 using Rise.Shared.Locations;
-using Rise.Shared.MaintObjects;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 using Rise.Shared.Zones;
-using Rise.Shared.WorkOrders;
 
 try {
 	WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -47,7 +43,7 @@ try {
 
 	// setup MudBlazor
 	builder.Services.AddMudServices(config => {
-		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomEnd;
+		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 	});
 
@@ -85,11 +81,7 @@ try {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 
-	builder.Services.AddHttpClient<IMaintObjService, MaintObjService>(client => {
-		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
-	}).AddHttpMessageHandler<CookieHandler>();
-
-	builder.Services.AddHttpClient<IWorkOrderService, WorkOrderService>(client => {
+	builder.Services.AddHttpClient<IMeasurementStationService, StationService>(client => {
 		client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001");
 	}).AddHttpMessageHandler<CookieHandler>();
 

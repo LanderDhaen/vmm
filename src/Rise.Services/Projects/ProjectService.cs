@@ -4,54 +4,44 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Networks;
 using Rise.Domain.Projects;
-using Rise.Domain.Stations;
 using Rise.Persistence;
+using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Networks;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 using Rise.Shared.Zones;
 
-using SharedProjectModificationType = Rise.Shared.Projects.ProjectModificationType;
 using SharedStatus = Rise.Shared.Projects.Status;
 using Status = Rise.Domain.Projects.Status;
 
 namespace Rise.Services.Projects;
 
 /// <summary>
-///     Service for projects.
+///     Service for projects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
+///     of the application.
 /// </summary>
 /// <param name="dbContext"></param>
-public class ProjectService(ApplicationDbContext dbContext)
+/// <param name="sessionContextProvider"></param>
+public class ProjectService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
 	: IProjectService {
 
 	public async Task<Result<ProjectResponse.Create>> CreateAsync(ProjectRequest.Create request,
 		CancellationToken ctx = default) {
-		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code, ctx)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == request.Code, cancellationToken: ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", request.Code);
 			return Result.Conflict($"Project met code '{request.Code}' bestaat al.");
 		}
 
 		DateOnly startdate = DateOnly.FromDateTime(request.StartDate!.Value);
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId, ctx);
+			.FirstOrDefaultAsync(x => x.Id == request.MeasurementNetworkId, cancellationToken: ctx);
 
 		if (measurementNetwork is null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
-
-		if (request.MeasurementStationId != Guid.Empty) {
-			MeasurementStation? measurementStation = await dbContext.MeasurementStations
-				.SingleOrDefaultAsync(x => x.Id == request.MeasurementStationId, ctx);
-
-			if (measurementStation is null) {
-				return Result.NotFound("Meetstation niet gevonden.");
-			}
-
-			p.UpdateMeasurementStationList(new List<MeasurementStation> { measurementStation });
-		}
 
 		dbContext.Projects.Add(p);
 
@@ -64,51 +54,27 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
-			.Include(x => x.MeasurementNetwork)
-			.ThenInclude(x => x.Zone)
-			.Include(x => x.DateRange)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
 			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
 		}
 
-		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId, ctx)) {
+		if (await dbContext.Projects.AnyAsync(x => x.Code == req.Code && x.Id != req.ProjectId, cancellationToken: ctx)) {
 			Log.Warning("Project met code '{Code}' bestaat al.", req.Code);
 			return Result.Conflict($"Project met code '{req.Code}' bestaat al.");
 		}
 
 		DateOnly startdate = DateOnly.FromDateTime(req.StartDate!.Value);
 		DateOnly? enddate = req.EndDate.HasValue ? DateOnly.FromDateTime(req.EndDate.Value) : null;
-
-		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate));
-
-		await dbContext.SaveChangesAsync(ctx);
-
-		return Result.Success();
-	}
-
-	public async Task<Result> UpdateMeasurementNetworkAsync(
-		ProjectRequest.UpdateMeasurementNetwork req,
-		CancellationToken ctx = default) {
-		Project? project = await dbContext.Projects
-			.Include(x => x.MeasurementNetwork)
-			.ThenInclude(x => x.Zone)
-			.Include(x => x.DateRange)
-			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
-
-		if (project is null) {
-			return Result.NotFound($"Project met Id '{req.ProjectId}' was niet gevonden.");
-		}
-
 		MeasurementNetwork? measurementNetwork = await dbContext.MeasurementNetworks
-			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId, ctx);
+			.FirstOrDefaultAsync(x => x.Id == req.MeasurementNetworkId, cancellationToken: ctx);
 
-		if (measurementNetwork is null) {
+		if (measurementNetwork == null) {
 			return Result.NotFound("Meetnet niet gevonden.");
 		}
 
-		project.UpdateMeasurementNetwork(measurementNetwork);
+		project.Edit(req.Name, req.Code, new DateRange(startdate, enddate), measurementNetwork);
 
 		await dbContext.SaveChangesAsync(ctx);
 
@@ -153,23 +119,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result<ProjectResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
-
-		// Only get active projects
-		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string and "Active") {
-			query = query.Where(p => p.Status == Status.Actief);
-		}
-
-		// Filtering (MSSQL handles casing)
-
-		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
-			query = query.Where(p =>
-				p.Name.Contains(req.SearchTerm) ||
-				p.Code.Contains(req.SearchTerm) ||
-				p.MeasurementNetwork.Name.Contains(req.SearchTerm) ||
-				p.MeasurementNetwork.Zone.Name.Contains(req.SearchTerm)
-			);
-		}
+		IQueryable<Project> query = dbContext.Projects.AsQueryable();
 
 		// search term
 		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
@@ -247,8 +197,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 		int totalCount = await query.CountAsync(ctx);
 
-		// Sorting
-
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			query = req.OrderBy switch {
@@ -272,15 +220,12 @@ public class ProjectService(ApplicationDbContext dbContext)
 			query = query.OrderBy(p => p.Id);
 		}
 
-		// Paginating
-
-		query = query
+		IQueryable<Project> page = query
+			.AsNoTracking()
 			.Skip(req.Skip)
 			.Take(req.Take);
 
-		// Selecting
-
-		List<ProjectDto.Index> projects = await query
+		List<ProjectDto.Index> projects = await page
 			.Select(p => new ProjectDto.Index {
 				Id = p.Id,
 				Name = p.Name,
@@ -299,7 +244,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 	public async Task<Result<ProjectResponse.Detail>> GetDetailAsync(Guid projectId, CancellationToken ctx = default) {
 		Project? p = await dbContext.Projects
 			.AsNoTracking()
-			.Include(p => p.DateRange)
 			.Include(p => p.MeasurementNetwork)
 			.ThenInclude(mn => mn.Zone)
 			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
@@ -330,51 +274,52 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result<ProjectResponse.History>>
 		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
+		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
-		Project? project = await dbContext.Projects
-			.AsNoTracking()
-			.Include(p => p.DateRange)
-			.Include(p => p.MeasurementNetwork)
-			.ThenInclude(mn => mn.Zone)
-			.Include(p => p.ProjectHistories)
-			.ThenInclude(h => h.DateRange)
-			.Include(p => p.ProjectHistories)
-			.ThenInclude(h => h.MeasurementNetwork)
-			.ThenInclude(mn => mn.Zone)
-			.Include(p => p.ProjectHistories.OrderByDescending(h => h.ValidityRange.ValidFrom))
-			.SingleOrDefaultAsync(p => p.Id == projectId, ctx);
+		ProjectDto.History? project = await query
+			.Where(p => p.Id == projectId)
+			.Select(p => new ProjectDto.History {
+				Id = p.Id,
+				Name = p.Name,
+				Code = p.Code,
+				StartDate = p.DateRange.StartDate,
+				EndDate = p.DateRange.EndDate,
+				ProjectHistories = p.ProjectHistories
+					.OrderByDescending(h => h.ValidityRange.ValidTo)
+					.Select(h => new ProjectHistoryDto.Index {
+						Id = h.Id,
+						StartDate = h.DateRange.StartDate,
+						EndDate = h.DateRange.EndDate,
+						ValidFrom = h.ValidityRange.ValidFrom,
+						ValidTo = h.ValidityRange.ValidTo
+					}).ToList()
+			})
+			.FirstOrDefaultAsync(ctx);
 
 		if (project is null) {
 			return Result.NotFound($"Project with Id '{projectId}' was not found");
 		}
 
-		List<ProjectDto.Modification> modifications = [];
-
-		foreach (ProjectModification m in project.GetModifications()) {
-			modifications.Add(new ProjectDto.Modification {
-				ProjectModificationType = (SharedProjectModificationType)m.MeasurementStationModificationType,
-				ModifiedAt = m.ModifiedAt,
-				PreviousValue = m.PreviousValue,
-				CurrentValue = m.CurrentValue
-			});
-		}
-
 		return Result.Success(new ProjectResponse.History {
-			Modifications = modifications
+			Project = project
 		});
 	}
 
 
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
-			.Include(p => p.MeasurementNetwork)
-			.ThenInclude(p => p.Zone)
-			.Include(p => p.ProjectHistories)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
 			return Result.NotFound($"Project with Id '{req.ProjectId}' was not found.");
 		}
+
+		// Technician? loggedInTechnician = await dbContext.Technicians
+		// 	.SingleOrDefaultAsync(x => x.AccountId == sessionContextProvider.User!.GetUserId(), ctx);
+		//
+		// if (loggedInTechnician is null) {
+		// 	return Result.Unauthorized("You are not authorized to edit this project.");
+		// }
 
 		project.UpdateStatus((Status)req.NewStatus);
 
@@ -383,7 +328,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 		return Result.Success();
 	}
 
-	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
+	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
 		Guid projectId,
 		CancellationToken ctx = default) {
 		bool exists = await dbContext.Projects
@@ -394,11 +339,8 @@ public class ProjectService(ApplicationDbContext dbContext)
 			return Result.NotFound($"Project met Id '{projectId}' was niet gevonden.");
 		}
 
-		IQueryable<MeasurementStation> query = dbContext.MeasurementStations
+		List<MeasurementStationDto.Index> stations = await dbContext.MeasurementStations
 			.AsNoTracking()
-			.AsQueryable();
-
-		List<MeasurementStationDto.Index> stations = await query
 			.Where(s => s.Projects.Any(p => p.Id == projectId))
 			.Select(s => new MeasurementStationDto.Index {
 				Id = s.Id,
@@ -411,33 +353,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 			})
 			.ToListAsync(ctx);
 
-		return Result.Success(new ProjectResponse.MeasurementStations {
-			MeasurementStationsFromProject = stations
-		});
-	}
-
-	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
-		CancellationToken ctx = default) {
-		Project? project = await dbContext.Projects
-			.Include(p => p.Stations)
-			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
-
-		if (project is null) {
-			return Result.NotFound($"Project met id '{req.ProjectId}' is niet gevonden.");
-		}
-
-		List<MeasurementStation> measurementStations = await dbContext.MeasurementStations
-			.Where(ms => req.MeasurementStationIds.Contains(ms.Id))
-			.ToListAsync(ctx);
-
-		if (measurementStations.Count != req.MeasurementStationIds.Count) {
-			return Result.Error("Een of meerdere meetstations zijn niet gevonden.");
-		}
-
-		project.UpdateMeasurementStationList(measurementStations);
-
-		await dbContext.SaveChangesAsync(ctx);
-
-		return Result.Success();
+		return Result.Success(stations);
 	}
 }

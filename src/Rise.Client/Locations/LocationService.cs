@@ -9,8 +9,7 @@ public class LocationService(HttpClient httpClient) : ILocationService {
 	public async Task<Result<LocationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		Result<LocationResponse.Index>? result =
-			await httpClient.GetFromJsonAsync<Result<LocationResponse.Index>>($"/api/locations?{request.AsQuery()}",
-				ctx);
+			await httpClient.GetFromJsonAsync<Result<LocationResponse.Index>>("/api/locations", ctx);
 		return result!;
 	}
 }

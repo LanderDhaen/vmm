@@ -9,8 +9,7 @@ public class NetworkService(HttpClient httpClient) : INetworkService {
 	public async Task<Result<NetworkResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		Result<NetworkResponse.Index>? result =
-			await httpClient.GetFromJsonAsync<Result<NetworkResponse.Index>>(
-				$"/api/measurementnetworks?{request.AsQuery()}", ctx);
+			await httpClient.GetFromJsonAsync<Result<NetworkResponse.Index>>("/api/measurementnetworks", ctx);
 		return result!;
 	}
 }

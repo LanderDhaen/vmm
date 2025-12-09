@@ -1,6 +1,5 @@
 @page "/projects"
 @using Rise.Client.Components
-@using Rise.Client.Components.Projects
 @using Rise.Shared.Projects
 @using Rise.Shared.Networks
 @using Rise.Shared.Zones
@@ -8,7 +7,7 @@
 
 @* Desktop view *@
 <MudHidden Breakpoint="Breakpoint.Xs">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
 		              Class="my-0"
@@ -18,6 +17,7 @@
 		              DebounceInterval="300"
 		              OnDebounceIntervalElapsed="HandleDesktopIntervalElapsed"
 		              @bind-Value="_searchTerm"
+		              FullWidth="true"
 		              Margin="Margin.Dense"/>
 		<MudButton Variant="Variant.Filled"
 		           Size="Size.Small"
@@ -43,10 +43,6 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
-	             SortMode="SortMode.Single"
-	             AllowUnsorted="false"
-	             ShowColumnOptions="false"
-	             RowClass=""
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
@@ -57,7 +53,10 @@
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<ProjectStatusChip Status="context.Item.Status"/>
+					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+					         Color="@(ProjectUtility.DefineStatusColor(context.Item.Status))">
+						@context.Item.Status
+					</MudChip>
 				</CellTemplate>
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.MeasurementNetwork" Title="Meetnet" HeaderClass="mud-theme-primary"/>
@@ -73,7 +72,7 @@
 
 @* Mobile view *@
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
-	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-4">
 		<MudTextField T="string"
 		              Label="Zoek"
 		              Class="my-0"
@@ -122,7 +121,26 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<ProjectCard Project="item" />
+					<MudCard Elevation="2"
+					         Class="rounded-lg"
+					         @onclick="() => NavigateToProject(item.Id)">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Class="pr-3" Row="true" AlignItems="AlignItems.Center"
+								          Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.subtitle1" Color="Color.Primary"><b>@item.Code</b></MudText>
+									<MudBadge Color="@(ProjectUtility.DefineStatusColor(item.Status))" Dot="true"/>
+								</MudStack>
+								<MudText Typo="Typo.h6">@item.Name</MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="pt-0">
+							<MudText Typo="Typo.subtitle1"><b>Startdatum:</b> @item.StartDate</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Einddatum:</b> @item.EndDate</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Meetnet:</b> @item.MeasurementNetwork</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Zone:</b> @item.Zone</MudText>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
 			}
 		}

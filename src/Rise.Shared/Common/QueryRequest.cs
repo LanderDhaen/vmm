@@ -56,8 +56,27 @@ public static class QueryRequest {
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
 		public string AsQuery() {
-			return
-				$"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&searchTerm={SearchTerm}&{string.Join("&", Filters.Select(f => $"{f.Key}={f.Value}"))}";
+			var parts = new List<string>
+			{
+					$"skip={Skip}",
+					$"take={Take}"
+				};
+
+			if (!string.IsNullOrWhiteSpace(OrderBy))
+				parts.Add($"orderBy={Uri.EscapeDataString(OrderBy!)}");
+
+			parts.Add($"orderDescending={OrderDescending.ToString().ToLowerInvariant()}");
+
+			if (!string.IsNullOrWhiteSpace(SearchTerm))
+				parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm!)}");
+
+			if (Filters.Count == 0)
+				return string.Join("&", parts);
+
+			string json = JsonSerializer.Serialize(Filters);
+			parts.Add($"filters={Uri.EscapeDataString(json)}");
+
+			return string.Join("&", parts);
 		}
 	}
 
@@ -106,23 +125,5 @@ public static class QueryRequest {
 		///     and the value specifies the filter criteria.
 		/// </summary>
 		public Dictionary<string, object?> Filters { get; set; } = new();
-	}
-
-	/// <summary>
-	///     Represents a request model to handle searching scenarios.
-	/// </summary>
-	public class Search {
-		/// <summary>
-		///     Gets or sets the term used for searching, enabling filtering of results based on text matches
-		///     in relevant fields such as names or descriptions.
-		/// </summary>
-		public string SearchTerm { get; set; } = string.Empty;
-
-		/// <summary>
-		///     Converts the current search term (if present) into a URL query string
-		/// </summary>
-		public string AsQuery() {
-			return string.IsNullOrWhiteSpace(SearchTerm) ? "" : $"&searchTerm={SearchTerm}";
-		}
 	}
 }

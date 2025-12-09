@@ -10,5 +10,11 @@ public enum Status {
 	Actief,
 
 	//end date in the past -> not active anymore
-	Afgesloten
+	Afgesloten,
+
+	//end date in the future -> not active yet
+	Gepland
+
+
+	// Gepauzeerd,
 }

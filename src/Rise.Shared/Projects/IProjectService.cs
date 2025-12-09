@@ -34,18 +34,8 @@ public interface IProjectService {
 		CancellationToken ctx = default
 	);
 
-	Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
+	Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
 		Guid projectId,
-		CancellationToken ctx = default
-	);
-
-	Task<Result> UpdateMeasurementStationsAsync(
-		ProjectRequest.UpdateMeasurementStations req,
-		CancellationToken ctx = default
-	);
-
-	Task<Result> UpdateMeasurementNetworkAsync(
-		ProjectRequest.UpdateMeasurementNetwork req,
 		CancellationToken ctx = default
 	);
 }
