@@ -135,19 +135,30 @@
 
 		<MudText Class="pb-4" Typo="Typo.h6">Sorteren</MudText>
 
-		<MudStack Spacing="1">
+		<MudStack Spacing="4">
 			<MudDivider/>
 
 			@foreach (var column in SortColumns)
 			{
 				<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 					<MudText>@column.Label</MudText>
-					<MudIconButton
-						Icon="@(_activeSorting == column.Value && _activeSortingDesc ? Icons.Material.Outlined.ArrowDownward : Icons.Material.Outlined.ArrowUpward)"
-						Color="@(_activeSorting == column.Value ? Color.Primary : Color.Default)"
-						Size="Size.Medium"
-						OnClick="@(() => SortMobileAsync(column.Value, _activeSorting == column.Value && !_activeSortingDesc))">
-					</MudIconButton>
+					<MudSpacer/>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, false))">
+						Oplopend
+					</MudButton>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, true))">
+						Aflopend
+					</MudButton>
 				</MudStack>
 			}
 		</MudStack>
