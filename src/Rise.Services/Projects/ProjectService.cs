@@ -60,6 +60,9 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result> EditAsync(ProjectRequest.Edit req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
+			.Include(x => x.MeasurementNetwork)
+			.ThenInclude(x => x.Zone)
+			.Include(x => x.DateRange)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
