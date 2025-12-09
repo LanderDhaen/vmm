@@ -66,13 +66,7 @@ else
 							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status:</b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
-									@WorkOrderUtility.TranslateStatus(_workOrder.Status)
-								</MudChip>
+								<WorkOrderStatusChip Status="_workOrder.Status"/>
 							</MudStack>
 							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>

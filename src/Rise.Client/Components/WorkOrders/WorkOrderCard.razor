@@ -8,9 +8,7 @@
 				<MudText Typo="Typo.h6" Color="Color.Primary">@WorkOrder.Name</MudText>
 				<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
 					<WorkOrderPriorityChip Priority="@WorkOrder.Priority"/>
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(WorkOrder.Status))">
-						@WorkOrderUtility.TranslateStatus(WorkOrder.Status)
-					</MudChip>
+					<WorkOrderStatusChip Status="WorkOrder.Status"/>
 				</MudStack>
 			</MudStack>
 			<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(WorkOrder.MaintObjType) @WorkOrder.MaintObj</b></MudText>
