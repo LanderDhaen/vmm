@@ -32,9 +32,7 @@ else
 				<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
 				<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
 				<MudTd DataLabel="Status">
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(ProjectUtility.DefineStatusColor(context.Status))">
-						@context.Status
-					</MudChip>
+					<ProjectStatusChip Status="@context.Status"/>
 				</MudTd>
 				<MudTd DataLabel="Locatie">@context.MeasurementNetwork</MudTd>
 				<MudTd DataLabel="Gemeente">@context.Zone</MudTd>
