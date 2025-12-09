@@ -260,6 +260,9 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result> UpdateStatusAsync(ProjectRequest.UpdateStatus req, CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
+			.Include(p => p.MeasurementNetwork)
+			.ThenInclude(p => p.Zone)
+			.Include(p => p.ProjectHistories)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
