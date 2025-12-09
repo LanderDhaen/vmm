@@ -451,57 +451,8 @@ public class DbSeeder(
 		
 		dbContext.MaintObjects.AddRange(maintObjs);
 		await dbContext.SaveChangesAsync();
-
-		await AssignMaintObjectsAsync();
 	}
-
-	private async Task AssignMaintObjectsAsync() {
-		if (!dbContext.MaintObjPlans.Any()) {
-			return;
-		}
-
-		List<MaintObj> maintObjs = await dbContext.MaintObjects.Include(x => x.Location).ToListAsync();
-		MeasurementStation stationAalst = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Zeebergbrug").FirstAsync();
-		MeasurementStation stationGent = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Duikplaats Blaarmeersen").FirstAsync();
-		
-		foreach (MaintObj maintObj in maintObjs) {
-			
-			// Assigning devices from stock Aalst to a station in Aalst
-
-			if (maintObj.Location.Name == "Stock Aalst") {
-				maintObj.AssignToStation(stationAalst);
-				
-				await dbContext.SaveChangesAsync();
-				
-				if (maintObj.MaintObjType is MaintObjType.Battery or MaintObjType.Logger) {
-					maintObj.MarkAsBroken();
-				}
-			}
-			
-			// Assigning devices from stock Gent to a station in Gent
-
-			if (maintObj.Location.Name == "Stock Gent") {
-				maintObj.AssignToStation(stationGent);
-				
-				await dbContext.SaveChangesAsync();
-				
-				if (maintObj.MaintObjType is MaintObjType.Modem or MaintObjType.Sensor)
-				{
-					maintObj.MarkAsBroken();
-				}
-
-			}
-
-			if (maintObj.Location.Name == "Stock Antwerpen" && maintObj.MaintObjType == MaintObjType.Sim) {
-				maintObj.MarkAsBroken();
-			}
-		}
-		
-		// Saving changes
-
-		await dbContext.SaveChangesAsync();
-	}
-
+	
 	private async Task MaintObjectHistoriesAsync() {
 		if (!dbContext.MaintObjects.Any()) {
 			return;
@@ -516,72 +467,57 @@ public class DbSeeder(
 			.ToListAsync();
 
 		List<Technician> technicians = await dbContext.Technicians.ToListAsync();
-		List<MeasurementStation> stations = await dbContext.MeasurementStations.ToListAsync();
-		List<Location> stockLocations = await dbContext.Locations.Where(l => l.IsStockLocation == true).ToListAsync();
+		
+		Location stockAntwerpen = await dbContext.Locations.Where(l => l.Name == "Stock Antwerpen").FirstAsync();
+		MeasurementStation stationAalst = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Zeebergbrug").FirstAsync();
+		MeasurementStation stationGent = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Duikplaats Blaarmeersen").FirstAsync();
+		MeasurementStation stationBreda = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Emerput").FirstAsync();
 		
 		foreach (MaintObj maintObj in maintObjs) {
 			
-			MaintObjStatus oldStatus = maintObj.MaintObjStatus;
+			maintObj.ScanBy(technicians[0]);
+			await dbContext.SaveChangesAsync();
 			
-			
-			// Different path depending on if the maintenance object is in stock
-		
-			if (maintObj.Station is null) {
-				
-				Location location = maintObj.Location;
-				
-				// Scan the device
-		
-				maintObj.ScanBy(technicians[0]);
+			if (maintObj.Location.Name == "Stock Aalst") {
+				maintObj.AssignToStation(stationAalst);
 				await dbContext.SaveChangesAsync();
-				
-				// Move to a station
-				
-				maintObj.AssignToStation(stations[0]);
-				await dbContext.SaveChangesAsync();
-				
-				// Scan again
-				
-				maintObj.ScanBy(technicians[1]);
-				await dbContext.SaveChangesAsync();
-				
-				// Revert the location change
-				
-				maintObj.MoveToStockLocation(location);
-				await dbContext.SaveChangesAsync();
-				
-				
-			} else {
-				
-				MeasurementStation station = maintObj.Station;
-				
-				// Scan the device
-				
-				maintObj.ScanBy(technicians[1]);
-				await dbContext.SaveChangesAsync();
-				
-				// Move to a stock location
-				
-				maintObj.MoveToStockLocation(stockLocations[0]);
-				await dbContext.SaveChangesAsync();
-				
-				// Scan again
-				
-				maintObj.ScanBy(technicians[0]);
-				await dbContext.SaveChangesAsync();
-				
-				// Revert the location change
-				
-				maintObj.AssignToStation(station);
-				await dbContext.SaveChangesAsync();
-			}
-			
-			// Revert status back to broken if it was originally broken
 
-			if (oldStatus == MaintObjStatus.Broken) {
-				maintObj.MarkAsBroken();
+				if (maintObj.MaintObjType is MaintObjType.Battery or MaintObjType.Logger) {
+					maintObj.MarkAsBroken();
+					await dbContext.SaveChangesAsync();
+				}
 			}
+
+			if (maintObj.Location.Name == "Stock Gent") {
+				maintObj.AssignToStation(stationGent);
+				await dbContext.SaveChangesAsync();
+				
+				if (maintObj.MaintObjType is MaintObjType.Modem or MaintObjType.Sim) {
+					maintObj.MarkAsBroken();
+					await dbContext.SaveChangesAsync();
+				}
+			}
+
+			if (maintObj.Location.Name == "Stock Antwerpen") {
+				maintObj.AssignToStation(stationBreda);
+				await dbContext.SaveChangesAsync();
+
+				if (maintObj.MaintObjType is MaintObjType.Sensor) {
+					maintObj.MarkAsBroken();
+					await dbContext.SaveChangesAsync();
+					
+					maintObj.MarkAsFixed();
+					await dbContext.SaveChangesAsync();
+				}
+				
+				maintObj.MoveToStockLocation(stockAntwerpen);
+				await dbContext.SaveChangesAsync();
+			}
+			
+			maintObj.ScanBy(technicians[1]);
+			
 		}
+		
 	}
 
 	private async Task WorkOrdersAsync() {
