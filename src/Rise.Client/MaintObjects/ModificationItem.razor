@@ -1,42 +1,40 @@
 @using Rise.Shared.MaintObjects
 
-<ItemContent>
-	@{
-		switch (Modification.MaintObjModificationType)
-		{
-			case MaintObjModificationType.StatusChanged:
-				<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
-				<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-					van
-					<MudChip T="string"
-					         Class="ma-0"
-					         Size="Size.Small"
-					         Variant="Variant.Outlined"
-					         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.PreviousValue)))">
-						@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.PreviousValue))
-					</MudChip>
+@{
+	switch (Modification.MaintObjModificationType)
+	{
+		case MaintObjModificationType.StatusChanged:
+			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
+			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+				van
+				<MudChip T="string"
+				         Class="ma-0"
+				         Size="Size.Small"
+				         Variant="Variant.Outlined"
+				         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.PreviousValue)))">
+					@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.PreviousValue))
+				</MudChip>
 
-					naar
+				naar
 
-					<MudChip T="string"
-					         Class="ma-0"
-					         Size="Size.Small"
-					         Variant="Variant.Outlined"
-					         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.CurrentValue)))">
-						@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.CurrentValue))
-					</MudChip>
-				</MudStack>
-				break;
+				<MudChip T="string"
+				         Class="ma-0"
+				         Size="Size.Small"
+				         Variant="Variant.Outlined"
+				         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.CurrentValue)))">
+					@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.CurrentValue))
+				</MudChip>
+			</MudStack>
+			break;
 
-			case MaintObjModificationType.Scanned:
-				<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
-				<MudText>door <b>@Modification.CurrentValue</b></MudText>
-				break;
+		case MaintObjModificationType.Scanned:
+			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
+			<MudText>door <b>@Modification.CurrentValue</b></MudText>
+			break;
 
-			default:
-				<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
-				<MudText>van <b>@Modification.PreviousValue</b> naar <b>@Modification.CurrentValue</b></MudText>
-				break;
-		}
+		default:
+			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
+			<MudText>van <b>@Modification.PreviousValue</b> naar <b>@Modification.CurrentValue</b></MudText>
+			break;
 	}
-</ItemContent>
+}
