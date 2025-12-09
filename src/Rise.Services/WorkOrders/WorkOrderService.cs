@@ -37,13 +37,13 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 			switch (key) {
 			case "priority":
-				query = desc ? query.OrderBy(p => p.Priority) : query.OrderByDescending(p => (SharedPriority)p.Priority);
+				query = desc ? query.OrderByDescending(p => p.Priority) : query.OrderBy(p => p.Priority);
 				break;
 
 			case "maintobjtype":
 				query = desc
 					? query.OrderByDescending(p => p.MaintObj.MaintObjType)
-					: query.OrderBy(p => (SharedMainObjType)p.MaintObj.MaintObjType);
+					: query.OrderBy(p => p.MaintObj.MaintObjType);
 				break;
 
 			case "maintobj":
