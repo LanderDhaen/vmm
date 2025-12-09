@@ -82,85 +82,85 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		}
 
 		// Filters
-if (req.Filters != null && req.Filters.Count != 0) {
-	var temp = req.Filters
-		.Select(kv => (kv.Key, Spec: ParseFilterSpec(kv.Value)))
-		.Where(x => x.Spec != null)
-		.ToList();
+		if (req.Filters != null && req.Filters.Count != 0) {
+			var temp = req.Filters
+				.Select(kv => (kv.Key, Spec: ParseFilterSpec(kv.Value)))
+				.Where(x => x.Spec != null)
+				.ToList();
 
-	var parsed = temp.Select(x => (Key: x.Key!, Spec: x.Spec!)).ToList();
+			var parsed = temp.Select(x => (Key: x.Key!, Spec: x.Spec!)).ToList();
 
-	foreach ((string keyOrig, FilterSpec spec) in parsed) {
-		var key = keyOrig?.Trim();
-		var raw = spec.Value;
-		var opCandidate = spec.Operator;
-		var opNorm = string.IsNullOrWhiteSpace(opCandidate) ? "Contains" : opCandidate;
+			foreach ((string keyOrig, FilterSpec spec) in parsed) {
+				var key = keyOrig?.Trim();
+				var raw = spec.Value;
+				var opCandidate = spec.Operator;
+				var opNorm = string.IsNullOrWhiteSpace(opCandidate) ? "Contains" : opCandidate;
 
-		switch (key) {
-		case "MaintObjType": {
-				if (!string.IsNullOrWhiteSpace(raw)) {
-					if (Enum.TryParse<SharedMainObjType>(raw, true, out var mt)) {
-						query = query.Where(p => p.MaintObj != null && p.MaintObj.MaintObjType == (Domain.MaintObjects.MaintObjType)mt);
-					} 
-				}
-				break;
-			}
-		case "Status": {
-				if (!string.IsNullOrWhiteSpace(raw)) {
-					if (Enum.TryParse<Status>(raw, true, out var sRes))
-						query = query.Where(p => p.Status == sRes);
-				}
-				break;
-			}
-		case "Priority": {
-				if (!string.IsNullOrWhiteSpace(raw)) {
-					if (Enum.TryParse<SharedPriority>(raw, true, out var pr))
-						query = query.Where(p => p.Priority == (Domain.WorkOrders.Priority)pr);
-				}
-				break;
-			}
-		case "Technician": {
-				var t = (raw ?? string.Empty).Trim();
-				if (!string.IsNullOrEmpty(t)) {
-					var pattern = $"%{t}%";
-					query = query.Where(p => p.Technician != null && EF.Functions.Like(p.Technician.FirstName + " " + p.Technician.LastName, pattern));
-				}
-				break;
-			}
-		case "StartDate": {
-				if (opNorm == "IsEmpty")
-					query = query.Where(p => p.DateRange == null || p.DateRange.StartDate == default);
-				else {
-					if (TryParseDateOnlySimple(raw, out var d)) {
-						query = opNorm switch {
-							"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate >= d),
-							"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate <= d),
-							_ => query.Where(p => p.DateRange != null && p.DateRange.StartDate == d)
-						};
+				switch (key) {
+				case "MaintObjType": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<SharedMainObjType>(raw, true, out var mt)) {
+								query = query.Where(p => p.MaintObj != null && p.MaintObj.MaintObjType == (Domain.MaintObjects.MaintObjType)mt);
+							}
+						}
+						break;
+					}
+				case "Status": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<Status>(raw, true, out var sRes))
+								query = query.Where(p => p.Status == sRes);
+						}
+						break;
+					}
+				case "Priority": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<SharedPriority>(raw, true, out var pr))
+								query = query.Where(p => p.Priority == (Domain.WorkOrders.Priority)pr);
+						}
+						break;
+					}
+				case "Technician": {
+						var t = (raw ?? string.Empty).Trim();
+						if (!string.IsNullOrEmpty(t)) {
+							var pattern = $"%{t}%";
+							query = query.Where(p => p.Technician != null && EF.Functions.Like(p.Technician.FirstName + " " + p.Technician.LastName, pattern));
+						}
+						break;
+					}
+				case "StartDate": {
+						if (opNorm == "IsEmpty")
+							query = query.Where(p => p.DateRange == null || p.DateRange.StartDate == default);
+						else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate >= d),
+									"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate <= d),
+									_ => query.Where(p => p.DateRange != null && p.DateRange.StartDate == d)
+								};
+							}
+						}
+						break;
+					}
+				case "EndDate": {
+						if (opNorm == "IsEmpty")
+							query = query.Where(p => p.DateRange == null || p.DateRange.EndDate == null);
+						else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate >= d),
+									"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate <= d),
+									_ => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate == d)
+								};
+							}
+						}
+						break;
 					}
 				}
-				break;
-			}
-		case "EndDate": {
-				if (opNorm == "IsEmpty")
-					query = query.Where(p => p.DateRange == null || p.DateRange.EndDate == null);
-				else {
-					if (TryParseDateOnlySimple(raw, out var d)) {
-						query = opNorm switch {
-							"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate >= d),
-							"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate <= d),
-							_ => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate == d)
-						};
-					}
-				}
-				break;
 			}
 		}
-	}
-}
 		// total count before paging
 		int totalCount = await query.CountAsync(ctx);
-		
+
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
 			string orderBy = req.OrderBy.Trim();
