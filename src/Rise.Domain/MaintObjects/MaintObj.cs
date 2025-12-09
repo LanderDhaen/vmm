@@ -47,29 +47,76 @@ public class MaintObj : Entity {
 	// Functions
 
 	public void AssignToStation(MeasurementStation station) {
-		Station = Guard.Against.Null(station);
+		
+		// Check if the values are the same as the old values
+
+		if (station.Equals(Station)) {
+			return;
+		}
+		
+		// Check if the values are allowed
+
+		Guard.Against.Null(station);
+		
+		// Create history object using the old values
+		
+		AddHistoryEntry();
+		
+		// Assign the new values
+		
+		Station = station;
 		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);
 		Location = station.Location;
-		SetStatus(MaintObjStatus.Active);
+		MaintObjStatus = MaintObjStatus.Active;
 	}
-
-	public void UnassignFromStation() {
-		Installation = null;
-		Station = null;
-		SetStatus(MaintObjStatus.Inactive);
-	}
-
+	
 	public void MoveToStockLocation(Location location) {
+		
+		// Check if the values are the same as the old values
+		
 		if (Location.Equals(location)) {
 			return;
 		}
+		
+		// Check if the values are allowed
+		
+		Guard.Against.Null(location);
 
-		Location = Guard.Against.Null(location);
-		UnassignFromStation();
+		if (!location.IsStockLocation) {
+			throw new ArgumentException("Dit is geen stocklocatie");
+		}
+		
+		// Create history object using old values
+		
+		AddHistoryEntry();
+		
+		// Assign the new values
+		
+		Location = location;
+		Installation = null;
+		Station = null;
+		MaintObjStatus =  MaintObjStatus.Inactive;
 	}
 
 	public void ScanBy(Technician technician) {
-		LastScannedBy = Guard.Against.Null(technician);
+		
+		// Check if the values are the same as the old values
+
+		if (technician.Equals(LastScannedBy)) {
+			return;
+		}
+		
+		// Check if the values are allowed
+		
+		Guard.Against.Null(technician);
+		
+		// Create history object using old values
+		
+		AddHistoryEntry();
+		
+		// Assign the new values
+		
+		LastScannedBy = technician;
 	}
 
 

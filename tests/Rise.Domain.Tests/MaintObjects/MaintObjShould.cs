@@ -45,7 +45,8 @@ public class MaintObjShould {
 
 	[Fact]
 	public void AssignAndUnassignStationUpdateLocationAndStockFlag() {
-		Location location = MakeLocation();
+		Location location = new("Stock", new Address("Main St 1", "Bus 1", "Brussels", "1000"),
+			new Coordinate(4.35, 50.85), true);
 		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 		MeasurementStation station = MakeStation("STN-100");
 
@@ -55,7 +56,7 @@ public class MaintObjShould {
 		mo.Station!.Id.ShouldBe(station.Id);
 		mo.Location.ShouldBe(station.Location);
 
-		mo.UnassignFromStation();
+		mo.MoveToStockLocation(location);
 
 		mo.Station.ShouldBeNull();
 	}

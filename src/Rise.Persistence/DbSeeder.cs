@@ -33,6 +33,7 @@ public class DbSeeder(
 		await MeasurementStationsHistoriesAsync();
 		await MaintObjectPlansAsync();
 		await MaintObjectsAsync();
+		await MaintObjectHistoriesAsync();
 		await WorkOrdersAsync();
 	}
 
@@ -479,6 +480,80 @@ public class DbSeeder(
 
 		await dbContext.SaveChangesAsync();
 
+	}
+
+	private async Task MaintObjectHistoriesAsync() {
+		if (dbContext.MaintObjects.Any()) {
+			return;
+		}
+		
+		List<MaintObj> maintObjs = await dbContext.MaintObjects
+			.Include(x => x.MaintObjPlan)
+			.Include(x => x.Installation)
+			.Include(x => x.Station)
+			.Include(x => x.Location)
+			.Include(x => x.LastScannedBy)
+			.ToListAsync();
+
+		List<Technician> technicians = await dbContext.Technicians.ToListAsync();
+		List<MeasurementStation> stations = await dbContext.MeasurementStations.ToListAsync();
+		List<Location> stockLocations = await dbContext.Locations.Where(l => l.IsStockLocation == true).ToListAsync();
+		
+		foreach (MaintObj maintObj in maintObjs) {
+			
+			
+			// Different path depending on if the maintenance object is in stock
+
+			if (maintObj.Station is null) {
+				
+				Location location = maintObj.Location;
+				
+				// Scan the device
+
+				maintObj.ScanBy(technicians[0]);
+				await dbContext.SaveChangesAsync();
+				
+				// Move to a station
+				
+				maintObj.AssignToStation(stations[0]);
+				await dbContext.SaveChangesAsync();
+				
+				// Scan again
+				
+				maintObj.ScanBy(technicians[1]);
+				await dbContext.SaveChangesAsync();
+				
+				// Revert the location change
+				
+				maintObj.MoveToStockLocation(location);
+				await dbContext.SaveChangesAsync();
+				
+				
+			} else {
+				
+				MeasurementStation station = maintObj.Station;
+				
+				// Scan the device
+				
+				maintObj.ScanBy(technicians[1]);
+				await dbContext.SaveChangesAsync();
+				
+				// Move to a stock location
+				
+				maintObj.MoveToStockLocation(stockLocations[0]);
+				await dbContext.SaveChangesAsync();
+				
+				// Scan again
+				
+				maintObj.ScanBy(technicians[0]);
+				await dbContext.SaveChangesAsync();
+				
+				// Revert the location change
+				
+				maintObj.AssignToStation(station);
+				await dbContext.SaveChangesAsync();
+			}
+		}
 	}
 
 	private async Task WorkOrdersAsync() {
