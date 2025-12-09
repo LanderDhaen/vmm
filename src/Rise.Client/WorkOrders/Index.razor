@@ -69,8 +69,16 @@
 					<WorkOrderStatusChip Status="@context.Item.Status"/>
 				</CellTemplate>
 			</PropertyColumn>
-			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@WorkOrderUtility.ToShortStartDate(context.Item.StartDate)
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@WorkOrderUtility.ToShortEndDate(context.Item.EndDate)
+				</CellTemplate>
+			</PropertyColumn>
 		</Columns>
 		
 		<PagerContent>
@@ -147,8 +155,8 @@
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
 							<MudText><b>Technieker:</b> @(item.Technician ?? "-")</MudText>
-							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(item.StartDate)</MudText>
-							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(item.EndDate)</MudText>
+							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToShortStartDate(item.StartDate)</MudText>
+							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToShortEndDate(item.EndDate)</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

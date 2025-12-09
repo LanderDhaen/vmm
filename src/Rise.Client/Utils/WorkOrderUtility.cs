@@ -118,7 +118,35 @@ public static class WorkOrderUtility {
 	/// </example>
 	public static string ToLongStartDate(DateOnly? startDate)
 		=> startDate?.ToString("d MMMM yyyy") ?? "-";
-
+	
+	/// <summary>
+	/// Formats the start date, if available, in a short format.
+	/// </summary>
+	/// <param name="startDate">The date when the work order was claimed by a technician.</param>
+	/// <returns>
+	/// A string formatted as <c>dd/MM/yyyy</c>.
+	/// </returns>
+	/// <example>
+	/// 27/11/2025
+	/// </example>
+	public static string ToShortStartDate(DateOnly? startDate)
+		=> startDate?.ToString("dd/MM/yyyy") ?? "-";
+	
+	/// <summary>
+	/// Formats the end date, if available, in a human-readable format.
+	/// </summary>
+	/// <param name="endDate">
+	/// The date when the work order was completed/canceled, or <c>null</c> if it is still in progress.
+	/// </param>
+	/// <returns>
+	/// A string formatted as <c>d MMMM yyyy</c>, or <c>-</c> if <paramref name="endDate"/> is <c>null</c>.
+	/// </returns>
+	/// <example>
+	/// 15 januari 2026
+	/// </example>
+	public static string ToLongEndDate(DateOnly? endDate)
+		=> endDate?.ToString("d MMMM yyyy") ?? "-";
+	
 	/// <summary>
 	/// Formats the end date, if available, in a short format.
 	/// </summary>
@@ -131,6 +159,6 @@ public static class WorkOrderUtility {
 	/// <example>
 	/// 15/01/2026
 	/// </example>
-	public static string ToLongEndDate(DateOnly? endDate)
-		=> endDate?.ToString("d MMMM yyyy") ?? "-";
+	public static string ToShortEndDate(DateOnly? endDate)
+		=> endDate?.ToString("dd/MM/yyyy") ?? "-";
 }

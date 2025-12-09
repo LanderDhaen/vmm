@@ -128,8 +128,8 @@
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @StationUtility.ToLongInstalledAt(item.InstalledAt)</MudText>
-							<MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @StationUtility.ToLongRemovedAt(item.RemovedAt)</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Geïnstalleerd:</b> @StationUtility.ToShortInstalledAt(item.InstalledAt)</MudText>
+							<MudText Typo="Typo.subtitle1"><b>Verwijderd:</b> @StationUtility.ToShortRemovedAt(item.RemovedAt)</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Locatie:</b> @item.Location</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Gemeente:</b> @item.City</MudText>
 							<MudText Typo="Typo.subtitle1"><b>Projecten:</b> @item.ProjectsCount</MudText>
