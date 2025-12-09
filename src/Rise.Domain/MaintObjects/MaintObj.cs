@@ -143,6 +143,22 @@ public class MaintObj : Entity {
 			Station,  Location, LastScannedBy,  validityRange); 
 		_maintObjHistories.Add(maintObjHistory);
 	}
+
+	public List<MaintObjModification> GetModifications() {
+		List<MaintObjModification> modifications = [];
+		
+		_maintObjHistories.Insert(0, new MaintObjHistory(MaintObjStatus, MaintObjPlan, Installation, Station, Location, LastScannedBy, new ValidityRange(UpdatedAt, DateTime.UtcNow)));
+
+		for (int i = 0; i < _maintObjHistories.Count - 1; i++) {
+			var current =  _maintObjHistories[i];
+			var previous = _maintObjHistories[i + 1];
+			
+			MaintObjModification modification = MaintObjModificationFactory.Create(current, previous);
+			modifications.Add(modification);
+		}
+		
+		return modifications;
+	}
 	
 }
 

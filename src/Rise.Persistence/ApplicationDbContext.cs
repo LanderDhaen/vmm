@@ -50,5 +50,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 
 		modelBuilder.Ignore<MeasurementStationModification>();
 		modelBuilder.Ignore<ProjectModification>();
+		modelBuilder.Ignore<MaintObjModification>();
 	}
 }
