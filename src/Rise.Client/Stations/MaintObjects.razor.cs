@@ -14,13 +14,4 @@ public partial class MaintObjects {
 	private void NavigateToMaintObject(Guid maintObjId) {
 		NavigationManager.NavigateTo($"/maintobjects/{maintObjId}");
 	}
-
-	private Color GetStatusColor(MaintObjStatus status) {
-		return status switch {
-			MaintObjStatus.Active => Color.Success,
-			MaintObjStatus.Inactive => Color.Error,
-			MaintObjStatus.Broken => Color.Warning,
-			_ => Color.Default
-		};
-	}
 }
