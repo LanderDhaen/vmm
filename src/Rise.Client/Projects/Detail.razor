@@ -29,25 +29,27 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			
+
 			@* Toolbar *@
-			
+
 			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-2">
 				@if (_project.Status.Equals(Status.Afgesloten))
 				{
-					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success"
+					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small"
+					           Variant="Variant.Filled" Color="Color.Success"
 					           OnClick="@ShowStartConfirmationAsync">
 						Opstarten
 					</MudButton>
 				}
 				else
 				{
-					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled"
+					           Color="Color.Error"
 					           OnClick="@ShowCloseConfirmationAsync">Afsluiten
 					</MudButton>
 				}
 			</MudStack>
-			
+
 			<MudGrid Spacing="4" Class="mt-2">
 
 				@* Details *@
@@ -92,7 +94,8 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">Meetnet</MudText>
+									         Color="Color.Primary">Meetnet
+									</MudText>
 									<MudTooltip Delay="400"
 									            Text="@(IsActive ? "Meetnet wijzigen" : "Afgesloten project kan niet bewerkt worden")">
 										<MudButton Variant="Variant.Text"
@@ -144,7 +147,6 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-
 			</MudGrid>
 			break;
 		case 1:
