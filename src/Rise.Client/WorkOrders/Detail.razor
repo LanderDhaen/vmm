@@ -33,19 +33,41 @@ else
 		case 0:
 			@* Toolbar *@
 			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-2">
-				@if (_workOrder.Status.Equals(WorkOrderStatus.Completed))
-				{
-					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small"
-					           Variant="Variant.Filled" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">
-						Opstarten
-					</MudButton>
-				}
-				else
-				{
-					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled"
-					           Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Afsluiten
-					</MudButton>
-				}
+					@switch (_workOrder.Status)
+					{
+						case WorkOrderStatus.Pending: 
+							<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch"
+							           Class="border-b-2"
+							           Size="Size.Small"
+							           Variant="Variant.Filled"
+							           Color="Color.Info"
+							           OnClick="@ShowStartConfirmationAsync">
+								Opnemen
+							</MudButton>
+							break;
+							
+						case WorkOrderStatus.Completed:
+							<MudButton StartIcon="@Icons.Material.Filled.RestartAlt"
+							           Size="Size.Small"
+							           Variant="Variant.Filled"
+							           Color="Color.Warning"
+							           OnClick="@ShowStartConfirmationAsync">
+								Heropenen
+							</MudButton>
+							break;
+
+						case WorkOrderStatus.InProgress:
+							<MudButton StartIcon="@Icons.Material.Filled.Check"
+							           Size="Size.Small"
+							           Variant="Variant.Filled"
+							           Color="Color.Success"
+							           OnClick="@ShowCloseConfirmationAsync">
+								Voltooien
+							</MudButton>
+							break;
+						default:
+							break;
+					}
 			</MudStack>
 
 			<MudGrid Spacing="4" Class="mt-2">

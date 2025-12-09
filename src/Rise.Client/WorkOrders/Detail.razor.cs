@@ -93,7 +93,7 @@ public partial class Detail {
 			Snackbar.Add(
 				_workOrder?.Status == WorkOrderStatus.Completed
 					? "Werkbon succesvol heropend!"
-					: "Werkbon succesvol gestart!", Severity.Success);
+					: "Werkbon succesvol opgenomen!", Severity.Success);
 
 			StateHasChanged();
 		} else {
@@ -125,7 +125,7 @@ public partial class Detail {
 	private async Task ShowCloseConfirmationAsync() {
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
-			"Weet u zeker dat u deze werkbon wilt afsluiten?",
+			"Weet u zeker dat u deze werkbon wilt voltooien?",
 			"Bevestigen",
 			"Annuleren",
 			options: new DialogOptions { CloseOnEscapeKey = true }
@@ -139,7 +139,7 @@ public partial class Detail {
 	private async Task ShowStartConfirmationAsync() {
 		string msg = _workOrder?.Status == WorkOrderStatus.Completed
 			? "Weet u zeker dat u deze werkbon wilt heropenen?"
-			: "Weet u zeker dat u deze werkbon wilt starten?";
+			: "Weet u zeker dat u deze werkbon wilt opnemen?";
 
 		bool? result = await DialogService.ShowMessageBox(
 			"Bevestiging",
