@@ -1,5 +1,6 @@
 using Rise.Shared.Common;
 
+
 namespace Rise.Shared.WorkOrders;
 
 /// <summary>
@@ -20,4 +21,6 @@ public interface IWorkOrderService {
 		WorkOrderRequest.UpdateStatus req,
 		CancellationToken ctx = default
 	);
+	Task<IEnumerable<string>> GetTechnicianNamesAsync(string? query, CancellationToken ctx = default);
+
 }
