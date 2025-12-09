@@ -31,8 +31,7 @@ else
 		case 0:
 
 			@* Toolbar *@
-
-			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-2">
+			<MudStack Row="true" Justify="Justify.FlexEnd">
 				@if (_project.Status.Equals(Status.Afgesloten))
 				{
 					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small"
@@ -51,7 +50,6 @@ else
 			</MudStack>
 
 			<MudGrid Spacing="4" Class="mt-2">
-
 				@* Details *@
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
