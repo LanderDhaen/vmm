@@ -22,10 +22,7 @@ public partial class History {
 			_modifications = result.Value.Modifications;
 		}
 	}
-
-	private void OnBreakPointChange(Breakpoint breakpoint) => _timelinePosition = breakpoint == Breakpoint.Xs ? TimelinePosition.Left : TimelinePosition.Alternate;
-
-
+	
 	private static string DefineTitle(MaintObjModificationType modificationType) {
 		return modificationType switch {
 			MaintObjModificationType.StatusChanged => "Status gewijzigd",

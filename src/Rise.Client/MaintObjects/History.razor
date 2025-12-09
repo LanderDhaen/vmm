@@ -1,4 +1,5 @@
 @using Rise.Client.Components
+@using Rise.Shared.MaintObjects
 <PageTitle>Onderhoudsobject Details</PageTitle>
 
 @if (_modifications is null)
@@ -8,17 +9,53 @@
 	</MudContainer>
 }
 else
-{
-	<MudBreakpointProvider OnBreakpointChanged="@OnBreakPointChange">
-		<MudTimeline TimelinePosition="_timelinePosition" Class="mr-20 m-xs-0">
+{	
+	<MudHidden Breakpoint="Breakpoint.Xs"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Alternate" Class="mr-20">
 			@{
-				foreach (var modification in _modifications) {
-					<TimeLineItem Title="@(DefineTitle(modification.MaintObjModificationType))"
-					              ModifiedAt="modification.ModifiedAt"
-					              CurrentValue=@modification.CurrentValue
-					              PreviousValue="@modification.PreviousValue"/>
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(modification.ModifiedAt)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<MudText Typo="Typo.h6">@DefineTitle(modification.MaintObjModificationType)</MudText>
+								@{
+									if (modification.MaintObjModificationType == MaintObjModificationType.Scanned)
+									{
+										<MudText>door @modification.CurrentValue</MudText>
+									}
+									else
+									{
+										<MudText>van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b></MudText>
+									}
+								} 
+						</ItemContent>
+					</MudTimelineItem>
 				}
 			}
 		</MudTimeline>
-	</MudBreakpointProvider>
+	</MudHidden>
+	
+	@* Mobile view *@
+	
+	<MudHidden Breakpoint="Breakpoint.SmAndUp"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Left">
+			@{
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemContent>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToShortValidFrom(modification.ModifiedAt)</MudChip>
+							<MudText Typo="Typo.h6">@DefineTitle(modification.MaintObjModificationType)</MudText>
+							<MudText>
+								van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
+							</MudText>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+			}
+		</MudTimeline>
+	</MudHidden>
 }
