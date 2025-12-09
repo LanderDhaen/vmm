@@ -185,14 +185,12 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 			case "technician":
 				query = desc
-					? query.OrderByDescending(p => p.Technician!.LastName)
-								 .ThenByDescending(p => p.Technician!.FirstName)
-					: query.OrderBy(p => p.Technician!.LastName)
-								 .ThenBy(p => p.Technician!.FirstName);
+					? query.OrderByDescending(p => p.Technician!.LastName).ThenByDescending(p => p.Technician!.FirstName)
+					: query.OrderBy(p => p.Technician!.LastName).ThenBy(p => p.Technician!.FirstName);
 				break;
 
 			case "status":
-				query = desc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => (SharedStatus)p.Status);
+				query = desc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => p.Status);
 				break;
 
 			case "startdate":
