@@ -42,7 +42,7 @@ try {
 
 	// setup MudBlazor
 	builder.Services.AddMudServices(config => {
-		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+		config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomEnd;
 		config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 	});
 
