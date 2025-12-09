@@ -77,7 +77,7 @@ public partial class Detail {
 			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshMaintObjDetails();
 		}
 	}

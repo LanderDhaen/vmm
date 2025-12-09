@@ -12,17 +12,18 @@ namespace Rise.Client.Stations;
 
 public partial class Detail {
 	// ===== Tabs =====
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Informatie",
 		"Historiek"
-	};
+	];
+
+	private IEnumerable<MaintObjDto.Index>? _maintObjectsFromStation;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 
 	private int _selectedTab;
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
-	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
-	private IEnumerable<MaintObjDto.Index>? _maintObjectsFromStation;
 
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -43,7 +44,7 @@ public partial class Detail {
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
-			new BreadcrumbItem($"{_station.Code}", null, true)
+			new BreadcrumbItem($"{_station?.Code}", null, true)
 		);
 
 		// set header
@@ -58,59 +59,63 @@ public partial class Detail {
 	}
 
 	private async Task OpenDialogAsync() {
-		var parameters = new DialogParameters<UpdateProjectListDialog> {
+		DialogParameters<UpdateProjectListDialog> parameters = new() {
 			{ x => x.StationId, StationId },
 			{ x => x.Projects, _projectsFromStation }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateProjectListDialog>("Simple Dialog", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateProjectListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshProjects();
 		}
 	}
 
 	private async Task OpenMaintObjectsListDialogAsync() {
-		var parameters = new DialogParameters<UpdateMaintObjectsListDialog> {
+		DialogParameters<UpdateMaintObjectsListDialog> parameters = new() {
 			{ x => x.StationId, StationId },
 			{ x => x.MaintObjects, _maintObjectsFromStation }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateMaintObjectsListDialog>("Simple Dialog", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateMaintObjectsListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshMaintObjects();
 		}
 	}
 
 	private async Task OpenUpdateLocationDialogAsync() {
-		var parameters = new DialogParameters<UpdateLocationDialog> {
+		DialogParameters<UpdateLocationDialog> parameters = new() {
 			{ x => x.StationId, StationId },
-			{ x => x.LocationId, _station.Location.Id }
+			{ x => x.LocationId, _station!.Location.Id }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
 
-		var dialog = await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshStationDetails();
 		}
 	}
 
 	private async Task OpenEditStationDialogAsync() {
-		var parameters = new DialogParameters<EditFormDialog> {
+		DialogParameters<EditFormDialog> parameters = new() {
 			{ x => x.StationId, StationId },
 			{ x => x.Station, _station }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
 
-		var dialog = await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
 
 		if (!result.Canceled) {
 			await RefreshStationDetails();

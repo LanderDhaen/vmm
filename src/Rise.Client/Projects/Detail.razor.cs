@@ -4,7 +4,6 @@ using MudBlazor;
 
 using Rise.Client.Components.Projects;
 using Rise.Client.Services;
-using Rise.Shared.Common;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -14,17 +13,17 @@ public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 
-	// Drawer
-	private bool _open;
-
 	// Overlay
 	private readonly bool _visible;
 
+	// Drawer
+	private bool _open;
+
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
-	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 
 	private int _selectedTab;
+	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
 
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
@@ -93,29 +92,31 @@ public partial class Detail {
 	}
 
 	private async Task OpenDialogAsync() {
-		var parameters = new DialogParameters<UpdateStationListDialog> {
+		DialogParameters<UpdateStationListDialog> parameters = new() {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.Stations, _stationsFromProject }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateStationListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshStations();
 		}
 	}
 
 	private async Task OpenUpdateMeasurementDialogAsync() {
-		var parameters = new DialogParameters<UpdateMeasurementNetworkDialog> {
+		DialogParameters<UpdateMeasurementNetworkDialog> parameters = new() {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.MeasurementNetworkId, _project!.MeasurementNetwork.Id }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
 
-		var dialog = await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateMeasurementNetworkDialog>("Meetnet wijzigen", parameters, options);
+		DialogResult? result = await dialog.Result;
 
 		if (!result.Canceled) {
 			await RefreshProjectDetail();
@@ -123,16 +124,17 @@ public partial class Detail {
 	}
 
 	private async Task OpenEditFormDialogAsync() {
-		var parameters = new DialogParameters<EditFormDialog> {
+		DialogParameters<EditFormDialog> parameters = new() {
 			{ x => x.ProjectId, ProjectId },
 			{ x => x.Project, _project }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
 
-		var dialog = await DialogService.ShowAsync<EditFormDialog>("Project bewerken", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Project bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshProjectDetail();
 		}
 	}
@@ -183,10 +185,6 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
-	}
-
-	private void OpenDrawer() {
-		_open = !_open;
 	}
 
 	// Show confirmation dialogs

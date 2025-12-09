@@ -110,8 +110,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		// Only get active projects
-		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string status &&
-			status.Equals("Active")) {
+		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string and "Active") {
 			query = query.Where(p => p.Status == Status.Actief);
 		}
 
@@ -245,12 +244,12 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 		List<ProjectDto.Modification> modifications = [];
 
-		foreach (var m in project.GetModifications()) {
+		foreach (ProjectModification m in project.GetModifications()) {
 			modifications.Add(new ProjectDto.Modification {
 				ProjectModificationType = (SharedProjectModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
-				CurrentValue = m.CurrentValue,
+				CurrentValue = m.CurrentValue
 			});
 		}
 

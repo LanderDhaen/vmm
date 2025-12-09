@@ -127,7 +127,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 					PostalCode = s.Location.Address.PostalCode,
 					Country = s.Location.Address.CountryIso,
 					X = s.Location.Coordinate.X,
-					Y = s.Location.Coordinate.Y,
+					Y = s.Location.Coordinate.Y
 				},
 				ProjectsCount = s.Projects.Count()
 			})
@@ -163,13 +163,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		List<MeasurementStationDto.Modification> modifications = [];
 
-		foreach (var m in measurementStation.GetModifications()) {
+		foreach (MeasurementStationModification m in measurementStation.GetModifications()) {
 			modifications.Add(new MeasurementStationDto.Modification {
 				MeasurementStationModificationType =
 					(MeasurementStationModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
-				CurrentValue = m.CurrentValue,
+				CurrentValue = m.CurrentValue
 			});
 		}
 
@@ -215,7 +215,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 				return Result.NotFound("Project niet gevonden.");
 			}
 
-			station.UpdateProjectList(new List<Project> { project });
+			station.UpdateProjectList([project]);
 		}
 
 		dbContext.MeasurementStations.Add(station);
@@ -397,13 +397,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.Error("Een of meerdere onderhoudsobjecten zijn niet gevonden.");
 		}
 
-		foreach (var current in measurementStation.MaintObjects.ToList()) {
+		foreach (MaintObj current in measurementStation.MaintObjects.ToList()) {
 			if (!req.MaintObjIds.Contains(current.Id)) {
 				current.UnassignFromStation();
 			}
 		}
 
-		foreach (var mo in maintObjects) {
+		foreach (MaintObj mo in maintObjects) {
 			if (mo.Station is null || mo.Station.Id != measurementStation.Id) {
 				mo.AssignToStation(measurementStation);
 			}

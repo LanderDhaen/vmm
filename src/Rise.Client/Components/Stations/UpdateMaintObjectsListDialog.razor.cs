@@ -10,14 +10,14 @@ namespace Rise.Client.Components.Stations;
 
 public partial class UpdateMaintObjectsListDialog {
 	private IEnumerable<MaintObjDto.Index>? _allMaintObjects = new List<MaintObjDto.Index>();
-	private Result? _result;
 	private CancellationTokenSource _cancellationTokenSource = new();
+	private Result? _result;
 	private string _searchTerm = string.Empty;
 
 	private MeasurementStationRequest.UpdateMaintObjects Model { get; } = new();
 
-	[CascadingParameter]
-	private IMudDialogInstance MudDialog { get; set; }
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
+
 	[Parameter] public Guid StationId { get; set; }
 	[Parameter] public IEnumerable<MaintObjDto.Index>? MaintObjects { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
@@ -35,7 +35,9 @@ public partial class UpdateMaintObjectsListDialog {
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
-	private void Cancel() => MudDialog.Cancel();
+	private void Cancel() {
+		MudDialog.Cancel();
+	}
 
 	private async Task UpdateSearch(string searchTerm) {
 		_searchTerm = searchTerm;
@@ -43,10 +45,11 @@ public partial class UpdateMaintObjectsListDialog {
 	}
 
 	private void OnCheckboxChanged(Guid stationId, bool isSelected) {
-		if (isSelected)
+		if (isSelected) {
 			Model.MaintObjIds.Add(stationId);
-		else
+		} else {
 			Model.MaintObjIds.Remove(stationId);
+		}
 	}
 
 	private async Task GetAllMaintObjectsAsync() {
@@ -55,11 +58,12 @@ public partial class UpdateMaintObjectsListDialog {
 		_cancellationTokenSource = new CancellationTokenSource();
 
 		QueryRequest.SkipTake request = new() {
-			SearchTerm = _searchTerm
+			SearchTerm = _searchTerm,
+			Filters = {
+				["Status"] = "Active",
+				["StationId"] = StationId
+			}
 		};
-
-		request.Filters["Status"] = "Active";
-		request.Filters["StationId"] = StationId;
 
 		Result<MaintObjResponse.Index> allMaintObjects =
 			await MaintObjService.GetIndexAsync(request, _cancellationTokenSource.Token);
@@ -76,30 +80,31 @@ public partial class UpdateMaintObjectsListDialog {
 	}
 
 	private async Task OpenQrScanner() {
-		var options = new DialogOptions {
+		DialogOptions options = new() {
 			CloseButton = true,
 			MaxWidth = MaxWidth.Small,
 			FullWidth = true
 		};
 
-		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
-		var result = await dialog.Result;
+		IDialogReference dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		DialogResult? result = await dialog.Result;
 
-		if (result.Canceled || result.Data is not string decoded)
+		if (result is { Canceled: true } || result?.Data is not string decoded) {
 			return;
+		}
 
-		var serial = decoded.Trim();
+		string serial = decoded.Trim();
 
 		if (string.IsNullOrWhiteSpace(serial)) {
 			Snackbar.Add("Onleesbare code: geen serienummer gevonden.", Severity.Error);
 			return;
 		}
 
-		var match = _allMaintObjects?.FirstOrDefault(mo =>
+		MaintObjDto.Index? match = _allMaintObjects?.FirstOrDefault(mo =>
 			string.Equals(mo.SerialNumber, serial, StringComparison.OrdinalIgnoreCase));
 
 		if (match is null) {
-			var existsResult = await MaintObjService.GetBySerialAsync(serial);
+			Result<MaintObjResponse.BySerial> existsResult = await MaintObjService.GetBySerialAsync(serial);
 			if (existsResult.IsSuccess) {
 				match = _allMaintObjects?.FirstOrDefault(mo => mo.Id == existsResult.Value.Id);
 			}
