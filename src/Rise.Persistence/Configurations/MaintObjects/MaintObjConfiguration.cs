@@ -42,17 +42,17 @@ internal class MaintObjConfiguration : EntityConfiguration<MaintObj> {
 internal class MaintObjHistoryConfiguration : HistoryEntityConfiguration<MaintObjHistory> {
 	public override void Configure(EntityTypeBuilder<MaintObjHistory> builder) {
 		base.Configure(builder);
-		
+
 		// Properties
-	
+
 		builder.Property(x => x.MaintObjStatus).IsRequired();
 		builder.OwnsOne(x => x.Installation, b => {
 			b.Property(p => p.InstalledAt).IsRequired().HasColumnName(nameof(Installation.InstalledAt));
 			b.Property(p => p.RemovedAt).HasColumnName(nameof(Installation.RemovedAt));
 		}).Navigation(e => e.Installation);
-		
+
 		// Relations
-		
+
 		builder.HasOne(x => x.MaintObjPlan)
 			.WithMany()
 			.IsRequired()

@@ -1,12 +1,11 @@
 using Rise.Domain.Projects;
 
 namespace Rise.Domain.MaintObjects;
-public static class MaintObjModificationFactory
-{
-	public static List<MaintObjModification> Create(MaintObjHistory current, MaintObjHistory previous)
-	{
+
+public static class MaintObjModificationFactory {
+	public static List<MaintObjModification> Create(MaintObjHistory current, MaintObjHistory previous) {
 		var modifications = new List<MaintObjModification>();
-		
+
 		if (current.MaintObjStatus != previous.MaintObjStatus) {
 			modifications.Add(new MaintObjModification(
 				MaintObjModificationType.StatusChanged,
@@ -14,7 +13,7 @@ public static class MaintObjModificationFactory
 				previous.MaintObjStatus.ToString(),
 				current.MaintObjStatus.ToString()));
 		}
-		
+
 		if (current.Location != previous.Location) {
 
 			if (current.Location.IsStockLocation) {
@@ -33,7 +32,7 @@ public static class MaintObjModificationFactory
 				));
 			}
 		}
-		
+
 		if (current.LastScannedBy?.Id != previous.LastScannedBy?.Id) {
 			modifications.Add(new MaintObjModification(
 				MaintObjModificationType.Scanned,
@@ -43,8 +42,7 @@ public static class MaintObjModificationFactory
 			));
 		}
 
-		if (modifications.Count == 0)
-		{
+		if (modifications.Count == 0) {
 			throw new InvalidOperationException(
 				"Niet mogelijk om de modificaties op te stellen voor deze twee historiek rijen");
 		}
@@ -55,5 +53,3 @@ public static class MaintObjModificationFactory
 	private static string DisplayName(Technician? technician) =>
 		technician is null ? "-" : $"{technician.FirstName} {technician.LastName}";
 }
-
-
