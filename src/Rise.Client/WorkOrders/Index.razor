@@ -1,5 +1,6 @@
 @page "/workorders"
 @using Rise.Client.Components
+@using Rise.Client.Components.WorkOrders
 @using Rise.Shared.WorkOrders
 <PageTitle>Werkbonnen</PageTitle>
 
@@ -44,9 +45,7 @@
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(context.Item.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(context.Item.Priority))">
-						@WorkOrderUtility.TranslatePriority(context.Item.Priority)
-					</MudChip>
+					<WorkOrderPriorityChip Priority="@context.Item.Priority"/>
 				</CellTemplate>
 			</PropertyColumn>
 
@@ -139,9 +138,7 @@
 								<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 									<MudText Typo="Typo.h6" Color="Color.Primary">@item.Name</MudText>
 									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-										<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(item.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(item.Priority))">
-											@WorkOrderUtility.TranslatePriority(item.Priority)
-										</MudChip>
+										<WorkOrderPriorityChip Priority="@item.Priority"/>
 										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(item.Status))">
 											@WorkOrderUtility.TranslateStatus(item.Status)
 										</MudChip>
