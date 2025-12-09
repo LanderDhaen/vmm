@@ -14,7 +14,7 @@
 else
 {
 	@* Tabs *@
-	<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center" Spacing="8">
+	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="() =>  SetTab(0)">
 			@_tabs[0]
@@ -28,27 +28,9 @@ else
 
 	@switch (_selectedTab)
 	{
-		case 0:	
-			
-			@* Toolbar *@
-			
-			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-1">
-				@if (_project.Status.Equals(Status.Afgesloten))
-				{
-					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success"
-					           OnClick="@ShowStartConfirmationAsync">
-						Opstarten
-					</MudButton>
-				}
-				else
-				{
-					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
-					           OnClick="@ShowCloseConfirmationAsync">Afsluiten
-					</MudButton>
-				}
-			</MudStack>
-			
-			<MudGrid Spacing="4" Class="mt-1">
+		case 0:
+			<MudGrid Spacing="4" Class="mt-2">
+
 				@* Details *@
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">

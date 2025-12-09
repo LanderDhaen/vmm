@@ -4,7 +4,7 @@ using MudBlazor;
 
 using Rise.Client.Components.Stations;
 using Rise.Client.Services;
-using Rise.Shared.Common;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -12,16 +12,18 @@ namespace Rise.Client.Stations;
 
 public partial class Detail {
 	// ===== Tabs =====
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Informatie",
 		"Historiek"
-	};
+	];
+
+	private IEnumerable<MaintObjDto.Index>? _maintObjectsFromStation;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
 
 	private int _selectedTab;
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
-	private IEnumerable<ProjectDto.Index> _projectsFromStation;
 
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
@@ -37,11 +39,12 @@ public partial class Detail {
 	protected override async Task OnInitializedAsync() {
 		await RefreshStationDetails();
 		await RefreshProjects();
+		await RefreshMaintObjects();
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
 			new BreadcrumbItem("Meetstations", "/stations"),
-			new BreadcrumbItem($"{_station.Code}", null, true)
+			new BreadcrumbItem($"{_station?.Code}", null, true)
 		);
 
 		// set header
@@ -56,44 +59,63 @@ public partial class Detail {
 	}
 
 	private async Task OpenDialogAsync() {
-		var parameters = new DialogParameters<UpdateProjectListDialog> {
+		DialogParameters<UpdateProjectListDialog> parameters = new() {
 			{ x => x.StationId, StationId },
 			{ x => x.Projects, _projectsFromStation }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateProjectListDialog>("Simple Dialog", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateProjectListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshProjects();
 		}
 	}
 
-	private async Task OpenUpdateLocationDialogAsync() {
-		var parameters = new DialogParameters<UpdateLocationDialog> {
+	private async Task OpenMaintObjectsListDialogAsync() {
+		DialogParameters<UpdateMaintObjectsListDialog> parameters = new() {
 			{ x => x.StationId, StationId },
-			{ x => x.LocationId, _station.Location.Id }
+			{ x => x.MaintObjects, _maintObjectsFromStation }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
 
-		var dialog = await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateMaintObjectsListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
+			await RefreshMaintObjects();
+		}
+	}
+
+	private async Task OpenUpdateLocationDialogAsync() {
+		DialogParameters<UpdateLocationDialog> parameters = new() {
+			{ x => x.StationId, StationId },
+			{ x => x.LocationId, _station!.Location.Id }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (result is { Canceled: false }) {
 			await RefreshStationDetails();
 		}
 	}
 
 	private async Task OpenEditStationDialogAsync() {
-		var parameters = new DialogParameters<EditFormDialog> {
+		DialogParameters<EditFormDialog> parameters = new() {
 			{ x => x.StationId, StationId },
 			{ x => x.Station, _station }
 		};
-		var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
 
-		var dialog = await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
-		var result = await dialog.Result;
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
 
 		if (!result.Canceled) {
 			await RefreshStationDetails();
@@ -102,10 +124,21 @@ public partial class Detail {
 
 	private async Task RefreshProjects() {
 		Result<MeasurementStationResponse.ProjectList> projectsResult =
-			await StationService.GetProjectsAsync(StationId, new QueryRequest.Search());
+			await StationService.GetProjectsAsync(StationId);
 
 		if (projectsResult.IsSuccess) {
 			_projectsFromStation = projectsResult.Value.Projects;
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task RefreshMaintObjects() {
+		Result<MeasurementStationResponse.MaintObjList> maintObjectsResult =
+			await StationService.GetMaintObjsAsync(StationId);
+
+		if (maintObjectsResult.IsSuccess) {
+			_maintObjectsFromStation = maintObjectsResult.Value.MaintObjects;
 		}
 
 		StateHasChanged();

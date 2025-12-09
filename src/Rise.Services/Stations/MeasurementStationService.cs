@@ -2,16 +2,20 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Common;
 using Rise.Domain.Locations;
+using Rise.Domain.MaintObjects;
 using Rise.Domain.Projects;
 using Rise.Domain.Stations;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 using MeasurementStationModificationType = Rise.Shared.Stations.MeasurementStationModificationType;
+using SharedMaintObjStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedStatus = Rise.Shared.Projects.Status;
+using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 
 namespace Rise.Services.Stations;
 
@@ -123,7 +127,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 					PostalCode = s.Location.Address.PostalCode,
 					Country = s.Location.Address.CountryIso,
 					X = s.Location.Coordinate.X,
-					Y = s.Location.Coordinate.Y,
+					Y = s.Location.Coordinate.Y
 				},
 				ProjectsCount = s.Projects.Count()
 			})
@@ -159,13 +163,13 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 		List<MeasurementStationDto.Modification> modifications = [];
 
-		foreach (var m in measurementStation.GetModifications()) {
+		foreach (MeasurementStationModification m in measurementStation.GetModifications()) {
 			modifications.Add(new MeasurementStationDto.Modification {
 				MeasurementStationModificationType =
 					(MeasurementStationModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
-				CurrentValue = m.CurrentValue,
+				CurrentValue = m.CurrentValue
 			});
 		}
 
@@ -176,7 +180,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
 		CancellationToken ct = default) {
-		Location location;
+		Location? location;
 		if (request.IsNewLocation) {
 			location = new Location(
 				request.Location!.Name,
@@ -204,14 +208,14 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		);
 
 		if (request.ProjectId != Guid.Empty) {
-			Project project = await dbContext.Projects
+			Project? project = await dbContext.Projects
 				.SingleOrDefaultAsync(x => x.Id == request.ProjectId, ct);
 
 			if (project is null) {
 				return Result.NotFound("Project niet gevonden.");
 			}
 
-			station.UpdateProjectList(new List<Project> { project });
+			station.UpdateProjectList([project]);
 		}
 
 		dbContext.MeasurementStations.Add(station);
@@ -240,7 +244,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 
 	public async Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(
 		Guid stationId,
-		QueryRequest.Search request,
 		CancellationToken ct = default) {
 		bool exists = await dbContext.MeasurementStations
 			.AsNoTracking()
@@ -254,15 +257,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		IQueryable<Project> query = dbContext.Projects
 			.AsNoTracking()
 			.AsQueryable();
-
-		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
-			query = query.Where(p =>
-				EF.Functions.Like(p.Name, $"%{request.SearchTerm}%") ||
-				EF.Functions.Like(p.Code, $"%{request.SearchTerm}%") ||
-				EF.Functions.Like(p.MeasurementNetwork.Name, $"%{request.SearchTerm}%") ||
-				EF.Functions.Like(p.MeasurementNetwork.Zone.Name, $"%{request.SearchTerm}%")
-			);
-		}
 
 		List<ProjectDto.Index> projects = await query
 			.Where(p => p.Stations.Any(s => s.Id == stationId))
@@ -318,7 +312,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
 		}
 
-		Location location;
+		Location? location;
 		if (req.IsNewLocation) {
 			location = new Location(
 				req.Location!.Name,
@@ -342,6 +336,80 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		measurementStation.MoveTo(location);
 
 		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Success();
+	}
+
+	public async Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(
+		Guid stationId,
+		CancellationToken ct = default) {
+		bool exists = await dbContext.MeasurementStations
+			.AsNoTracking()
+			.AnyAsync(s => s.Id == stationId, ct);
+
+		if (!exists) {
+			return Result.NotFound("Meetstation niet gevonden.");
+		}
+
+		IQueryable<MaintObj> query = dbContext.MaintObjects
+			.AsNoTracking()
+			.AsQueryable();
+
+		List<MaintObjDto.Index> maintObjs = await query
+			.Where(m => m.Station != null && m.Station.Id == stationId)
+			.Select(m => new MaintObjDto.Index {
+				Id = m.Id,
+				Name = m.Name,
+				SerialNumber = m.SerialNumber,
+				Brand = m.Brand,
+
+				MaintObjType = (SharedType)m.MaintObjType,
+				MaintObjStatus = (SharedMaintObjStatus)m.MaintObjStatus,
+
+				Location = m.Location.Name,
+				StationCode = m.Station.Code
+			})
+			.ToListAsync(ct);
+
+		return Result.Success(new MeasurementStationResponse.MaintObjList {
+			MaintObjects = maintObjs
+		});
+	}
+
+
+	public async Task<Result> UpdateMaintObjsAsync(
+		MeasurementStationRequest.UpdateMaintObjects req,
+		CancellationToken ct = default) {
+		MeasurementStation? measurementStation = await dbContext.MeasurementStations
+			.Include(s => s.MaintObjects)
+			.Include(s => s.Location)
+			.SingleOrDefaultAsync(x => x.Id == req.MeasurementStationId, ct);
+
+		if (measurementStation is null) {
+			return Result.NotFound($"Meetstation met id '{req.MeasurementStationId}' is niet gevonden.");
+		}
+
+		List<MaintObj> maintObjects = await dbContext.MaintObjects
+			.Where(ms => req.MaintObjIds.Contains(ms.Id))
+			.ToListAsync(ct);
+
+		if (maintObjects.Count != req.MaintObjIds.Count) {
+			return Result.Error("Een of meerdere onderhoudsobjecten zijn niet gevonden.");
+		}
+
+		foreach (MaintObj current in measurementStation.MaintObjects.ToList()) {
+			if (!req.MaintObjIds.Contains(current.Id)) {
+				current.UnassignFromStation();
+			}
+		}
+
+		foreach (MaintObj mo in maintObjects) {
+			if (mo.Station is null || mo.Station.Id != measurementStation.Id) {
+				mo.AssignToStation(measurementStation);
+			}
+		}
+
+		await dbContext.SaveChangesAsync(ct);
 
 		return Result.Success();
 	}

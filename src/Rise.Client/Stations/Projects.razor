@@ -14,7 +14,8 @@ else
 	@* Desktop view *@
 
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="ProjectsFromStation" CustomHeader="true" OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
+		<MudTable T="ProjectDto.Index" Striped="true" Hover="true" Items="ProjectsFromStation" CustomHeader="true"
+		          OnRowClick="@(args => NavigateToProject(args.Item!.Id))">
 			<HeaderContent>
 				<MudTHeadRow>
 					<MudTh Class="mud-theme-primary">#</MudTh>

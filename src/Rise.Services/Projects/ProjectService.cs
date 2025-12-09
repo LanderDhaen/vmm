@@ -39,7 +39,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 		Project p = new(request.Name, request.Code, new DateRange(startdate), measurementNetwork);
 
 		if (request.MeasurementStationId != Guid.Empty) {
-			MeasurementStation measurementStation = await dbContext.MeasurementStations
+			MeasurementStation? measurementStation = await dbContext.MeasurementStations
 				.SingleOrDefaultAsync(x => x.Id == request.MeasurementStationId, ctx);
 
 			if (measurementStation is null) {
@@ -110,8 +110,7 @@ public class ProjectService(ApplicationDbContext dbContext)
 		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		// Only get active projects
-		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string status &&
-			status.Equals("Active")) {
+		if (req.Filters.TryGetValue("Status", out object? statusObj) && statusObj is string and "Active") {
 			query = query.Where(p => p.Status == Status.Actief);
 		}
 
@@ -244,12 +243,12 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 		List<ProjectDto.Modification> modifications = [];
 
-		foreach (var m in project.GetModifications()) {
+		foreach (ProjectModification m in project.GetModifications()) {
 			modifications.Add(new ProjectDto.Modification {
 				ProjectModificationType = (SharedProjectModificationType)m.MeasurementStationModificationType,
 				ModifiedAt = m.ModifiedAt,
 				PreviousValue = m.PreviousValue,
-				CurrentValue = m.CurrentValue,
+				CurrentValue = m.CurrentValue
 			});
 		}
 
@@ -276,7 +275,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
-		QueryRequest.Search req,
 		CancellationToken ctx = default) {
 		bool exists = await dbContext.Projects
 			.AsNoTracking()
@@ -289,14 +287,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 		IQueryable<MeasurementStation> query = dbContext.MeasurementStations
 			.AsNoTracking()
 			.AsQueryable();
-
-		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
-			query = query.Where(p =>
-				EF.Functions.Like(p.Code, $"%{req.SearchTerm}%") ||
-				EF.Functions.Like(p.Location.Name, $"%{req.SearchTerm}%") ||
-				EF.Functions.Like(p.Location.Address.City, $"%{req.SearchTerm}%")
-			);
-		}
 
 		List<MeasurementStationDto.Index> stations = await query
 			.Where(s => s.Projects.Any(p => p.Id == projectId))

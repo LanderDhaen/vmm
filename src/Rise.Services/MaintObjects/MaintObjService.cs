@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
@@ -9,6 +8,7 @@ using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
 using Rise.Shared.Stations;
 
+using MaintObjStatus = Rise.Domain.MaintObjects.MaintObjStatus;
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
@@ -25,6 +25,20 @@ public class MaintObjService(ApplicationDbContext dbContext)
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
+
+		if (req.Filters.TryGetValue("Status", out object? statusObj)
+			&& statusObj is string and "Active") {
+			if (req.Filters.TryGetValue("StationId", out object? stationIdObj)
+				&& stationIdObj is string stationIdStr
+				&& Guid.TryParse(stationIdStr, out Guid parsedId)) {
+				query = query.Where(p => p.MaintObjStatus == MaintObjStatus.Inactive || p.Station!.Id == parsedId);
+			}
+		}
+
+		query = query.Where(m =>
+			m.SerialNumber.Contains(req.SearchTerm) ||
+			m.Name.Contains(req.SearchTerm)
+		);
 
 		int totalCount = await query.CountAsync(ctx);
 
@@ -85,13 +99,13 @@ public class MaintObjService(ApplicationDbContext dbContext)
 
 	public async Task<Result<MaintObjResponse.Create>> CreateAsync(MaintObjRequest.Create request,
 		CancellationToken ctx = default) {
-		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == request.SerialNumber)) {
+		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == request.SerialNumber, ctx)) {
 			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", request.SerialNumber);
 			return Result.Conflict($"Onderhoudsobject met serienummer '{request.SerialNumber}' bestaat al.");
 		}
 
 		Location? location = await dbContext.Locations
-			.FirstOrDefaultAsync(x => x.Id == request.LocationId);
+			.FirstOrDefaultAsync(x => x.Id == request.LocationId, ctx);
 
 		if (location is null) {
 			return Result.NotFound("De locatie werd niet gevonden.");
@@ -228,7 +242,8 @@ public class MaintObjService(ApplicationDbContext dbContext)
 			return Result.NotFound($"Onderhoudsobject met Id '{req.MaintObjId}' was niet gevonden.");
 		}
 
-		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == req.SerialNumber && x.Id != req.MaintObjId)) {
+		if (await dbContext.MaintObjects.AnyAsync(x => x.SerialNumber == req.SerialNumber && x.Id != req.MaintObjId,
+				ctx)) {
 			Log.Warning("Onderhoudsobject met serienummer '{SerialNumber}' bestaat al.", req.SerialNumber);
 			return Result.Conflict($"Onderhoudsobject met serienummer '{req.SerialNumber}' bestaat al.");
 		}
@@ -274,12 +289,12 @@ public class MaintObjService(ApplicationDbContext dbContext)
 	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber,
 		CancellationToken ct = default) {
 		if (string.IsNullOrWhiteSpace(serialNumber)) {
-			return Result.Invalid(new[] {
+			return Result.Invalid([
 				new ValidationError {
 					Identifier = nameof(serialNumber),
 					ErrorMessage = "Serienummer is verplicht."
 				}
-			});
+			]);
 		}
 
 		MaintObj? maintObj = await dbContext.MaintObjects

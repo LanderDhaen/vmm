@@ -36,7 +36,6 @@ public interface IProjectService {
 
 	Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
-		QueryRequest.Search req,
 		CancellationToken ctx = default
 	);
 

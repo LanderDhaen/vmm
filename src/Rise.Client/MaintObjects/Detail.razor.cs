@@ -9,7 +9,6 @@ using Rise.Shared.MaintObjects;
 namespace Rise.Client.MaintObjects;
 
 public partial class Detail {
-	// ====== Tabs ======
 	private readonly List<string> _tabs = [
 		"Informatie",
 		"Historiek"
@@ -78,7 +77,7 @@ public partial class Detail {
 			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
 		DialogResult? result = await dialog.Result;
 
-		if (!result.Canceled) {
+		if (result is { Canceled: false }) {
 			await RefreshMaintObjDetails();
 		}
 	}

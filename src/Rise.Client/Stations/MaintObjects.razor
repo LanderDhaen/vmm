@@ -1,0 +1,53 @@
+@using Rise.Shared.MaintObjects
+@using Rise.Client.Components.MaintObjects
+
+<PageTitle>MaintObjects</PageTitle>
+
+@if (MaintObjectsFromStation is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	@* Desktop view *@
+	<MudHidden Breakpoint="Breakpoint.Xs">
+		<MudTable T="MaintObjDto.Index" Items="MaintObjectsFromStation" CustomHeader="true"
+		          OnRowClick="@(args => NavigateToMaintObject(args.Item!.Id))">
+			<HeaderContent>
+				<MudTHeadRow>
+					<MudTh Class="mud-theme-primary">#</MudTh>
+					<MudTh Class="mud-theme-primary">Naam</MudTh>
+					<MudTh Class="mud-theme-primary">Merk</MudTh>
+					<MudTh Class="mud-theme-primary">Type</MudTh>
+					<MudTh Class="mud-theme-primary">Status</MudTh>
+				</MudTHeadRow>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd DataLabel="Serienummer">@context.SerialNumber</MudTd>
+				<MudTd DataLabel="Naam">@context.Name</MudTd>
+				<MudTd DataLabel="Merk">@context.Brand</MudTd>
+				<MudTd DataLabel="Type">@MaintObjectUtility.TranslateType(context.MaintObjType)</MudTd>
+				<MudTd DataLabel="Status">
+					<MudChip T="string"
+					         Variant="Variant.Outlined"
+					         Color="@MaintObjectUtility.DefineStatusColor(context.MaintObjStatus)"
+					         Size="Size.Small">
+						@(MaintObjectUtility.TranslateStatus(context.MaintObjStatus))
+					</MudChip>
+				</MudTd>
+			</RowTemplate>
+		</MudTable>
+	</MudHidden>
+
+	@* Mobile view *@
+	<MudHidden Breakpoint="Breakpoint.SmAndUp">
+		<MudGrid Spacing="6">
+			@foreach (var mo in MaintObjectsFromStation)
+			{
+				<MaintObjCard MaintObj="mo"/>
+			}
+		</MudGrid>
+	</MudHidden>
+}

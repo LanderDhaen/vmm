@@ -16,7 +16,7 @@ public interface IMeasurementStationService {
 
 	Task<Result<MeasurementStationResponse.History>> GetHistoryAsync(Guid stationId, CancellationToken ctx = default);
 
-	Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(Guid stationId, QueryRequest.Search request, CancellationToken ctx = default);
+	Task<Result<MeasurementStationResponse.ProjectList>> GetProjectsAsync(Guid stationId, CancellationToken ctx = default);
 
 	Task<Result<MeasurementStationResponse.Create>> CreateAsync(MeasurementStationRequest.Create request,
 		CancellationToken ctx = default);
@@ -24,4 +24,8 @@ public interface IMeasurementStationService {
 	Task<Result> UpdateProjectsAsync(MeasurementStationRequest.UpdateProjects req, CancellationToken ctx = default);
 
 	Task<Result> UpdateLocationAsync(MeasurementStationRequest.UpdateLocation req, CancellationToken ctx = default);
+
+	Task<Result<MeasurementStationResponse.MaintObjList>> GetMaintObjsAsync(Guid stationId, CancellationToken ct = default);
+
+	Task<Result> UpdateMaintObjsAsync(MeasurementStationRequest.UpdateMaintObjects req, CancellationToken ctx = default);
 }

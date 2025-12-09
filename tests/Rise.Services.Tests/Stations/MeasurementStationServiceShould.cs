@@ -209,7 +209,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		await _dbContext.SaveChangesAsync();
 
 		Result<MeasurementStationResponse.ProjectList> result =
-			await _service.GetProjectsAsync(station.Id, new QueryRequest.Search());
+			await _service.GetProjectsAsync(station.Id);
 
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
@@ -231,7 +231,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 		await _dbContext.SaveChangesAsync();
 
 		Result<MeasurementStationResponse.ProjectList> result =
-			await _service.GetProjectsAsync(station.Id, new QueryRequest.Search());
+			await _service.GetProjectsAsync(station.Id);
 
 		Assert.True(result.IsSuccess);
 		Assert.NotNull(result.Value);
@@ -241,7 +241,7 @@ public class MeasurementStationServiceShould : IClassFixture<MsSqlContainerFixtu
 	[Fact]
 	public async Task GetProjectsAsync_ShouldReturnNotFound_WhenStationDoesNotExist() {
 		Result<MeasurementStationResponse.ProjectList> result =
-			await _service.GetProjectsAsync(Guid.NewGuid(), new QueryRequest.Search());
+			await _service.GetProjectsAsync(Guid.NewGuid());
 
 		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}

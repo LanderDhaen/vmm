@@ -105,7 +105,7 @@ public partial class UpdateStationListDialog {
 		if (_result.IsSuccess) {
 			Snackbar.Add("Meetstations succesvol bijgewerkt!", Severity.Success);
 			Result<ProjectResponse.MeasurementStations> stationsResult =
-				await ProjectService.GetStationsAsync(ProjectId, new QueryRequest.Search());
+				await ProjectService.GetStationsAsync(ProjectId);
 			if (stationsResult is { IsSuccess: true, Value: not null }) {
 				Stations = stationsResult.Value.MeasurementStationsFromProject;
 			}

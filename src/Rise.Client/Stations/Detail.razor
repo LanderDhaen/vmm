@@ -11,10 +11,10 @@
 	</MudContainer>
 }
 else
-{	
+{
 	@* Tabs *@
-	
-	<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center" Spacing="8">
+
+	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="() =>  SetTabAsync(0)">
 			@_tabs[0]
@@ -25,14 +25,13 @@ else
 			@_tabs[1]
 		</MudText>
 	</MudStack>
-	
+
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-1">
+			<MudGrid Spacing="4" Class="mt-2">
 
 				@* Details *@
-
 				<MudItem xs="12" md="6" Class="d-flex">
 					<MudCard Elevation="2" Class="rounded-lg flex-grow-1">
 						<MudCardHeader>
@@ -51,7 +50,8 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
-							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))</MudText>
+							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))
+							</MudText>
 							<MudText><b>Verwijderd:</b> @(StationUtility.ToLongRemovedAt(_station.RemovedAt))</MudText>
 							<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
 						</MudCardContent>
@@ -59,12 +59,35 @@ else
 				</MudItem>
 
 				@* Location *@
-
 				<MudItem xs="12" md="6">
 					<LocationCard Location="_station.Location" OnClick="@OpenUpdateLocationDialogAsync"/>
 				</MudItem>
 
-				@* TODO: MaintObj table *@
+				@* MaintObj table *@
+				<MudItem xs="12">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">Onderhoudsobjecten
+									</MudText>
+									<MudButton Variant="Variant.Text"
+									           StartIcon="@Icons.Material.Filled.PlaylistAdd"
+									           Size="Size.Small"
+									           Color="Color.Primary"
+									           Class="px-4"
+									           OnClick="@OpenMaintObjectsListDialogAsync">
+										Aanpassen
+									</MudButton>
+								</MudStack>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MaintObjects StationId="_station.Id" MaintObjectsFromStation="_maintObjectsFromStation"/>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
 
 				@* Projects table *@
 				<MudItem xs="12">

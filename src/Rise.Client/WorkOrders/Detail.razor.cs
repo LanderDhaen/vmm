@@ -41,7 +41,9 @@ public partial class Detail {
 		}
 	}
 
-	private void SetTab(int index) => _selectedTab = index;
+	private void SetTab(int index) {
+		_selectedTab = index;
+	}
 
 	private async Task GetWorkOrderDetailAsync() {
 		Result<WorkOrderResponse.Detail> detail =
@@ -88,11 +90,10 @@ public partial class Detail {
 		if (result.IsSuccess) {
 			await GetWorkOrderDetailAsync();
 
-			if (_workOrder?.Status == WorkOrderStatus.Completed) {
-				Snackbar.Add("Werkbon succesvol heropend!", Severity.Success);
-			} else {
-				Snackbar.Add("Werkbon succesvol gestart!", Severity.Success);
-			}
+			Snackbar.Add(
+				_workOrder?.Status == WorkOrderStatus.Completed
+					? "Werkbon succesvol heropend!"
+					: "Werkbon succesvol gestart!", Severity.Success);
 
 			StateHasChanged();
 		} else {

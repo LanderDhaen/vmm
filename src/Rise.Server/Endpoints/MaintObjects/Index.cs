@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Primitives;
+
 using Rise.Shared.Common;
 using Rise.Shared.Identity;
 using Rise.Shared.MaintObjects;
@@ -16,6 +18,19 @@ public class Index(IMaintObjService maintObjService) : Endpoint<QueryRequest.Ski
 	}
 
 	public override Task<Result<MaintObjResponse.Index>> ExecuteAsync(QueryRequest.SkipTake req, CancellationToken ct) {
+		// Manually parse filters from query string
+		foreach ((string key, StringValues value) in HttpContext.Request.Query) {
+			if (key == "skip" || key == "take" || key == "orderBy" || key == "orderDescending") {
+				continue;
+			}
+
+			if (bool.TryParse(value, out bool boolValue)) {
+				req.Filters[key] = boolValue;
+			} else {
+				req.Filters[key] = value.ToString();
+			}
+		}
+
 		return maintObjService.GetIndexAsync(req, ct);
 	}
 }
