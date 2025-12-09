@@ -1,4 +1,7 @@
 namespace Rise.Shared.Common;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 /// <summary>
 ///     Provides structures to facilitate structured queries for data retrieval scenarios.
@@ -53,10 +56,29 @@ public static class QueryRequest {
 		///     Converts the current pagination and sorting parameters into a URL query string
 		/// </summary>
 		public string AsQuery() {
-			return string.IsNullOrWhiteSpace(SearchTerm)
-				? $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&{string.Join("&", Filters.Select(f => $"{f.Key}={f.Value}"))}"
-				: $"skip={Skip}&take={Take}&orderBy={OrderBy}&orderDescending={OrderDescending}&searchTerm={SearchTerm}";
+			var parts = new List<string>
+			{
+					$"skip={Skip}",
+					$"take={Take}"
+				};
+
+			if (!string.IsNullOrWhiteSpace(OrderBy))
+				parts.Add($"orderBy={Uri.EscapeDataString(OrderBy!)}");
+
+			parts.Add($"orderDescending={OrderDescending.ToString().ToLowerInvariant()}");
+
+			if (!string.IsNullOrWhiteSpace(SearchTerm))
+				parts.Add($"searchTerm={Uri.EscapeDataString(SearchTerm!)}");
+
+			if (Filters.Count == 0)
+				return string.Join("&", parts);
+
+			string json = JsonSerializer.Serialize(Filters);
+			parts.Add($"filters={Uri.EscapeDataString(json)}");
+
+			return string.Join("&", parts);
 		}
+
 	}
 
 	/// <summary>
