@@ -1,0 +1,50 @@
+@using Rise.Client.Components
+@using Rise.Shared.MaintObjects
+<PageTitle>Onderhoudsobject Details</PageTitle>
+
+@if (_modifications is null)
+{
+	<MudContainer Class="d-flex justify-center align-center">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{	
+	<MudHidden Breakpoint="Breakpoint.Xs"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Alternate" Class="mr-20">
+			@{
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(modification.ModifiedAt)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<ModificationItem Modification="modification" />
+						</ItemContent>
+					</MudTimelineItem>
+				}
+			}
+		</MudTimeline>
+	</MudHidden>
+	
+	@* Mobile view *@
+	
+	<MudHidden Breakpoint="Breakpoint.SmAndUp"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Left">
+			@{
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemContent>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">
+								@HistoryUtility.ToShortValidFrom(modification.ModifiedAt)
+							</MudChip>
+							<ModificationItem Modification="modification"/>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+			}
+		</MudTimeline>
+	</MudHidden>
+}

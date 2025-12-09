@@ -12,4 +12,8 @@ public static partial class MaintObjResponse {
 	public class Detail {
 		public required MaintObjDto.Detail MaintObj { get; set; }
 	}
+
+	public class History {
+		public required IEnumerable<MaintObjDto.Modification> Modifications { get; init; }
+	}
 }

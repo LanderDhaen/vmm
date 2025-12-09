@@ -1,5 +1,6 @@
 @page "/workorders"
 @using Rise.Client.Components
+@using Rise.Client.Components.WorkOrders
 @using Rise.Shared.WorkOrders
 <PageTitle>Werkbonnen</PageTitle>
 
@@ -44,9 +45,7 @@
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(context.Item.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(context.Item.Priority))">
-						@WorkOrderUtility.TranslatePriority(context.Item.Priority)
-					</MudChip>
+					<WorkOrderPriorityChip Priority="@context.Item.Priority"/>
 				</CellTemplate>
 			</PropertyColumn>
 
@@ -64,9 +63,7 @@
 
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(context.Item.Status))">
-						@WorkOrderUtility.TranslateStatus(context.Item.Status)
-					</MudChip>
+					<WorkOrderStatusChip Status="@context.Item.Status"/>
 				</CellTemplate>
 			</PropertyColumn>
 
@@ -139,19 +136,15 @@
 								<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 									<MudText Typo="Typo.h6" Color="Color.Primary">@item.Name</MudText>
 									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-										<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(item.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(item.Priority))">
-											@WorkOrderUtility.TranslatePriority(item.Priority)
-										</MudChip>
-										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(item.Status))">
-											@WorkOrderUtility.TranslateStatus(item.Status)
-										</MudChip>
+										<WorkOrderPriorityChip Priority="@item.Priority"/>
+										<WorkOrderStatusChip Status="@item.Status"/>
 									</MudStack>
 								</MudStack>
 								<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(item.MaintObjType) @item.MaintObj</b></MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText><b>Technieker: </b> @item.Technician</MudText>
+							<MudText><b>Technieker:</b> @item.Technician</MudText>
 							<MudText><b>Start datum:</b> @WorkOrderUtility.ToLongStartDate(item.StartDate)</MudText>
 							<MudText><b>Eind datum:</b> @WorkOrderUtility.ToLongEndDate(item.EndDate)</MudText>
 						</MudCardContent>
