@@ -133,7 +133,7 @@
 		}
 		else
 		{
-			@foreach (var item in _mobilityWorkOrders)
+			@foreach (WorkOrderDto.Index item in _mobilityWorkOrders)
 			{
 				<MudItem xs="12">
 					<MudCard Elevation="2"
@@ -177,7 +177,7 @@
 	<MudStack Spacing="4">
 		<MudDivider/>
 
-		@foreach (var column in SortColumns)
+		@foreach ((string Value, string Label) column in SortColumns)
 		{
 			<MudStack Row="true" AlignItems="AlignItems.Center">
 				<MudText>@column.Label</MudText>
