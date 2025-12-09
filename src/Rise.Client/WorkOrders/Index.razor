@@ -42,8 +42,8 @@
 	             Striped="true"
 	             Hover="true"
 	             SortMode="SortMode.Single"
-	             RowClick="OnRowClick">
-
+	             RowClick="OnRowClick"
+	             @ref="_grid">
 		<Columns>
 			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
