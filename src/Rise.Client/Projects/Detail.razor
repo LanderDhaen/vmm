@@ -29,6 +29,25 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
+			
+			@* Toolbar *@
+			
+			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-2">
+				@if (_project.Status.Equals(Status.Afgesloten))
+				{
+					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success"
+					           OnClick="@ShowStartConfirmationAsync">
+						Opstarten
+					</MudButton>
+				}
+				else
+				{
+					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+					           OnClick="@ShowCloseConfirmationAsync">Afsluiten
+					</MudButton>
+				}
+			</MudStack>
+			
 			<MudGrid Spacing="4" Class="mt-2">
 
 				@* Details *@
