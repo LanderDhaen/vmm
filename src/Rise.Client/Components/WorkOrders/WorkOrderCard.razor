@@ -1,0 +1,22 @@
+<MudCard Elevation="2"
+         Class="rounded-lg"
+         @onclick="() => NavigateToWorkOrder(WorkOrder.Id)"
+>
+	<MudCardHeader>
+		<CardHeaderContent>
+			<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+				<MudText Typo="Typo.h6" Color="Color.Primary">@WorkOrder.Name</MudText>
+				<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+					<WorkOrderPriorityChip Priority="@WorkOrder.Priority"/>
+					<WorkOrderStatusChip Status="WorkOrder.Status"/>
+				</MudStack>
+			</MudStack>
+			<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(WorkOrder.MaintObjType) @WorkOrder.MaintObj</b></MudText>
+		</CardHeaderContent>
+	</MudCardHeader>
+	<MudCardContent Class="pt-0">
+		<MudText><b>Technieker: </b> @WorkOrder.Technician</MudText>
+		<MudText><b>Start datum:</b> @WorkOrderUtility.ToLongStartDate(WorkOrder.StartDate)</MudText>
+		<MudText><b>Eind datum:</b> @WorkOrderUtility.ToLongEndDate(WorkOrder.EndDate)</MudText>
+	</MudCardContent>
+</MudCard>

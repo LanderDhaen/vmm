@@ -16,3 +16,17 @@ public class Detail(IMeasurementStationService stationService)
 		return stationService.GetDetailAsync(stationId, ct);
 	}
 }
+
+public class History(IMeasurementStationService stationService)
+	: Endpoint<EmptyRequest, Result<MeasurementStationResponse.History>> {
+	public override void Configure() {
+		Get("/api/stations/{stationId}/history");
+		Roles(AppRoles.Administrator);
+	}
+
+	public override async Task<Result<MeasurementStationResponse.History>> ExecuteAsync(EmptyRequest req,
+		CancellationToken ct) {
+		Guid stationId = Route<Guid>("stationId");
+		return await stationService.GetHistoryAsync(stationId, ct);
+	}
+}

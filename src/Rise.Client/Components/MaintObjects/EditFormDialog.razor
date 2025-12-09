@@ -1,0 +1,56 @@
+<MudDialog Class="mx-3">
+	<TitleContent>
+		<MudText Typo="Typo.h6">Onderhoudsobject aanpassen</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm Model="@Model" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0"
+		         Style="width: 80vw; max-width: 80vh">
+			<MudGrid>
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Naam
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
+					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Serienummer
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
+					<MudTextField @bind-Value="Model.SerialNumber"
+					              For="@(() => Model.SerialNumber)"
+					              Immediate="true"
+					              Variant="Variant.Outlined"
+					              Placeholder="Serienummer"
+					              Adornment="Adornment.End"
+					              AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
+					              OnAdornmentClick="OpenQrScanner"
+					/>
+				</MudItem>
+
+				<MudItem xs="12" sm="6">
+					<MudText Typo="Typo.subtitle2">Merk
+						<MudText Typo="Typo.caption">(Optioneel)</MudText>
+						</MudText>
+					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
+					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
+				</MudItem>
+			</MudGrid>
+		</MudForm>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.SaveAs"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@EditMaintObjAsync">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+		           Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
+</MudDialog>

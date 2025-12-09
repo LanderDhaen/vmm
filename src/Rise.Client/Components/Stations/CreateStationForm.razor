@@ -1,0 +1,24 @@
+@using Rise.Client.Components.Locations
+<MudCardContent>
+	<MudGrid>
+		<MudItem xs="12" sm="6">
+			<MudText Typo="Typo.subtitle2">Referentienummer
+				<MudText Color="Color.Error" Inline="true">*</MudText>
+			</MudText>
+			<MudTextField @bind-Value="Model.Code" For="@(() => Model.Code)" Counter="50" MaxLength="50"
+			              Immediate="true" Variant="Variant.Outlined" Placeholder="Referentienummer"/>
+		</MudItem>
+
+		<MudItem xs="12" sm="6">
+			<MudText Typo="Typo.subtitle2">Installatie datum
+				<MudText Color="Color.Error" Inline="true">*</MudText>
+			</MudText>
+			<MudDatePicker @bind-Date="Model.InstalledAt" For="@(() => Model.InstalledAt)"
+			               IsDateDisabledFunc="@(dt => dt < new DateTime(2000, 1, 1))"
+			               DateFormat="dd/MM/yyyy" Variant="Variant.Outlined"/>
+		</MudItem>
+
+		<LocationForm Model="Model"></LocationForm>
+
+	</MudGrid>
+</MudCardContent>

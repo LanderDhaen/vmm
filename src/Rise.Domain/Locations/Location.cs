@@ -12,10 +12,11 @@ public class Location : Entity {
 	private Location() {
 	}
 
-	public Location(string name, Address address, Coordinate coordinate) {
+	public Location(string name, Address address, Coordinate coordinate, bool isStockLocation = false) {
 		Name = name;
 		Address = Guard.Against.Null(address);
 		Coordinate = Guard.Against.Null(coordinate);
+		IsStockLocation = isStockLocation;
 	}
 
 	public string Name {
@@ -37,6 +38,8 @@ public class Location : Entity {
 	///     <see cref="LocationConfiguration" />
 	/// </summary>
 	public Coordinate Coordinate { get; init; } = default!;
+
+	public bool IsStockLocation { get; set; }
 
 	public void Edit(string name) {
 		Name = Guard.Against.NullOrEmpty(name);

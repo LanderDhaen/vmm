@@ -1,0 +1,110 @@
+@page "/maintobjects/{MaintObjId:guid}"
+@using Rise.Client.Components.Locations
+@using Rise.Client.Components.MaintObjects
+@using Rise.Client.Components.Stations
+@inject NavigationManager Navigation
+
+<PageTitle>Onderhoudsobject Details</PageTitle>
+
+@if (_maintObj is null)
+{
+	<MudContainer Class="d-flex justify-center align-center" Style="height:100vh;">
+		<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+	</MudContainer>
+}
+else
+{
+	// ====== Tabs ======
+	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
+		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
+		         @onclick="() =>  SetTab(0)">
+			@_tabs[0]
+		</MudText>
+
+		<MudText Class="@($"tab-item {(_selectedTab == 1 ? "active" : "")}")"
+		         @onclick="() =>  SetTab(1)">
+			@_tabs[1]
+		</MudText>
+	</MudStack>
+
+
+	@switch (_selectedTab)
+	{
+		case 0:
+			<MudGrid Spacing="4" Class="mt-2">
+				@* Details *@
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+									<MudText Typo="Typo.h6"
+									         Color="Color.Primary">
+										@_maintObj.SerialNumber
+									</MudText>
+									<MudTooltip Delay="400"
+									            Text="Onderhoudsobject bewerken">
+										<MudButton Variant="Variant.Text"
+										           StartIcon="@Icons.Material.Filled.Edit"
+										           Size="Size.Small"
+										           Color="Color.Primary"
+										           Class="px-4"
+										           OnClick="@OpenEditMaintObjDialogAsync">
+											Aanpassen
+										</MudButton>
+									</MudTooltip>
+								</MudStack>
+								<MudText
+									Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Status:</b></MudText>
+								<MaintObjStatusChip Status="_maintObj.MaintObjStatus"/>
+							</MudStack>
+							<MudText><b>Merk:</b> @(_maintObj.Brand ?? "-")</MudText>
+							<MudText><b>Geïnstalleerd:</b> @MaintObjectUtility.ToLongInstalledAt(_maintObj.InstalledAt)</MudText>
+							<MudText><b>Verwijderd:</b> @MaintObjectUtility.ToLongRemovedAt(_maintObj.RemovedAt)</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* Location *@
+				<MudItem xs="12" md="6">
+					<LocationCard ShowMoveButton="false" Location="_maintObj.Location"/>
+				</MudItem>
+
+				<MudItem xs="12" md="6">
+					<MudCard Elevation="2" Class="rounded-lg">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudText Typo="Typo.h6"
+								         Color="Color.Primary">Onderhoudsplan
+								</MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent>
+							<MudText><b>Onderhoudsinterval:</b> @_maintObj.MaintenanceIntervalDays dagen</MudText>
+							<MudText><b>Volgend onderhoud:</b> @MaintObjectUtility.CalculateNextMaintenance(_maintObj.InstalledAt, _maintObj.MaintenanceIntervalDays)</MudText>
+							<MudDivider Light="true" Class="my-4"/>
+							<MudText><b>Kalibratieinterval:</b> @_maintObj.CalibrationIntervalDays dagen</MudText>
+							<MudText>
+								<b>Volgende kalibratie:</b> @MaintObjectUtility.CalculateNextCalibration(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)
+							</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+
+				@* MeasurementStationCard *@
+				<MudItem xs="12" sm="6">
+					<StationCard Station="_maintObj.Station"></StationCard>
+				</MudItem>
+			</MudGrid>
+			break;
+
+		case 1:
+			<History MaintObjId="MaintObjId"/>
+			break;
+	}
+}

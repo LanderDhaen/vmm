@@ -51,13 +51,31 @@ public class ProjectService(HttpClient httpClient) : IProjectService {
 		return result!;
 	}
 
-	public async Task<Result<List<MeasurementStationDto.Index>>> GetStationsAsync(
+	public async Task<Result<ProjectResponse.MeasurementStations>> GetStationsAsync(
 		Guid projectId,
 		CancellationToken ctx = default) {
-		Result<List<MeasurementStationDto.Index>>? result =
-			await httpClient.GetFromJsonAsync<Result<List<MeasurementStationDto.Index>>>(
+		Result<ProjectResponse.MeasurementStations>? result =
+			await httpClient.GetFromJsonAsync<Result<ProjectResponse.MeasurementStations>>(
 				$"/api/projects/{projectId}/stations",
 				ctx);
+		return result!;
+	}
+
+	public async Task<Result> UpdateMeasurementStationsAsync(ProjectRequest.UpdateMeasurementStations req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/stations", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
+		return result!;
+	}
+
+	public async Task<Result> UpdateMeasurementNetworkAsync(ProjectRequest.UpdateMeasurementNetwork req,
+		CancellationToken ctx = default) {
+		HttpResponseMessage response =
+			await httpClient.PutAsJsonAsync($"/api/projects/{req.ProjectId}/measurementnetwork", req, ctx);
+
+		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
 }

@@ -1,0 +1,175 @@
+@page "/maintobjects"
+@using Rise.Client.Components
+@using Rise.Client.Components.MaintObjects
+@using Rise.Shared.MaintObjects
+<PageTitle>Onderhoudsobjecten</PageTitle>
+
+@* Desktop view *@
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="my-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              Margin="Margin.Dense"/>
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@Icons.Material.Filled.FilterAlt"
+		           Color="Color.Primary"
+		           Class="px-4">
+			Filteren
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
+			Onderhoudsobject
+		</MudButton>
+	</MudStack>
+
+	<MudDataGrid T="MaintObjDto.Index"
+	             ServerData="GetMaintObjectsAsync"
+	             RowsPerPage="10"
+	             Striped="true"
+	             Hover="true"
+	             SortMode="SortMode.Single"
+	             AllowUnsorted="false"
+	             ShowColumnOptions="false"
+	             RowClick="@(args => NavigateToMaintObj(args.Item.Id))">
+
+		<Columns>
+			<PropertyColumn Property="x => x.SerialNumber" InitialDirection="SortDirection.Descending" Title="#" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjType" Title="Type" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@MaintObjectUtility.TranslateType(context.Item.MaintObjType)
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.Brand" Title="Merk" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					<MaintObjStatusChip Status="@context.Item.MaintObjStatus"/>
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>
+
+
+		</Columns>
+
+		<PagerContent>
+			<Pagination T="MaintObjDto.Index" />
+		</PagerContent>
+
+	</MudDataGrid>
+</MudHidden>
+
+@* Mobile view *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="my-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              FullWidth="true"
+		              Margin="Margin.Dense"/>
+
+		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@ToggleSortingDrawer"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+		               Color="Color.Primary"
+		               Size="Size.Small"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.Add"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@NavigateToCreate"/>
+	</MudStack>
+
+	<MudGrid Spacing="4">
+		@if (_mobileItems is null)
+		{
+			<MudItem xs="12">
+				<div>
+					<MudProgressCircular Indeterminate="true"/>
+				</div>
+			</MudItem>
+		}
+		else if (!_mobileItems.Any())
+		{
+			<MudItem xs="12">
+				<MudText>Geen projecten</MudText>
+			</MudItem>
+		}
+		else
+		{
+			@foreach (var item in _mobileItems)
+			{
+				<MudItem xs="12">
+					<MaintObjCard MaintObj="item"/>
+				</MudItem>
+			}
+		}
+	</MudGrid>
+</MudHidden>
+
+@* Drawer for sorting on mobile *@
+
+@if (_mobileSortOptionsOpen)
+{
+	<MudDrawer Anchor="Anchor.Bottom"
+	           Variant="DrawerVariant.Temporary"
+	           Elevation="8"
+	           @bind-Open="_mobileSortOptionsOpen"
+	           Class="pa-4 rounded-lg">
+
+		<MudText Typo="Typo.h6">Sorteren</MudText>
+
+		<MudStack Spacing="4">
+			<MudDivider/>
+
+			@foreach (var column in SortColumns)
+			{
+				<MudStack Row="true" AlignItems="AlignItems.Center">
+					<MudText>@column.Label</MudText>
+					<MudSpacer/>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, false))">
+						Oplopend
+					</MudButton>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, true))">
+						Aflopend
+					</MudButton>
+				</MudStack>
+			}
+
+			<MudDivider/>
+
+			<MudButton Variant="Variant.Text"
+			           Color="Color.Primary"
+			           OnClick="@ToggleSortingDrawer">
+				Sluiten
+			</MudButton>
+		</MudStack>
+	</MudDrawer>
+}
+
+@* TODO: Implement drawer for filtering *@

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components.Stations;
 using Rise.Client.Services;
+using Rise.Shared.MaintObjects;
 using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
@@ -10,49 +12,39 @@ namespace Rise.Client.Stations;
 
 public partial class Detail {
 	// ===== Tabs =====
-	private readonly List<string> _tabs = new() {
-		"Info",
-		"Apparaten",
-		"Projecten",
+	private readonly List<string> _tabs = [
+		"Informatie",
 		"Historiek"
-	};
+	];
 
-	private bool _loaded;
-	private List<ProjectDto.Index>? _projects;
+	private IEnumerable<MaintObjDto.Index>? _maintObjectsFromStation;
+	private IEnumerable<ProjectDto.Index>? _projectsFromStation;
+
 	private int _selectedTab;
 
 	// ===== Main =====
 	private MeasurementStationDto.Detail? _station;
+
 	[Parameter] public Guid StationId { get; set; }
 	[Inject] public required IMeasurementStationService StationService { get; set; }
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
+	[Inject] private ISnackbar Snackbar { get; set; } = default!;
+	[Inject] private IDialogService DialogService { get; set; } = default!;
 
-	private async Task SetTabAsync(int index) {
+	private void SetTabAsync(int index) {
 		_selectedTab = index;
-
-		if (index == 2 && _projects is null) {
-			Result<List<ProjectDto.Index>> res = await StationService.GetProjectsAsync(StationId);
-			_projects = res.IsSuccess ? res.Value : new List<ProjectDto.Index>();
-			StateHasChanged();
-		}
 	}
 
 	protected override async Task OnInitializedAsync() {
-		Result<MeasurementStationResponse.Detail> result = await StationService.GetDetailAsync(StationId);
-		_loaded = true;
-
-		if (result.IsSuccess) {
-			_station = result.Value.Station;
-
-			_tabs[2] = $"Projecten ({_station.ProjectsCount})";
-		}
+		await RefreshStationDetails();
+		await RefreshProjects();
+		await RefreshMaintObjects();
 
 		// set breadcrumbs
 		BreadcrumbService.SetBreadcrumbs(
-			new BreadcrumbItem("Home", "/"),
 			new BreadcrumbItem("Meetstations", "/stations"),
-			new BreadcrumbItem($"{_station.Code}", null, true)
+			new BreadcrumbItem($"{_station?.Code}", null, true)
 		);
 
 		// set header
@@ -66,42 +58,102 @@ public partial class Detail {
 		);
 	}
 
-	private Task<GridData<ProjectDto.Index>> GetProjectsGridAsync(GridState<ProjectDto.Index> state) {
-		if (_projects is null) {
-			return LoadAndSliceAsync(state);
+	private async Task OpenDialogAsync() {
+		DialogParameters<UpdateProjectListDialog> parameters = new() {
+			{ x => x.StationId, StationId },
+			{ x => x.Projects, _projectsFromStation }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateProjectListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (result is { Canceled: false }) {
+			await RefreshProjects();
+		}
+	}
+
+	private async Task OpenMaintObjectsListDialogAsync() {
+		DialogParameters<UpdateMaintObjectsListDialog> parameters = new() {
+			{ x => x.StationId, StationId },
+			{ x => x.MaintObjects, _maintObjectsFromStation }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateMaintObjectsListDialog>("Simple Dialog", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (result is { Canceled: false }) {
+			await RefreshMaintObjects();
+		}
+	}
+
+	private async Task OpenUpdateLocationDialogAsync() {
+		DialogParameters<UpdateLocationDialog> parameters = new() {
+			{ x => x.StationId, StationId },
+			{ x => x.LocationId, _station!.Location.Id }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<UpdateLocationDialog>("Locatie wijzigen", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (result is { Canceled: false }) {
+			await RefreshStationDetails();
+		}
+	}
+
+	private async Task OpenEditStationDialogAsync() {
+		DialogParameters<EditFormDialog> parameters = new() {
+			{ x => x.StationId, StationId },
+			{ x => x.Station, _station }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshStationDetails();
+		}
+	}
+
+	private async Task RefreshProjects() {
+		Result<MeasurementStationResponse.ProjectList> projectsResult =
+			await StationService.GetProjectsAsync(StationId);
+
+		if (projectsResult.IsSuccess) {
+			_projectsFromStation = projectsResult.Value.Projects;
 		}
 
-		List<ProjectDto.Index> items = _projects
-			.Skip(state.Page * state.PageSize)
-			.Take(state.PageSize)
-			.ToList();
-
-		return Task.FromResult(new GridData<ProjectDto.Index> {
-			TotalItems = _projects.Count,
-			Items = items
-		});
+		StateHasChanged();
 	}
 
-	private async Task<GridData<ProjectDto.Index>> LoadAndSliceAsync(GridState<ProjectDto.Index> state) {
-		Result<List<ProjectDto.Index>> res = await StationService.GetProjectsAsync(StationId);
-		_projects = res.IsSuccess ? res.Value : new List<ProjectDto.Index>();
+	private async Task RefreshMaintObjects() {
+		Result<MeasurementStationResponse.MaintObjList> maintObjectsResult =
+			await StationService.GetMaintObjsAsync(StationId);
 
-		List<ProjectDto.Index> items = _projects
-			.Skip(state.Page * state.PageSize)
-			.Take(state.PageSize)
-			.ToList();
+		if (maintObjectsResult.IsSuccess) {
+			_maintObjectsFromStation = maintObjectsResult.Value.MaintObjects;
+		}
 
-		return new GridData<ProjectDto.Index> {
-			TotalItems = _projects.Count,
-			Items = items
-		};
+		StateHasChanged();
 	}
 
-	private void OnProjectRowClick(DataGridRowClickEventArgs<ProjectDto.Index> args) {
-		Navigation.NavigateTo($"/projects/{args.Item.Id}");
-	}
+	private async Task RefreshStationDetails() {
+		Result<MeasurementStationResponse.Detail> result = await StationService.GetDetailAsync(StationId);
 
-	private static string FormatDate(DateTime? dt) {
-		return dt is null ? "-" : dt.Value.ToShortDateString();
+		if (result.IsSuccess) {
+			_station = result.Value.Station;
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
 	}
 }

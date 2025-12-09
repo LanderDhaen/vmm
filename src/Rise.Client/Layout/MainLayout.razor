@@ -9,7 +9,7 @@
 <MudLayout Style="background-color: #ececec ">
 	@* Desktop *@
 	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudAppBar Color="Color.Transparent" Elevation="0">
+		<MudAppBar Style="background-color: rgb(236 ,236 ,236,0.7); backdrop-filter: blur(10px);" Elevation="3">
 			<Breadcrumbs Items="@BreadcrumbService.Items.ToList()"></Breadcrumbs>
 		</MudAppBar>
 		<MudDrawer Open="true" Elevation="2" Variant="DrawerVariant.Persistent">
@@ -17,7 +17,7 @@
 			<NavMenu/>
 		</MudDrawer>
 		<MudMainContent Style="min-height: 100vh;">
-			<MudContainer>
+			<MudContainer Class="mt-4">
 				@Body
 			</MudContainer>
 		</MudMainContent>
@@ -25,15 +25,15 @@
 
 	@* Mobile *@
 	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<div class="d-flex justify-space-between p-4 mb-2">
+		<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-4">
 			<Header Title="@HeaderService.State.Title" Icon="@HeaderService.State.Icon"
 			        OnBack="@EventCallback.Factory.Create(this, () => HeaderService.State.OnBack?.Invoke() ?? Task.CompletedTask)"></Header>
-			<MudIconButton Class="p-0" Icon="@Icons.Material.Filled.Menu"
+			<MudIconButton Icon="@Icons.Material.Filled.Menu"
+			               Class="pr-0"
 			               Size="Size.Large"
 			               Color="Color.Primary"
-			               OnClick="@ToggleDrawer"
-			               title="Menu"/>
-		</div>
+			               OnClick="@ToggleDrawer"/>
+		</MudStack>
 		<MudDrawer @bind-Open="_open" Elevation="2" Variant="DrawerVariant.Temporary" Anchor="Anchor.Right"
 		           OverlayAutoClose="true">
 			<DrawerHeader/>

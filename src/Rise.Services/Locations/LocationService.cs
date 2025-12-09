@@ -2,22 +2,31 @@ using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.Locations;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 
 namespace Rise.Services.Locations;
 
 /// <summary>
-///     Service for locations. Note the use of <see cref="ISessionContextProvider" /> to get the current user in this layer
-///     of the application.
+///     Service for locations.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
 public class LocationService(ApplicationDbContext dbContext) : ILocationService {
 	public async Task<Result<LocationResponse.Index>> GetIndexAsync(QueryRequest.SkipTake request,
 		CancellationToken ctx = default) {
 		IQueryable<Location> query = dbContext.Locations.AsQueryable();
+
+		if (request.Filters.TryGetValue("isStockLocation", out object? stockObj) && stockObj is bool stock) {
+			query = query.Where(l => l.IsStockLocation == stock);
+		}
+
+		if (!string.IsNullOrWhiteSpace(request.SearchTerm)) {
+			query = query.Where(l =>
+				l.Name.Contains(request.SearchTerm) ||
+				l.Address.City.Contains(request.SearchTerm) ||
+				l.Address.PostalCode.Contains(request.SearchTerm)
+			);
+		}
 
 		if (!string.IsNullOrWhiteSpace(request.OrderBy)) {
 			query = query.OrderBy(l => EF.Property<object>(l, request.OrderBy));

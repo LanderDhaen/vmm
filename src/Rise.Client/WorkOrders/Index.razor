@@ -1,0 +1,205 @@
+@page "/workorders"
+@using Rise.Client.Components
+@using Rise.Client.Components.WorkOrders
+@using Rise.Shared.WorkOrders
+<PageTitle>Werkbonnen</PageTitle>
+
+@* Desktop view *@
+
+<MudHidden Breakpoint="Breakpoint.Xs">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="my-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              Disabled="true"
+		              Margin="Margin.Dense"/>
+		<MudButton Variant="Variant.Filled"
+		           Size="Size.Small"
+		           StartIcon="@Icons.Material.Filled.FilterAlt"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           Disabled="true">
+			Filteren
+		</MudButton>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
+			Werkbon
+		</MudButton>
+	</MudStack>
+
+	<MudDataGrid T="WorkOrderDto.Index"
+	             ServerData="GetWorkOrdersAsync"
+	             RowsPerPage="10"
+	             Striped="true"
+	             Hover="true"
+	             SortMode="SortMode.Single"
+	             RowClick="OnRowClick">
+
+		<Columns>
+			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					<WorkOrderPriorityChip Priority="@context.Item.Priority"/>
+				</CellTemplate>
+			</PropertyColumn>
+
+			<PropertyColumn Property="x => x.MaintObj"
+			                SortBy="x => x.MaintObjType"
+			                Title="Onderhoudsobject"
+			                HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@MaintObjectUtility.TranslateType(context.Item.MaintObjType) @context.Item.MaintObj
+				</CellTemplate>
+			</PropertyColumn>
+
+			<PropertyColumn Property="x => x.Name" Title="Titel" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
+
+			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					<WorkOrderStatusChip Status="@context.Item.Status"/>
+				</CellTemplate>
+			</PropertyColumn>
+
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+		</Columns>
+		
+		<PagerContent>
+			<Pagination T="WorkOrderDto.Index" />
+		</PagerContent>
+		
+	</MudDataGrid>
+</MudHidden>
+
+@* Mobile view *@
+
+<MudHidden Breakpoint="Breakpoint.SmAndUp">
+	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
+		<MudTextField T="string"
+		              Label="Zoek"
+		              Class="my-0"
+		              Variant="Variant.Outlined"
+		              Adornment="Adornment.End"
+		              AdornmentIcon="@Icons.Material.Filled.Search"
+		              Disabled="true"
+		              FullWidth="true"
+		              Margin="Margin.Dense"/>
+
+		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@ToggleSortingDrawer"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               Disabled="true"/>
+
+		<MudIconButton Icon="@Icons.Material.Filled.Add"
+		               Color="Color.Primary"
+		               Size="Size.Small"
+		               OnClick="@NavigateToCreate"/>
+	</MudStack>
+
+	<MudGrid Spacing="4">
+		@if (_mobilityWorkOrders is null)
+		{
+			<MudItem xs="12">
+				<div>
+					<MudProgressCircular Indeterminate="true"/>
+				</div>
+			</MudItem>
+		}
+		else if (!_mobilityWorkOrders.Any())
+		{
+			<MudItem xs="12">
+				<MudText>Geen werkbonnen</MudText>
+			</MudItem>
+		}
+		else
+		{
+			@foreach (var item in _mobilityWorkOrders)
+			{
+				<MudItem xs="12">
+					<MudCard Elevation="2"
+					         Class="rounded-lg cursor-pointer"
+					         @onclick="() => NavigateToDetail(item.Id)">
+						<MudCardHeader>
+							<CardHeaderContent>
+								<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+									<MudText Typo="Typo.h6" Color="Color.Primary">@item.Name</MudText>
+									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+										<WorkOrderPriorityChip Priority="@item.Priority"/>
+										<WorkOrderStatusChip Status="@item.Status"/>
+									</MudStack>
+								</MudStack>
+								<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(item.MaintObjType) @item.MaintObj</b></MudText>
+							</CardHeaderContent>
+						</MudCardHeader>
+						<MudCardContent Class="pt-0">
+							<MudText><b>Technieker:</b> @item.Technician</MudText>
+							<MudText><b>Start datum:</b> @WorkOrderUtility.ToLongStartDate(item.StartDate)</MudText>
+							<MudText><b>Eind datum:</b> @WorkOrderUtility.ToLongEndDate(item.EndDate)</MudText>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+			}
+		}
+	</MudGrid>
+</MudHidden>
+
+@* Sort drawer (mobile) *@
+@if (_mobileSortOptionsOpen)
+{
+	<MudDrawer Anchor="Anchor.Bottom"
+	           Variant="DrawerVariant.Temporary"
+	           Elevation="8"
+	           @bind-Open="_mobileSortOptionsOpen"
+	           Class="pa-4 rounded-lg">
+
+		<MudText Typo="Typo.h6">Sorteren</MudText>
+
+		<MudStack Spacing="4">
+			<MudDivider/>
+
+			@foreach (var column in SortColumns)
+			{
+				<MudStack Row="true" AlignItems="AlignItems.Center">
+					<MudText>@column.Label</MudText>
+					<MudSpacer/>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && !_activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && !_activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, false))">
+						Oplopend
+					</MudButton>
+
+					<MudButton
+						Variant="@(_activeSorting == column.Value && _activeSortingDesc ? Variant.Filled : Variant.Outlined)"
+						Color="@(_activeSorting == column.Value && _activeSortingDesc ? Color.Primary : Color.Default)"
+						Size="Size.Small"
+						OnClick="@(() => SortMobileAsync(column.Value, true))">
+						Aflopend
+					</MudButton>
+				</MudStack>
+			}
+
+			<MudDivider/>
+
+			<MudButton Variant="Variant.Text"
+			           Color="Color.Primary"
+			           OnClick="@ToggleSortingDrawer">
+				Sluiten
+			</MudButton>
+		</MudStack>
+	</MudDrawer>
+}

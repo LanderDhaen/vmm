@@ -1,0 +1,42 @@
+<MudDialog Class="mx-3">
+	<TitleContent>
+		<MudText Typo="Typo.h6">Meetnet wijzigen</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
+			@if (_networks is null)
+			{
+				<MudContainer Class="d-flex justify-center align-center" Style="width: 80vw; max-width: 80vh">
+					<MudProgressCircular Indeterminate="true" Size="Size.Medium" Color="Color.Primary"/>
+				</MudContainer>
+			}
+			else
+			{
+				<MudText Typo="Typo.subtitle2">Meetnet</MudText>
+				<MudSelect T="Guid?" @bind-Value="Model.MeasurementNetworkId"
+				           For="@(() => Model.MeasurementNetworkId)"
+				           Placeholder="Selecteer een meetnet: " Clearable="true" Variant="Variant.Outlined"
+				           Style="width: 60vh">
+					@foreach (var network in _networks)
+					{
+						<MudSelectItem Value="@(network.Id as Guid?)">@network.Name</MudSelectItem>
+					}
+				</MudSelect>
+			}
+		</MudForm>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.SaveAs"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           OnClick="@UpdateMeasurementNetworkAsync">
+			Opslaan
+		</MudButton>
+		<MudButton OnClick="@Cancel" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+		           Class="my-3 mr-4">
+			Annuleren
+		</MudButton>
+	</DialogActions>
+</MudDialog>

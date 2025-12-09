@@ -1,0 +1,91 @@
+@page "/workorders/create"
+@using Rise.Shared.WorkOrders
+@using Rise.Shared.MaintObjects
+
+<PageTitle>Voeg toe</PageTitle>
+
+<MudCard>
+    <MudForm Model="@Model"
+             @ref="form"
+             Validation="_validator.ValidateValue"
+             ValidationDelay="0">
+        <MudCardContent>
+            <MudGrid>
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle2">Naam</MudText>
+                    <MudTextField @bind-Value="Model.Name"
+                                  For="@(() => Model.Name)"
+                                  Variant="Variant.Outlined"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.subtitle2">Prioriteit</MudText>
+                    <MudSelect T="Priority"
+                               @bind-Value="Model.Priority"
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="Priority.High">Hoog</MudSelectItem>
+                        <MudSelectItem Value="Priority.Normal">Normaal</MudSelectItem>
+                        <MudSelectItem Value="Priority.Low">Laag</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">Beschrijving</MudText>
+                    <MudTextField @bind-Value="Model.Description"
+                                  For="@(() => Model.Description)"
+                                  Variant="Variant.Outlined"
+                                  Lines="4"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">Onderhoudsobject</MudText>
+
+                    <MudAutocomplete T="MaintObjDto.Index"
+                                     Dense="true"
+                                     Clearable="true"
+                                     ResetValueOnEmptyText="true"
+                                     @bind-Value="_selectedMaintObj"
+                                     @bind-Value:after="OnMaintObjChanged"
+                                     SearchFunc="SearchMaintObjs"
+                                     ToStringFunc="MaintObjToString"
+                                     CoerceText="true"
+                                     CoerceValue="true"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.End"
+                                     AdornmentIcon="@Icons.Material.Filled.QrCodeScanner"
+                                     OnAdornmentClick="OpenQrScanner"
+                                     Placeholder="Typ naam of serienummer…"
+                                     Required="true"
+                                     RequiredError="Kies een onderhoudsobject">
+
+                        <ItemTemplate Context="mo">
+                            <div class="d-flex flex-column">
+                                <span>@mo.Name</span>
+                                <small class="text-muted">@mo.SerialNumber</small>
+                            </div>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+                </MudItem>
+
+            </MudGrid>
+        </MudCardContent>
+    </MudForm>
+
+    <MudCardActions Style="display:flex; justify-content:flex-end; gap:10px; margin-right:8px">
+        <MudButton StartIcon="@Icons.Material.Filled.Add"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="CreateWorkOrderAsync">
+            Opslaan
+        </MudButton>
+
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Primary"
+                   OnClick="@(() => NavigationManager.NavigateTo("/workorders"))">
+            Annuleren
+        </MudButton>
+    </MudCardActions>
+</MudCard>
