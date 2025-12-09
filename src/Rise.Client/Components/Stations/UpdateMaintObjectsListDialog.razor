@@ -1,14 +1,15 @@
+@using Rise.Client.Components.MaintObjects
 @using Rise.Shared.MaintObjects
 <MudDialog Class="mx-3" Style="width: 80vw; max-width: 80vh">
 	<TitleContent>
-		<MudText Typo="Typo.h5">Onderhoudsobjecten aanpassen</MudText>
+		<MudText Typo="Typo.h5">Onderhoudsobjecten toevoegen</MudText>
 	</TitleContent>
 
 	<DialogContent>
 		<MudTextField T="string"
 		              InputType="InputType.Search"
 		              Label="Zoek onderhoudsobject"
-		              Class="m-0"
+		              Class="m-0 pb-2"
 		              Variant="Variant.Outlined"
 		              DebounceInterval="300"
 		              OnDebounceIntervalElapsed="@UpdateSearch"
@@ -36,12 +37,7 @@
 				<MudTd DataLabel="Serienummer">@context.SerialNumber</MudTd>
 				<MudTd DataLabel="Type">@context.MaintObjType</MudTd>
 				<MudTd DataLabel="Status">
-					<MudChip T="string"
-					         Variant="Variant.Outlined"
-					         Color="@MaintObjectUtility.DefineStatusColor(context.MaintObjStatus)"
-					         Size="Size.Small">
-						@(MaintObjectUtility.TranslateStatus(context.MaintObjStatus))
-					</MudChip>
+					<MaintObjStatusChip Status="@context.MaintObjStatus"/>
 				</MudTd>
 			</RowTemplate>
 		</MudTable>

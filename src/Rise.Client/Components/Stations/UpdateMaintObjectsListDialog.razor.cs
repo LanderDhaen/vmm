@@ -58,10 +58,11 @@ public partial class UpdateMaintObjectsListDialog {
 		_cancellationTokenSource = new CancellationTokenSource();
 
 		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = Int32.MaxValue, // Temporary fix due to time constraints
 			SearchTerm = _searchTerm,
 			Filters = {
-				["Status"] = "Active",
-				["StationId"] = StationId
+				["Status"] = MaintObjStatus.Inactive,
 			}
 		};
 

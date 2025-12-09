@@ -390,17 +390,17 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		}
 
 		List<MaintObj> maintObjects = await dbContext.MaintObjects
+			.Include(ms => ms.Location)
+			.Include(ms => ms.Station)
+			.Include(ms => ms.Installation)
+			.Include(ms => ms.MaintObjPlan)
+			.Include(ms => ms.LastScannedBy)
+			
 			.Where(ms => req.MaintObjIds.Contains(ms.Id))
 			.ToListAsync(ct);
 
 		if (maintObjects.Count != req.MaintObjIds.Count) {
 			return Result.Error("Een of meerdere onderhoudsobjecten zijn niet gevonden.");
-		}
-
-		foreach (MaintObj current in measurementStation.MaintObjects.ToList()) {
-			if (!req.MaintObjIds.Contains(current.Id)) {
-				current.UnassignFromStation();
-			}
 		}
 
 		foreach (MaintObj mo in maintObjects) {
