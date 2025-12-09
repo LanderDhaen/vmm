@@ -390,6 +390,11 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 		}
 
 		List<MaintObj> maintObjects = await dbContext.MaintObjects
+			.Include(ms => ms.Location)
+			.Include(ms => ms.Station)
+			.Include(ms => ms.Installation)
+			.Include(ms => ms.MaintObjPlan)
+			
 			.Where(ms => req.MaintObjIds.Contains(ms.Id))
 			.ToListAsync(ct);
 
