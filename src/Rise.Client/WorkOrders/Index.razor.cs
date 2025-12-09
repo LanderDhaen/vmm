@@ -39,6 +39,9 @@ public partial class Index{
 	private string? _filterTechnician;
 	private DateTime? _filterStartDate;
 	private DateTime? _filterEndDate;
+	private Priority? _filterPriority;
+	
+  private IEnumerable<Priority>? _priorityOptions;
 
 	private IEnumerable<WorkOrderStatus>? _statusOptions;
 	private IEnumerable<MaintObjType>? _maintObjTypeOptions;
@@ -137,6 +140,7 @@ public partial class Index{
 	private async Task ClearFilters() {
 		_filterStatus = null;
 		_filterMaintObjType = null;
+		_filterPriority = null;
 		_filterTechnician = null;
 		_filterStartDate = null;
 		_filterEndDate = null;
@@ -186,7 +190,11 @@ public partial class Index{
 			_filterTechnicianOptions = list ?? Enumerable.Empty<string>();
 		} catch (OperationCanceledException) { } catch { _filterTechnicianOptions = Enumerable.Empty<string>(); } finally { StateHasChanged(); }
 	}
-
+private Task HandlePrioritySelectOpen() {
+	_priorityOptions = Enum.GetValues(typeof(Priority)).Cast<Priority>().ToList();
+	StateHasChanged();
+	return Task.CompletedTask;
+}
 	public ValueTask DisposeAsync() {
 		try { _selectCancellationTokenSource.Cancel(); } catch { }
 		_selectCancellationTokenSource.Dispose();
