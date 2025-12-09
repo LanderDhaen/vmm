@@ -7,13 +7,17 @@
 		         Style="width: 80vw; max-width: 80vh">
 			<MudGrid>
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudText Typo="Typo.subtitle2">Naam
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
 					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Serienummer</MudText>
+					<MudText Typo="Typo.subtitle2">Serienummer
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
 					<MudTextField @bind-Value="Model.SerialNumber"
 					              For="@(() => Model.SerialNumber)"
 					              Immediate="true"
@@ -26,7 +30,9 @@
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Merk</MudText>
+					<MudText Typo="Typo.subtitle2">Merk
+						<MudText Typo="Typo.caption">(Optioneel)</MudText>
+						</MudText>
 					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
 				</MudItem>
