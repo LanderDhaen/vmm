@@ -26,7 +26,7 @@ public partial class UpdateMeasurementNetworkDialog {
 			Skip = 0,
 			Take = Int32.MaxValue
 		};
-		
+
 		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		_networks = result.Value.measurementsNetworks;
 

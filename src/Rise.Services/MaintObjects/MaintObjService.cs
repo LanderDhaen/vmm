@@ -10,9 +10,9 @@ using Rise.Shared.Stations;
 
 using MaintObjStatus = Rise.Domain.MaintObjects.MaintObjStatus;
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
+using SharedMaintObjModificationType = Rise.Shared.MaintObjects.MaintObjModificationType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
-using SharedMaintObjModificationType = Rise.Shared.MaintObjects.MaintObjModificationType;
 
 namespace Rise.Services.MaintObjects;
 
@@ -25,15 +25,15 @@ public class MaintObjService(ApplicationDbContext dbContext)
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
-		
+
 		// Check if there's a key-value pair for Status
 		if (req.Filters.TryGetValue("Status", out object? statusObj)) {
-				// Check if it's a valid Status
-				if (statusObj is string statusStr && Enum.TryParse(statusStr, out MaintObjStatus status)) {
-					query = query.Where(m => m.MaintObjStatus == status);
-				} 
+			// Check if it's a valid Status
+			if (statusObj is string statusStr && Enum.TryParse(statusStr, out MaintObjStatus status)) {
+				query = query.Where(m => m.MaintObjStatus == status);
+			}
 		}
-		
+
 		query = query.Where(m =>
 			m.SerialNumber.Contains(req.SearchTerm) ||
 			m.Name.Contains(req.SearchTerm)

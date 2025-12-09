@@ -11,7 +11,7 @@ public partial class History {
 	[Parameter] public Guid MaintObjId { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
 
-	private TimelinePosition _timelinePosition;
+	private readonly TimelinePosition _timelinePosition;
 
 
 	protected override async Task OnInitializedAsync() {
@@ -22,7 +22,7 @@ public partial class History {
 			_modifications = result.Value.Modifications;
 		}
 	}
-	
+
 	private static string DefineTitle(MaintObjModificationType modificationType) {
 		return modificationType switch {
 			MaintObjModificationType.StatusChanged => "Status gewijzigd",

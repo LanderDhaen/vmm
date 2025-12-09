@@ -1,5 +1,6 @@
-using Rise.Shared.WorkOrders;
 using Microsoft.AspNetCore.Components;
+
+using Rise.Shared.WorkOrders;
 
 namespace Rise.Client.Components.WorkOrders;
 

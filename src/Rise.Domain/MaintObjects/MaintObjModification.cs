@@ -7,7 +7,7 @@ public class MaintObjModification {
 		PreviousValue = Guard.Against.Null(previousValue);
 		CurrentValue = Guard.Against.Null(currentValue);
 	}
-	
+
 	public MaintObjModificationType MaintObjModificationType { get; init; }
 	public DateTime ModifiedAt { get; init; }
 	public string PreviousValue { get; init; }
