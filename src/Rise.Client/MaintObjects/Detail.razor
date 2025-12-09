@@ -1,5 +1,6 @@
 @page "/maintobjects/{MaintObjId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Client.Components.Stations
 @inject NavigationManager Navigation
 
 <PageTitle>Onderhoudsobject Details</PageTitle>
@@ -32,7 +33,6 @@ else
 			<MudGrid Spacing="4" Class="mt-1">
 				
 				@* Details *@
-				
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
 						<MudCardHeader>
@@ -49,12 +49,13 @@ else
 										           Size="Size.Small"
 										           Color="Color.Primary"
 										           Class="px-4"
-										           Disabled="true">
+										           OnClick="@OpenEditMaintObjDialogAsync">
 											Aanpassen
 										</MudButton>
 									</MudTooltip>
 								</MudStack>
-								<MudText Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
+								<MudText
+									Typo="Typo.subtitle2">@MaintObjectUtility.TranslateType(_maintObj.MaintObjType) @_maintObj.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
@@ -74,19 +75,19 @@ else
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-				
-				@* Location *@
 
+				@* Location *@
 				<MudItem xs="12" md="6">
 					<LocationCard Location="_maintObj.Location"/>
 				</MudItem>
-				
+
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
 						<MudCardHeader>
 							<CardHeaderContent>
-									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">Onderhoudsplan</MudText>
+								<MudText Typo="Typo.h6"
+								         Color="Color.Primary">Onderhoudsplan
+								</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
@@ -94,12 +95,18 @@ else
 							<MudText><b>Volgende kalibratie:</b> @MaintObjectUtility.CalculateNextMaintenance(_maintObj.InstalledAt, _maintObj.MaintenanceIntervalDays)</MudText>
 							<MudDivider Light="true" Class="my-4"/>
 							<MudText><b>Kalibratieinterval:</b> @_maintObj.CalibrationIntervalDays dagen</MudText>
-							<MudText><b>Verwijderd:</b> @MaintObjectUtility.CalculateNextCalibration(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)</MudText>
+							<MudText>
+								<b>Verwijderd:</b> @MaintObjectUtility.CalculateNextCalibration(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)
+							</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>
-			</MudGrid>
 
+				@* MeasurementStationCard *@
+				<MudItem xs="12" sm="6">
+					<StationCard Station="_maintObj.Station"></StationCard>
+				</MudItem>
+			</MudGrid>
 			break;
 
 		case 1:

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
+using Rise.Client.Components.MaintObjects;
 using Rise.Client.Services;
 using Rise.Shared.MaintObjects;
 
@@ -12,13 +13,9 @@ public partial class Detail {
 	private readonly List<string> _tabs = new() {
 		"Informatie",
 		"Historiek"
-	};
+	];
 
-	// ====== Main ======
 	private MaintObjDto.Detail? _maintObj;
-
-	// Drawer
-	// private bool _open;
 
 	private int _selectedTab;
 
@@ -35,16 +32,9 @@ public partial class Detail {
 	}
 
 	protected override async Task OnInitializedAsync() {
-		// Load project details and stations in parallel
-		Task<Result<MaintObjResponse.Detail>> detailTask = MaintObjService.GetDetailAsync(MaintObjId);
-		await Task.WhenAll(detailTask);
+		await GetMaintObjDetailAsync();
 
-		Result<MaintObjResponse.Detail> detailResult = detailTask.Result;
-
-		// --- Project detail ---
-		if (detailResult.IsSuccess) {
-			_maintObj = detailResult.Value.MaintObj;
-
+		if (_maintObj is not null) {
 			// set breadcrumbs
 			BreadcrumbService.SetBreadcrumbs(
 				new BreadcrumbItem("Onderhoudsobjecten", "/maintObjects"),
@@ -60,9 +50,48 @@ public partial class Detail {
 					return Task.CompletedTask;
 				}
 			);
+		}
+	}
+
+	private async Task GetMaintObjDetailAsync() {
+		Result<MaintObjResponse.Detail> detail = await MaintObjService.GetDetailAsync(MaintObjId);
+
+		// --- MaintObj detail ---
+		if (detail.IsSuccess) {
+			_maintObj = detail.Value.MaintObj;
 		} else {
-			string message = detailResult.Errors != null
-				? string.Join(Environment.NewLine, detailResult.Errors)
+			string message = detail.Errors != null
+				? string.Join(Environment.NewLine, detail.Errors)
+				: "Er is een fout opgetreden.";
+			Snackbar.Add(message, Severity.Error);
+		}
+	}
+
+	private async Task OpenEditMaintObjDialogAsync() {
+		DialogParameters<EditFormDialog> parameters = new() {
+			{ x => x.MaintObjId, MaintObjId },
+			{ x => x.MaintObj, _maintObj }
+		};
+		DialogOptions options = new() { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraLarge };
+
+		IDialogReference dialog =
+			await DialogService.ShowAsync<EditFormDialog>("Station bewerken", parameters, options);
+		DialogResult? result = await dialog.Result;
+
+		if (!result.Canceled) {
+			await RefreshMaintObjDetails();
+		}
+	}
+
+	//helper
+	private async Task RefreshMaintObjDetails() {
+		Result<MaintObjResponse.Detail> result = await MaintObjService.GetDetailAsync(MaintObjId);
+
+		if (result.IsSuccess) {
+			_maintObj = result.Value.MaintObj;
+		} else {
+			string message = result.Errors != null
+				? string.Join(Environment.NewLine, result.Errors)
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}

@@ -4,10 +4,10 @@ using Rise.Domain.Common;
 using Rise.Domain.Locations;
 using Rise.Domain.MaintObjects;
 using Rise.Persistence;
-using Rise.Services.Identity;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
+using Rise.Shared.Stations;
 
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
@@ -16,13 +16,10 @@ using SharedType = Rise.Shared.MaintObjects.MaintObjType;
 namespace Rise.Services.MaintObjects;
 
 /// <summary>
-///     Service for maintenance objects. Note the use of <see cref="ISessionContextProvider" /> to get the current user in
-///     this layer
-///     of the application.
+///     Service for maintenance objects.
 /// </summary>
 /// <param name="dbContext"></param>
-/// <param name="sessionContextProvider"></param>
-public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProvider sessionContextProvider)
+public class MaintObjService(ApplicationDbContext dbContext)
 	: IMaintObjService {
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
@@ -108,7 +105,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand, location);
+		MaintObj mo = new(request.Name, request.SerialNumber, (MaintObjType)request.MaintObjType, plan, request.Brand,
+			location);
 
 		dbContext.MaintObjects.Add(mo);
 
@@ -120,7 +118,6 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	}
 
 	public async Task<Result<MaintObjResponse.Detail>> GetDetailAsync(Guid maintObjId, CancellationToken ct = default) {
-
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
 
 		MaintObjDto.Detail? maintObj = await query
@@ -141,14 +138,32 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 					PostalCode = m.Location.Address.PostalCode,
 					Country = m.Location.Address.CountryIso,
 					X = m.Location.Coordinate.X,
-					Y = m.Location.Coordinate.Y,
+					Y = m.Location.Coordinate.Y
 				},
 				StationCode = m.Station != null ? m.Station.Code : null,
 				InstalledAt = m.Installation != null ? m.Installation.InstalledAt : null,
 				RemovedAt = m.Installation != null ? m.Installation.RemovedAt : null,
 				MaintenanceIntervalDays = m.MaintObjPlan.MaintenanceIntervalDays,
 				CalibrationIntervalDays = m.MaintObjPlan.CalibrationIntervalDays,
-
+				Station = m.Station != null
+					? new MeasurementStationDto.Detail {
+						Id = m.Station.Id,
+						Code = m.Station.Code,
+						InstalledAt = m.Station.Installation.InstalledAt,
+						RemovedAt = m.Station.Installation.RemovedAt,
+						Location = new LocationDto.Detail {
+							Id = m.Station.Location.Id,
+							Name = m.Station.Location.Name,
+							AddressLine1 = m.Station.Location.Address.Addressline1,
+							AddressLine2 = m.Station.Location.Address.Addressline2,
+							City = m.Station.Location.Address.City,
+							PostalCode = m.Station.Location.Address.PostalCode,
+							Country = m.Station.Location.Address.CountryIso,
+							X = m.Station.Location.Coordinate.X,
+							Y = m.Station.Location.Coordinate.Y
+						}
+					}
+					: null
 			}).SingleOrDefaultAsync(ct);
 
 		if (maintObj is null) {
@@ -180,8 +195,7 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			return Result.NotFound("Het onderhoudstype werd niet gevonden.");
 		}
 
-		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand,
-			new Installation((DateTime)req.InstalledAt, req.RemovedAt));
+		maintObj.Edit(req.Name, req.SerialNumber, plan, req.Brand);
 
 		await dbContext.SaveChangesAsync(ctx);
 
@@ -215,10 +229,8 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 	public async Task<Result<MaintObjResponse.BySerial>> GetBySerialAsync(string serialNumber,
 		CancellationToken ct = default) {
 		if (string.IsNullOrWhiteSpace(serialNumber)) {
-			return Result.Invalid(new[]
-			{
-				new ValidationError
-				{
+			return Result.Invalid(new[] {
+				new ValidationError {
 					Identifier = nameof(serialNumber),
 					ErrorMessage = "Serienummer is verplicht."
 				}
@@ -229,8 +241,9 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			.AsNoTracking()
 			.FirstOrDefaultAsync(m => m.SerialNumber == serialNumber, ct);
 
-		if (maintObj is null)
+		if (maintObj is null) {
 			return Result.NotFound();
+		}
 
 		return Result.Success(new MaintObjResponse.BySerial {
 			Id = maintObj.Id,
@@ -238,5 +251,4 @@ public class MaintObjService(ApplicationDbContext dbContext, ISessionContextProv
 			Name = maintObj.Name
 		});
 	}
-
 }

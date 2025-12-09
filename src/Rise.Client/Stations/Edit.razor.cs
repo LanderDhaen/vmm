@@ -1,13 +1,8 @@
-using FluentValidation.Results;
-
 using Microsoft.AspNetCore.Components;
 
 using MudBlazor;
 
 using Rise.Client.Services;
-using Rise.Shared.Common;
-using Rise.Shared.Locations;
-using Rise.Shared.Projects;
 using Rise.Shared.Stations;
 
 using Severity = MudBlazor.Severity;
@@ -16,12 +11,12 @@ namespace Rise.Client.Stations;
 
 public partial class Edit {
 	private readonly MeasurementStationRequest.Edit.Validator _validator = new();
-	private MudForm form = default!;
+	private MudForm _form = null!;
 
 	[Parameter] public Guid StationId { get; set; }
-	[Inject] private ISnackbar Snackbar { get; set; } = default!;
-	[Inject] private IMeasurementStationService StationService { get; set; } = default!;
-	[Inject] private NavigationManager Nav { get; set; } = default!;
+	[Inject] private ISnackbar Snackbar { get; set; } = null!;
+	[Inject] private IMeasurementStationService StationService { get; set; } = null!;
+	[Inject] private NavigationManager Nav { get; set; } = null!;
 	[Inject] public required BreadcrumbService BreadcrumbService { get; set; }
 	[Inject] public required HeaderService HeaderService { get; set; }
 
@@ -35,7 +30,7 @@ public partial class Edit {
 				StationId = StationId,
 				Code = detail.Value.Station.Code,
 				InstalledAt = detail.Value.Station.InstalledAt,
-				RemovedAt = detail.Value.Station.RemovedAt,
+				RemovedAt = detail.Value.Station.RemovedAt
 			};
 		}
 
@@ -58,9 +53,9 @@ public partial class Edit {
 	}
 
 	private async Task EditStationAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (form.IsValid) {
+		if (_form.IsValid) {
 			Result result = await StationService.EditAsync(Model, CancellationToken.None);
 			if (result.IsSuccess) {
 				Snackbar.Add("Meetstation succesvol aangepast!", Severity.Success);

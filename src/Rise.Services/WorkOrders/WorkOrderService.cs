@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 
+using Rise.Domain.MaintObjects;
 using Rise.Domain.WorkOrders;
 using Rise.Persistence;
 using Rise.Shared.Common;
 using Rise.Shared.Locations;
 using Rise.Shared.MaintObjects;
+using Rise.Shared.Stations;
 using Rise.Shared.WorkOrders;
 
 using SharedMainObjType = Rise.Shared.MaintObjects.MaintObjType;
@@ -20,10 +22,8 @@ namespace Rise.Services.WorkOrders;
 /// </summary>
 /// <param name="dbContext"></param>
 public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderService {
-
 	public async Task<Result<WorkOrderResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
-
 		IQueryable<WorkOrder> query = dbContext.WorkOrders.AsQueryable().AsNoTracking();
 
 
@@ -32,12 +32,14 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		// Sorting
 		if (!string.IsNullOrWhiteSpace(req.OrderBy)) {
 			bool desc = req.OrderDescending;
-			var orderBy = req.OrderBy.Trim();
-			var key = orderBy.ToLowerInvariant();
+			string orderBy = req.OrderBy.Trim();
+			string key = orderBy.ToLowerInvariant();
 
 			switch (key) {
 			case "priority":
-				query = desc ? query.OrderBy(p => p.Priority) : query.OrderByDescending(p => (SharedPriority)p.Priority);
+				query = desc
+					? query.OrderBy(p => p.Priority)
+					: query.OrderByDescending(p => (SharedPriority)p.Priority);
 				break;
 
 			case "maintobjtype":
@@ -57,9 +59,9 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 			case "technician":
 				query = desc
 					? query.OrderByDescending(p => p.Technician!.LastName)
-								 .ThenByDescending(p => p.Technician!.FirstName)
+						.ThenByDescending(p => p.Technician!.FirstName)
 					: query.OrderBy(p => p.Technician!.LastName)
-								 .ThenBy(p => p.Technician!.FirstName);
+						.ThenBy(p => p.Technician!.FirstName);
 				break;
 
 			case "status":
@@ -67,19 +69,26 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 				break;
 
 			case "startdate":
-				query = desc ? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.StartDate : default) : query.OrderBy(p => p.DateRange != null ? p.DateRange.StartDate : default);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.StartDate : default)
+					: query.OrderBy(p => p.DateRange != null ? p.DateRange.StartDate : default);
 				break;
 
 			case "enddate":
-				query = desc ? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.EndDate : null) : query.OrderBy(p => p.DateRange != null ? p.DateRange.EndDate : null);
+				query = desc
+					? query.OrderByDescending(p => p.DateRange != null ? p.DateRange.EndDate : null)
+					: query.OrderBy(p => p.DateRange != null ? p.DateRange.EndDate : null);
 				break;
 
 			default:
 				try {
-					query = desc ? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy)) : query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
+					query = desc
+						? query.OrderByDescending(e => EF.Property<object>(e, req.OrderBy))
+						: query.OrderBy(e => EF.Property<object>(e, req.OrderBy));
 				} catch {
 					query = query.OrderBy(w => w.Id);
 				}
+
 				break;
 			}
 		} else {
@@ -104,7 +113,7 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 				EndDate = p.DateRange != null ? p.DateRange.EndDate : null,
 				Technician = p.Technician != null
 					? p.Technician.FirstName + " " + p.Technician.LastName
-					: null,
+					: null
 			})
 			.ToListAsync(ctx);
 
@@ -150,14 +159,31 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 						PostalCode = w.MaintObj.Location.Address.PostalCode,
 						Country = w.MaintObj.Location.Address.CountryIso,
 						X = w.MaintObj.Location.Coordinate.X,
-						Y = w.MaintObj.Location.Coordinate.Y,
+						Y = w.MaintObj.Location.Coordinate.Y
 					},
 
 					StationCode = w.MaintObj.Station != null ? w.MaintObj.Station.Code : null,
+					Station = w.MaintObj.Station != null
+						? new MeasurementStationDto.Detail {
+							Id = w.MaintObj.Station.Id,
+							Code = w.MaintObj.Station.Code,
+							Location = new LocationDto.Detail {
+								Id = w.MaintObj.Station.Location.Id,
+								Name = w.MaintObj.Station.Location.Name,
+								AddressLine1 = w.MaintObj.Station.Location.Address.Addressline1,
+								AddressLine2 = w.MaintObj.Station.Location.Address.Addressline2,
+								City = w.MaintObj.Station.Location.Address.City,
+								PostalCode = w.MaintObj.Station.Location.Address.PostalCode,
+								Country = w.MaintObj.Station.Location.Address.CountryIso,
+								X = w.MaintObj.Station.Location.Coordinate.X,
+								Y = w.MaintObj.Station.Location.Coordinate.Y
+							}
+						}
+						: null,
 					InstalledAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.InstalledAt : null,
 					RemovedAt = w.MaintObj.Installation != null ? w.MaintObj.Installation.RemovedAt : null,
 					MaintenanceIntervalDays = w.MaintObj.MaintObjPlan.MaintenanceIntervalDays,
-					CalibrationIntervalDays = w.MaintObj.MaintObjPlan.CalibrationIntervalDays,
+					CalibrationIntervalDays = w.MaintObj.MaintObjPlan.CalibrationIntervalDays
 				},
 
 				Location = new LocationDto.Detail {
@@ -169,7 +195,7 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 					PostalCode = w.MaintObj.Location.Address.PostalCode,
 					Country = w.MaintObj.Location.Address.CountryIso,
 					X = w.MaintObj.Location.Coordinate.X,
-					Y = w.MaintObj.Location.Coordinate.Y,
+					Y = w.MaintObj.Location.Coordinate.Y
 				}
 			})
 			.FirstOrDefaultAsync(ctx);
@@ -181,18 +207,55 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 		return Result.Success(new WorkOrderResponse.Detail { WorkOrder = workOrder });
 	}
 
-	public async Task<Result> UpdateStatusAsync(WorkOrderRequest.UpdateStatus req, CancellationToken ctx = default) {
+	public async Task<Result> UpdateStatusAsync(
+		WorkOrderRequest.UpdateStatus req,
+		CancellationToken ctx = default
+	) {
 		WorkOrder? workOrder = await dbContext.WorkOrders
+			.Include(x => x.MaintObj)
 			.SingleOrDefaultAsync(x => x.Id == req.WorkOrderId, ctx);
 
 		if (workOrder is null) {
 			return Result.NotFound($"Werkbon met Id '{req.WorkOrderId}' is niet gevonden.");
 		}
 
-		workOrder.UpdateStatus((Status)req.NewStatus);
+		try {
+			workOrder.UpdateStatus((Status)req.NewStatus);
+		} catch (ArgumentException ex) {
+			return Result.Conflict(ex.Message);
+		}
 
 		await dbContext.SaveChangesAsync(ctx);
 
 		return Result.Success();
+	}
+
+
+	public async Task<Result<WorkOrderResponse.Create>> CreateAsync(
+		WorkOrderRequest.Create req,
+		CancellationToken ctx = default
+	) {
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.SingleOrDefaultAsync(x => x.Id == req.MaintObjId, ctx);
+
+		if (maintObj is null) {
+			return Result.NotFound(
+				$"Onderhoudsobject met Id '{req.MaintObjId}' is niet gevonden."
+			);
+		}
+
+		WorkOrder workOrder = new(
+			req.Name,
+			req.Description,
+			(Rise.Domain.WorkOrders.Priority)req.Priority,
+			maintObj
+		);
+
+		dbContext.WorkOrders.Add(workOrder);
+		await dbContext.SaveChangesAsync(ctx);
+
+		return Result.Created(new WorkOrderResponse.Create {
+			WorkOrderId = workOrder.Id
+		});
 	}
 }

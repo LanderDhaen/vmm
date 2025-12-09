@@ -49,5 +49,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) :
 		// Ignoring classes used for mapping
 
 		modelBuilder.Ignore<MeasurementStationModification>();
+		modelBuilder.Ignore<ProjectModification>();
 	}
 }

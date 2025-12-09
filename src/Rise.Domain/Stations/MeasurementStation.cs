@@ -85,10 +85,7 @@ public class MeasurementStation : Entity {
 
 		// Create history object using the old values
 
-		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		MeasurementStationHistory measurementStationHistory =
-			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
-		_measurementStationHistories.Add(measurementStationHistory);
+		AddHistoryEntry();
 
 		// Assign the new values
 
@@ -104,15 +101,21 @@ public class MeasurementStation : Entity {
 
 		// Create history object using the old values
 
-		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
-		MeasurementStationHistory measurementStationHistory =
-			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
-		_measurementStationHistories.Add(measurementStationHistory);
+		AddHistoryEntry();
 
 		// Assign the new values
 
 		UpdatedAt = DateTime.UtcNow; // Update this here since trigger doesn't fire for owned entities (https://github.com/koenbeuk/EntityFrameworkCore.Triggered/issues/171)
 		Installation = installation;
+	}
+
+	// History
+
+	private void AddHistoryEntry() {
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		MeasurementStationHistory measurementStationHistory =
+			new(new Installation(Installation.InstalledAt, Installation.RemovedAt), Location, validityRange);
+		_measurementStationHistories.Add(measurementStationHistory);
 	}
 
 	public List<MeasurementStationModification> GetModifications() {

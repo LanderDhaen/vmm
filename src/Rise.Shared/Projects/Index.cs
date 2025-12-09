@@ -20,6 +20,6 @@ public static partial class ProjectResponse {
 	}
 
 	public class History {
-		public required ProjectDto.History Project { get; set; }
+		public required IEnumerable<ProjectDto.Modification> Modifications { get; init; }
 	}
 }

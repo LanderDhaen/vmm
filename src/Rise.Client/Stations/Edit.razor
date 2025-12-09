@@ -3,6 +3,7 @@
 
 <PageTitle>Meetstation bewerken</PageTitle>
 
+@* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
 @if (Model is null)
 {
 	<MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large"/>
@@ -10,10 +11,10 @@
 else
 {
 	<MudCard>
-		<MudForm Model="@Model" @ref="form" Validation="_validator.ValidateValue" ValidationDelay="0">
+		<MudForm Model="@Model" @ref="_form" Validation="_validator.ValidateValue" ValidationDelay="0">
 			<MudCardContent>
 				<MudGrid>
-					
+
 				</MudGrid>
 			</MudCardContent>
 		</MudForm>
