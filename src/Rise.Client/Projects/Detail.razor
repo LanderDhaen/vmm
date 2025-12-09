@@ -34,10 +34,10 @@ else
 			<MudStack Row="true" Justify="Justify.FlexEnd">
 				@if (_project.Status.Equals(Status.Afgesloten))
 				{
-					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small"
-					           Variant="Variant.Filled" Color="Color.Success"
+					<MudButton StartIcon="@Icons.Material.Filled.RestartAlt" Size="Size.Small"
+					           Variant="Variant.Filled" Color="Color.Warning"
 					           OnClick="@ShowStartConfirmationAsync">
-						Opstarten
+						Heropstarten
 					</MudButton>
 				}
 				else
