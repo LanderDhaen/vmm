@@ -33,4 +33,10 @@ public class WorkOrderService(HttpClient httpClient) : IWorkOrderService {
 		Result? result = await response.Content.ReadFromJsonAsync<Result>(ctx);
 		return result!;
 	}
+	public async Task<IEnumerable<string>> GetTechnicianNamesAsync(string? query, CancellationToken ctx = default) {
+		string q = string.IsNullOrWhiteSpace(query) ? string.Empty : query.Trim();
+		var url = $"/api/workorders/technicians?query={Uri.EscapeDataString(q)}";
+		var result = await httpClient.GetFromJsonAsync<Result<List<string>>>(url, ctx);
+		return result?.Value ?? Enumerable.Empty<string>();
+	}
 }
