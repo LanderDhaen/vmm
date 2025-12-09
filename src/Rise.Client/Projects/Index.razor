@@ -25,18 +25,14 @@
 		           Class="px-4">
 			Filteren
 		</MudButton>
-
-		<MudTooltip Text="project toevoegen" Delay="600" Arrow="true" Placement="Placement.Top"
-		            Color="Color.Dark">
-			<MudButton Variant="Variant.Filled"
-			           StartIcon="@Icons.Material.Filled.Add"
-			           Size="Size.Small"
-			           Color="Color.Primary"
-			           Class="px-4"
-			           OnClick="@NavigateToCreate">
-				Project
-			</MudButton>
-		</MudTooltip>
+		<MudButton Variant="Variant.Filled"
+		           StartIcon="@Icons.Material.Filled.Add"
+		           Size="Size.Small"
+		           Color="Color.Primary"
+		           Class="px-4"
+		           OnClick="@NavigateToCreate">
+			Project
+		</MudButton>
 	</MudStack>
 
 	<MudDataGrid T="ProjectDto.Index"
