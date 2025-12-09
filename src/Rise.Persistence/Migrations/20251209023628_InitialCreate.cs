@@ -325,49 +325,6 @@ namespace Rise.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaintObjHistory",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MaintObjStatus = table.Column<int>(type: "int", nullable: false),
-                    MaintObjPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LastScannedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MaintObjHistory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MaintObjHistory_Location_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_MaintObjHistory_MaintObjPlan_MaintObjPlanId",
-                        column: x => x.MaintObjPlanId,
-                        principalTable: "MaintObjPlan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MaintObjHistory_MeasurementStation_StationId",
-                        column: x => x.StationId,
-                        principalTable: "MeasurementStation",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MaintObjHistory_Technician_LastScannedById",
-                        column: x => x.LastScannedById,
-                        principalTable: "Technician",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MeasurementStationHistory",
                 columns: table => new
                 {
@@ -417,6 +374,55 @@ namespace Rise.Persistence.Migrations
                         name: "FK_Project_MeasurementNetwork_MeasurementNetworkId",
                         column: x => x.MeasurementNetworkId,
                         principalTable: "MeasurementNetwork",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MaintObjHistory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MaintObjStatus = table.Column<int>(type: "int", nullable: false),
+                    MaintObjPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InstalledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RemovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LastScannedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MaintObjId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ValidFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MaintObjHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MaintObjHistory_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MaintObjHistory_MaintObjPlan_MaintObjPlanId",
+                        column: x => x.MaintObjPlanId,
+                        principalTable: "MaintObjPlan",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MaintObjHistory_MaintObj_MaintObjId",
+                        column: x => x.MaintObjId,
+                        principalTable: "MaintObj",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MaintObjHistory_MeasurementStation_StationId",
+                        column: x => x.StationId,
+                        principalTable: "MeasurementStation",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MaintObjHistory_Technician_LastScannedById",
+                        column: x => x.LastScannedById,
+                        principalTable: "Technician",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -537,6 +543,11 @@ namespace Rise.Persistence.Migrations
                 name: "IX_MaintObjHistory_LocationId",
                 table: "MaintObjHistory",
                 column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaintObjHistory_MaintObjId",
+                table: "MaintObjHistory",
+                column: "MaintObjId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaintObjHistory_MaintObjPlanId",

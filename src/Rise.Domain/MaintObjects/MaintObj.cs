@@ -44,6 +44,8 @@ public class MaintObj : Entity {
 
 	public Technician? LastScannedBy { get; private set; }
 	
+	public IReadOnlyList<MaintObjHistory> MaintObjHistories => _maintObjHistories.AsReadOnly();
+	
 	// Functions
 
 	public void AssignToStation(MeasurementStation station) {
@@ -103,6 +105,7 @@ public class MaintObj : Entity {
 		// Check if the values are the same as the old values
 
 		if (technician.Equals(LastScannedBy)) {
+			Console.WriteLine("I'm returned in device " + Name);
 			return;
 		}
 		
@@ -134,13 +137,20 @@ public class MaintObj : Entity {
 	// History
 
 	private void AddHistoryEntry() {
+		
+		Console.WriteLine("Historiek toegevoegd aan apparaat " + Name);
+		
 		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
 		Installation? installation = Installation is null ? null : new Installation(Installation.InstalledAt, Installation.RemovedAt);
 		
 		MaintObjHistory maintObjHistory = new(MaintObjStatus, 
 			MaintObjPlan,
 			installation,
-			Station,  Location, LastScannedBy,  validityRange); 
+			Station,  
+			Location, 
+			LastScannedBy,  
+			validityRange); 
+		
 		_maintObjHistories.Add(maintObjHistory);
 	}
 

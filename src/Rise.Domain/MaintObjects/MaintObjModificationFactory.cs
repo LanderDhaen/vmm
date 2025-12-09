@@ -4,7 +4,6 @@ namespace Rise.Domain.MaintObjects;
 
 public static class MaintObjModificationFactory {
 	public static MaintObjModification Create(MaintObjHistory current, MaintObjHistory previous) {
-		
 		if (current.Location != previous.Location) {
 
 			if (current.Location.IsStockLocation) {

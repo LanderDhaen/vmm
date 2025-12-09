@@ -370,6 +370,9 @@ namespace Rise.Persistence.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("MaintObjId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("MaintObjPlanId")
                         .HasColumnType("uniqueidentifier");
 
@@ -384,6 +387,8 @@ namespace Rise.Persistence.Migrations
                     b.HasIndex("LastScannedById");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("MaintObjId");
 
                     b.HasIndex("MaintObjPlanId");
 
@@ -939,6 +944,10 @@ namespace Rise.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Rise.Domain.MaintObjects.MaintObj", null)
+                        .WithMany("MaintObjHistories")
+                        .HasForeignKey("MaintObjId");
+
                     b.HasOne("Rise.Domain.MaintObjects.MaintObjPlan", "MaintObjPlan")
                         .WithMany()
                         .HasForeignKey("MaintObjPlanId")
@@ -1251,6 +1260,11 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("MaintObj");
 
                     b.Navigation("Technician");
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObj", b =>
+                {
+                    b.Navigation("MaintObjHistories");
                 });
 
             modelBuilder.Entity("Rise.Domain.Projects.Project", b =>

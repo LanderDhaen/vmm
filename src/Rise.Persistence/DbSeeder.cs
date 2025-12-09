@@ -483,7 +483,7 @@ public class DbSeeder(
 	}
 
 	private async Task MaintObjectHistoriesAsync() {
-		if (dbContext.MaintObjects.Any()) {
+		if (!dbContext.MaintObjects.Any()) {
 			return;
 		}
 		
@@ -503,13 +503,13 @@ public class DbSeeder(
 			
 			
 			// Different path depending on if the maintenance object is in stock
-
+		
 			if (maintObj.Station is null) {
 				
 				Location location = maintObj.Location;
 				
 				// Scan the device
-
+		
 				maintObj.ScanBy(technicians[0]);
 				await dbContext.SaveChangesAsync();
 				

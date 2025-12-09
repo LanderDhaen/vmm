@@ -14,3 +14,17 @@ public class Detail(IMaintObjService maintObjService) : Endpoint<EmptyRequest, R
 		return await maintObjService.GetDetailAsync(maintObjId, ct);
 	}
 }
+
+public class History(IMaintObjService maintObjService) : Endpoint<EmptyRequest, Result<MaintObjResponse.History>> {
+	public override void Configure() {
+		Get("/api/maintObjects/{maintObjId}/history");
+		Roles(AppRoles.Administrator);
+	}
+
+	public override async Task<Result<MaintObjResponse.History>> ExecuteAsync(EmptyRequest request,
+		CancellationToken ct) {
+		Guid maintObjId = Route<Guid>("maintObjId");
+		
+		return await maintObjService.GetHistoryAsync(maintObjId, ct);
+	}
+}
