@@ -22,7 +22,12 @@ public partial class UpdateMeasurementNetworkDialog {
 	private ProjectRequest.UpdateMeasurementNetwork Model { get; set; }
 
 	protected override async Task OnInitializedAsync() {
-		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(new QueryRequest.SkipTake());
+		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = Int32.MaxValue
+		};
+		
+		Result<NetworkResponse.Index> result = await NetworkService.GetIndexAsync(request);
 		_networks = result.Value.measurementsNetworks;
 
 		Model = new ProjectRequest.UpdateMeasurementNetwork {

@@ -67,6 +67,8 @@ public partial class UpdateStationListDialog {
 		_cancellationTokenSource = new CancellationTokenSource();
 
 		QueryRequest.SkipTake request = new() {
+			Skip = 0,
+			Take = Int32.MaxValue,
 			SearchTerm = _searchTerm
 		};
 

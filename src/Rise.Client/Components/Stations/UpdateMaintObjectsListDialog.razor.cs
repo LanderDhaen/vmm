@@ -87,7 +87,7 @@ public partial class UpdateMaintObjectsListDialog {
 			FullWidth = true
 		};
 
-		IDialogReference dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		IDialogReference dialog = await DialogService.ShowAsync<QrScanDialog>("Scan QR code", options);
 		DialogResult? result = await dialog.Result;
 
 		if (result is { Canceled: true } || result?.Data is not string decoded) {

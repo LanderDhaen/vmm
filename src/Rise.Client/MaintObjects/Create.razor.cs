@@ -14,7 +14,7 @@ public partial class Create {
 	private readonly MaintObjRequest.Create.Validator _validator = new();
 	private IEnumerable<LocationDto.Index>? _locations;
 	private Result<MaintObjResponse.Create>? _result;
-	private MudForm form;
+	private MudForm _form;
 
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IMaintObjService MaintObjService { get; set; }
@@ -58,7 +58,7 @@ public partial class Create {
 			FullWidth = true
 		};
 
-		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		var dialog = await DialogService.ShowAsync<QrScanDialog>("Scan QR code", options);
 		var result = await dialog.Result;
 
 		if (result.Canceled || result.Data is not string decoded)
@@ -85,9 +85,9 @@ public partial class Create {
 
 
 	private async Task CreateMaintObjAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (form.IsValid) {
+		if (_form.IsValid) {
 			_result = await MaintObjService.CreateAsync(Model);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Onderhoudsobject succesvol aangemaakt!", Severity.Success);
