@@ -127,8 +127,9 @@ else
 									<MudText Typo="Typo.h6"
 									         Color="Color.Primary">Meetstations
 									</MudText>
-									<MudTooltip Delay="600"
-									            Text="@(IsActive ? "Lijst bewerken" : "Afgesloten project kan niet bewerkt worden")">
+									<MudTooltip
+										Text="@(IsActive ? "Lijst bewerken" : "Afgesloten project kan niet bewerkt worden")"
+										Delay="600" Placement="Placement.Top">
 										<MudButton Variant="Variant.Text"
 										           StartIcon="@Icons.Material.Filled.PlaylistAdd"
 										           Size="Size.Small"
