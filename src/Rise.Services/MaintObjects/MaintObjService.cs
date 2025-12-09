@@ -12,6 +12,7 @@ using MaintObjStatus = Rise.Domain.MaintObjects.MaintObjStatus;
 using MaintObjType = Rise.Domain.MaintObjects.MaintObjType;
 using SharedStatus = Rise.Shared.MaintObjects.MaintObjStatus;
 using SharedType = Rise.Shared.MaintObjects.MaintObjType;
+using SharedMaintObjModificationType = Rise.Shared.MaintObjects.MaintObjModificationType;
 
 namespace Rise.Services.MaintObjects;
 
@@ -186,6 +187,50 @@ public class MaintObjService(ApplicationDbContext dbContext)
 
 		return Result.Success(new MaintObjResponse.Detail {
 			MaintObj = maintObj
+		});
+	}
+
+	public async Task<Result<MaintObjResponse.History>>
+		GetHistoryAsync(Guid maintObjId, CancellationToken ct = default) {
+
+		MaintObj? maintObj = await dbContext.MaintObjects
+			.AsNoTracking()
+			.Include(x => x.MaintObjPlan)
+			.Include(x => x.Installation)
+			.Include(x => x.Station)
+			.Include(x => x.Location)
+			.Include(x => x.LastScannedBy)
+			.Include(x => x.MaintObjHistories)
+			.ThenInclude(h => h.MaintObjPlan)
+			.Include(x => x.MaintObjHistories)
+			.ThenInclude(h => h.Installation)
+			.Include(x => x.MaintObjHistories)
+			.ThenInclude(h => h.Station)
+			.Include(x => x.MaintObjHistories)
+			.ThenInclude(h => h.Location)
+			.Include(x => x.MaintObjHistories)
+			.ThenInclude(h => h.LastScannedBy)
+			.Include(p => p.MaintObjHistories.OrderByDescending(h => h.ValidityRange.ValidFrom))
+			.Where(x => x.Id == maintObjId)
+			.SingleOrDefaultAsync(ct);
+
+		if (maintObj is null) {
+			return Result.NotFound($"Onderhoudsobject met Id '{maintObjId}' was niet gevonden.");
+		}
+
+		List<MaintObjDto.Modification> modifications = [];
+
+		foreach (var m in maintObj.GetModifications()) {
+			modifications.Add(new MaintObjDto.Modification {
+				MaintObjModificationType = (SharedMaintObjModificationType)m.MaintObjModificationType,
+				ModifiedAt = m.ModifiedAt,
+				PreviousValue = m.PreviousValue,
+				CurrentValue = m.CurrentValue,
+			});
+		}
+
+		return Result.Success(new MaintObjResponse.History {
+			Modifications = modifications
 		});
 	}
 

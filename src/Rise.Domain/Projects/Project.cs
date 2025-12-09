@@ -170,6 +170,9 @@ public class Project : Entity {
 	}
 }
 
+/// <summary>
+///     A project history is something that holds a past state of a project.
+/// </summary>
 public class ProjectHistory : HistoryEntity {
 	/// <summary>
 	///     Entity Framework Core Constructor

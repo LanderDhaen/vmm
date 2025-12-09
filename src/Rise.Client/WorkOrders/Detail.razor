@@ -1,5 +1,7 @@
 @page "/workorders/{WorkOrderId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Client.Components.MaintObjects
+@using Rise.Client.Components.WorkOrders
 @using Rise.Shared.WorkOrders
 
 <PageTitle>Werkbon Details</PageTitle>
@@ -60,25 +62,12 @@ else
 						<MudCardContent>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Prioriteit:</b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
-									@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
-								</MudChip>
+								<WorkOrderPriorityChip Priority="_workOrder.Priority"/>
 							</MudStack>
 							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status:</b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
-									@WorkOrderUtility.TranslateStatus(_workOrder.Status)
-								</MudChip>
+								<WorkOrderStatusChip Status="_workOrder.Status"/>
 							</MudStack>
 							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)
 							</MudText>
@@ -122,13 +111,7 @@ else
 						<MudCardContent>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status:</b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@(MaintObjectUtility.DefineStatusColor(_workOrder.MaintObj.MaintObjStatus))">
-									@MaintObjectUtility.TranslateStatus(_workOrder.MaintObj.MaintObjStatus)
-								</MudChip>
+								<MaintObjStatusChip Status="_workOrder.MaintObj.MaintObjStatus"/>
 							</MudStack>
 							<MudText><b>Type:</b> @MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType)
 							</MudText>

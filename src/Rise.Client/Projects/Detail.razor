@@ -1,4 +1,5 @@
 @page "/projects/{ProjectId:guid}"
+@using Rise.Client.Components.Projects
 @using Rise.Shared.Projects
 @inject NavigationManager Navigation
 
@@ -57,13 +58,7 @@ else
 						<MudCardContent>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status: </b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@(ProjectUtility.DefineStatusColor(_project.Status))">
-									@_project.Status
-								</MudChip>
+								<ProjectStatusChip Status="_project.Status"/>
 							</MudStack>
 							<MudText><b>Startdatum:</b> @(_project.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @(_project.EndDate)</MudText>

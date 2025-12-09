@@ -21,6 +21,11 @@ public interface IMaintObjService {
 		CancellationToken ctx = default
 	);
 
+	Task<Result<MaintObjResponse.History>> GetHistoryAsync(
+		Guid maintObjId,
+		CancellationToken ctx = default
+	);
+
 	Task<Result> EditAsync(MaintObjRequest.Edit req, CancellationToken ctx);
 
 	Task<Result> UpdateLocationAsync(MaintObjRequest.UpdateLocation req, CancellationToken ctx = default);

@@ -1,5 +1,6 @@
 @page "/maintobjects/{MaintObjId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Client.Components.MaintObjects
 @using Rise.Client.Components.Stations
 @inject NavigationManager Navigation
 
@@ -60,13 +61,7 @@ else
 						<MudCardContent>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status:</b></MudText>
-								<MudChip T="string"
-								         Class="ma-0"
-								         Size="Size.Small"
-								         Variant="Variant.Outlined"
-								         Color="@(MaintObjectUtility.DefineStatusColor(_maintObj.MaintObjStatus))">
-									@MaintObjectUtility.TranslateStatus(_maintObj.MaintObjStatus)
-								</MudChip>
+								<MaintObjStatusChip Status="_maintObj.MaintObjStatus"/>
 							</MudStack>
 							<MudText><b>Merk:</b> @(_maintObj.Brand ?? "-")</MudText>
 							<MudText><b>Geïnstalleerd:</b> @MaintObjectUtility.ToLongInstalledAt(_maintObj.InstalledAt)</MudText>
@@ -109,7 +104,7 @@ else
 			break;
 
 		case 1:
-			<div>Historiek?</div>
+			<History MaintObjId="MaintObjId"/>
 			break;
 	}
 }

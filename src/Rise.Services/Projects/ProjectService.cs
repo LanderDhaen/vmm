@@ -223,7 +223,6 @@ public class ProjectService(ApplicationDbContext dbContext)
 
 	public async Task<Result<ProjectResponse.History>>
 		GetHistoryAsync(Guid projectId, CancellationToken ctx = default) {
-		IQueryable<Project> query = dbContext.Projects.AsQueryable().AsNoTracking();
 
 		Project? project = await dbContext.Projects
 			.AsNoTracking()

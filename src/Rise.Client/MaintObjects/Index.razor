@@ -52,10 +52,7 @@
 			<PropertyColumn Property="x => x.Brand" Title="Merk" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-					         Color="@(MaintObjectUtility.DefineStatusColor(context.Item.MaintObjStatus))">
-						@MaintObjectUtility.TranslateStatus(context.Item.MaintObjStatus)
-					</MudChip>
+					<MaintObjStatusChip Status="@context.Item.MaintObjStatus"/>
 				</CellTemplate>
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.Location" Title="Locatie" HeaderClass="mud-theme-primary"/>

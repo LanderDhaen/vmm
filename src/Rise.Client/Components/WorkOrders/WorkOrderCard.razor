@@ -7,12 +7,8 @@
 			<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
 				<MudText Typo="Typo.h6" Color="Color.Primary">@WorkOrder.Name</MudText>
 				<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-					<MudChip T="string" Icon="@WorkOrderUtility.DefinePriorityIcon(WorkOrder.Priority)" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefinePriorityColor(WorkOrder.Priority))">
-						@WorkOrderUtility.TranslatePriority(WorkOrder.Priority)
-					</MudChip>
-					<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@(WorkOrderUtility.DefineStatusColor(WorkOrder.Status))">
-						@WorkOrderUtility.TranslateStatus(WorkOrder.Status)
-					</MudChip>
+					<WorkOrderPriorityChip Priority="@WorkOrder.Priority"/>
+					<WorkOrderStatusChip Status="WorkOrder.Status"/>
 				</MudStack>
 			</MudStack>
 			<MudText Typo="Typo.h6"><b>@MaintObjectUtility.TranslateType(WorkOrder.MaintObjType) @WorkOrder.MaintObj</b></MudText>

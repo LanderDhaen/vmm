@@ -42,4 +42,14 @@ public static class MaintObjDto {
 		public required int MaintenanceIntervalDays { get; init; }
 		public required int CalibrationIntervalDays { get; init; }
 	}
+	/// <summary>
+	///     Represents a change made to a maintenance object.
+	/// </summary>
+	public class Modification {
+		public required MaintObjModificationType MaintObjModificationType { get; init; }
+		public required DateTime ModifiedAt { get; init; }
+		public required string PreviousValue { get; init; }
+		public required string CurrentValue { get; init; }
+	}
+	
 }
