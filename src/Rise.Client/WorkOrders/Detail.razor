@@ -12,8 +12,8 @@
 }
 else
 {
-	<MudStack Row="true" Justify="Justify.SpaceBetween">
-		<MudStack Row="true" Spacing="8">
+	<MudStack Class="pt-2" Row="true" Justify="Justify.SpaceBetween">
+		<MudStack Row="true" Spacing="6">
 			<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			         @onclick="() => SetTab(0)">
 				@_tabs[0]
@@ -61,6 +61,8 @@ else
 
 				case WorkOrderStatus.Cancelled:
 					break;
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
 		</MudHidden>
 	</MudStack>
@@ -68,7 +70,7 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-4">
+			<MudGrid Spacing="4" Class="mt-2">
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
 						<MudCardHeader>
@@ -98,7 +100,8 @@ else
 
 						<MudCardContent>
 							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
-							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
+							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)
+							</MudText>
 							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>
 						</MudCardContent>
 					</MudCard>
@@ -110,8 +113,8 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6" Color="Color.Primary">Onderhoudsobject</MudText>
-									<MudStack Row="true" Justify="Justify.SpaceBetween">
-										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
+										<MudChip T="string" Size="Size.Small" Variant="Variant.Text"
 										         Color="@(MaintObjectUtility.DefineStatusColor(_workOrder.MaintObj.MaintObjStatus))">
 											@MaintObjectUtility.TranslateStatus(_workOrder.MaintObj.MaintObjStatus)
 										</MudChip>
@@ -152,7 +155,7 @@ else
 			<div>Historiek?</div>
 			break;
 	}
-	
+
 	<MudHidden Breakpoint="Breakpoint.MdAndUp">
 		<MudStack Row="true"
 		          Spacing="2"

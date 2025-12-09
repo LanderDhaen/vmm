@@ -14,7 +14,7 @@
 else
 {
 	// ====== Tabs ======
-	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="() =>  SetTab(0)">
 			@_tabs[0]
@@ -30,8 +30,7 @@ else
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-4">
-
+			<MudGrid Spacing="4" Class="mt-2">
 				@* Details *@
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">

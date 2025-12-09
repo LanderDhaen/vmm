@@ -11,10 +11,10 @@
 	</MudContainer>
 }
 else
-{	
+{
 	@* Tabs *@
-	
-	<MudStack Row="true" Justify="Justify.FlexStart" Spacing="8">
+
+	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 		         @onclick="() =>  SetTabAsync(0)">
 			@_tabs[0]
@@ -25,14 +25,13 @@ else
 			@_tabs[1]
 		</MudText>
 	</MudStack>
-	
+
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-4">
+			<MudGrid Spacing="4" Class="mt-2">
 
 				@* Details *@
-
 				<MudItem xs="12" md="6" Class="d-flex">
 					<MudCard Elevation="2" Class="rounded-lg flex-grow-1">
 						<MudCardHeader>
@@ -51,7 +50,8 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
-							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))</MudText>
+							<MudText><b>Geïnstalleerd:</b> @(StationUtility.ToLongInstalledAt(_station.InstalledAt))
+							</MudText>
 							<MudText><b>Verwijderd:</b> @(StationUtility.ToLongRemovedAt(_station.RemovedAt))</MudText>
 							<MudText><b>Projecten:</b> @_station.ProjectsCount</MudText>
 						</MudCardContent>
@@ -59,7 +59,6 @@ else
 				</MudItem>
 
 				@* Location *@
-
 				<MudItem xs="12" md="6">
 					<LocationCard Location="_station.Location" OnClick="@OpenUpdateLocationDialogAsync"/>
 				</MudItem>
