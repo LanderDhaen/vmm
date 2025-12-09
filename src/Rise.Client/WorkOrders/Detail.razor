@@ -150,48 +150,4 @@ else
 			<div>Historiek?</div>
 			break;
 	}
-
-	@* Floating action buttons for mobile *@
-	<MudHidden Breakpoint="Breakpoint.MdAndUp">
-		<MudStack Row="true"
-		          Spacing="2"
-		          Style="position:fixed; right:16px; bottom:16px; z-index:10;">
-
-			@switch (_workOrder.Status)
-			{
-				case WorkOrderStatus.Pending:
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Primary"
-					           OnClick="@ShowStartConfirmationAsync">
-						Starten
-					</MudButton>
-
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Error"
-					           OnClick="@ShowCancelConfirmationAsync">
-						Annuleren
-					</MudButton>
-					break;
-
-				case WorkOrderStatus.InProgress:
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Error"
-					           OnClick="@ShowCloseConfirmationAsync">
-						Afsluiten
-					</MudButton>
-					break;
-
-				case WorkOrderStatus.Completed:
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Success"
-					           OnClick="@ShowStartConfirmationAsync">
-						Heropenen
-					</MudButton>
-					break;
-
-				case WorkOrderStatus.Cancelled:
-					break;
-			}
-		</MudStack>
-	</MudHidden>
 }

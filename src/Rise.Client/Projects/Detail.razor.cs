@@ -17,7 +17,7 @@ public partial class Detail {
 	private readonly bool _visible;
 
 	// Drawer
-	private bool _open;
+	private readonly bool _open;
 
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
