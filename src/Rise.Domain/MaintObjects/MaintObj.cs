@@ -177,8 +177,8 @@ public class MaintObj : Entity {
 			var current =  _maintObjHistories[i];
 			var previous = _maintObjHistories[i + 1];
 			
-			MaintObjModification modification = MaintObjModificationFactory.Create(current, previous);
-			modifications.Add(modification);
+			List<MaintObjModification> modificationsPerPair = MaintObjModificationFactory.Create(current, previous);
+			modifications.AddRange(modificationsPerPair);
 		}
 		
 		return modifications;
