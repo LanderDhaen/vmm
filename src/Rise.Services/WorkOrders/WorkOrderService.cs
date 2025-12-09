@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using Microsoft.EntityFrameworkCore;
 
 using Rise.Domain.WorkOrders;
@@ -16,17 +18,144 @@ using Status = Rise.Domain.WorkOrders.WorkOrderStatus;
 namespace Rise.Services.WorkOrders;
 
 /// <summary>
-///     Service for workorders.
+/// Service for workorders.
 /// </summary>
 /// <param name="dbContext"></param>
 public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderService {
 
+	private static FilterSpec? ParseFilterSpec(object? rawValue) {
+		if (rawValue is null)
+			return null;
+
+		try {
+			if (rawValue is not JsonElement je)
+				return new FilterSpec(null, rawValue?.ToString());
+
+			if (je.ValueKind != JsonValueKind.Object)
+				return new FilterSpec(null, je.ValueKind == JsonValueKind.String ? je.GetString() : je.GetRawText());
+
+			string? op = null;
+			string? val = null;
+
+			if (je.TryGetProperty("Operator", out var opProp))
+				op = opProp.ValueKind == JsonValueKind.String ? opProp.GetString() : opProp.GetRawText();
+
+			if (je.TryGetProperty("Value", out var vProp))
+				val = vProp.ValueKind == JsonValueKind.String ? vProp.GetString() : vProp.GetRawText();
+
+			return new FilterSpec(op, val);
+		} catch {
+			return null;
+		}
+	}
+
+	private static bool TryParseDateOnlySimple(string? raw, out DateOnly d) {
+		d = default;
+		if (string.IsNullOrWhiteSpace(raw)) return false;
+		raw = raw.Trim().Trim('"');
+		if (DateOnly.TryParseExact(raw, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out d))
+			return true;
+		return false;
+	}
+
 	public async Task<Result<WorkOrderResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 
-		IQueryable<WorkOrder> query = dbContext.WorkOrders.AsQueryable().AsNoTracking();
+		IQueryable<WorkOrder> query = dbContext.WorkOrders
+			.Include(w => w.MaintObj)
+				.ThenInclude(m => m.Location)
+			.Include(w => w.MaintObj)
+				.ThenInclude(m => m.MaintObjPlan)
+			.Include(w => w.Technician)
+			.AsQueryable()
+			.AsNoTracking();
 
+		if (!string.IsNullOrWhiteSpace(req.SearchTerm)) {
+			var t = req.SearchTerm.Trim().ToLowerInvariant();
+			query = query.Where(p =>
+				(!string.IsNullOrEmpty(p.Name) && p.Name.ToLower().Contains(t)) ||
+				(p.MaintObj != null && p.MaintObj.Name.ToLower().Contains(t)) ||
+				(p.Technician != null &&
+					((p.Technician.FirstName + " " + p.Technician.LastName).ToLower().Contains(t) ||
+					 (p.Technician.LastName + " " + p.Technician.FirstName).ToLower().Contains(t)))
+			);
+		}
 
+		// Filters
+		if (req.Filters != null && req.Filters.Count != 0) {
+			var temp = req.Filters
+				.Select(kv => (kv.Key, Spec: ParseFilterSpec(kv.Value)))
+				.Where(x => x.Spec != null)
+				.ToList();
+
+			var parsed = temp.Select(x => (Key: x.Key!, Spec: x.Spec!)).ToList();
+
+			foreach ((string keyOrig, FilterSpec spec) in parsed) {
+				var key = keyOrig?.Trim();
+				var raw = spec.Value;
+				var opCandidate = spec.Operator;
+				var opNorm = string.IsNullOrWhiteSpace(opCandidate) ? "Contains" : opCandidate;
+
+				switch (key) {
+				case "MaintObjType": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<SharedMainObjType>(raw, true, out var mt)) {
+								query = query.Where(p => p.MaintObj != null && p.MaintObj.MaintObjType == (Domain.MaintObjects.MaintObjType)mt);
+							} else if (int.TryParse(raw, out var n)) {
+								query = query.Where(p => p.MaintObj != null && (int)p.MaintObj.MaintObjType == n);
+							}
+						}
+						break;
+					}
+				case "Status": {
+						if (!string.IsNullOrWhiteSpace(raw)) {
+							if (Enum.TryParse<Status>(raw, true, out var sRes))
+								query = query.Where(p => p.Status == sRes);
+							else if (int.TryParse(raw, out var n))
+								query = query.Where(p => (int)p.Status == n);
+						}
+						break;
+					}
+				case "Technician": {
+						var t = (raw ?? string.Empty).Trim().ToLowerInvariant();
+						if (!string.IsNullOrEmpty(t)) {
+							query = query.Where(p => p.Technician != null && EF.Functions.Like((p.Technician.FirstName + " " + p.Technician.LastName).ToLower(), $"%{t}%"));
+						}
+						break;
+					}
+				case "StartDate": {
+						if (opNorm == "IsEmpty")
+							query = query.Where(p => p.DateRange == null || p.DateRange.StartDate == default);
+						else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate >= d),
+									"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.StartDate <= d),
+									_ => query.Where(p => p.DateRange != null && p.DateRange.StartDate == d)
+								};
+							}
+						}
+						break;
+					}
+				case "EndDate": {
+						if (opNorm == "IsEmpty")
+							query = query.Where(p => p.DateRange == null || p.DateRange.EndDate == null);
+						else {
+							if (TryParseDateOnlySimple(raw, out var d)) {
+								query = opNorm switch {
+									"GreaterThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate >= d),
+									"LessThanOrEqual" => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate <= d),
+									_ => query.Where(p => p.DateRange != null && p.DateRange.EndDate != null && p.DateRange.EndDate == d)
+								};
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		// total count before paging
 		int totalCount = await query.CountAsync(ctx);
 
 		// Sorting
