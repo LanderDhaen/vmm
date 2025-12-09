@@ -28,7 +28,7 @@ public partial class Index {
 	private IEnumerable<MeasurementStationDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-	private string _searchTerm;
+	private string _searchTerm = string.Empty;
 
 
 	[Inject] public required IMeasurementStationService StationService { get; init; }
@@ -56,7 +56,7 @@ public partial class Index {
 
 	private async Task<GridData<MeasurementStationDto.Index>> GetStationsAsync(
 		GridState<MeasurementStationDto.Index> state) {
-		SortDefinition<MeasurementStationDto.Index>? sorting = state.SortDefinitions.FirstOrDefault(
+		SortDefinition<MeasurementStationDto.Index> sorting = state.SortDefinitions.FirstOrDefault(
 			new SortDefinition<MeasurementStationDto.Index>(_activeSorting, _activeSortingDesc, 0,
 				null)); // Can't seem to have no sort function here
 
@@ -82,7 +82,7 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetStationsMobileAsync() {
-		_cancellationTokenSource.Cancel();
+		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
 

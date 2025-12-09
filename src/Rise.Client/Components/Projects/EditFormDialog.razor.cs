@@ -12,7 +12,7 @@ public partial class EditFormDialog {
 	private MudForm form;
 
 	[Parameter] public Guid ProjectId { get; set; }
-	[Parameter] public ProjectDto.Detail Project { get; set; }
+	[Parameter] public required ProjectDto.Detail Project { get; set; }
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
