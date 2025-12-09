@@ -24,8 +24,8 @@ else
 			</HeaderContent>
 			<RowTemplate>
 				<MudTd DataLabel="#">@context.Code</MudTd>
-				<MudTd DataLabel="Geïnstalleerd op">@(StationUtility.ToLongInstalledAt(context.InstalledAt))</MudTd>
-				<MudTd DataLabel="Verwijderd op">@(StationUtility.ToLongRemovedAt(context.RemovedAt))</MudTd>
+				<MudTd DataLabel="Geïnstalleerd op">@(StationUtility.ToShortRemovedAt(context.InstalledAt))</MudTd>
+				<MudTd DataLabel="Verwijderd op">@(StationUtility.ToShortRemovedAt(context.RemovedAt))</MudTd>
 				<MudTd DataLabel="Locatie">@context.Location</MudTd>
 				<MudTd DataLabel="Gemeente">@context.City</MudTd>
 			</RowTemplate>

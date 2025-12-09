@@ -79,8 +79,8 @@ else
 								<MudText><b>Status: </b></MudText>
 								<ProjectStatusChip Status="_project.Status"/>
 							</MudStack>
-							<MudText><b>Startdatum:</b> @(_project.StartDate)</MudText>
-							<MudText><b>Einddatum:</b> @(_project.EndDate)</MudText>
+							<MudText><b>Startdatum:</b> @ProjectUtility.ToLongStartDate(_project.StartDate)</MudText>
+							<MudText><b>Einddatum:</b> @ProjectUtility.ToLongEndDate(_project.EndDate)</MudText>
 						</MudCardContent>
 					</MudCard>
 				</MudItem>

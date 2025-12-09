@@ -50,8 +50,16 @@
 			<PropertyColumn Property="x => x.Code" InitialDirection="SortDirection.Descending" Title="#"
 			                HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.Name" Title="Naam" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@ProjectUtility.ToShortStartDate(context.Item.StartDate)
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@ProjectUtility.ToShortEndDate(context.Item.EndDate)
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<ProjectStatusChip Status="context.Item.Status"/>
