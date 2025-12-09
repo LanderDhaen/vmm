@@ -25,14 +25,18 @@
 		           Class="px-4">
 			Filteren
 		</MudButton>
-		<MudButton Variant="Variant.Filled"
-		           StartIcon="@Icons.Material.Filled.Add"
-		           Size="Size.Small"
-		           Color="Color.Primary"
-		           Class="px-4"
-		           OnClick="@NavigateToCreate">
-			Project
-		</MudButton>
+
+		<MudTooltip Text="project toevoegen" Delay="600" Arrow="true" Placement="Placement.Top"
+		            Color="Color.Dark">
+			<MudButton Variant="Variant.Filled"
+			           StartIcon="@Icons.Material.Filled.Add"
+			           Size="Size.Small"
+			           Color="Color.Primary"
+			           Class="px-4"
+			           OnClick="@NavigateToCreate">
+				Project
+			</MudButton>
+		</MudTooltip>
 	</MudStack>
 
 	<MudDataGrid T="ProjectDto.Index"
@@ -120,7 +124,7 @@
 			@foreach (var item in _mobileItems)
 			{
 				<MudItem xs="12">
-					<ProjectCard Project="item" />
+					<ProjectCard Project="item"/>
 				</MudItem>
 			}
 		}
