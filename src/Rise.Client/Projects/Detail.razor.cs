@@ -146,13 +146,9 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
-			if (_project is not null) {
-				_project.Status = Status.Afgesloten;
-				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-			}
+			await RefreshProjectDetail();
 
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
-			_open = false;
 
 			StateHasChanged();
 		} else {
@@ -170,13 +166,9 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
-			if (_project is not null) {
-				_project.Status = Status.Actief;
-				_project.EndDate = null;
-			}
+			await RefreshProjectDetail();
 
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
-			_open = false;
 
 			StateHasChanged();
 		} else {

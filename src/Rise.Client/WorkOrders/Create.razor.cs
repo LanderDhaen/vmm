@@ -45,7 +45,7 @@ public partial class Create {
 			new BreadcrumbItem("Voeg toe", "/workorders/create", true)
 		);
 
-		HeaderService.Set("Werkbon aanmaken", string.Empty);
+		HeaderService.Set("Voeg toe", string.Empty);
 	}
 
 	private Task<IEnumerable<MaintObjDto.Index>> SearchMaintObjs(string value, CancellationToken ct) {

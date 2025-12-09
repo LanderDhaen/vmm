@@ -12,45 +12,6 @@
 }
 else
 {
-	<MudHidden Breakpoint="Breakpoint.Xs">
-		<MudDrawer @bind-open="@_open" Anchor="Anchor.Right" Elevation="1" Variant="DrawerVariant.Temporary">
-			<MudDrawerHeader>Acties</MudDrawerHeader>
-			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="@ShowCloseConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
-				Project afsluiten
-			</MudButton>
-
-			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="@ShowStartConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Actief)">
-				Project opstarten
-			</MudButton>
-		</MudDrawer>
-	</MudHidden>
-
-	// Mobile
-	<MudHidden Breakpoint="Breakpoint.SmAndUp">
-		<MudDrawer @bind-open="@_open" Anchor="Anchor.Bottom" Elevation="1" Variant="DrawerVariant.Temporary">
-			<MudDrawerHeader>Acties</MudDrawerHeader>
-			<MudButton StartIcon="@Icons.Material.Filled.Cancel"
-			           Color="Color.Error"
-			           OnClick="@ShowCloseConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Afgesloten)">
-				Project afsluiten
-			</MudButton>
-
-			<MudButton StartIcon="@Icons.Material.Filled.Check"
-			           Color="Color.Success"
-			           OnClick="@ShowStartConfirmationAsync"
-			           Disabled="@(_project?.Status == Status.Actief)">
-				Project opstarten
-			</MudButton>
-		</MudDrawer>
-	</MudHidden>
-
 	@* Tabs *@
 	<MudStack Class="pt-2" Row="true" Justify="Justify.FlexStart" Spacing="6">
 		<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
@@ -94,6 +55,16 @@ else
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Status: </b></MudText>
+								<MudChip T="string"
+								         Class="ma-0"
+								         Size="Size.Small"
+								         Variant="Variant.Outlined"
+								         Color="@(ProjectUtility.DefineStatusColor(_project.Status))">
+									@_project.Status
+								</MudChip>
+							</MudStack>
 							<MudText><b>Startdatum:</b> @(_project.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @(_project.EndDate)</MudText>
 						</MudCardContent>
@@ -107,7 +78,7 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6"
-									         Color="Color.Primary">@_project.MeasurementNetwork.Name</MudText>
+									         Color="Color.Primary">Meetnet</MudText>
 									<MudTooltip Delay="400"
 									            Text="@(IsActive ? "Meetnet wijzigen" : "Afgesloten project kan niet bewerkt worden")">
 										<MudButton Variant="Variant.Text"
@@ -121,6 +92,7 @@ else
 										</MudButton>
 									</MudTooltip>
 								</MudStack>
+								<MudText Typo="Typo.subtitle2">@_project.MeasurementNetwork.Name</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent>
