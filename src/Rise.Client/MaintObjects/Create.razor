@@ -7,7 +7,10 @@
 			<MudGrid>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Serienummer</MudText>
+					<MudText Typo="Typo.subtitle2">
+						Serienummer
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+					</MudText>
 					<MudTextField @bind-Value="Model.SerialNumber"
 					              For="@(() => Model.SerialNumber)"
 					              Immediate="true"
@@ -19,25 +22,31 @@
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Naam</MudText>
+					<MudText Typo="Typo.subtitle2">Naam
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
 					<MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Counter="250" MaxLength="250"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Naam"/>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Type</MudText>
+					<MudText Typo="Typo.subtitle2">Type
+						<MudText Color="Color.Error" Inline="true">*</MudText>
+						</MudText>
 					<MudSelect @bind-Value="Model.MaintObjType"
 					           For="@(() => Model.MaintObjType)"
 					           Placeholder="Selecteer een type: " Clearable="true" Variant="Variant.Outlined">
 						@foreach (var type in Enum.GetValues(typeof(MaintObjType)).Cast<MaintObjType>())
 						{
-							<MudSelectItem Value="type">@type.ToString()</MudSelectItem>
+							<MudSelectItem Value="type">@MaintObjectUtility.TranslateType(type)</MudSelectItem>
 						}
 					</MudSelect>
 				</MudItem>
 
 				<MudItem xs="12" sm="6">
-					<MudText Typo="Typo.subtitle2">Merk</MudText>
+					<MudText Typo="Typo.subtitle2">Merk
+						<MudText Typo="Typo.caption">(Optioneel)</MudText>
+						</MudText>
 					<MudTextField @bind-Value="Model.Brand" For="@(() => Model.Brand)"
 					              Immediate="true" Variant="Variant.Outlined" Placeholder="Merk"/>
 				</MudItem>
@@ -45,7 +54,9 @@
 				@if (_locations != null)
 				{
 					<MudItem xs="12" sm="6">
-						<MudText Typo="Typo.subtitle2">Locatie</MudText>
+						<MudText Typo="Typo.subtitle2">Locatie
+							<MudText Color="Color.Error" Inline="true">*</MudText>
+							</MudText>
 						<MudSelect T="Guid?"
 						           @bind-Value="Model.LocationId"
 						           For="@(() => Model.LocationId)"
