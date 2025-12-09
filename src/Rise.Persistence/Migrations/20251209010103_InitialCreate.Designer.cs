@@ -12,7 +12,7 @@ using Rise.Persistence;
 namespace Rise.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251208181837_InitialCreate")]
+    [Migration("20251209010103_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -359,6 +359,40 @@ namespace Rise.Persistence.Migrations
                     b.HasIndex("StationId");
 
                     b.ToTable("MaintObj", (string)null);
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("LastScannedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MaintObjPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MaintObjStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("StationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastScannedById");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("MaintObjPlanId");
+
+                    b.HasIndex("StationId");
+
+                    b.ToTable("MaintObjHistory", (string)null);
                 });
 
             modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjPlan", b =>
@@ -893,6 +927,85 @@ namespace Rise.Persistence.Migrations
                     b.Navigation("MaintObjPlan");
 
                     b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("Rise.Domain.MaintObjects.MaintObjHistory", b =>
+                {
+                    b.HasOne("Rise.Domain.Projects.Technician", "LastScannedBy")
+                        .WithMany()
+                        .HasForeignKey("LastScannedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Rise.Domain.Locations.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.MaintObjects.MaintObjPlan", "MaintObjPlan")
+                        .WithMany()
+                        .HasForeignKey("MaintObjPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rise.Domain.Stations.MeasurementStation", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId");
+
+                    b.OwnsOne("Rise.Domain.Common.Installation", "Installation", b1 =>
+                        {
+                            b1.Property<Guid>("MaintObjHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("InstalledAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("InstalledAt");
+
+                            b1.Property<DateTime?>("RemovedAt")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("RemovedAt");
+
+                            b1.HasKey("MaintObjHistoryId");
+
+                            b1.ToTable("MaintObjHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MaintObjHistoryId");
+                        });
+
+                    b.OwnsOne("Rise.Domain.Common.ValidityRange", "ValidityRange", b1 =>
+                        {
+                            b1.Property<Guid>("MaintObjHistoryId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("ValidFrom")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidFrom");
+
+                            b1.Property<DateTime>("ValidTo")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ValidTo");
+
+                            b1.HasKey("MaintObjHistoryId");
+
+                            b1.ToTable("MaintObjHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MaintObjHistoryId");
+                        });
+
+                    b.Navigation("Installation");
+
+                    b.Navigation("LastScannedBy");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("MaintObjPlan");
+
+                    b.Navigation("Station");
+
+                    b.Navigation("ValidityRange")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rise.Domain.Networks.MeasurementNetwork", b =>

@@ -7,6 +7,16 @@ using Rise.Domain.Stations;
 namespace Rise.Domain.MaintObjects;
 
 public class MaintObj : Entity {
+	
+	// History
+
+	private readonly List<MaintObjHistory> _maintObjHistories = [];
+	
+	// Constructors
+	
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
 	private MaintObj() { }
 
 	public MaintObj(string name, string serialNumber, MaintObjType maintObjType, MaintObjPlan maintObjPlan, string? brand, Location location) {
@@ -17,6 +27,8 @@ public class MaintObj : Entity {
 		Brand = brand;
 		Location = Guard.Against.Null(location);
 	}
+	
+	// Properties
 
 	public string Name { get; private set; }
 	public string SerialNumber { get; private set; }
@@ -31,6 +43,8 @@ public class MaintObj : Entity {
 	public Location Location { get; private set; }
 
 	public Technician? LastScannedBy { get; private set; }
+	
+	// Functions
 
 	public void AssignToStation(MeasurementStation station) {
 		Station = Guard.Against.Null(station);
@@ -69,4 +83,52 @@ public class MaintObj : Entity {
 		MaintObjPlan = maintObjPlan;
 		Brand = brand;
 	}
+	
+	// History
+
+	private void AddHistoryEntry() {
+		ValidityRange validityRange = new(UpdatedAt, DateTime.UtcNow);
+		Installation? installation = Installation is null ? null : new Installation(Installation.InstalledAt, Installation.RemovedAt);
+		
+		MaintObjHistory maintObjHistory = new(MaintObjStatus, 
+			MaintObjPlan,
+			installation,
+			Station,  Location, LastScannedBy,  validityRange); 
+		_maintObjHistories.Add(maintObjHistory);
+	}
+	
+}
+
+/// <summary>
+///     A maintenance object history is something that holds a past state of a maintenance object.
+/// </summary>
+public class MaintObjHistory : HistoryEntity {
+	/// <summary>
+	///     Entity Framework Core Constructor
+	/// </summary>
+	private MaintObjHistory() { }
+
+	public MaintObjHistory(MaintObjStatus maintObjStatus, 
+		MaintObjPlan maintObjPlan, Installation? installation, 
+		MeasurementStation? station, 
+		Location location, 
+		Technician? lastScannedBy,
+		ValidityRange validityRange) {
+		
+		MaintObjStatus = Guard.Against.Null(maintObjStatus);
+		MaintObjPlan = Guard.Against.Null(maintObjPlan);
+		Installation = installation;
+		Station = station;
+		Location = location;
+		LastScannedBy = lastScannedBy;
+		ValidityRange = validityRange;
+
+	}
+	
+	public MaintObjStatus MaintObjStatus { get; init; }
+	public MaintObjPlan MaintObjPlan { get; init; }
+	public Installation? Installation { get; init; }
+	public MeasurementStation? Station { get; init; }
+	public Location Location { get; init; }
+	public Technician? LastScannedBy { get; init; }
 }
