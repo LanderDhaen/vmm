@@ -59,14 +59,16 @@
 			</PropertyColumn>
 
 			<PropertyColumn Property="x => x.Name" Title="Titel" HeaderClass="mud-theme-primary"/>
-			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary"/>
-
+			<PropertyColumn Property="x => x.Technician" Title="Technieker" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@(context.Item.Technician ?? "-")
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.Status" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<WorkOrderStatusChip Status="@context.Item.Status"/>
 				</CellTemplate>
 			</PropertyColumn>
-
 			<PropertyColumn Property="x => x.StartDate" Title="Startdatum" HeaderClass="mud-theme-primary"/>
 			<PropertyColumn Property="x => x.EndDate" Title="Einddatum" HeaderClass="mud-theme-primary"/>
 		</Columns>
@@ -144,7 +146,7 @@
 							</CardHeaderContent>
 						</MudCardHeader>
 						<MudCardContent Class="pt-0">
-							<MudText><b>Technieker:</b> @item.Technician</MudText>
+							<MudText><b>Technieker:</b> @(item.Technician ?? "-")</MudText>
 							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(item.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(item.EndDate)</MudText>
 						</MudCardContent>
