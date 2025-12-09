@@ -395,7 +395,7 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			.Include(ms => ms.Installation)
 			.Include(ms => ms.MaintObjPlan)
 			.Include(ms => ms.LastScannedBy)
-			
+
 			.Where(ms => req.MaintObjIds.Contains(ms.Id))
 			.ToListAsync(ct);
 

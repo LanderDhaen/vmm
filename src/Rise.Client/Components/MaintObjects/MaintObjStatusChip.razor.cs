@@ -1,5 +1,6 @@
-using Rise.Shared.MaintObjects;
 using Microsoft.AspNetCore.Components;
+
+using Rise.Shared.MaintObjects;
 
 namespace Rise.Client.Components.MaintObjects;
 

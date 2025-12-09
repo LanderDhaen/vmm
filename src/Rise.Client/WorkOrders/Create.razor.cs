@@ -21,7 +21,7 @@ public partial class Create {
 
 	private readonly WorkOrderRequest.Create.Validator _validator = new();
 
-	private MudForm form = default!;
+	private MudForm _form = default!;
 	private WorkOrderRequest.Create Model { get; set; } = new();
 	private IEnumerable<MaintObjDto.Index>? _maintObjs;
 
@@ -30,7 +30,7 @@ public partial class Create {
 	protected override async Task OnInitializedAsync() {
 		QueryRequest.SkipTake req = new() {
 			Skip = 0,
-			Take = 1000,
+			Take = Int32.MaxValue,
 			OrderBy = "Name"
 		};
 
@@ -82,10 +82,10 @@ public partial class Create {
 			FullWidth = true
 		};
 
-		var dialog = DialogService.Show<QrScanDialog>("Scan QR code", options);
+		var dialog = await DialogService.ShowAsync<QrScanDialog>("Scan QR code", options);
 		var result = await dialog.Result;
 
-		if (result.Canceled || result.Data is not string decoded)
+		if (result!.Canceled || result.Data is not string decoded)
 			return;
 
 		var serial = decoded.Trim();
@@ -118,9 +118,9 @@ public partial class Create {
 	}
 
 	private async Task CreateWorkOrderAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (!form.IsValid)
+		if (!_form.IsValid)
 			return;
 
 		Result<WorkOrderResponse.Create> result =

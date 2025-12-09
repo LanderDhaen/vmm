@@ -51,5 +51,5 @@ public static class MaintObjDto {
 		public required string PreviousValue { get; init; }
 		public required string CurrentValue { get; init; }
 	}
-	
+
 }

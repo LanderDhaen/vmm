@@ -10,7 +10,7 @@ namespace Rise.Client.Projects;
 public partial class Create {
 	private readonly ProjectRequest.Create.Validator _validator = new();
 	private Result<ProjectResponse.Create>? _result;
-	private MudForm form;
+	private MudForm _form;
 	[Inject] private ISnackbar Snackbar { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 	[Inject] public required NavigationManager NavigationManager { get; set; }
@@ -36,9 +36,9 @@ public partial class Create {
 	}
 
 	private async Task CreateProjectAsync() {
-		await form.Validate();
+		await _form.Validate();
 
-		if (form.IsValid) {
+		if (_form.IsValid) {
 			_result = await ProjectService.CreateAsync(Model);
 			if (_result.IsSuccess) {
 				Snackbar.Add("Project succesvol aangemaakt!", Severity.Success);

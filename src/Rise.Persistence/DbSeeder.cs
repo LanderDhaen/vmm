@@ -447,17 +447,17 @@ public class DbSeeder(
 			new MaintObj("SM1200", "87962", MaintObjType.Sim, plans[0], null, stockLocations[2]),
 			new MaintObj("CT9300", "50736", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[2]),
 		};
-		
-		
+
+
 		dbContext.MaintObjects.AddRange(maintObjs);
 		await dbContext.SaveChangesAsync();
 	}
-	
+
 	private async Task MaintObjectHistoriesAsync() {
 		if (!dbContext.MaintObjects.Any()) {
 			return;
 		}
-		
+
 		List<MaintObj> maintObjs = await dbContext.MaintObjects
 			.Include(x => x.MaintObjPlan)
 			.Include(x => x.Installation)
@@ -467,17 +467,17 @@ public class DbSeeder(
 			.ToListAsync();
 
 		List<Technician> technicians = await dbContext.Technicians.ToListAsync();
-		
+
 		Location stockAntwerpen = await dbContext.Locations.Where(l => l.Name == "Stock Antwerpen").FirstAsync();
 		MeasurementStation stationAalst = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Zeebergbrug").FirstAsync();
 		MeasurementStation stationGent = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Duikplaats Blaarmeersen").FirstAsync();
 		MeasurementStation stationBreda = await dbContext.MeasurementStations.Where(x => x.Location.Name == "Emerput").FirstAsync();
-		
+
 		foreach (MaintObj maintObj in maintObjs) {
-			
+
 			maintObj.ScanBy(technicians[0]);
 			await dbContext.SaveChangesAsync();
-			
+
 			if (maintObj.Location.Name == "Stock Aalst") {
 				maintObj.AssignToStation(stationAalst);
 				await dbContext.SaveChangesAsync();
@@ -491,7 +491,7 @@ public class DbSeeder(
 			if (maintObj.Location.Name == "Stock Gent") {
 				maintObj.AssignToStation(stationGent);
 				await dbContext.SaveChangesAsync();
-				
+
 				if (maintObj.MaintObjType is MaintObjType.Modem or MaintObjType.Sim) {
 					maintObj.MarkAsBroken();
 					await dbContext.SaveChangesAsync();
@@ -505,19 +505,19 @@ public class DbSeeder(
 				if (maintObj.MaintObjType is MaintObjType.Sensor) {
 					maintObj.MarkAsBroken();
 					await dbContext.SaveChangesAsync();
-					
+
 					maintObj.MarkAsFixed();
 					await dbContext.SaveChangesAsync();
 				}
-				
+
 				maintObj.MoveToStockLocation(stockAntwerpen);
 				await dbContext.SaveChangesAsync();
 			}
-			
+
 			maintObj.ScanBy(technicians[1]);
-			
+
 		}
-		
+
 	}
 
 	private async Task WorkOrdersAsync() {

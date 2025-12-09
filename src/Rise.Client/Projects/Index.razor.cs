@@ -30,7 +30,7 @@ public partial class Index {
 	private IEnumerable<ProjectDto.Index>? _mobileItems;
 
 	private bool _mobileSortOptionsOpen;
-	private string _searchTerm;
+	private string _searchTerm = string.Empty;
 
 	[Inject] public required IProjectService ProjectService { get; init; }
 	[Inject] public required NavigationManager NavigationManager { get; init; }
@@ -80,7 +80,7 @@ public partial class Index {
 	// Mobile
 
 	private async Task GetProjectsMobileAsync() {
-		_cancellationTokenSource.Cancel();
+		await _cancellationTokenSource.CancelAsync();
 		_cancellationTokenSource.Dispose();
 		_cancellationTokenSource = new CancellationTokenSource();
 

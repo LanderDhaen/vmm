@@ -24,7 +24,7 @@ public class History(IMaintObjService maintObjService) : Endpoint<EmptyRequest, 
 	public override async Task<Result<MaintObjResponse.History>> ExecuteAsync(EmptyRequest request,
 		CancellationToken ct) {
 		Guid maintObjId = Route<Guid>("maintObjId");
-		
+
 		return await maintObjService.GetHistoryAsync(maintObjId, ct);
 	}
 }
