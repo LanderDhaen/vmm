@@ -20,17 +20,7 @@ else
 							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(modification.ModifiedAt)</MudChip>
 						</ItemOpposite>
 						<ItemContent>
-							<MudText Typo="Typo.h6">@DefineTitle(modification.MaintObjModificationType)</MudText>
-								@{
-									if (modification.MaintObjModificationType == MaintObjModificationType.Scanned)
-									{
-										<MudText>door @modification.CurrentValue</MudText>
-									}
-									else
-									{
-										<MudText>van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b></MudText>
-									}
-								} 
+							<ModificationItem Modification="modification" />
 						</ItemContent>
 					</MudTimelineItem>
 				}
@@ -47,11 +37,10 @@ else
 				{
 					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
 						<ItemContent>
-							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToShortValidFrom(modification.ModifiedAt)</MudChip>
-							<MudText Typo="Typo.h6">@DefineTitle(modification.MaintObjModificationType)</MudText>
-							<MudText>
-								van <b>@modification.PreviousValue</b> naar <b>@modification.CurrentValue</b>
-							</MudText>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">
+								@HistoryUtility.ToShortValidFrom(modification.ModifiedAt)
+							</MudChip>
+							<ModificationItem Modification="modification"/>
 						</ItemContent>
 					</MudTimelineItem>
 				}
