@@ -121,26 +121,27 @@ public class MaintObj : Entity {
 		LastScannedBy = technician;
 	}
 
-
-	public void SetStatus(MaintObjStatus status) {
-
-		// Check if the values are the same as the old values
-		
-		if (status.Equals(MaintObjStatus)) {
+	public void MarkAsBroken() {
+		if (MaintObjStatus == MaintObjStatus.Broken) {
 			return;
 		}
 		
-		// Check if the values are allowed
-
-		Guard.Against.Null(MaintObjStatus);
-		
-		// Create history object using old values
-		
 		AddHistoryEntry();
 		
-		// Assign the new values
+		SetStatus(MaintObjStatus.Broken);
+	}
+
+	public void MarkAsFixed() {
+		if (MaintObjStatus != MaintObjStatus.Broken) {
+			return;
+		}
 		
-		MaintObjStatus = status;
+		AddHistoryEntry();
+		SetStatus(MaintObjStatus.Inactive);
+	}
+
+	private void SetStatus(MaintObjStatus status) {
+		MaintObjStatus = Guard.Against.Null(status);
 	}
 
 	public void Edit(string name, string serialNumber, MaintObjPlan maintObjPlan, string? brand) {

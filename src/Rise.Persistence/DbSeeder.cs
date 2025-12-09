@@ -470,8 +470,11 @@ public class DbSeeder(
 
 			if (maintObj.Location.Name == "Stock Aalst") {
 				maintObj.AssignToStation(stationAalst);
+				
+				await dbContext.SaveChangesAsync();
+				
 				if (maintObj.MaintObjType is MaintObjType.Battery or MaintObjType.Logger) {
-					maintObj.SetStatus(MaintObjStatus.Broken);
+					maintObj.MarkAsBroken();
 				}
 			}
 			
@@ -479,15 +482,18 @@ public class DbSeeder(
 
 			if (maintObj.Location.Name == "Stock Gent") {
 				maintObj.AssignToStation(stationGent);
+				
+				await dbContext.SaveChangesAsync();
+				
 				if (maintObj.MaintObjType is MaintObjType.Modem or MaintObjType.Sensor)
 				{
-					maintObj.SetStatus(MaintObjStatus.Broken);
+					maintObj.MarkAsBroken();
 				}
 
 			}
 
 			if (maintObj.Location.Name == "Stock Antwerpen" && maintObj.MaintObjType == MaintObjType.Sim) {
-				maintObj.SetStatus(MaintObjStatus.Broken);
+				maintObj.MarkAsBroken();
 			}
 		}
 		
@@ -570,9 +576,11 @@ public class DbSeeder(
 				await dbContext.SaveChangesAsync();
 			}
 			
-			// Revert status back to the original (to keep some broken maintenance objects)
-			
-			maintObj.SetStatus(oldStatus);
+			// Revert status back to broken if it was originally broken
+
+			if (oldStatus == MaintObjStatus.Broken) {
+				maintObj.MarkAsBroken();
+			}
 		}
 	}
 

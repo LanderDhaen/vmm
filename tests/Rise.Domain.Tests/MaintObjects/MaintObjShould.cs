@@ -76,10 +76,10 @@ public class MaintObjShould {
 		Location location = MakeLocation();
 		MaintObj mo = new("Sensor-1", "SN-123", MaintObjType.Sensor, MakeType(), null, location);
 
-		mo.SetStatus(MaintObjStatus.Broken);
+		mo.MarkAsBroken();
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Broken);
 
-		mo.SetStatus(MaintObjStatus.Inactive);
+		mo.MarkAsFixed();
 		mo.MaintObjStatus.ShouldBe(MaintObjStatus.Inactive);
 	}
 
