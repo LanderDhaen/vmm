@@ -85,6 +85,9 @@ public class ProjectService(ApplicationDbContext dbContext)
 		ProjectRequest.UpdateMeasurementNetwork req,
 		CancellationToken ctx = default) {
 		Project? project = await dbContext.Projects
+			.Include(x => x.MeasurementNetwork)
+			.ThenInclude(x => x.Zone)
+			.Include(x => x.DateRange)
 			.SingleOrDefaultAsync(x => x.Id == req.ProjectId, ctx);
 
 		if (project is null) {
