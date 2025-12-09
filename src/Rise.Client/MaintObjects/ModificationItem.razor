@@ -1,3 +1,4 @@
+@using Rise.Client.Components.MaintObjects
 @using Rise.Shared.MaintObjects
 
 @{
@@ -7,23 +8,12 @@
 			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
 				van
-				<MudChip T="string"
-				         Class="ma-0"
-				         Size="Size.Small"
-				         Variant="Variant.Outlined"
-				         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.PreviousValue)))">
-					@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.PreviousValue))
-				</MudChip>
+				
+				<MaintObjStatusChip Status="@(Enum.Parse<MaintObjStatus>(Modification.PreviousValue))"/>
 
 				naar
-
-				<MudChip T="string"
-				         Class="ma-0"
-				         Size="Size.Small"
-				         Variant="Variant.Outlined"
-				         Color="@(MaintObjectUtility.DefineStatusColor(Enum.Parse<MaintObjStatus>(Modification.CurrentValue)))">
-					@MaintObjectUtility.TranslateStatus(Enum.Parse<MaintObjStatus>(Modification.CurrentValue))
-				</MudChip>
+				
+				<MaintObjStatusChip Status="@(Enum.Parse<MaintObjStatus>(Modification.CurrentValue))"/>
 			</MudStack>
 			break;
 

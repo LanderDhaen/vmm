@@ -1,5 +1,6 @@
 @page "/workorders/{WorkOrderId:guid}"
 @using Rise.Client.Components.Locations
+@using Rise.Client.Components.MaintObjects
 @using Rise.Shared.WorkOrders
 
 <PageTitle>Werkbon Details</PageTitle>
@@ -120,13 +121,7 @@ else
 						<MudCardContent>
 							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
 								<MudText><b>Status:</b></MudText>
-								<MudChip T="string" 
-								         Class="ma-0"
-								         Size="Size.Small" 
-								         Variant="Variant.Outlined"
-								         Color="@(MaintObjectUtility.DefineStatusColor(_workOrder.MaintObj.MaintObjStatus))">
-									@MaintObjectUtility.TranslateStatus(_workOrder.MaintObj.MaintObjStatus)
-								</MudChip>
+								<MaintObjStatusChip Status="_workOrder.MaintObj.MaintObjStatus"/>
 							</MudStack>
 							<MudText><b>Type:</b> @MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType)</MudText>
 							<MudText><b>Code:</b> @_workOrder.MaintObj.SerialNumber</MudText>
