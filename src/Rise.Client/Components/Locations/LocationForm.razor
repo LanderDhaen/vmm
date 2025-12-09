@@ -10,7 +10,8 @@
 		                 @bind-Value:after="@OnLocationSelected"
 		                 For="@(() => Model.LocationId)"
 		                 Placeholder="Selecteer een locatie: " Clearable="true"
-		                 Variant="Variant.Outlined">
+		                 Variant="Variant.Outlined"
+		                 MaxItems="@_locations.Count()">
 			<NoItemsTemplate>
 				<CreateLocationButton OnClick="@AddNewLocation"></CreateLocationButton>
 			</NoItemsTemplate>
