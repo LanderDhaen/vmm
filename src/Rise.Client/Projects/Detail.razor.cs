@@ -14,12 +14,6 @@ public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = ["Informatie", "Historiek"];
 
-	// Drawer
-	private bool _open;
-
-	// Overlay
-	private readonly bool _visible;
-
 	// ====== Main ======
 	private ProjectDto.Detail? _project;
 	private IEnumerable<MeasurementStationDto.Index>? _stationsFromProject;
@@ -144,13 +138,9 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
-			if (_project is not null) {
-				_project.Status = Status.Afgesloten;
-				_project.EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-			}
+			await RefreshProjectDetail();
 
 			Snackbar.Add("Project succesvol afgesloten!", Severity.Success);
-			_open = false;
 
 			StateHasChanged();
 		} else {
@@ -168,13 +158,9 @@ public partial class Detail {
 		});
 
 		if (result.IsSuccess) {
-			if (_project is not null) {
-				_project.Status = Status.Actief;
-				_project.EndDate = null;
-			}
+			await RefreshProjectDetail();
 
 			Snackbar.Add("Project succesvol opgestart!", Severity.Success);
-			_open = false;
 
 			StateHasChanged();
 		} else {
@@ -183,10 +169,6 @@ public partial class Detail {
 				: "Er is een fout opgetreden.";
 			Snackbar.Add(message, Severity.Error);
 		}
-	}
-
-	private void OpenDrawer() {
-		_open = !_open;
 	}
 
 	// Show confirmation dialogs

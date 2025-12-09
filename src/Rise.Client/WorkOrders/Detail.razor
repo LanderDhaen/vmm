@@ -12,7 +12,8 @@
 }
 else
 {
-	<MudStack Row="true" Justify="Justify.SpaceBetween">
+	@* Tabs *@
+	<MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center" Spacing="8">
 		<MudStack Row="true" Spacing="8">
 			<MudText Class="@($"tab-item {(_selectedTab == 0 ? "active" : "")}")"
 			         @onclick="() => SetTab(0)">
@@ -23,81 +24,61 @@ else
 				@_tabs[1]
 			</MudText>
 		</MudStack>
-
-		<MudHidden Breakpoint="Breakpoint.SmAndDown">
-			@switch (_workOrder.Status)
-			{
-				case WorkOrderStatus.Pending:
-					<MudStack Row="true" Spacing="2">
-						<MudButton Variant="Variant.Outlined"
-						           Color="Color.Primary"
-						           OnClick="@ShowStartConfirmationAsync">
-							Starten
-						</MudButton>
-
-						<MudButton Variant="Variant.Outlined"
-						           Color="Color.Error"
-						           OnClick="@ShowCancelConfirmationAsync">
-							Annuleren
-						</MudButton>
-					</MudStack>
-					break;
-
-				case WorkOrderStatus.InProgress:
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Error"
-					           OnClick="@ShowCloseConfirmationAsync">
-						Afsluiten
-					</MudButton>
-					break;
-
-				case WorkOrderStatus.Completed:
-					<MudButton Variant="Variant.Outlined"
-					           Color="Color.Success"
-					           OnClick="@ShowStartConfirmationAsync">
-						Heropenen
-					</MudButton>
-					break;
-
-				case WorkOrderStatus.Cancelled:
-					break;
-			}
-		</MudHidden>
 	</MudStack>
 
 	@switch (_selectedTab)
 	{
 		case 0:
-			<MudGrid Spacing="4" Class="mt-4">
+			
+			@* Toolbar *@
+			
+			<MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Class="mt-1">
+				@if (_workOrder.Status.Equals(WorkOrderStatus.Completed))
+				{
+					<MudButton StartIcon="@Icons.Material.Filled.RocketLaunch" Size="Size.Small" Variant="Variant.Filled" Color="Color.Success" OnClick="@ShowStartConfirmationAsync">Opstarten</MudButton>
+				}
+				else
+				{
+					<MudButton StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Variant="Variant.Filled" Color="Color.Error" OnClick="@ShowCloseConfirmationAsync">Afsluiten</MudButton>
+				}
+			</MudStack>
+			
+			<MudGrid Spacing="4" Class="mt-1">
+				
+				@* Details *@
+				
 				<MudItem xs="12" md="6">
 					<MudCard Elevation="2" Class="rounded-lg">
 						<MudCardHeader>
 							<CardHeaderContent>
-								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-									<MudText Typo="Typo.h6" Color="Color.Primary">@_workOrder.Name</MudText>
-									<MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-										<MudChip T="string"
-										         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
-										         Size="Size.Small"
-										         Variant="Variant.Outlined"
-										         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
-											@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
-										</MudChip>
-										<MudChip T="string"
-										         Size="Size.Small"
-										         Variant="Variant.Outlined"
-										         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
-											@WorkOrderUtility.TranslateStatus(_workOrder.Status)
-										</MudChip>
-									</MudStack>
-								</MudStack>
-
+								<MudText Typo="Typo.h6" Color="Color.Primary">@_workOrder.Name</MudText>
 								<MudText Typo="Typo.subtitle2">@_workOrder.Description</MudText>
 							</CardHeaderContent>
 						</MudCardHeader>
 
 						<MudCardContent>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Prioriteit:</b></MudText>
+								<MudChip T="string"
+								         Class="ma-0"
+								         Icon="@WorkOrderUtility.DefinePriorityIcon(_workOrder.Priority)"
+								         Size="Size.Small"
+								         Variant="Variant.Outlined"
+								         Color="@WorkOrderUtility.DefinePriorityColor(_workOrder.Priority)">
+									@WorkOrderUtility.TranslatePriority(_workOrder.Priority)
+								</MudChip>
+							</MudStack>
 							<MudText><b>Technieker:</b> @(_workOrder.Technician ?? "-")</MudText>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Status:</b></MudText>
+								<MudChip T="string"
+								         Class="ma-0"
+								         Size="Size.Small"
+								         Variant="Variant.Outlined"
+								         Color="@WorkOrderUtility.DefineStatusColor(_workOrder.Status)">
+									@WorkOrderUtility.TranslateStatus(_workOrder.Status)
+								</MudChip>
+							</MudStack>
 							<MudText><b>Startdatum:</b> @WorkOrderUtility.ToLongStartDate(_workOrder.StartDate)</MudText>
 							<MudText><b>Einddatum:</b> @WorkOrderUtility.ToLongEndDate(_workOrder.EndDate)</MudText>
 						</MudCardContent>
@@ -110,11 +91,6 @@ else
 							<CardHeaderContent>
 								<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
 									<MudText Typo="Typo.h6" Color="Color.Primary">Onderhoudsobject</MudText>
-									<MudStack Row="true" Justify="Justify.SpaceBetween">
-										<MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
-										         Color="@(MaintObjectUtility.DefineStatusColor(_workOrder.MaintObj.MaintObjStatus))">
-											@MaintObjectUtility.TranslateStatus(_workOrder.MaintObj.MaintObjStatus)
-										</MudChip>
 										<MudButton Variant="Variant.Text"
 										           StartIcon="@Icons.Material.Filled.OpenInNew"
 										           Size="Size.Small"
@@ -123,17 +99,36 @@ else
 										           OnClick="@(() => NavigateToMaintObj(_workOrder.MaintObj.Id))">
 											Bekijk
 										</MudButton>
-									</MudStack>
 								</MudStack>
 
-								<MudText Typo="Typo.subtitle2">
-									@MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType)
-									in @(_workOrder.MaintObj.StationCode ?? "-")
-								</MudText>
+								@if (_workOrder.MaintObj.StationCode is null)
+								{
+									<MudText Typo="Typo.subtitle2">
+										Momenteel in stock
+									</MudText>
+								}
+								else
+								{
+									<MudText Typo="Typo.subtitle2">
+										Geplaatst in meetstation @_workOrder.MaintObj.StationCode
+									</MudText>
+								}
+
 							</CardHeaderContent>
 						</MudCardHeader>
 
 						<MudCardContent>
+							<MudStack Row="true" Justify="Justify.FlexStart" Spacing="2">
+								<MudText><b>Status:</b></MudText>
+								<MudChip T="string" 
+								         Class="ma-0"
+								         Size="Size.Small" 
+								         Variant="Variant.Outlined"
+								         Color="@(MaintObjectUtility.DefineStatusColor(_workOrder.MaintObj.MaintObjStatus))">
+									@MaintObjectUtility.TranslateStatus(_workOrder.MaintObj.MaintObjStatus)
+								</MudChip>
+							</MudStack>
+							<MudText><b>Type:</b> @MaintObjectUtility.TranslateType(_workOrder.MaintObj.MaintObjType)</MudText>
 							<MudText><b>Code:</b> @_workOrder.MaintObj.SerialNumber</MudText>
 							<MudText><b>Naam:</b> @_workOrder.MaintObj.Name</MudText>
 							<MudText><b>Merk:</b> @(_workOrder.MaintObj.Brand ?? "-")</MudText>

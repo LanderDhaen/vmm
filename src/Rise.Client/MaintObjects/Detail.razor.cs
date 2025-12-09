@@ -11,7 +11,7 @@ namespace Rise.Client.MaintObjects;
 public partial class Detail {
 	// ====== Tabs ======
 	private readonly List<string> _tabs = [
-		"Info",
+		"Informatie",
 		"Historiek"
 	];
 
