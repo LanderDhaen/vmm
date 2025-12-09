@@ -49,7 +49,11 @@
 					@MaintObjectUtility.TranslateType(context.Item.MaintObjType)
 				</CellTemplate>
 			</PropertyColumn>
-			<PropertyColumn Property="x => x.Brand" Title="Merk" HeaderClass="mud-theme-primary"/>
+			<PropertyColumn Property="x => x.Brand" Title="Merk" HeaderClass="mud-theme-primary">
+				<CellTemplate Context="context">
+					@(context.Item.Brand ?? "-")
+				</CellTemplate>
+			</PropertyColumn>
 			<PropertyColumn Property="x => x.MaintObjStatus" Title="Status" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<MaintObjStatusChip Status="@context.Item.MaintObjStatus"/>
