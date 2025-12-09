@@ -25,16 +25,15 @@ public class MaintObjService(ApplicationDbContext dbContext)
 	public async Task<Result<MaintObjResponse.Index>> GetIndexAsync(QueryRequest.SkipTake req,
 		CancellationToken ctx = default) {
 		IQueryable<MaintObj> query = dbContext.MaintObjects.AsQueryable().AsNoTracking();
-
-		if (req.Filters.TryGetValue("Status", out object? statusObj)
-			&& statusObj is string and "Active") {
-			if (req.Filters.TryGetValue("StationId", out object? stationIdObj)
-				&& stationIdObj is string stationIdStr
-				&& Guid.TryParse(stationIdStr, out Guid parsedId)) {
-				query = query.Where(p => p.MaintObjStatus == MaintObjStatus.Inactive || p.Station!.Id == parsedId);
-			}
+		
+		// Check if there's a key-value pair for Status
+		if (req.Filters.TryGetValue("Status", out object? statusObj)) {
+				// Check if it's a valid Status
+				if (statusObj is string statusStr && Enum.TryParse(statusStr, out MaintObjStatus status)) {
+					query = query.Where(m => m.MaintObjStatus == status);
+				} 
 		}
-
+		
 		query = query.Where(m =>
 			m.SerialNumber.Contains(req.SearchTerm) ||
 			m.Name.Contains(req.SearchTerm)

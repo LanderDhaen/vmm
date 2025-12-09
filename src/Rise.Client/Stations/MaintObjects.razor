@@ -30,12 +30,7 @@ else
 				<MudTd DataLabel="Merk">@context.Brand</MudTd>
 				<MudTd DataLabel="Type">@MaintObjectUtility.TranslateType(context.MaintObjType)</MudTd>
 				<MudTd DataLabel="Status">
-					<MudChip T="string"
-					         Variant="Variant.Outlined"
-					         Color="@MaintObjectUtility.DefineStatusColor(context.MaintObjStatus)"
-					         Size="Size.Small">
-						@(MaintObjectUtility.TranslateStatus(context.MaintObjStatus))
-					</MudChip>
+					<MaintObjStatusChip Status="@context.MaintObjStatus"/>
 				</MudTd>
 			</RowTemplate>
 		</MudTable>

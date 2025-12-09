@@ -397,12 +397,6 @@ public class MeasurementStationService(ApplicationDbContext dbContext) : IMeasur
 			return Result.Error("Een of meerdere onderhoudsobjecten zijn niet gevonden.");
 		}
 
-		foreach (MaintObj current in measurementStation.MaintObjects.ToList()) {
-			if (!req.MaintObjIds.Contains(current.Id)) {
-				current.UnassignFromStation();
-			}
-		}
-
 		foreach (MaintObj mo in maintObjects) {
 			if (mo.Station is null || mo.Station.Id != measurementStation.Id) {
 				mo.AssignToStation(measurementStation);
