@@ -501,6 +501,8 @@ public class DbSeeder(
 		
 		foreach (MaintObj maintObj in maintObjs) {
 			
+			MaintObjStatus oldStatus = maintObj.MaintObjStatus;
+			
 			
 			// Different path depending on if the maintenance object is in stock
 		
@@ -553,6 +555,10 @@ public class DbSeeder(
 				maintObj.AssignToStation(station);
 				await dbContext.SaveChangesAsync();
 			}
+			
+			// Revert status back to the original (to keep some broken maintenance objects)
+			
+			maintObj.SetStatus(oldStatus);
 		}
 	}
 
