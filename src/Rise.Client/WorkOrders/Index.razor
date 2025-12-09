@@ -88,15 +88,17 @@
 
 <MudHidden Breakpoint="Breakpoint.SmAndUp">
 	<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pb-6">
-		<MudTextField T="string"
-		              Label="Zoek"
-		              Class="my-0"
-		              Variant="Variant.Outlined"
-		              Adornment="Adornment.End"
-		              AdornmentIcon="@Icons.Material.Filled.Search"
-		              Disabled="true"
-		              FullWidth="true"
-		              Margin="Margin.Dense"/>
+<MudTextField T="string"
+              Label="Zoek"
+              Class="my-0"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              DebounceInterval="300"
+              OnDebounceIntervalElapsed="HandleMobileIntervalElapsed"
+              @bind-Value="_searchTerm"
+              FullWidth="true"
+              Margin="Margin.Dense"/>
 
 		<MudIconButton Icon="@Icons.Material.Outlined.SortByAlpha"
 		               Color="Color.Primary"
