@@ -85,26 +85,26 @@ public static class WorkOrderUtility {
 	/// </summary>
 	/// <param name="createdAt">The date and time when the work order was created.</param>
 	/// <returns>
-	/// A string formatted as <c>d MMMM yyyy 'om' HH'u'mm</c>.
+	/// A string formatted as <c>d MMMM yyyy HH'u'mm</c>.
 	/// </returns>
 	/// <example>
-	/// 27 november 2025 om 14u30
+	/// 27 november 2025 14u30
 	/// </example>
 	public static string ToLongCreatedAt(DateTime createdAt)
-		=> createdAt.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm");
+		=> createdAt.ToLocalTime().ToString("d MMMM yyyy HH'u'mm");
 
 	/// <summary>
 	/// Formats the created at date and time in a short format.
 	/// </summary>
 	/// <param name="createdAt">The date and time when the work order was created.</param>
 	/// <returns>
-	/// A string formatted as <c>dd/MM/yyyy 'om' HH'u'mm</c>.
+	/// A string formatted as <c>dd/MM/yyyy HH'u'mm</c>.
 	/// </returns>
 	/// <example>
-	/// 27/11/2025 om 14u30
+	/// 27/11/2025 14u30
 	/// </example>
 	public static string ToShortCreatedAt(DateTime createdAt)
-		=> createdAt.ToLocalTime().ToString("dd/MM/yyyy 'om' HH'u'mm");
+		=> createdAt.ToLocalTime().ToString("dd/MM/yyyy HH'u'mm");
 
 	/// <summary>
 	/// Formats the start date, if available, in a long, human-readable format.

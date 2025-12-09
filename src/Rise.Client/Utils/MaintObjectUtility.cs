@@ -66,7 +66,7 @@ public static class MaintObjectUtility {
 	/// 27 november 2025 14u30
 	/// </example>
 	public static string ToLongInstalledAt(DateTime? installedAt)
-		=> installedAt?.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm") ?? "-";
+		=> installedAt?.ToLocalTime().ToString("d MMMM yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
 	/// Formats the installation date and time in a short format.
@@ -79,7 +79,7 @@ public static class MaintObjectUtility {
 	/// 15 januari 2026 09u00
 	/// </example>
 	public static string ToShortInstalledAt(DateTime? installedAt)
-		=> installedAt?.ToLocalTime().ToString("dd/MM/yyyy 'om' HH'u'mm") ?? "-";
+		=> installedAt?.ToLocalTime().ToString("dd/MM/yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
 	/// Formats the removal date and time in a long, human-readable format.
@@ -94,7 +94,7 @@ public static class MaintObjectUtility {
 	/// 15 januari 2026 09u00
 	/// </example>
 	public static string ToLongRemovedAt(DateTime? removedAt)
-		=> removedAt?.ToLocalTime().ToString("d MMMM yyyy 'om' HH'u'mm") ?? "-";
+		=> removedAt?.ToLocalTime().ToString("d MMMM yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
 	/// Formats the removal date and time in a short format.
@@ -107,20 +107,18 @@ public static class MaintObjectUtility {
 	/// 15/01/2026 09u00
 	/// </example>
 	public static string ToShortRemovedAt(DateTime? removedAt)
-		=> removedAt?.ToLocalTime().ToString("dd/MM/yyyy 'om' HH'u'mm") ?? "-";
+		=> removedAt?.ToLocalTime().ToString("dd/MM/yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
 	/// Calculates and formats the next expected maintenance date.
 	/// </summary>
 	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
 	/// <param name="maintenanceInterval">The maintenance interval in days.</param>
-	/// <returns>
-	/// A formatted maintenance date such as <c>27 november 2026 om 14u30</c>,  
-	/// or <c>Onderhoudsobject is niet geïnstalleerd</c> if <paramref name="installedAt"/> is <c>null</c>.
-	/// </returns>
+	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name=\"installedAt\"/> is null.</returns>
+	/// <example>27 november 2026 14u30</example>
 	public static string CalculateNextMaintenance(DateTime? installedAt, int maintenanceInterval) =>
 		installedAt.HasValue
-			? installedAt.Value.AddDays(maintenanceInterval).ToString("d MMMM yyyy 'om' HH'u'mm")
+			? installedAt.Value.AddDays(maintenanceInterval).ToString("d MMMM yyyy HH'u'mm")
 			: "Onderhoudsobject is niet geïnstalleerd";
 
 	/// <summary>
@@ -128,12 +126,10 @@ public static class MaintObjectUtility {
 	/// </summary>
 	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
 	/// <param name="calibrationInterval">The calibration interval in days.</param>
-	/// <returns>
-	/// A formatted calibration date such as <c>12 maart 2026 om 10u15</c>,  
-	/// or <c>Onderhoudsobject is niet geïnstalleerd</c> if <paramref name="installedAt"/> is <c>null</c>.
-	/// </returns>
+	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name="installedAt"/> is null.</returns>
+	/// <example>12 maart 2026 10u15</example>
 	public static string CalculateNextCalibration(DateTime? installedAt, int calibrationInterval) =>
 		installedAt.HasValue
-			? installedAt.Value.AddDays(calibrationInterval).ToString("d MMMM yyyy 'om' HH'u'mm")
+			? installedAt.Value.AddDays(calibrationInterval).ToString("d MMMM yyy HH'u'mm")
 			: "Onderhoudsobject is niet geïnstalleerd";
 }
