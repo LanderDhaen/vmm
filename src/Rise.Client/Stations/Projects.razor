@@ -30,8 +30,8 @@ else
 			<RowTemplate>
 				<MudTd DataLabel="#">@context.Code</MudTd>
 				<MudTd DataLabel="Naam">@context.Name</MudTd>
-				<MudTd DataLabel="Startdatum">@context.StartDate</MudTd>
-				<MudTd DataLabel="Einddatum">@context.EndDate</MudTd>
+				<MudTd DataLabel="Startdatum">@ProjectUtility.ToShortStartDate(context.StartDate)</MudTd>
+				<MudTd DataLabel="Einddatum">@ProjectUtility.ToShortEndDate(context.EndDate)</MudTd>
 				<MudTd DataLabel="Status">
 					<ProjectStatusChip Status="@context.Status"/>
 				</MudTd>
