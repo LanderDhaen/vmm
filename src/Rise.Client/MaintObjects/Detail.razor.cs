@@ -10,7 +10,7 @@ namespace Rise.Client.MaintObjects;
 
 public partial class Detail {
 	// ====== Tabs ======
-	private readonly List<string> _tabs = new() {
+	private readonly List<string> _tabs = [
 		"Informatie",
 		"Historiek"
 	];
