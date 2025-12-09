@@ -322,4 +322,28 @@ public class WorkOrderService(ApplicationDbContext dbContext) : IWorkOrderServic
 
 		return Result.Success();
 	}
+
+	public async Task<IEnumerable<string>> GetTechnicianNamesAsync(string? query, CancellationToken ctx = default) {
+		var q = (query ?? string.Empty).Trim().ToLowerInvariant();
+
+		var techniciansQuery = dbContext.WorkOrders
+			.Where(w => w.Technician != null)
+			.Select(w => new { w.Technician!.FirstName, w.Technician!.LastName })
+			.Distinct();
+
+		if (!string.IsNullOrEmpty(q)) {
+			techniciansQuery = techniciansQuery.Where(t =>
+				(t.FirstName + " " + t.LastName).ToLower().Contains(q) ||
+				(t.LastName + " " + t.FirstName).ToLower().Contains(q)
+			);
+		}
+
+		var names = await techniciansQuery
+			.Select(t => t.FirstName + " " + t.LastName)
+			.OrderBy(n => n)
+			.Take(50)
+			.ToListAsync(ctx);
+
+		return names;
+	}
 }
