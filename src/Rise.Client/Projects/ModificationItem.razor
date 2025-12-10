@@ -7,13 +7,7 @@
 		case ProjectModificationType.StatusChanged:
 			<MudText Typo="Typo.h6">@GetTitle(Modification.ProjectModificationType)</MudText>
 			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-				van
-				
-				<ProjectStatusChip Status="@(Enum.Parse<Status>(Modification.PreviousValue))"/>
-
-				naar
-				
-				<ProjectStatusChip Status="@(Enum.Parse<Status>(Modification.CurrentValue))"/>
+				van <StatusDisplay Value="@Modification.PreviousValue"/> naar <StatusDisplay Value="@Modification.CurrentValue"/>
 			</MudStack>
 			break;
 			 

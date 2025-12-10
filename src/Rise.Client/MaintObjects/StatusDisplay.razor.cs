@@ -5,6 +5,6 @@ namespace Rise.Client.MaintObjects
 	public partial class StatusDisplay
 	{
 		[Parameter]
-		public string Value { get; set; }
+		public required string Value { get; init; }
 	}
 }
