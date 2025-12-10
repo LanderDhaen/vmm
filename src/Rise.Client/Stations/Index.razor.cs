@@ -253,5 +253,5 @@ public partial class Index {
 		StateHasChanged();
 	}
 	private string GetFilterDrawerClass() =>
-		_filterDrawerAnchor == Anchor.Right ? "p-4 rounded-l-lg" : "p-4 rounded-t-lg";
+		_filterDrawerAnchor == Anchor.Right ? "pa-4 rounded-l-lg" : "pa-4 rounded-t-lg";
 }
