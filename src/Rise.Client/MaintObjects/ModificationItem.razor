@@ -1,23 +1,20 @@
-@using Rise.Client.Components.MaintObjects
 @using Rise.Shared.MaintObjects
 
 @{
+	<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 	switch (Modification.MaintObjModificationType)
 	{
 		case MaintObjModificationType.StatusChanged:
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
 				van <StatusDisplay Value="@Modification.PreviousValue"/> naar <StatusDisplay Value="@Modification.CurrentValue"/>
 			</MudStack>
 			break;
 
 		case MaintObjModificationType.Scanned:
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 			<MudText>door <b>@Modification.CurrentValue</b></MudText>
 			break;
 
 		default:
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 			<MudText>van <b>@Modification.PreviousValue</b> naar <b>@Modification.CurrentValue</b></MudText>
 			break;
 	}

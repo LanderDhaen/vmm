@@ -1,20 +1,18 @@
 @using Rise.Shared.Stations
 
 @{
+	<MudText Typo="Typo.h6">@GetTitle(Modification.MeasurementStationModificationType)</MudText>
 	switch (Modification.MeasurementStationModificationType)
 	{
 		case MeasurementStationModificationType.InstalledAtChanged: 
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MeasurementStationModificationType)</MudText>
 			<MudText>van <b>@ParseInstalledAt(Modification.PreviousValue)</b> naar <b>@ParseInstalledAt(Modification.CurrentValue)</b></MudText>
 			break;
 			
-		case MeasurementStationModificationType.RemovedAtChanged: 
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MeasurementStationModificationType)</MudText>
+		case MeasurementStationModificationType.RemovedAtChanged:
 			<MudText>van <b>@ParseRemovedAt(Modification.PreviousValue)</b> naar <b>@ParseRemovedAt(Modification.CurrentValue)</b></MudText>
 			break;
 		
 		default:
-			<MudText Typo="Typo.h6">@GetTitle(Modification.MeasurementStationModificationType)</MudText>
 			<MudText>van <b>@Modification.PreviousValue</b> naar <b>@Modification.CurrentValue</b></MudText>
 			break;
 	}
