@@ -110,26 +110,48 @@ public static class MaintObjectUtility {
 		=> removedAt?.ToLocalTime().ToString("dd/MM/yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
-	/// Calculates and formats the next expected maintenance date.
+	/// Calculates and formats the next expected maintenance date based on the current date.
 	/// </summary>
 	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
 	/// <param name="maintenanceInterval">The maintenance interval in days.</param>
-	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name=\"installedAt\"/> is null.</returns>
+	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name="installedAt"/> is null.</returns>
 	/// <example>27 november 2026 14u30</example>
-	public static string CalculateNextMaintenance(DateTime? installedAt, int maintenanceInterval) =>
-		installedAt.HasValue
-			? installedAt.Value.AddDays(maintenanceInterval).ToString("d MMMM yyyy HH'u'mm")
-			: "Onderhoudsobject is niet geïnstalleerd";
+	public static string CalculateNextMaintenance(DateTime? installedAt, int maintenanceInterval)
+	{
+		if (!installedAt.HasValue)
+			return "Onderhoudsobject is niet geïnstalleerd";
 
+		var nextMaintenance = installedAt.Value;
+
+		// Keep adding intervals until the date is in the future
+		while (nextMaintenance <= DateTime.Now)
+		{
+			nextMaintenance = nextMaintenance.AddDays(maintenanceInterval);
+		}
+
+		return nextMaintenance.ToString("d MMMM yyyy HH'u'mm");
+	}
+	
 	/// <summary>
-	/// Calculates and formats the next expected calibration date.
+	/// Calculates and formats the next expected calibration date based on the current date.
 	/// </summary>
 	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
 	/// <param name="calibrationInterval">The calibration interval in days.</param>
 	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name="installedAt"/> is null.</returns>
 	/// <example>12 maart 2026 10u15</example>
-	public static string CalculateNextCalibration(DateTime? installedAt, int calibrationInterval) =>
-		installedAt.HasValue
-			? installedAt.Value.AddDays(calibrationInterval).ToString("d MMMM yyy HH'u'mm")
-			: "Onderhoudsobject is niet geïnstalleerd";
+	public static string CalculateNextCalibration(DateTime? installedAt, int calibrationInterval)
+	{
+		if (!installedAt.HasValue)
+			return "Onderhoudsobject is niet geïnstalleerd";
+
+		var nextCalibration = installedAt.Value;
+
+		// Keep adding intervals until the date is in the future
+		while (nextCalibration <= DateTime.Now)
+		{
+			nextCalibration = nextCalibration.AddDays(calibrationInterval);
+		}
+
+		return nextCalibration.ToString("d MMMM yyyy HH'u'mm");
+	}
 }
