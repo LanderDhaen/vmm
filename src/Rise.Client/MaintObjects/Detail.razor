@@ -86,11 +86,11 @@ else
 						</MudCardHeader>
 						<MudCardContent>
 							<MudText><b>Onderhoudsinterval:</b> @_maintObj.MaintenanceIntervalDays dagen</MudText>
-							<MudText><b>Volgend onderhoud:</b> @MaintObjectUtility.CalculateNextMaintenance(_maintObj.InstalledAt, _maintObj.MaintenanceIntervalDays)</MudText>
+							<MudText><b>Volgend onderhoud:</b> @MaintObjectUtility.CalculateNextInterval(_maintObj.InstalledAt, _maintObj.MaintenanceIntervalDays)</MudText>
 							<MudDivider Light="true" Class="my-4"/>
 							<MudText><b>Kalibratieinterval:</b> @_maintObj.CalibrationIntervalDays dagen</MudText>
 							<MudText>
-								<b>Volgende kalibratie:</b> @MaintObjectUtility.CalculateNextCalibration(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)
+								<b>Volgende kalibratie:</b> @MaintObjectUtility.CalculateNextInterval(_maintObj.InstalledAt, _maintObj.CalibrationIntervalDays)
 							</MudText>
 						</MudCardContent>
 					</MudCard>

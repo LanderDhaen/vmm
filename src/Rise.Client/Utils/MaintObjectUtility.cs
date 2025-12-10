@@ -110,26 +110,23 @@ public static class MaintObjectUtility {
 		=> removedAt?.ToLocalTime().ToString("dd/MM/yyyy HH'u'mm") ?? "-";
 
 	/// <summary>
-	/// Calculates and formats the next expected maintenance date.
+	/// Calculates and formats the next expected maintenance or calibration date.
 	/// </summary>
 	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
-	/// <param name="maintenanceInterval">The maintenance interval in days.</param>
-	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name=\"installedAt\"/> is null.</returns>
-	/// <example>27 november 2026 14u30</example>
-	public static string CalculateNextMaintenance(DateTime? installedAt, int maintenanceInterval) =>
-		installedAt.HasValue
-			? installedAt.Value.AddDays(maintenanceInterval).ToString("d MMMM yyyy HH'u'mm")
-			: "Onderhoudsobject is niet geïnstalleerd";
+	/// <param name="intervalDays">The interval in days.</param>
+	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> if <paramref name="installedAt"/> is null.</returns>
+	public static string CalculateNextInterval(DateTime? installedAt, int intervalDays)
+	{
+		if (!installedAt.HasValue)
+			return "Onderhoudsobject is niet geïnstalleerd";
 
-	/// <summary>
-	/// Calculates and formats the next expected calibration date.
-	/// </summary>
-	/// <param name="installedAt">The installation date, or <c>null</c> if not installed.</param>
-	/// <param name="calibrationInterval">The calibration interval in days.</param>
-	/// <returns>A string formatted as <c>d MMMM yyyy HH'u'mm</c>, or <c>Onderhoudsobject is niet geïnstalleerd</c> when <paramref name="installedAt"/> is null.</returns>
-	/// <example>12 maart 2026 10u15</example>
-	public static string CalculateNextCalibration(DateTime? installedAt, int calibrationInterval) =>
-		installedAt.HasValue
-			? installedAt.Value.AddDays(calibrationInterval).ToString("d MMMM yyy HH'u'mm")
-			: "Onderhoudsobject is niet geïnstalleerd";
+		var now = DateTime.Now;
+		var daysSinceInstall = (now - installedAt.Value).TotalDays;
+
+		var intervalsPassed = Math.Ceiling(daysSinceInstall / intervalDays);
+		var nextDate = installedAt.Value.AddDays(intervalsPassed * intervalDays);
+
+		return nextDate.ToLocalTime().ToString("d MMMM yyyy HH'u'mm");
+	}
+
 }
