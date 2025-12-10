@@ -39,11 +39,13 @@
 	             RowsPerPage="10"
 	             Striped="true"
 	             Hover="true"
+	             AllowUnsorted="false"
+	             ShowColumnOptions="false"
 	             SortMode="SortMode.Single"
 	             RowClick="OnRowClick">
 
 		<Columns>
-			<PropertyColumn Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
+			<PropertyColumn InitialDirection="SortDirection.Descending" Property="x => x.Priority" Title="Prioriteit" HeaderClass="mud-theme-primary">
 				<CellTemplate Context="context">
 					<WorkOrderPriorityChip Priority="@context.Item.Priority"/>
 				</CellTemplate>

@@ -1,0 +1,11 @@
+@using Rise.Client.Components.Projects
+@using Rise.Shared.Projects
+
+@if (Enum.TryParse(Value, out Status status))
+{
+	<ProjectStatusChip Status="@status" />
+}
+else
+{
+	<b>@Value</b>
+}

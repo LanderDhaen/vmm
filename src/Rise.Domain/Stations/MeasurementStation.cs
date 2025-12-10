@@ -131,10 +131,10 @@ public class MeasurementStation : Entity {
 
 			var curr = _measurementStationHistories[i];
 			var prev = _measurementStationHistories[i + 1];
+			
+			List<MeasurementStationModification> modificationsPerPair = MeasurementStationModificationFactory.Create(curr, prev);
 
-			MeasurementStationModification modification = MeasurementStationModificationFactory.Create(curr, prev);
-
-			modifications.Add(modification);
+			modifications.AddRange(modificationsPerPair);
 		}
 
 		return modifications;

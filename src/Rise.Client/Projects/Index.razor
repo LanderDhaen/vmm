@@ -21,7 +21,8 @@
 		           Size="Size.Small"
 		           StartIcon="@Icons.Material.Filled.FilterAlt"
 		           Color="Color.Primary"
-		           Class="px-4">
+		           Class="px-4"
+		           Disabled="true">
 			Filteren
 		</MudButton>
 		<MudButton Variant="Variant.Filled"
@@ -43,7 +44,6 @@
 	             SortMode="SortMode.Single"
 	             AllowUnsorted="false"
 	             ShowColumnOptions="false"
-	             RowClass=""
 	             RowClick="@(args => NavigateToProject(args.Item.Id))">
 
 		<Columns>
@@ -99,7 +99,8 @@
 
 		<MudIconButton Icon="@Icons.Material.Filled.FilterAlt"
 		               Color="Color.Primary"
-		               Size="Size.Small"/>
+		               Size="Size.Small"
+		               Disabled="true"/>
 
 		<MudIconButton Icon="@Icons.Material.Filled.Add"
 		               Color="Color.Primary"

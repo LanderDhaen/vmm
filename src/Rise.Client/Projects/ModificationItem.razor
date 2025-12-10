@@ -1,0 +1,26 @@
+@using Rise.Client.Components.Projects
+@using Rise.Shared.Projects
+
+@{
+	<MudText Typo="Typo.h6">@GetTitle(Modification.ProjectModificationType)</MudText>
+	switch (Modification.ProjectModificationType)
+	{
+		case ProjectModificationType.StatusChanged:
+			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+				van <StatusDisplay Value="@Modification.PreviousValue"/> naar <StatusDisplay Value="@Modification.CurrentValue"/>
+			</MudStack>
+			break;
+			 
+		case ProjectModificationType.StartDateChanged:
+			<MudText>van <b>@ParseStartDate(Modification.PreviousValue)</b> naar <b>@ParseStartDate(Modification.CurrentValue)</b></MudText>
+			break;
+			
+		case ProjectModificationType.EndDateChanged:
+			<MudText>van <b>@ParseEndDate(Modification.PreviousValue)</b> naar <b>@ParseEndDate(Modification.CurrentValue)</b></MudText>
+			break;
+		
+		default:
+			<MudText>van <b>@Modification.PreviousValue</b> naar <b>@Modification.CurrentValue</b></MudText>
+			break;
+	}
+}

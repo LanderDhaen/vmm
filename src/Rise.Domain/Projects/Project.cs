@@ -162,8 +162,8 @@ public class Project : Entity {
 			var current = _projectHistories[i];
 			var previous = _projectHistories[i + 1];
 
-			ProjectModification modification = ProjectModificationFactory.Create(current, previous);
-			modifications.Add(modification);
+			List<ProjectModification> modificationsPerPair = ProjectModificationFactory.Create(current, previous);
+			modifications.AddRange(modificationsPerPair);
 		}
 
 		return modifications;
