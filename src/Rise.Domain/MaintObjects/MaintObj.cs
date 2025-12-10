@@ -65,7 +65,7 @@ public class MaintObj : Entity {
 		// Assign the new values
 
 		Station = station;
-		Installation = new Installation(Station.Installation.InstalledAt, Station.Installation.RemovedAt);
+		Installation = new Installation(DateTime.Now);
 		Location = station.Location;
 		SetStatus(MaintObjStatus.Active);
 	}
