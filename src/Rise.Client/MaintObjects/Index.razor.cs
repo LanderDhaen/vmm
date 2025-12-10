@@ -19,12 +19,14 @@ public partial class Index {
 
 	private string _activeSorting = "SerialNumber";
 	private bool _activeSortingDesc = true;
+	
+	private string _searchTerm = string.Empty;
 
 	private CancellationTokenSource _cancellationTokenSource = new();
 
 
 	private IEnumerable<MaintObjDto.Index>? _mobileItems;
-	private readonly MudDataGrid<MaintObjDto.Index> _grid;
+	private MudDataGrid<MaintObjDto.Index> _grid;
 
 
 	private bool _mobileSortOptionsOpen;
@@ -62,7 +64,8 @@ public partial class Index {
 			Skip = state.Page * state.PageSize,
 			Take = state.PageSize,
 			OrderBy = sorting.SortBy,
-			OrderDescending = sorting.Descending
+			OrderDescending = sorting.Descending,
+			SearchTerm = _searchTerm
 		};
 
 		Result<MaintObjResponse.Index> result =
@@ -86,9 +89,10 @@ public partial class Index {
 			Take = 10,
 			OrderBy = _activeSorting,
 			OrderDescending = _activeSortingDesc,
+			SearchTerm = _searchTerm
 		};
 
-		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request);
+		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.MaintObjects;
 	}
@@ -104,6 +108,16 @@ public partial class Index {
 		_activeSortingDesc = descending;
 		await GetMaintObjectsMobileAsync();
 		ToggleSortingDrawer();
+	}
+	
+	// Searching
+
+	private async Task HandleDesktopIntervalElapsed() {
+		await _grid.ReloadServerData();
+	}
+
+	private async Task HandleMobileIntervalElapsed() {
+		await GetMaintObjectsMobileAsync();
 	}
 
 	// TODO: Implement filtering (updating the state for desktop or calling SortFilterAsync for mobile)

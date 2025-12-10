@@ -426,7 +426,7 @@ public class DbSeeder(
 			// Adding devices to stock Aalst
 			
 			new MaintObj("BT1000", "48291", MaintObjType.Battery, plans[0], null, stockLocations[0]),
-			new MaintObj("CR3000", "24365", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[0]), // Matches one of the provided barcodes
+			new MaintObj("CR3000", "68973", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[0]), // Matches one of the provided barcodes
 			new MaintObj("SA5000", "16308", MaintObjType.Sensor, plans[2], "In-Situ", stockLocations[0]),
 			new MaintObj("SM1200", "72459", MaintObjType.Sim, plans[0], null, stockLocations[0]),
 			new MaintObj("CT9300", "59142", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[0]),
@@ -442,7 +442,7 @@ public class DbSeeder(
 			// Adding devices to the stock in Antwerpen
 			
 			new MaintObj("BT1000", "15248", MaintObjType.Battery, plans[0], null, stockLocations[2]),
-			new MaintObj("CR3000", "68973", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[2]),
+			new MaintObj("CR3000", "24365", MaintObjType.Logger, plans[1], "Campbell Scientific", stockLocations[2]),
 			new MaintObj("SA5000", "43105", MaintObjType.Sensor, plans[2], "In-Situ", stockLocations[2]),
 			new MaintObj("SM1200", "87962", MaintObjType.Sim, plans[0], null, stockLocations[2]),
 			new MaintObj("CT9300", "50736", MaintObjType.Modem, plans[1], "Cinterion", stockLocations[2]),
