@@ -14,18 +14,18 @@ public static class ProjectModificationFactory {
 				current.Status.ToString()));
 		}
 		
-		if (!current.DateRange.StartDate.Equals(previous.DateRange.StartDate)) {
-			modifications.Add(new ProjectModification(ProjectModificationType.StartDateChanged,
-				current.ValidityRange.ValidFrom,
-				previous.DateRange.StartDate.ToString(),
-				current.DateRange.StartDate.ToString()));
-		}
-
 		if (!current.DateRange.EndDate.Equals(previous.DateRange.EndDate)) {
 			modifications.Add(new ProjectModification(ProjectModificationType.EndDateChanged,
 				current.ValidityRange.ValidFrom,
 				previous.DateRange.EndDate?.ToString() ?? "-",
 				current.DateRange.EndDate?.ToString() ?? "-"));
+		}
+		
+		if (!current.DateRange.StartDate.Equals(previous.DateRange.StartDate)) {
+			modifications.Add(new ProjectModification(ProjectModificationType.StartDateChanged,
+				current.ValidityRange.ValidFrom,
+				previous.DateRange.StartDate.ToString(),
+				current.DateRange.StartDate.ToString()));
 		}
 
 		if (!current.MeasurementNetwork.Equals(previous.MeasurementNetwork)) {

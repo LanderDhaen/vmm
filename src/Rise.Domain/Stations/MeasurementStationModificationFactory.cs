@@ -18,16 +18,7 @@ namespace Rise.Domain.Stations {
 					current.Location.Name
 				));
 			}
-
-			if (!current.Installation.InstalledAt.Equals(previous.Installation.InstalledAt)) {
-				modifications.Add(new MeasurementStationModification(
-					MeasurementStationModificationType.InstalledAtChanged,
-					current.ValidityRange.ValidFrom,
-					previous.Installation.InstalledAt.ToString("s"),  
-					current.Installation.InstalledAt.ToString("s")
-				));
-			}
-
+			
 			if (!current.Installation.RemovedAt.Equals(previous.Installation.RemovedAt)) {
 				modifications.Add( new MeasurementStationModification(
 					MeasurementStationModificationType.RemovedAtChanged,
@@ -37,6 +28,15 @@ namespace Rise.Domain.Stations {
 				));
 			}
 
+			if (!current.Installation.InstalledAt.Equals(previous.Installation.InstalledAt)) {
+				modifications.Add(new MeasurementStationModification(
+					MeasurementStationModificationType.InstalledAtChanged,
+					current.ValidityRange.ValidFrom,
+					previous.Installation.InstalledAt.ToString("s"),  
+					current.Installation.InstalledAt.ToString("s")
+				));
+			}
+			
 			if (modifications.Count == 0) {
 				throw new InvalidOperationException("Niet mogelijk om een modificatie op te stellen voor deze twee historiekrijen");
 			}
