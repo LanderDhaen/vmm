@@ -126,7 +126,7 @@ public static class MaintObjectUtility {
 		var intervalsPassed = Math.Ceiling(daysSinceInstall / intervalDays);
 		var nextDate = installedAt.Value.AddDays(intervalsPassed * intervalDays);
 
-		return nextDate.ToString("d MMMM yyyy HH'u'mm");
+		return nextDate.ToLocalTime().ToString("d MMMM yyyy HH'u'mm");
 	}
 
 }
