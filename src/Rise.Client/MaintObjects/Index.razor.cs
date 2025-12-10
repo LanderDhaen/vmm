@@ -92,7 +92,7 @@ public partial class Index {
 			SearchTerm = _searchTerm
 		};
 
-		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request);
+		Result<MaintObjResponse.Index> result = await MaintObjService.GetIndexAsync(request, _cancellationTokenSource.Token);
 
 		_mobileItems = result.Value.MaintObjects;
 	}
