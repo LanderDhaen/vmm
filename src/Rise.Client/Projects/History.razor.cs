@@ -12,25 +12,11 @@ public partial class History {
 	[Parameter] public Guid ProjectId { get; set; }
 	[Inject] public required IProjectService ProjectService { get; set; }
 
-	private TimelinePosition _timelinePosition;
-
 	protected override async Task OnInitializedAsync() {
 		Result<ProjectResponse.History> result = await ProjectService.GetHistoryAsync(ProjectId);
 
 		if (result.IsSuccess) {
 			_modifications = result.Value.Modifications;
 		}
-	}
-
-	private void OnBreakPointChange(Breakpoint breakpoint) => _timelinePosition = breakpoint == Breakpoint.Xs ? TimelinePosition.Left : TimelinePosition.Alternate;
-
-	private static string DefineTitle(ProjectModificationType modificationType) {
-		return modificationType switch {
-			ProjectModificationType.StartDateChanged => "Startdatum gewijzigd",
-			ProjectModificationType.EndDateChanged => "Einddatum gewijzigd",
-			ProjectModificationType.StatusChanged => "Status gewijzigd",
-			ProjectModificationType.MeasurementNetworkChanged => "Meetnet gewijzigd",
-			_ => "Wijziging"
-		};
 	}
 }

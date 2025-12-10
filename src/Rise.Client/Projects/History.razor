@@ -9,16 +9,43 @@
 }
 else
 {
-	<MudBreakpointProvider OnBreakpointChanged="@OnBreakPointChange">
-		<MudTimeline TimelinePosition="_timelinePosition" Class="mr-20 m-xs-0">
+	@* Desktop view *@
+	
+	<MudHidden Breakpoint="Breakpoint.Xs"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Alternate" Class="mr-20">
 			@{
-				foreach (var modification in _modifications) {
-					<TimeLineItem Title="@(DefineTitle(modification.ProjectModificationType))"
-					              ModifiedAt="modification.ModifiedAt"
-					              CurrentValue=@modification.CurrentValue
-					              PreviousValue="@modification.PreviousValue"/>
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemOpposite>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@HistoryUtility.ToLongValidFrom(modification.ModifiedAt)</MudChip>
+						</ItemOpposite>
+						<ItemContent>
+							<ModificationItem Modification="modification" />
+						</ItemContent>
+					</MudTimelineItem>
 				}
 			}
 		</MudTimeline>
-	</MudBreakpointProvider>
+	</MudHidden>
+	
+	@* Mobile view *@
+	
+	<MudHidden Breakpoint="Breakpoint.SmAndUp"> 
+		<MudTimeline TimelinePosition="TimelinePosition.Left">
+			@{
+				foreach (var modification in _modifications)
+				{
+					<MudTimelineItem Color="Color.Primary" TimelineAlign="TimelineAlign.End">
+						<ItemContent>
+							<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">
+								@HistoryUtility.ToShortValidFrom(modification.ModifiedAt)
+							</MudChip>
+							<ModificationItem Modification="modification"/>
+						</ItemContent>
+					</MudTimelineItem>
+				}
+			}
+		</MudTimeline>
+	</MudHidden>
 }
