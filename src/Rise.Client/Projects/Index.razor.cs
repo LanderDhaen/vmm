@@ -14,10 +14,9 @@ public partial class Index {
 		("Name", "Naam"),
 		("StartDate", "Startdatum"),
 		("EndDate", "Einddatum"),
-		("Status",  "Status"),
+		("Status", "Status"),
 		("MeasurementNetwork", "Meetnet"),
-		("Zone", "Zone"),
-		("Status", "Status")
+		("Zone", "Zone")
 	];
 
 	private string _activeSorting = "Code";
