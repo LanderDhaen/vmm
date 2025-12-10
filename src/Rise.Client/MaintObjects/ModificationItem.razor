@@ -7,13 +7,7 @@
 		case MaintObjModificationType.StatusChanged:
 			<MudText Typo="Typo.h6">@GetTitle(Modification.MaintObjModificationType)</MudText>
 			<MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-				van
-				
-				<MaintObjStatusChip Status="@(Enum.Parse<MaintObjStatus>(Modification.PreviousValue))"/>
-
-				naar
-				
-				<MaintObjStatusChip Status="@(Enum.Parse<MaintObjStatus>(Modification.CurrentValue))"/>
+				van <StatusDisplay Value="@Modification.PreviousValue"/> naar <StatusDisplay Value="@Modification.CurrentValue"/>
 			</MudStack>
 			break;
 

@@ -1,0 +1,11 @@
+@using Rise.Shared.MaintObjects
+@using Rise.Client.Components.MaintObjects
+
+@if (Enum.TryParse(Value, out MaintObjStatus status))
+{
+	<MaintObjStatusChip Status="@status" />
+}
+else
+{
+	<b>@Value</b>
+}
